@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <18:36 on Wednesday, 2 February 2005 by alexjb>
+; Time-stamp: <14:27 on Friday, 18 February 2005 by alexjb>
 ;
 
 (message ".emacs")
@@ -21,8 +21,8 @@
 ;; (this of course falls down when logging on remotely, but hey I
 ;; always do that in text mode anyway :-)
  
-(defvar I-am-at-work (string-match "cambridge" (system-name)))
-(defvar I-am-at-home (string-match "trent" (system-name)))
+(defvar I-am-at-work (string-match "okra" (system-name)))
+(defvar I-am-at-home (string-match "malory" (system-name)))
 
 ;; (setq load-path (cons "~/lisp/" load-path))
 
@@ -150,7 +150,7 @@
   (if I-am-at-work
       (progn
 	(set-frame-width (selected-frame) 120)
-	(set-frame-height (selected-frame) 60))
+	(set-frame-height (selected-frame) 50))
 ;;smaller monitor at home :-(
     (set-frame-width (selected-frame) 120)
     (set-frame-height (selected-frame) 50)))
@@ -420,7 +420,6 @@
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
 
-(message "Doing ispell dict setting")
 
 ;; ispell
 ;
@@ -434,11 +433,17 @@
   (ispell-change-dictionary "british")
   (message "Set ispell to British Dictionary"))
 
-; set British dict for all files
-(add-hook 'find-file-hooks 'set-british-dict)
+(if (locate-library "ispell")
+    (progn
+      (message "Doing ispell dict setting")
 
-; if we are editing text turn on flyspell mode
-(add-hook 'text-mode-hook 'flyspell-mode)
+; set British dict for all files
+      (add-hook 'find-file-hooks 'set-british-dict)
+
+      ; if we are editing text turn on flyspell mode
+      (add-hook 'text-mode-hook 'flyspell-mode)))
+
+(message "past ispell setup")
 
 
 ;; Compile mode. Or rather, comint, compile and mode-compile.
@@ -454,17 +459,6 @@
 ;; Version control library. Splendid.
 (setq vc-command-messages t
       vc-initial-comment t)
-
-;; Elisp list
-(if (locate-library "ell")
-    (progn
-      (setq ell-locate t
-	    ell-goto-addr t)
-      (cond
-       (I-am-at-work			;? And for home?
-	  (setq ell-proxy-host "proxy.gpt.co.uk"
-		ell-proxy-port 8080)))
-      (autoload 'ell-packages "ell" "Display the Emacs lisp list" t)))
 
 ;; WoMan - WithOut Man
 (if (locate-library "woman")
@@ -737,21 +731,13 @@
       ;; colourization
       (add-hook 'php-mode-user-hook 'turn-on-font-lock)))
 
-;; Batch file mode
-(setq auto-mode-alist
-      (append (list (cons "\\.cmd\\'" 'bat-generic-mode)
-		    (cons "\\.nt\\'" 'bat-generic-mode))
-	      auto-mode-alist))
+(message "Done various programming modes")
 
-(add-hook 'snmp-common-mode-hook
-	  '(lambda ()
-	     (make-variable-buffer-local 'make-backup-files)
-	     (setq make-backup-files nil)
-	     (imenu-add-to-menubar "Imenu")))
 
 ;; enable the mouse wheel
 (autoload 'mwheel-install "mwheel" "Enable wheely mouse")
 (mwheel-install)
+
 
 ;; Convert dos to unix text files
 ;; from: elf@ee.ryerson.ca (Luis Fernandes)
@@ -817,11 +803,16 @@
 (global-set-key [(control meta tab)] (lambda ()
 				       (interactive)
 				       (crs-bury-buffer -1)))
-;;; Bind control-tab in a cycle buffer kind of way
-;;(global-set-key [(control tab)] 'bury-buffer)
 
-;; More keybindings, make Control-c copy ala windoze - probably a bad idea
-;;(global-set-key [(control c)] 'kill-ring-save)
+;
+; If we have the bs.el library then rebind C-x b to use bs
+;
+(if (locate-library "bs")
+    (progn
+      (load-library "bs")
+      (global-set-key (kbd "C-x b") 'bs-show)))
+
+(message "Done Buffer Handling Tweaks")
 
 ;; If I define a single press macro exec I may use it more often
 (global-set-key [(control meta m)] 'call-last-kbd-macro)
