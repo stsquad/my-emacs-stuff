@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <19:58 on Sunday, 21 April 2002 by alex>
+; Time-stamp: <18:37 on Monday, 22 April 2002 by alex>
 ;
 
 (message ".emacs")
@@ -643,7 +643,7 @@
 ;; cc-mode
 (add-hook 'c-mode-common-hook
 	  '(lambda ()
-	     (defconst stdbgl-c-style
+	     (defconst my-c-style
 	       '((c-tab-always-indent . nil)
 		 (c-indent-level 3)
 		 (c-comment-only-line-offset 0)
@@ -674,11 +674,11 @@
 				     (case-label . +)
 				     (block-open . 0)))
 		 )
-	       "Standard BGL C style")
+	       "Alex'sC style")
 
-	     (c-add-style "Standard BGL C style" stdbgl-c-style t)
+	     (c-add-style "Alex's C style" my-c-style t)
 	     (turn-on-auto-fill)
-	     (c-toggle-auto-state 1)
+; no auto new line	     (c-toggle-auto-state 1)
 	     (imenu-add-to-menubar "Imenu")
 	     (if I-am-emacs-21
 		 (cwarn-mode))
