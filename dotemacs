@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <15:34 on Thursday, 4 March 2004 by alex>
+; Time-stamp: <13:16 on Tuesday, 26 October 2004 by alex>
 ;
 
 (message ".emacs")
@@ -15,7 +15,6 @@
 ;; Find out about my environment
 ;; Tweak a few paths
 
-(defvar I-am-win32 (eq window-system 'w32))
 (defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
 
 ;; Lets define which machine I'm on, therefor if I am at work
@@ -142,18 +141,6 @@
 	   (global-set-key [end] 'end-of-buffer)
 	   ))
 
-(if I-am-win32
-    (progn     ; Pointy-clinky dialog box to open files from the menus
-      (if (locate-library "dlgopen")
-	  (progn
-	    (autoload 'dlgopen-open-files "dlgopen"
-	      "Use dialog box as file selector" t)
-	    (define-key global-map [menu-bar files open-file]
-	      '("Open File..." . dlgopen-open-files))))
-
-      ; Use an X style font menu instead of the Windows dialog
-      (setq w32-use-w32-font-dialog nil)))
-
 (message "Done keymapping")
 
 
@@ -271,10 +258,6 @@
 (transient-mark-mode t)
 (delete-selection-mode 1)
 
-;; Shut off annoying beep
-(if I-am-win32
-    (set-message-beep 'silent))
-
 ;; Groovy things with matching parentheses
 (show-paren-mode t)
 
@@ -367,38 +350,13 @@
 (if (locate-library "tramp")
     (progn
       (load-library "tramp")
-      (if I-am-win32
-	  (setq tramp-methods
-		(cons '("pscp"
-			(tramp-connection-function  tramp-open-connection-rsh)
-			(tramp-rsh-program          "plink")
-			(tramp-rcp-program          "pscp")
-			(tramp-remote-sh            "/bin/sh")
-			(tramp-rsh-args     	    ("-ssh" "-v"))
-			(tramp-rcp-args     	    nil)
-			(tramp-rcp-keep-date-arg    "-p")
-			(tramp-su-program           nil)
-			(tramp-su-args              nil)
-			(tramp-encoding-command     nil)
-			(tramp-decoding-command     nil)
-			(tramp-encoding-function    nil)
-			(tramp-decoding-function    nil)
-			(tramp-telnet-program       nil))
-		      tramp-methods)
-		tramp-default-method "pscp")
-	(setq tramp-default-method "scp"))
       ))
 
 ;; Calendar / Diary stuff.
 
-(if I-am-at-work
-    (setq calendar-latitude      53.42
-	  calendar-longitude     -2.92
-	  calendar-location-name "Liverpool")
-;; or I'm at home
-  (setq calendar-latitude      53.30
+(setq calendar-latitude      53.30
 	calendar-longitude     -2.15
-	calendar-location-name "Manchester"))
+	calendar-location-name "Manchester")
  
 
 (setq european-calendar-style t
@@ -458,11 +416,6 @@
       ediff-window-setup-function 'ediff-setup-windows-plain
       ediff-use-last-dir          t)
 
-(if I-am-win32
-    (setq ediff-diff-program
-	  (concat cygnus-directory
-		  "bin/diff.exe")))
-
 (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
 
 (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
@@ -471,9 +424,26 @@
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
 
+(message "Doing ispell dict setting")
+
 ;; ispell
-; I speak british english
-(ispell-change-dictionary "british")
+;
+; There should be an easier way to set the default
+; however I'm currently setting each time a file
+; is opened using the find-file-hooks
+
+; I'm British, not Amercian damit!
+(defun set-british-dict ()
+  "Set British Dictionary"
+  (ispell-change-dictionary "british")
+  (message "Set ispell to British Dictionary"))
+
+; set British dict for all files
+(add-hook 'find-file-hooks 'set-british-dict)
+
+; if we are editing text turn on flyspell mode
+(add-hook 'text-mode-hook 'flyspell-mode)
+
 
 ;; Compile mode. Or rather, comint, compile and mode-compile.
 (setq compilation-scroll-output t
@@ -483,28 +453,11 @@
 (if (locate-library "mode-compile")
     (progn
       (autoload 'mode-compile "mode-compile"
-	"Compile file in current buffer" t) 
-      (if I-am-win32
-	  (setq mode-compile-exe-file-ext ".exe"))))
-
-;?
-;(setq binary-process-input t)
-;; For the interactive shell
-;(setq explicit-shell-file-name "d:/bin/bash.exe")
-;; For subprocesses invoked via the shell (e.g., "shell -c command")
-;(setq shell-file-name "c:/bin/sh.exe")
-;(setq win32-quote-process-args t)
-;(setq shell-command-switch "-c")
+	"Compile file in current buffer" t)))
 
 ;; Version control library. Splendid.
 (setq vc-command-messages t
       vc-initial-comment t)
-
-;; Work around gdb ^M problems
-(if I-am-win32
-    (add-hook 'gdb-mode-hook
-	      '(lambda ()
-		 (set-buffer-process-coding-system 'undecided 'undecided))))
 
 ;; Elisp list
 (if (locate-library "ell")
@@ -523,11 +476,6 @@
       (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
       (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
       (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)
-
-      (if I-am-win32
-	  (setq woman-manpath (list (concat cygnus-directory "usr/man/")
-				    (concat cygnus-directory "usr/local/man/")
-				    )))
 
       (setq woman-imenu-title "Imenu"
 	    woman-imenu t
