@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <21:26 on Wednesday, 6 February 2002 by alex>
+; Time-stamp: <13:30 on Friday, 19 April 2002 by alex>
 ;
 
 (message ".emacs")
@@ -270,10 +270,10 @@
 (setq frame-title-format "%b")
 (setq  icon-title-format "%b")
 
-(if I-am-emacs-21
-    (progn
-      (autoload 'zone-when-idle "zone")
-      (zone-when-idle 60)))
+;(if I-am-emacs-21
+;    (progn
+;      (autoload 'zone-when-idle "zone")
+;      (zone-when-idle 60)))
 
 ;; want to reduce the amount of white space in the mode-line
 (setq default-mode-line-format
@@ -526,11 +526,10 @@
 ;  resume. This stuff is all far from bullet-proof.
 
 ;; ispell
-(if (and I-am-win32 I-am-at-work)
-    (setq ispell-program-name
-	          (concat cygnus-directory "bin/ispell.exe") )
-
-(flyspell-default-dictionary "english")
+;(if (and I-am-win32 I-am-at-work)
+;    (setq ispell-program-name
+;	          (concat cygnus-directory "bin/ispell.exe") ) 
+;          (flyspell-default-dictionary "english") )
 
 ;; Compile mode. Or rather, comint, compile and mode-compile.
 (setq compilation-scroll-output t
@@ -798,6 +797,7 @@
 	  '(lambda ()
 	     (defconst stdbgl-c-style
 	       '((c-tab-always-indent . nil)
+		 (c-indent-level 3)
 		 (c-comment-only-line-offset 0)
 		 (c-basic-offset . 4)
 ;		 (c-echo-syntactic-information-p . t)
