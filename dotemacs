@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <19:07 on Thursday, 6 June 2002 by alex>
+; Time-stamp: <00:22 on Wednesday, 12 June 2002 by alex>
 ;
 
 (message ".emacs")
@@ -194,9 +194,26 @@
 (setq default-x-frame-alist '((top . 20) (left . 140)
 			    (width . 90) (height . 60)))
 ;;; So lets just force the current frame to the right size!
-(set-frame-size (selected-frame) 100 50)
+;;(set-frame-size (selected-frame) 100 50)
+
+;; Set up dimensions
+;;(setq default-frame-alist
+;;      '(
+;;; Define here the default geometry or via ~/.Xdefaults.
+;;	(width . 120) (height . 60)
+;;	(cursor-color . "red")
+;;	(cursor-type . box)
+;;	(foreground-color . "wheat")
+;;	(background-color . "dark slate gray")))
+
+;; Set size of frame - probably should check if X is running
+;;(add-to-list 'default-frame-alist '(height . 48))
+;;(add-to-list 'default-frame-alist '(width . 80))
 
 (message "Display Done")
+
+;; Disable tool-bar (I never use it)
+(tool-bar-mode -1)
 
 ;; fancier buffer menu
 (setq buffers-menu-max-size nil) ; Don't think this is needed with msb
@@ -812,19 +829,28 @@
     (diary))
 ;;(enlarge-window 21)
 
-;; Set up dimensions
-;;(setq default-frame-alist
-;;      '(
-;;; Define here the default geometry or via ~/.Xdefaults.
-;;	(width . 120) (height . 60)
-;;	(cursor-color . "red")
-;;	(cursor-type . box)
-;;	(foreground-color . "wheat")
-;;	(background-color . "dark slate gray")))
-
 ;; enable the mouse wheel
 (autoload 'mwheel-install "mwheel" "Enable wheely mouse")
 (mwheel-install)
+
+;; Convert dos to unix text files
+;; from: elf@ee.ryerson.ca (Luis Fernandes)
+;; 22 May 1997
+
+;;; Usage: M-x dos2unix
+;;;
+(defun dos2unix ()
+  "Convert this entire buffer from MS-DOS text file format to UNIX."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (replace-regexp "\r$" "" nil)
+    (goto-char (1- (point-max)))
+    (if (looking-at "\C-z")
+        (delete-char 1))))
+
+;;; Bind control-tab in a cycle buffer kind of way
+(global-set-key [(control tab)] 'bury-buffer)
 
 
 (message "Done .emacs")
