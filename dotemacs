@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <19:36 on Thursday, 13 June 2002 by alex>
+; Time-stamp: <10:05 on Monday, 2 December 2002 by alex>
 ;
 
 (message ".emacs")
@@ -191,25 +191,14 @@
 
 ;;; Display hacks
 ;;; This actually works, except of course the frame has already been created
-(setq default-x-frame-alist '((top . 20) (left . 140)
-			    (width . 90) (height . 80)))
+;;(setq default-x-frame-alist '((top . 20) (left . 140)
+;;			    (width . 90) (height . 80)))
 
-;;; So lets just force the current frame to the right size!
-;;(set-frame-size (selected-frame) 100 50)
-
-;; Set up dimensions
-;;(setq default-frame-alist
-;;      '(
-;;; Define here the default geometry or via ~/.Xdefaults.
-;;	(width . 120) (height . 60)
-;;	(cursor-color . "red")
-;;	(cursor-type . box)
-;;	(foreground-color . "wheat")
-;;	(background-color . "dark slate gray")))
-
-;; Set size of frame - probably should check if X is running
-;;(add-to-list 'default-frame-alist '(height . 48))
-;;(add-to-list 'default-frame-alist '(width . 80))
+;; Set the frame size to larger if on a Graphics display (we tell by
+;; looking at colour cells
+(when (> (display-color-cells) 16)
+  (set-frame-width (selected-frame) 120)
+  (set-frame-height (selected-frame) 60))
 
 (message "Display Done")
 
@@ -822,14 +811,6 @@
 	     (setq make-backup-files nil)
 	     (imenu-add-to-menubar "Imenu")))
 
-;;; Do This Now
-;; Nicer. I don't need the startup message now.
-;? We can probably use cookie1.el to display a fortune file.
-
-(if I-am-win32
-    (diary))
-;;(enlarge-window 21)
-
 ;; enable the mouse wheel
 (autoload 'mwheel-install "mwheel" "Enable wheely mouse")
 (mwheel-install)
@@ -850,8 +831,56 @@
     (if (looking-at "\C-z")
         (delete-char 1))))
 
+;;; Fancy buffer cycleing
+
+; necessary support function for buffer burial
+(defun crs-delete-these (delete-these from-this-list)
+  "Delete DELETE-THESE FROM-THIS-LIST."
+  (cond
+   ((car delete-these)
+    (if (member (car delete-these) from-this-list)
+	(crs-delete-these (cdr delete-these) (delete (car delete-these)
+                                                     from-this-list))
+      (crs-delete-these (cdr delete-these) from-this-list)))
+   (t from-this-list)))
+
+; this is the list of buffers I never want to see
+(defvar crs-hated-buffers
+  '("KILL" "*Compile-Log*"))
+
+; might as well use this for both
+(setq iswitchb-buffer-ignore (append '("^ " "*Buffer") crs-hated-buffers))
+
+(defun crs-hated-buffers ()
+  "List of buffers I never want to see, converted from names to buffers."
+  (delete nil
+	  (append
+	   (mapcar 'get-buffer crs-hated-buffers)
+	   (mapcar (lambda (this-buffer)
+		     (if (string-match "^ " (buffer-name this-buffer))
+			 this-buffer))
+		   (buffer-list)))))
+
+; I'm sick of switching buffers only to find KILL right in front of me
+(defun crs-bury-buffer (&optional n)
+  (interactive)
+  (unless n
+    (setq n 1))
+  (let ((my-buffer-list (crs-delete-these (crs-hated-buffers)
+					  (buffer-list (selected-frame)))))
+    (switch-to-buffer
+     (if (< n 0)
+	 (nth (+ (length my-buffer-list) n)
+	      my-buffer-list)
+       (bury-buffer)
+       (nth n my-buffer-list)))))
+
+(global-set-key [(control tab)] 'crs-bury-buffer)
+(global-set-key [(control meta tab)] (lambda ()
+				       (interactive)
+				       (crs-bury-buffer -1)))
 ;;; Bind control-tab in a cycle buffer kind of way
-(global-set-key [(control tab)] 'bury-buffer)
+;;(global-set-key [(control tab)] 'bury-buffer)
 
 
 (message "Done .emacs")
