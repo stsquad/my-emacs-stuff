@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <22:05 on Monday, 3 January 2005 by alex>
+; Time-stamp: <10:52 on Wednesday, 19 January 2005 by alexjb>
 ;
 
 (message ".emacs")
@@ -116,7 +116,9 @@
 ;;; keymapping
 ;; I'm allowed to bind: C-c [letter], [f5]-[f9]
 
+;; Goto-line should be easy
 (global-set-key "\C-cg" 'goto-line)
+(global-set-key "\M-g" 'goto-line)
 
 ;; Return => newline-and-indent
 (global-unset-key "\C-m")
