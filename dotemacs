@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <10:52 on Wednesday, 19 January 2005 by alexjb>
+; Time-stamp: <18:36 on Wednesday, 2 February 2005 by alexjb>
 ;
 
 (message ".emacs")
@@ -42,15 +42,6 @@
       (autoload 'babel-as-string "babel"
 	"Translate MSG, returning a string." t)
       (autoload 'babel-buffer "babel" "Translate the current buffer." t)))
-
-(if (locate-library "zenirc")
-    (progn
-      (autoload 'zenirc "zenirc" "Waste time using IRC" t)
-      (setq zenirc-server-default "leup489")
-      (add-hook 'zenirc-mode-hook
-		'(lambda ()
-		   (define-key zenirc-mode-map [mouse-2]
-		     'browse-url-at-mouse)))))
 
 ;(require 'generic-x)  ; Includes ini-generic-mode
 
