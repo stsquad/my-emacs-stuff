@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <10:05 on Monday, 2 December 2002 by alex>
+; Time-stamp: <18:00 on Thursday, 12 December 2002 by alex>
 ;
 
 (message ".emacs")
@@ -19,23 +19,7 @@
 (defvar I-am-at-work nil)
 (defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
 
-(if I-am-win32
-    (setq cygnus-directory "S:/SABC.SHR/LCT/bin/cygwin/"
-	  temp-directory "C:/TEMP/"
-	  temporary-file-directory "C:/TEMP/"))
-
-(setq load-path (cons "~/lisp/" load-path))
-
-(if (and I-am-win32 I-am-at-work)
-    (setq load-path (cons "S:/SABC.SHR/LCT/bin/emacs-21.1/site-lisp/w3/"
-			  load-path)))
-
-(if I-am-win32
-    (setq exec-path (append exec-path
-			    (mapcar '(lambda (dir)
-				       (concat cygnus-directory dir))
-				    '("bin" "usr/bin" "usr/local/bin"))
-			    )))
+;; (setq load-path (cons "~/lisp/" load-path))
 
 ;; Autoloads
 ;? Put them near their configuration.
@@ -94,26 +78,6 @@
 
 ;; Automagically decompress files
 (auto-compression-mode)
-
-;; Postscript printing
-(if (and I-am-win32 I-am-at-work)
-    (setq printer-name "LPT1"
-	  ps-printer-name nil		; nil means use printer-name
-	  ps-print-header nil		; Don't want a header
-	  ps-print-header-frame nil	; And even if we did, no box
-	  ps-paper-type 'a4
-	  ps-razzle-dazzle t		; Show progress while formatting
-
-	  ps-build-face-reference t	; Set up font alternatives
-	  ps-italic-faces '(font-lock-comment-face
-			    font-lock-string-face
-			    font-lock-variable-name-face)
-	  ps-bold-faces '(font-lock-keyword-face
-			  font-lock-type-face
-			  font-lock-function-name-face
-			  font-lock-builtin-face
-			  font-lock-variable-name-face)
-	  ps-print-color-p nil))
 
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
@@ -195,7 +159,7 @@
 ;;			    (width . 90) (height . 80)))
 
 ;; Set the frame size to larger if on a Graphics display (we tell by
-;; looking at colour cells
+;; looking at colour cells (must fix to not break emacs20, maybe)
 (when (> (display-color-cells) 16)
   (set-frame-width (selected-frame) 120)
   (set-frame-height (selected-frame) 60))
@@ -651,6 +615,26 @@
 ;; though?)
 (setq enable-local-variables t)
 
+;; Set proper values for kernel work
+(defun linux-c-mode ()
+  "C mode with adjusted defaults for use with the Linux kernel."
+  (interactive)
+  (c-mode)
+  (c-set-style "K&R")
+  (setq c-basic-offset 8))
+
+;; if its got linux in the path then its a kernel file
+(setq auto-mode-alist (cons '("*/linux.*/.*\\.[ch]$" . linux-c-mode)
+                       auto-mode-alist))
+
+;; load the ctags library and bind C-f to something worth using :-)
+(if (locate-library "etags")
+    (progn
+      (load-library "etags")
+      (global-unset-key "\C-f")
+      (global-set-key "\C-f" 'find-tag)))
+
+
 ;; tcl
 (add-hook 'tcl-mode-hook
 	  '(lambda ()
@@ -881,6 +865,9 @@
 				       (crs-bury-buffer -1)))
 ;;; Bind control-tab in a cycle buffer kind of way
 ;;(global-set-key [(control tab)] 'bury-buffer)
+
+;; More keybindings, make Control-c copy ala windoze - probably a bad idea
+;;(global-set-key [(control c)] 'kill-ring-save)
 
 
 (message "Done .emacs")
