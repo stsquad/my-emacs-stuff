@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <16:54 on Sunday, 5 January 2003 by alex>
+; Time-stamp: <15:34 on Thursday, 4 March 2004 by alex>
 ;
 
 (message ".emacs")
@@ -472,10 +472,8 @@
 ;  resume. This stuff is all far from bullet-proof.
 
 ;; ispell
-;(if (and I-am-win32 I-am-at-work)
-;    (setq ispell-program-name
-;	          (concat cygnus-directory "bin/ispell.exe") ) 
-;          (flyspell-default-dictionary "english") )
+; I speak british english
+(ispell-change-dictionary "british")
 
 ;; Compile mode. Or rather, comint, compile and mode-compile.
 (setq compilation-scroll-output t
@@ -881,9 +879,9 @@
 ;; More keybindings, make Control-c copy ala windoze - probably a bad idea
 ;;(global-set-key [(control c)] 'kill-ring-save)
 
+;; If I define a single press macro exec I may use it more often
+(global-set-key [(control meta m)] 'call-last-kbd-macro)
 
 (message "Done .emacs")
-;))		; Close auto-compilation magic. This appears to be a
-		; little flaky under NT.
 
 (setq debug-on-error nil)
