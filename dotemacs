@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <17:40 on Monday, 29 April 2002 by alex>
+; Time-stamp: <08:46 on Thursday, 9 May 2002 by alex>
 ;
 
 (message ".emacs")
@@ -711,7 +711,9 @@
 
 (setq cperl-info-on-command-no-prompt nil
       cperl-clobber-lisp-bindings     nil
-      cperl-electric-keywords         t) ; cperl-mode tries to load
+      cperl-electric-parens           nil
+      cperl-electric-keywords         nil)
+					 ; cperl-mode tries to load
 					 ; abbrev before running the hook
 
 (add-hook 'cperl-mode-hook
@@ -720,10 +722,11 @@
 	     (setq cperl-hairy                                 t
 	           cperl-merge-trailing-else                   nil
 	           cperl-tab-always-indent                     nil
-	           cperl-auto-newline                          t
-	           cperl-electric-lbrace-space                 t
+	           cperl-auto-newline                          nil
+	           cperl-electric-lbrace-space                 nil
 	           cperl-electric-linefeed                     t
-	           cperl-electric-parens                       t
+	           cperl-electric-parens                       nil
+	           cperl-electric-keywords                     nil
 	           cperl-lazy-help-time                        1
 	           cperl-extra-newline-before-brace            t
 	           cperl-extra-newline-before-brace-multiline  t
@@ -736,7 +739,7 @@
 		 (define-key cperl-mode-map "\C-cr" 'mode-compile))
 	     (define-key cperl-mode-map "\C-cc" 'cperl-check-syntax)
 	     (define-key cperl-mode-map "\C-j"  'cperl-linefeed)
-	     ))
+	     (message "Ran cperl-mode hook")))
 
 
 ;; Elisp mode
@@ -759,7 +762,6 @@
 		   	(if (eq window-system 'x)
 			    "xdvi"
 			  "dvi2tty * | cat -s"))))
-
 (add-hook 'latex-mode-hook
 	  '(lambda ()
 	     (imenu-add-to-menubar "Imenu")))
@@ -863,6 +865,10 @@
 ;;	(cursor-type . box)
 ;;	(foreground-color . "wheat")
 ;;	(background-color . "dark slate gray")))
+
+;; enable the mouse wheel
+(autoload 'mwheel-install "mwheel" "Enable wheely mouse")
+(mwheel-install)
 
 
 (message "Done .emacs")
