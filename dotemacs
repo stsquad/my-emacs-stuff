@@ -1,11 +1,8 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <14:27 on Friday, 18 February 2005 by alexjb>
+; Time-stamp: <16:07 on Monday, 21 February 2005 by alexjb>
 ;
 
-(message ".emacs")
-
-(message "Start")
-
+(message ".emacs Start")
 
 (setq debug-on-error t)
 
@@ -30,26 +27,6 @@
 ;? Put them near their configuration.
 ;? Check that extended modes are available.
 (autoload 'msb-mode "msb" "Fancier buffer-selection menu" t)
-
-(if (locate-library "dict-web")
-    (autoload 'dict "dict-web" "Look up a word or phrase in the Dictionary" t))
-
-(if (locate-library "babel")
-    (progn
-      (autoload 'babel "babel"
-	"Use web translation site to translate message" t)
-      (autoload 'babel-region "babel" "Translate the current region." t)
-      (autoload 'babel-as-string "babel"
-	"Translate MSG, returning a string." t)
-      (autoload 'babel-buffer "babel" "Translate the current buffer." t)))
-
-;(require 'generic-x)  ; Includes ini-generic-mode
-
-;; Looks like Ed was bored
-(if (locate-library "pyf")
-    (autoload 'pick-your-fish "pyf" "Pick Your Fish!" t))
-(if (locate-library "mc")
-    (autoload 'mc             "mc"  "Mornington Crescent" t))
 
 ;; Default mode is text-mode,
 (setq default-major-mode 'text-mode)
@@ -339,8 +316,6 @@
 (set-foreground-color "wheat")
 
 
-
-
 ;;; Major non-file-related modes
 ;; TRAMP
 (if (locate-library "tramp")
@@ -445,6 +420,16 @@
 
 (message "past ispell setup")
 
+;; calculator
+;
+; If we have the calculator library available lets load it in
+;
+
+(if (locate-library "calculator")
+    (progn
+     (autoload 'calculator "calculator"
+      "Run the Emacs calculator." t)
+     (global-set-key [(control return)] 'calculator)))
 
 ;; Compile mode. Or rather, comint, compile and mode-compile.
 (setq compilation-scroll-output t
@@ -480,36 +465,6 @@
 		(lambda ()
 		  (setq truncate-lines t)
 		  (auto-show-mode 1)))
-
-;; W3 + browse URL
-;? Variable to customise the buffer it appears in?
-;? Needs work for -home
-(if (locate-library "w3-auto")
-    (progn
-      (require 'w3-auto)
-      (setq w3-do-incremental-display   t
-	    w3-user-fonts-take-precedence t
-	    url-be-asynchronous         nil
-	    url-cookie-confirmation     t
-	    url-privacy-level 'paranoid)
-
-      (setq w3-default-homepage
-	    "http://www-comms-cov.intranet.marconi.com/home/"
-	    url-proxy-services
-	    '(("http" ."proxy.gpt.co.uk:8080")
-	      ("ftp" . "proxy.gpt.co.uk:8080")
-	      ("no_proxy" .
-    "^.*\\(marconicomms\.com\\)\\|\\(marconi\.com\\)\\|\\(gpt\.co\.uk\\)")))
-      
-      (add-hook 'url-local-hook 'url-setup-privacy-info)
-      (add-hook 'w3-mode-hook
-		'(lambda ()
-		   (auto-show-mode 1))))) ; Horizontal scrolling
-
-;; Vcard - for gnus MIME
-(if (locate-library "vcard")
-    (setq vcard-pretty-print-function 'vcard-format-sample-string))
-
 
 ;;; File modes
 ;; New modes - add (imenu-add-to-menubar "Imenu") and (turn-on-auto-fill)
