@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <14:44 on Wednesday, 23 February 2005 by alexjb>
+; Time-stamp: <12:56 on Monday, 28 February 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -411,6 +411,9 @@
 ; There should be an easier way to set the default
 ; however I'm currently setting each time a file
 ; is opened using the find-file-hooks
+;
+; Also if I'm on a odd machine I'll skip it as they have the ispell.el
+; library but not the actual ispell program
 
 ; I'm British, not Amercian damit!
 (defun set-british-dict ()
@@ -418,17 +421,17 @@
   (ispell-change-dictionary "british")
   (message "Set ispell to British Dictionary"))
 
-(if (locate-library "ispell")
-    (progn
-      (message "Doing ispell dict setting")
+(if (or I-am-at-work I-am-at-home)
+    (if (locate-library "ispell")
+	(progn
+	  (message "Doing ispell dict setting")
 
-; set British dict for all files
-      (add-hook 'find-file-hooks 'set-british-dict)
+					; set British dict for all files
+	  (add-hook 'find-file-hooks 'set-british-dict)
 
-      ; if we are editing text turn on flyspell mode
-      (add-hook 'text-mode-hook 'flyspell-mode)))
-
-(message "past ispell setup")
+					; if we are editing text turn on flyspell mode
+	  (add-hook 'text-mode-hook 'flyspell-mode)))
+  (message "Skipping ispell"))
 
 ;; calculator
 ;
