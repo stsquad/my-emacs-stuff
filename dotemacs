@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <13:16 on Tuesday, 26 October 2004 by alex>
+; Time-stamp: <22:05 on Monday, 3 January 2005 by alex>
 ;
 
 (message ".emacs")
@@ -339,8 +339,11 @@
 		   lazy-lock-stealth-time        3)))
 (global-font-lock-mode t)
 
-;; And the background colour
-;;(set-background-color "darkgreen")
+;; Set the colours I want
+;; (loosely based on Mandrake's theme)
+
+(set-background-color "DarkSlateGrey")
+(set-foreground-color "wheat")
 
 
 
