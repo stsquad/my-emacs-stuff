@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <18:37 on Monday, 22 April 2002 by alex>
+; Time-stamp: <17:40 on Monday, 29 April 2002 by alex>
 ;
 
 (message ".emacs")
@@ -674,7 +674,7 @@
 				     (case-label . +)
 				     (block-open . 0)))
 		 )
-	       "Alex'sC style")
+	       "Alex's C style")
 
 	     (c-add-style "Alex's C style" my-c-style t)
 	     (turn-on-auto-fill)
@@ -826,6 +826,13 @@
 (add-hook 'texinfo-mode-hook
 	  '(lambda ()
 	     (imenu-add-to-menubar "Imenu")))
+
+;; PHP file mode
+(if (locate-library "php-mode-102")
+    (progn
+      (load-library "php-mode-102")
+      ;; colourization
+      (add-hook 'php-mode-user-hook 'turn-on-font-lock)))
 
 ;; Batch file mode
 (setq auto-mode-alist
