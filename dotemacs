@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <16:07 on Monday, 21 February 2005 by alexjb>
+; Time-stamp: <14:44 on Wednesday, 23 February 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -20,6 +20,12 @@
  
 (defvar I-am-at-work (string-match "okra" (system-name)))
 (defvar I-am-at-home (string-match "malory" (system-name)))
+
+;;
+;; Lets set some paramters if we are running as a console or under X
+;;
+(defvar I-am-in-X (> (display-color-cells) 16))
+(defvar I-am-in-console (< (display-color-cells) 16))
 
 ;; (setq load-path (cons "~/lisp/" load-path))
 
@@ -123,7 +129,7 @@
 
 ;; Set the frame size to larger if on a Graphics display (we tell by
 ;; looking at colour cells (must fix to not break emacs20, maybe)
-(when (> (display-color-cells) 16)
+(if I-am-in-X
   (if I-am-at-work
       (progn
 	(set-frame-width (selected-frame) 120)
@@ -236,7 +242,9 @@
       scroll-conservatively 5
       scroll-step 1
       next-line-add-newlines nil)
-(set-scroll-bar-mode 'right)
+
+(if I-am-in-X
+    (set-scroll-bar-mode 'right))
 
 ;; Make pound signs work
 (set-language-environment "Latin-1")
@@ -312,8 +320,10 @@
 ;; Set the colours I want
 ;; (loosely based on Mandrake's theme)
 
-(set-background-color "DarkSlateGrey")
-(set-foreground-color "wheat")
+(if I-am-in-X
+    (progn
+      (set-background-color "DarkSlateGrey")
+      (set-foreground-color "wheat")))
 
 
 ;;; Major non-file-related modes
