@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <13:30 on Friday, 19 April 2002 by alex>
+; Time-stamp: <19:58 on Sunday, 21 April 2002 by alex>
 ;
 
 (message ".emacs")
@@ -451,9 +451,16 @@
       ))
 
 ;; Calendar / Diary stuff.
-(setq calendar-latitude      53.42
-      calendar-longitude     -2.92
-      calendar-location-name "Liverpool")
+
+(if I-am-at-work
+    (setq calendar-latitude      53.42
+	  calendar-longitude     -2.92
+	  calendar-location-name "Liverpool")
+;; or I'm at home
+  (setq calendar-latitude      53.30
+	calendar-longitude     -2.15
+	calendar-location-name "Manchester"))
+ 
 
 (setq european-calendar-style t
       mark-holidays-in-calendar t
@@ -628,165 +635,6 @@
 (if (locate-library "vcard")
     (setq vcard-pretty-print-function 'vcard-format-sample-string))
 
-;; Note: There's some sort of incompatibility between the current
-;; versions of Gnus+mm and vcard.el. The following patch to vcard.el
-;; is a quick-and-very-dirty fix:
-
-; --- c:/TEMP/vcard.el	Wed Jun 14 11:06:29 2000
-; +++ c:/TEMP/vcard.el171pvW	Wed Jun 14 11:06:29 2000
-; @@ -168,8 +168,6 @@
-;         (setq vcard (vcard-parse-string vcard)))
-;    (funcall vcard-pretty-print-function vcard))
-; 
-; +fset 'vcard-format-string 'vcard-pretty-print)
-; +
-;  
-;  ;;; Parsing routines
-
-;; Gnus, message and smtpmail
-;? group refresh hook: cursor at top line. <- Hard
-;? Setting gnus-activate-level to < level of groups on news.gpt will
-;? stop gnus querying them automagically.
-;? A few defuns to cite region - "> ", "| ", "    ".
-(setq auto-mode-alist
-      (append (list (cons "\\.SCORE\\'" 'gnus-score-mode)
-		    (cons "\\.ADAPT\\'" 'gnus-score-mode))
-	      auto-mode-alist))
-
-(add-hook 'gnus-load-hook
-          '(lambda ()
-             (if I-am-at-work		; Specifics first
-                 (setq gnus-select-method '(nntp "cvup176.gpt.co.uk")
-                       gnus-secondary-select-methods '((nntp "news.gpt.co.uk")
-                                                       (nntp "news.fore.com"))
-		       gnus-home-score-file
-		           '(
-			     ("^local"   "local.SCORE")
-			     ("^test$"   "local.SCORE")
-			     ("\\.emacs" "emacs.SCORE")
-			     ("\\.perl"  "perl.SCORE")
-			     ("\\.pgp"   "pgp.SCORE")
-			     )
-		       gnus-home-adapt-file
-		           '(
-			     ("^local"   "local.ADAPT")
-			     ("^test$"   "local.ADAPT")
-			     ("\\.emacs" "emacs.ADAPT")
-			     ("\\.perl"  "perl.ADAPT")
-			     ("\\.pgp"   "pgp.ADAPT")
-			     )))
-
-	     (add-hook 'gnus-select-article-hook 'gnus-summary-show-thread)
-
-	     (add-hook 'gnus-group-mode-hook
-			  '(lambda ()
-			     (auto-show-mode 1)))
-	     (add-hook 'gnus-summary-mode-hook
-			  '(lambda ()
-			     (auto-show-mode 1)))
-	     (add-hook 'gnus-article-mode-hook
-			  '(lambda ()
-			     (auto-show-mode 1))) ;? May be borken.
-	     
-	     (put 'gnus-group-exit 'disabled t)	; I keep frobbing it
-
-	     ;; Quite a list. Make it slightly saner...
-	     ;; First - startup
-             (setq gnus-check-new-newsgroups 'ask-server
-                   gnus-read-active-file     nil
-		   gnus-subscribe-newsgroup-method
-		       'gnus-subscribe-randomly
-                   gnus-use-dribble-file     t
-                   gnus-always-read-dribble-file t
-		   gnus-asynchronous t
-		   gnus-prefetched-article-deletion-strategy '(read)
-                   ;; Scoring
-                   gnus-save-score t
-                   gnus-use-adaptive-scoring nil
-                   gnus-summary-zcore-fuzz   10
-		   gnus-score-interactive-default-score 100
-		   ;; Posting
-		   gnus-post-method 'current
-                   gnus-extract-address-components
-		       'mail-extract-address-components
-		   ;; Archiving
-		   gnus-message-archive-group
-		       '((if (message-news-p)
-			     "sent-news"
-			   "sent-mail"))
-		   gnus-message-archive-method
-		       '(nnfolder "archive"
-				  (nnfolder-inhibit-expiry t)
-				  (nnfolder-active-file "~/News/sent/active")
-				  (nnfolder-directory "~/News/sent/"))
-		   ;; Behaviour
-                   gnus-large-newsgroup     300
-                   gnus-auto-select-first   t
-                   gnus-auto-select-next    'quietly
-                   gnus-interactive-exit    nil
-                   gnus-interactive-catchup nil
-		   ;; Appearance
-		   gnus-thread-hide-subtree t
-		   gnus-summary-make-fake-root 'empty
-                   gnus-use-full-window     nil
-		   gnus-break-pages         nil
-                   gnus-thread-indent-level 2
-                   gnus-group-uncollapsed-levels 1
-                   gnus-group-line-format "%M%S%p%P%5y: %(%-25,25c%) %D\n"
-                   gnus-group-mode-line-format "Gnus: %S"
-                   gnus-summary-line-format
-                                     "%U%R%z%I%(%[%4L: %-17,17n%]%) %s\n"
-                   gnus-summary-mode-line-format "Gnus: %p %Z"
-                   gnus-article-mode-line-format "Gnus: [%z:%A] %S"
-                   )))
-
-(add-hook 'message-mode-hook
-          '(lambda ()
-             (setq message-post-method '(nntp "")
-                   message-cite-function
-                           'message-cite-original-without-signature
-                   message-kill-buffer-on-exit t
-;		   message-signature 'sig-generate
-;; Instead, bind C-c C-w directly?
-                   message-send-mail-function 'smtpmail-send-it)
-	     
-             (flyspell-mode 1)
-
-	     (add-hook 'message-sent-hook
-		       '(lambda ()
-			  (gnus-score-followup-thread 1)))))
-
-(setq mm-discouraged-alternatives '("text/html" "text/richtext"))
-
-(if I-am-at-work			;? Fix up for -home
-    (setq smtpmail-default-smtp-server "cvhp152"
-          smtpmail-local-domain "marconicomms.com"))
-
-;; The rest of this rubbish is for gnus-user-agent.
-;; I don't like (require)ing things.
-(if (not I-am-emacs-21)
-    (progn ()
-	   (autoload 'gnus-inews-add-send-actions "gnus-msg")
-	   (autoload 'gnus-configure-posting-styles "gnus-msg")
-	   (autoload 'gnus-setup-message "gnus-msg")
-
-	   (defun gnus-mail (&rest args)
-"Start editing a mail message to be sent gnus style.
-  Use message mode as the underlying agent."
-	     (unless (and (fboundp 'gnus-alive-p) (gnus-alive-p))
-	       (gnus-no-server)
-	       (gnus-group-suspend))
-	     (gnus-setup-message 'message (apply 'message-mail args)))
-
-	   (define-mail-user-agent 'gnus-user-agent
-	     'gnus-mail 'message-send-and-exit
-	     'message-kill-buffer 'message-send-hook)
-
-	   (setq mail-user-agent 'gnus-user-agent)
-	   ))
-
-(message "Done gnus")
-
 
 ;;; File modes
 ;; New modes - add (imenu-add-to-menubar "Imenu") and (turn-on-auto-fill)
@@ -835,6 +683,10 @@
 	     (if I-am-emacs-21
 		 (cwarn-mode))
 	     ))
+
+;; Obey local variables set in -*- type things (maybe only for C files
+;; though?)
+(setq enable-local-variables t)
 
 ;; tcl
 (add-hook 'tcl-mode-hook
