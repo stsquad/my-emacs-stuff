@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <18:00 on Thursday, 12 December 2002 by alex>
+; Time-stamp: <16:54 on Sunday, 5 January 2003 by alex>
 ;
 
 (message ".emacs")
@@ -16,8 +16,14 @@
 ;; Tweak a few paths
 
 (defvar I-am-win32 (eq window-system 'w32))
-(defvar I-am-at-work nil)
 (defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
+
+;; Lets define which machine I'm on, therefor if I am at work
+;; (this of course falls down when logging on remotely, but hey I
+;; always do that in text mode anyway :-)
+ 
+(defvar I-am-at-work (string-match "cambridge" (system-name)))
+(defvar I-am-at-home (string-match "trent" (system-name)))
 
 ;; (setq load-path (cons "~/lisp/" load-path))
 
@@ -161,8 +167,14 @@
 ;; Set the frame size to larger if on a Graphics display (we tell by
 ;; looking at colour cells (must fix to not break emacs20, maybe)
 (when (> (display-color-cells) 16)
-  (set-frame-width (selected-frame) 120)
-  (set-frame-height (selected-frame) 60))
+  (if I-am-at-work
+      (progn
+	(set-frame-width (selected-frame) 120)
+	(set-frame-height (selected-frame) 60))
+;;smaller monitor at home :-(
+    (set-frame-width (selected-frame) 120)
+    (set-frame-height (selected-frame) 50)))
+    
 
 (message "Display Done")
 
