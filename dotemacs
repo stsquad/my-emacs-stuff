@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <08:46 on Thursday, 9 May 2002 by alex>
+; Time-stamp: <19:07 on Thursday, 6 June 2002 by alex>
 ;
 
 (message ".emacs")
@@ -74,17 +74,6 @@
 ;; Default mode is text-mode,
 (setq default-major-mode 'text-mode)
 
-;; Make Things Happen. This is supposed to come early, for unclear reasons.
-;? Periodically re-start gnuserver?
-(if (locate-library "gnuserv")
-    (progn
-      (require 'gnuserv)
-      (setq server-done-function 'bury-buffer)
-      ;;? It would be nice to use a new frame
-      ;;? iff (selected-frame) has >2 windows
-      (setq gnuserv-frame (selected-frame))
-      (gnuserv-start)))
-
 ;; Don't truncate message buffer. For debugging reasons.
 (setq message-log-max t)
 
@@ -134,39 +123,6 @@
 
 
 ;;; Miscellaneous functions
-
-(defun local-make-auto-save-file-name ()
-  "Override `make-auto-save-file-name' to auto-save on local drive"
-  (let ((buffer-name)
-	(limit 0))
-    
-    (if buffer-file-name
-	(setq buffer-name buffer-file-name)
-      (setq buffer-name (buffer-name)))
-
-    (while (string-match "[/\\%:]" buffer-name limit)
-      (let* ((character (aref buffer-name (match-beginning 0)))
-	     (replacement
-	      (cond ((eq character ?%) "%%")
-		    ((eq character ?/) "%+")
-		    ((eq character ?:) "%~")
-		    ((eq character ?\\) "%-"))))
-	(setq buffer-name (replace-match replacement t t buffer-name))
-	(setq limit (1+ (match-end 0)))))
-    ;; Generate the file name.
-
-    (if buffer-file-name
-	(concat "C:/TEMP/autosave/"
-		"#"
-		buffer-name
-		"#")
-      (expand-file-name
-       (format "#%s#%s#" buffer-name (make-temp-name "")) "C:/TEMP/autosave/")
-      )))
-
-; Only use this at work
-; (if I-am-at-work
-;     (fset 'make-auto-save-file-name 'local-make-auto-save-file-name))
 
 (defun praise-emacs ()
   (interactive)
@@ -854,7 +810,7 @@
 
 (if I-am-win32
     (diary))
-(enlarge-window 21)
+;;(enlarge-window 21)
 
 ;; Set up dimensions
 ;;(setq default-frame-alist
