@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <00:22 on Wednesday, 12 June 2002 by alex>
+; Time-stamp: <19:36 on Thursday, 13 June 2002 by alex>
 ;
 
 (message ".emacs")
@@ -192,7 +192,8 @@
 ;;; Display hacks
 ;;; This actually works, except of course the frame has already been created
 (setq default-x-frame-alist '((top . 20) (left . 140)
-			    (width . 90) (height . 60)))
+			    (width . 90) (height . 80)))
+
 ;;; So lets just force the current frame to the right size!
 ;;(set-frame-size (selected-frame) 100 50)
 
