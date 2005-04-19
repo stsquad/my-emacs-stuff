@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <12:56 on Monday, 28 February 2005 by alexjb>
+; Time-stamp: <10:38 on Tuesday, 19 April 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -17,16 +17,21 @@
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely, but hey I
 ;; always do that in text mode anyway :-)
- 
-(defvar I-am-at-work (string-match "okra" (system-name)))
-(defvar I-am-at-home (string-match "malory" (system-name)))
 
+(defvar I-am-at-work (string-match "transitives" (system-name)))
+(defvar I-am-at-home (string-match "malory" (system-name)))
+ 
 ;;
 ;; Lets set some paramters if we are running as a console or under X
 ;;
 (defvar I-am-in-X (> (display-color-cells) 16))
 (defvar I-am-in-console (< (display-color-cells) 16))
 
+;;
+;; Add some local elisp dirs for stuff that didn't come with the mahcine
+;;
+
+;;(add-to-list 'load-path "~/elisp/ecb-2.31/")
 ;; (setq load-path (cons "~/lisp/" load-path))
 
 ;; Autoloads
@@ -43,8 +48,8 @@
 ;; Less verbosity
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Prompt for Local Variable lists
-(setq enable-local-variables 'maybe)
+;; Obey local variables set in -*- type things
+(setq enable-local-variables t)
 
 ;; Silently add trailing newline to file
 (setq require-final-newline t)
@@ -73,9 +78,15 @@
   (sleep-for 1)
   (message "Basking in the glory of your praise...Done."))
 
+;;
+;; Need a better way to do this as fortune is on different places
+;; on different machines.
+;;
 (defun fortune ()
   "Famous unix fortune teller."
-  (shell-command-to-string "/usr/games/fortune"))
+  (shell-command-to-string "/usr/bin/fortune"))
+
+;(fortune)
 
 (defun my-kill-line ()
   "Iain's hack to make kill-line work even when you're in the middle of one."
@@ -173,7 +184,7 @@
 (setq  icon-title-format "%b")
 
 ;(if I-am-emacs-21
-;    (progn
+;    (progn 
 ;      (autoload 'zone-when-idle "zone")
 ;      (zone-when-idle 60)))
 
@@ -444,15 +455,14 @@
       "Run the Emacs calculator." t)
      (global-set-key [(control return)] 'calculator)))
 
+;; Some keybindsings for compile-command and recompile
+(global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "C-c r") 'recompile)
+
 ;; Compile mode. Or rather, comint, compile and mode-compile.
 (setq compilation-scroll-output t
       compile-auto-highlight    t
       compilation-window-height 9)
-
-(if (locate-library "mode-compile")
-    (progn
-      (autoload 'mode-compile "mode-compile"
-	"Compile file in current buffer" t)))
 
 ;; Version control library. Splendid.
 (setq vc-command-messages t
@@ -479,69 +489,120 @@
 		  (setq truncate-lines t)
 		  (auto-show-mode 1)))
 
-;;; File modes
-;; New modes - add (imenu-add-to-menubar "Imenu") and (turn-on-auto-fill)
-;;? Or should I put (turn-on-auto-fill) in find-files-hook?
+;;
+;; cc-mode stuff
+;;
+;; I'll define all my basic prefs in my-c-style from which the others
+;; can inherit depending on what I'm working on.
+;;
 
-;; cc-mode
-(add-hook 'c-mode-common-hook
-	  '(lambda ()
-	     (defconst my-c-style
-	       '((c-tab-always-indent . nil)
-		 (c-indent-level 3)
-		 (c-comment-only-line-offset 0)
-		 (c-basic-offset . 4)
-;		 (c-echo-syntactic-information-p . t)
-		 (c-electric-pound-behavior . (alignleft))
-		 (c-hanging-comment-ender-p . nil)
-		 (c-comment-continuation-stars . "* ")
-		 (c-recognize-knr-p . nil)
-		 (c-cleanup-list . (empty-defun-braces
-				    defun-close-semi
-				    list-close-comma
-				    scope-operator))
-		 (c-hanging-braces-alist . ((brace-list-open)
-					    (brace-list-close)
-					    (block-close . c-snug-do-while)
-					    (substatement-open before after)))
-		 (c-hanging-colons-alist . ((member-init-intro after)
-					    (access-label after)
-					    (inher-intro after)
-					    (case-label after)
-					    (label after)))
-		 (c-offsets-alist . ((arglist-close . c-lineup-arglist)
-				     (substatement-open . 0)
-				     (statement-cont . ++)
-				     (arglist-cont-nonempty . ++)
-;				     (ansi-funcdecl-cont . 0)
-				     (case-label . +)
-				     (block-open . 0)))
-		 )
-	       "Alex's C style")
+(defconst my-c-style
+  '((c-tab-always-indent . nil)
+    (c-indent-level 3)
+    (c-comment-only-line-offset 0)
+    (c-basic-offset . 4)
+;    (c-echo-syntactic-information-p . t) - this is only useful for debugging
+    (c-electric-pound-behavior . (alignleft))
+    (c-hanging-comment-ender-p . nil)
+    (c-comment-continuation-stars . "* ")
+    (c-recognize-knr-p . nil)
+    (c-cleanup-list . (empty-defun-braces
+		       defun-close-semi
+		       list-close-comma
+		       scope-operator))
+    (c-hanging-braces-alist . ((brace-list-open)
+			       (brace-list-close)
+			       (block-close . c-snug-do-while)
+			       (substatement-open before after)))
+    (c-hanging-colons-alist . ((member-init-intro after)
+			       (access-label after)
+			       (inher-intro after)
+			       (case-label after)
+			       (label after)))
+    (c-offsets-alist . ((arglist-close . c-lineup-arglist)
+			(substatement-open . 0)
+			(statement-cont . ++)
+			(arglist-cont-nonempty . ++)
+;		     (ansi-funcdecl-cont . 0)
+			(case-label . +)
+			(block-open . 0)))
+    )
+  "Alex's C style")
 
-	     (c-add-style "Alex's C style" my-c-style t)
-	     (turn-on-auto-fill)
-; no auto new line	     (c-toggle-auto-state 1)
-	     (imenu-add-to-menubar "Imenu")
-	     (if I-am-emacs-21
-		 (cwarn-mode))
-	     ))
+(c-add-style "my-c-style" my-c-style t)
+(setq c-default-style "my-c-style")
 
-;; Obey local variables set in -*- type things (maybe only for C files
-;; though?)
-(setq enable-local-variables t)
+;;
+;; my-c-mode-hook is called every time
+;; I enter c-mode where I can enforce my will
+;;
+(defun my-c-mode-hook()
+  "My c-mode hook"
+  (interactive)
+  (message "In my-c-mode-hook")
+  (turn-on-auto-fill)
+  (if I-am-emacs-21
+      (cwarn-mode)))
+  
+(add-hook 'c-mode-common-hook 'my-c-mode-hook)
 
-;; Set proper values for kernel work
+;;
+;; Linux Kernel C-mode
+;;
 (defun linux-c-mode ()
   "C mode with adjusted defaults for use with the Linux kernel."
   (interactive)
   (c-mode)
+  (message "Setting Linux C Style")
   (c-set-style "K&R")
+  (setq tab-width 8)
+  (setq indent-tabs-mode t)
   (setq c-basic-offset 8))
 
 ;; if its got linux in the path then its a kernel file
-(setq auto-mode-alist (cons '("*/linux.*/.*\\.[ch]$" . linux-c-mode)
+(setq auto-mode-alist (cons '(".*/linux.*/.*\\.[ch]$" . linux-c-mode)
                        auto-mode-alist))
+
+;;
+;; Transitive Coding Style
+;;
+(defconst transitive-c-style
+  '("my-c-style"  ; based on my style
+    (c-basic-offset . 2)
+    (c-comment-only-line-offset . 0)
+    (c-hanging-braces-alist     . ((substatement-open before after)))
+    (c-offsets-alist . ((topmost-intro        . 0)
+                         (topmost-intro-cont   . 0)
+                         (substatement         . +)
+                         (substatement-open    . 0)
+                         (case-label           . +)
+                         (access-label         . -)
+                         (inclass              . ++)
+                         (inline-open          . 0)
+                         ))
+    )
+  "Transitive's C Style")
+
+(c-add-style "transitive-c-style" transitive-c-style t)
+
+;; Set the proper values for works coding standards
+(defun transitive-c-mode()
+  "C mode with adjusted defaults for work."
+  (interactive)
+  (c++-mode)
+  (message "Setting Transitive C Style")
+  (c-set-style "transitive-c-style"))
+  
+(if I-am-at-work
+    (progn
+      (setq auto-mode-alist (cons '(".*/export/.*\\.[ch]$" . transitive-c-mode)
+                       auto-mode-alist))
+      (setq auto-mode-alist (cons '(".*/export/.*\\.cc$" . transitive-c-mode)
+                       auto-mode-alist))))
+
+;;
+;; End of c-mode customisations
+;;
 
 ;; load the ctags library and bind C-f to something worth using :-)
 (if (locate-library "etags")
@@ -724,6 +785,9 @@
         (delete-char 1))))
 
 ;;; Fancy buffer cycleing
+;
+; this lot may be redundant as most is covered by the bs.el library
+
 
 ; necessary support function for buffer burial
 (defun crs-delete-these (delete-these from-this-list)
@@ -772,6 +836,8 @@
 				       (interactive)
 				       (crs-bury-buffer -1)))
 
+;;(global-set-key (kbd "C-TAB") 'crs-bury-buffer)
+
 ;
 ; If we have the bs.el library then rebind C-x b to use bs
 ;
@@ -780,10 +846,48 @@
       (load-library "bs")
       (global-set-key (kbd "C-x b") 'bs-show)))
 
+;
+; Fix the crappy list buffers so you don't need to keep switching focus
+;
+
+;Opens list-buffers but with focus on it
+(defun list-buffers-other-win ()
+      "Opens list-buffers and put focus on it"
+      (interactive)
+      (list-buffers)
+      (other-window 1))
+
+(global-set-key "\C-x\C-b" 'list-buffers-other-win)
+
 (message "Done Buffer Handling Tweaks")
+
+;;
+;; Handy little key sequence utility so I don't have to guess at the
+;; correct kbd incantation
+;;
+
+(defun insert-sequence-key (key)
+  "Inserts a keystroke suitable for use in fcns like global-set-key"
+  (interactive "kInseret key chord: ")
+  (insert (format "(kbd \"%s\")" (key-description key))))
+
+(global-set-key (kbd "<C-f8>") 'insert-sequence-key)
+
+;;
+;; Make Bookmark handling a little more sane
+;;
+;; Rebind from the random octo-keys
+
+(global-set-key [(meta b)] 'list-bookmarks)
+(global-set-key [(meta a)] 'bookmark-set)
+
 
 ;; If I define a single press macro exec I may use it more often
 (global-set-key [(control meta m)] 'call-last-kbd-macro)
+
+
+
+
 
 (message "Done .emacs")
 
