@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <10:38 on Tuesday, 19 April 2005 by alexjb>
+; Time-stamp: <14:11 on Tuesday, 17 May 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -24,15 +24,9 @@
 ;;
 ;; Lets set some paramters if we are running as a console or under X
 ;;
+
 (defvar I-am-in-X (> (display-color-cells) 16))
 (defvar I-am-in-console (< (display-color-cells) 16))
-
-;;
-;; Add some local elisp dirs for stuff that didn't come with the mahcine
-;;
-
-;;(add-to-list 'load-path "~/elisp/ecb-2.31/")
-;; (setq load-path (cons "~/lisp/" load-path))
 
 ;; Autoloads
 ;? Put them near their configuration.
@@ -336,7 +330,6 @@
       (set-background-color "DarkSlateGrey")
       (set-foreground-color "wheat")))
 
-
 ;;; Major non-file-related modes
 ;; TRAMP
 (if (locate-library "tramp")
@@ -526,6 +519,7 @@
 ;		     (ansi-funcdecl-cont . 0)
 			(case-label . +)
 			(block-open . 0)))
+    (indent-tabs-mode . nil)
     )
   "Alex's C style")
 
@@ -580,6 +574,7 @@
                          (inclass              . ++)
                          (inline-open          . 0)
                          ))
+    (indent-tabs-mode . nil)
     )
   "Transitive's C Style")
 
@@ -589,9 +584,10 @@
 (defun transitive-c-mode()
   "C mode with adjusted defaults for work."
   (interactive)
-  (c++-mode)
   (message "Setting Transitive C Style")
-  (c-set-style "transitive-c-style"))
+  (c-set-style "transitive-c-style")
+  (c++-mode)
+  (setq-default indent-tabs-mode nil))
   
 (if I-am-at-work
     (progn
@@ -705,11 +701,7 @@
       (autoload 'html-helper-mode "html-helper-mode" "Enhanced HTML mode" t)
 
       (setq auto-mode-alist
-	    (append (list (cons "\\.s?html?\\'"  'html-helper-mode)
-			  (cons "\\.hitop\\'" 'html-helper-mode)
-			  (cons "\\.live\\'" 'html-helper-mode)
-			  ;;? What about a hitop-mode?
-			  (cons "\\.ht\\'"    'html-helper-mode))
+	    (append (list (cons "\\.s?html?\\'"  'html-helper-mode))
 		    auto-mode-alist)
 	    html-helper-mode-uses-visual-basic nil
 	    html-helper-address-string user-mail-address)
@@ -831,12 +823,11 @@
        (bury-buffer)
        (nth n my-buffer-list)))))
 
-(global-set-key [(control tab)] 'crs-bury-buffer)
-(global-set-key [(control meta tab)] (lambda ()
-				       (interactive)
-				       (crs-bury-buffer -1)))
-
-;;(global-set-key (kbd "C-TAB") 'crs-bury-buffer)
+(global-set-key (kbd "<C-tab>") 'crs-bury-buffer)
+(global-set-key (kbd "<C-S-iso-lefttab>")
+		(lambda ()
+		  (interactive)
+		  (crs-bury-buffer -1)))
 
 ;
 ; If we have the bs.el library then rebind C-x b to use bs
@@ -855,7 +846,8 @@
       "Opens list-buffers and put focus on it"
       (interactive)
       (list-buffers)
-      (other-window 1))
+      (other-window 1)
+      (delete-other-windows))
 
 (global-set-key "\C-x\C-b" 'list-buffers-other-win)
 
@@ -886,8 +878,16 @@
 (global-set-key [(control meta m)] 'call-last-kbd-macro)
 
 
+;;
+;; I have the cedat/ecb stuff on some machines which I'm playing with
+;; at the moment
+;;
 
-
+(when (file-exists-p "~/.emacs.d/cedet-1.0beta3b/common/cedet.el")
+  (message "Loading cedat stuff....")
+  (load-file "~/.emacs.d/cedet-1.0beta3b/common/cedet.el")
+  (add-to-list 'load-path "~/.emacs.d/ecb-2.31/")
+  (require 'ecb))
 
 (message "Done .emacs")
 
