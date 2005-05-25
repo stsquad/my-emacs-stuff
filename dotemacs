@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <14:11 on Tuesday, 17 May 2005 by alexjb>
+; Time-stamp: <15:00 on Wednesday, 25 May 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -128,26 +128,44 @@
 (message "Setting up display")
 
 ;;; Display hacks
-;;; This actually works, except of course the frame has already been created
-;;(setq default-x-frame-alist '((top . 20) (left . 140)
-;;			    (width . 90) (height . 80)))
 
 ;; Set the frame size to larger if on a Graphics display (we tell by
 ;; looking at colour cells (must fix to not break emacs20, maybe)
 (if I-am-in-X
   (if I-am-at-work
       (progn
-	(set-frame-width (selected-frame) 120)
-	(set-frame-height (selected-frame) 50))
-;;smaller monitor at home :-(
-    (set-frame-width (selected-frame) 120)
-    (set-frame-height (selected-frame) 50)))
-    
+	(setq default-frame-alist '((top . 0)
+				    (left . 0)
+				    ;; (left . 1300) ; right hand monitor
+				    (width . 140)
+				    (height . 55)
+				    (background-color . "DarkSlateGrey")
+				    (foreground-color . "wheat")
+				    (vertical-scroll-bars . right)
+				    (tool-bar-lines . nil))))
+    ; smaller screen at home
+    (progn
+    	(setq default-frame-alist '((top . 0)
+			    (left . 0)
+			    (width . 120)
+			    (height . 50)
+			    (background-color . "DarkSlateGrey")
+			    (foreground-color . "wheat")
+			    (vertical-scroll-bars . right)
+			    (tool-bar-lines . nil))))))
+
+;; Create new frame
+;
+; This is a hack to get around the fact that default-frame-alist
+; won't take effect until new frames get created
+
+(if I-am-in-X
+    (progn
+      (new-frame)
+      (delete-frame)
+      (message "done frame switch")))
 
 (message "Display Done")
-
-;; Disable tool-bar (I never use it)
-(tool-bar-mode -1)
 
 ;; fancier buffer menu
 (setq buffers-menu-max-size nil) ; Don't think this is needed with msb
@@ -248,9 +266,6 @@
       scroll-step 1
       next-line-add-newlines nil)
 
-(if I-am-in-X
-    (set-scroll-bar-mode 'right))
-
 ;; Make pound signs work
 (set-language-environment "Latin-1")
 (setq unibyte-display-via-language-environment t)
@@ -321,14 +336,6 @@
 		   lazy-lock-stealth-lines       50
 		   lazy-lock-stealth-time        3)))
 (global-font-lock-mode t)
-
-;; Set the colours I want
-;; (loosely based on Mandrake's theme)
-
-(if I-am-in-X
-    (progn
-      (set-background-color "DarkSlateGrey")
-      (set-foreground-color "wheat")))
 
 ;;; Major non-file-related modes
 ;; TRAMP
