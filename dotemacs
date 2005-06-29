@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <15:00 on Wednesday, 25 May 2005 by alexjb>
+; Time-stamp: <16:15 on Wednesday, 29 June 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -157,13 +157,14 @@
 ;; Create new frame
 ;
 ; This is a hack to get around the fact that default-frame-alist
-; won't take effect until new frames get created
+; won't take effect until new frames get created (or so I thought, it
+; appears to take effect right away now!
 
-(if I-am-in-X
-    (progn
-      (new-frame)
-      (delete-frame)
-      (message "done frame switch")))
+;(if I-am-in-X
+;    (progn
+;      (new-frame)
+;      (delete-frame)
+;      (message "done frame switch")))
 
 (message "Display Done")
 
@@ -592,8 +593,8 @@
   "C mode with adjusted defaults for work."
   (interactive)
   (message "Setting Transitive C Style")
-  (c-set-style "transitive-c-style")
   (c++-mode)
+  (c-set-style "transitive-c-style")
   (setq-default indent-tabs-mode nil))
   
 (if I-am-at-work
