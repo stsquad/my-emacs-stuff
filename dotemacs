@@ -1,5 +1,5 @@
 ; Generic .emacs, written in -*- emacs-lisp -*-
-; Time-stamp: <16:15 on Wednesday, 29 June 2005 by alexjb>
+; Time-stamp: <16:15 on Friday, 22 July 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -403,6 +403,12 @@
 		  case-fold-search nil)))
 
 ;; ediff
+;
+; Need to setup proberly
+;
+;? Also need to find a way to restore it all on
+;  resume. This stuff is all far from bullet-proof.
+
 (setq diff-switches               "-u"
       ediff-custom-diff-options   "-U3"
       ediff-split-window-function 'split-window-horizontally
@@ -414,8 +420,15 @@
 (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
 
 (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)
-;? Also need to find a way to restore it all on
-;  resume. This stuff is all far from bullet-proof.
+
+;; diff-mode
+;
+; Customise a <alt-G> to go to source
+;
+(if (locate-library "diff-mode")
+    (progn
+    (load-library "diff-mode")
+    (define-key diff-mode-map (kbd "M-g") 'diff-goto-source)))
 
 
 ;; ispell
@@ -881,20 +894,26 @@
 (global-set-key [(meta b)] 'list-bookmarks)
 (global-set-key [(meta a)] 'bookmark-set)
 
+;;
+;; Macro keys
+;;
+;; If I define a single press macro keys I may use them more often
+;;
 
-;; If I define a single press macro exec I may use it more often
 (global-set-key [(control meta m)] 'call-last-kbd-macro)
-
+(global-set-key (kbd "<f10>") 'call-last-kbd-macro)
+(global-set-key (kbd "<C-f11>") 'start-kbd-macro)
+(global-set-key (kbd "<C-f12>") 'end-kbd-macro)
 
 ;;
 ;; I have the cedat/ecb stuff on some machines which I'm playing with
 ;; at the moment
 ;;
 
-(when (file-exists-p "~/.emacs.d/cedet-1.0beta3b/common/cedet.el")
+(when (file-exists-p "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
   (message "Loading cedat stuff....")
-  (load-file "~/.emacs.d/cedet-1.0beta3b/common/cedet.el")
-  (add-to-list 'load-path "~/.emacs.d/ecb-2.31/")
+  (load-file "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
+  (add-to-list 'load-path "~/.emacs.d/ecb-2.32/")
   (require 'ecb))
 
 (message "Done .emacs")
