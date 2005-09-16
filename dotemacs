@@ -1,6 +1,6 @@
 ;
 ; Alex Bennée's .emacs written in -*- emacs-lisp -*-
-; Time-stamp: <16:40 on Wednesday, 14 September 2005 by alexjb>
+; Time-stamp: <18:31 on Friday, 16 September 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -102,6 +102,26 @@
   (beginning-of-line)
   (call-interactively 'kill-line))
 
+
+;; String munging functions
+;
+; Extract the first group in a regex
+
+(defun extract-string(regex string)
+  "Extract a string in a regex (the bit in ()'s)"
+  (interactive)
+  (let ((s string)) (if (string-match regex s) (match-string 1 s) s)))
+
+; chomp
+(defun chomp(string)
+  "Perform a perl-like chomp"
+  (let ((s string)) (if (string-match "\\(.*\\)\n" s) (match-string 1 s) s)))
+
+;
+; example:
+;(extract-string "name is \\(\.*\\) " "my name is Alex ok")
+;
+; extracts "Alex"
 
 (message "Done defuns")
 
@@ -495,12 +515,11 @@
 (global-set-key (kbd "C-c c") 'compile)
 (global-set-key (kbd "C-c r") 'recompile)
 
-
-
 ;; Compile mode. Or rather, comint, compile and mode-compile.
 (setq compilation-scroll-output t
+;;      compilation-buffer-name-function nil
       compile-auto-highlight    t
-      compilation-window-height 9)
+      compilation-window-height 15)
 
 ;; Version control library. Splendid.
 (setq vc-command-messages t
