@@ -1,6 +1,6 @@
 ;
 ; Alex Bennée's .emacs written in -*- emacs-lisp -*-
-; Time-stamp: <18:31 on Friday, 16 September 2005 by alexjb>
+; Time-stamp: <15:13 on Thursday, 29 September 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -16,8 +16,7 @@
 (defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
 
 ;; Lets define which machine I'm on, therefor if I am at work
-;; (this of course falls down when logging on remotely, but hey I
-;; always do that in text mode anyway :-)
+;; (this of course falls down when logging on remotely via tramp)
 
 (defvar I-am-at-work (string-match "transitives" (system-name)))
 (defvar I-am-at-home (string-match "malory" (system-name)))
@@ -123,8 +122,64 @@
 ;
 ; extracts "Alex"
 
-(message "Done defuns")
+;; Find methods
+;
+; Define various find methods for searching through code/whatever and
+; presenting the results in a buffer that can be navigated in emacs. It uses
+; the existing grep-find mechanics but extends it.
+;
 
+;; Define a current-project-root
+;
+; In most cases I open emacs at the top of a src tree. Searches and compiles
+; can then use this as a starting point
+;
+; change with (setq current-project-root (chomp (shell-command-to-string "pwd")))
+(defvar current-project-root
+  (concat (chomp (shell-command-to-string "pwd")))
+  "Describes the current project root dir (top of src tree)")
+
+
+(defun my-grep-find (root files search)
+  (grep-find (concat "find " root files " -print0 |  xargs -0 -e grep -n -e " search)))
+
+; define the find search strings (note excessive escapeage of ('s)
+(defvar find-c-files
+  (concat " \\( -iname '*.[chS]' -or -iname '*.cc' \\) ")
+  "Search string for C/C++ files")
+
+(defvar find-perl-files
+  (concat " \\( -iname '*.pl' -or -iname '*.pm' \\) ")
+  "Search string for Perl files")
+
+(defvar find-lisp-files
+  (concat " \\( -iname '*.el' \\) ")
+  "Search string for Lisp Files")
+
+;
+; my-find
+;
+; Need to improve to be context sensative
+;
+(defun my-find (search)
+  (interactive "sSearch string:")
+  (my-grep-find current-project-root find-c-files search))
+
+; my-find-files (find a file name from project root)
+;
+; exteneds fine-name-dired to use project root
+
+;(defun my-find-files (filespec)
+;  (interactive "sSearch file:")
+;  (grep-find (concat "find " current-project-root " -iname '" filespec "*' -printf '%p:0:\n'")))
+
+(defun my-find-files (filespec)
+   (interactive "sSearch for filespec:")
+   (find-name-dired current-project-root filespec))
+
+(global-set-key (kbd "<f6>") 'my-find-files)
+
+(message "Done defuns")
 
 ;;; keymapping
 ;; I'm allowed to bind: C-c [letter], [f5]-[f9]
@@ -577,6 +632,7 @@
 			       (case-label after)
 			       (label after)))
     (c-offsets-alist . ((arglist-close . c-lineup-arglist)
+                        (arglist-cont-nonempty . c-lineup-arglist)
 			(substatement-open . 0)
 			(statement-cont . ++)
 ;;			(arglist-cont-nonempty . ++)
@@ -599,6 +655,10 @@
   (interactive)
   (message "In my-c-mode-hook")
   (turn-on-auto-fill)
+  (local-set-key (kbd "<f5>") (lambda (search)
+				     (interactive "sSearch C files for:")
+				     (my-grep-find current-project-root find-c-files search)))
+
   (if I-am-emacs-21
       (cwarn-mode)))
   
@@ -689,9 +749,17 @@
 
 
 ;; Elisp mode
+
+; auto-mode lists
 (setq auto-mode-alist
       (append (list (cons "\\.emacs\\'" 'emacs-lisp-mode))
 	      auto-mode-alist))
+; I may also edit as dotemacs
+(setq auto-mode-alist
+      (append (list (cons "dotemacs" 'emacs-lisp-mode))
+	      auto-mode-alist))
+
+
 
 (add-hook 'emacs-lisp-mode-hook
 	  '(lambda ()
