@@ -1,6 +1,6 @@
 ;
 ; Alex Bennée's .emacs written in -*- emacs-lisp -*-
-; Time-stamp: <15:13 on Thursday, 29 September 2005 by alexjb>
+; Time-stamp: <17:09 on Friday, 9 December 2005 by alexjb>
 ;
 
 (message ".emacs Start")
@@ -201,6 +201,10 @@
 (global-unset-key "\C-k")
 (global-set-key "\C-k" 'my-kill-line)
 
+;; The default window size keys are silly
+(global-set-key (kbd "<M-down>") 'enlarge-window)
+(global-set-key (kbd "<M-up>") 'shrink-window)
+
 ;; In Emacs 21, home and end go to beginning and end of line. This is
 ;; clearly the Wrong Thing.
 (if I-am-emacs-21
@@ -267,7 +271,7 @@
 
 ;; Stop the mouse cursor getting in the way. This is great.
 (if 'window-system
-    (mouse-avoidance-mode 'cat-and-mouse))
+    (mouse-avoidance-mode 'exile))
 
 ;; Change the cursor colour in Ovwrt mode
 (defun ins-cursor-set ()
@@ -524,8 +528,9 @@
 ;
 (if (locate-library "diff-mode")
     (progn
-    (load-library "diff-mode")
-    (define-key diff-mode-map (kbd "M-g") 'diff-goto-source)))
+      (load-library "diff-mode")
+      (define-key diff-mode-map (kbd "M-g") 'diff-goto-source)
+      (define-key diff-mode-map (kbd "<next>") 'diff-hunk-next)))
 
 
 ;; ispell
@@ -542,6 +547,11 @@
   "Set British Dictionary"
   (ispell-change-dictionary "british")
   (message "Set ispell to British Dictionary"))
+
+(defun my-text-mode-hook ()
+  (set-british-dict)
+  (define-key text-mode-map (kbd "<f1>") ispell-word))
+
 
 (if (or I-am-at-work I-am-at-home)
     (if (locate-library "ispell")
@@ -566,6 +576,29 @@
       "Run the Emacs calculator." t)
      (global-set-key [(control return)] 'calculator)))
 
+;; Compile Mode Stuff
+;
+; I want to be able to search straight from the compile mode window
+
+;(defun my-compile-mode-hook ()
+;  )
+;
+;(add-hook 'compilation-mode-hook 'my-compile-mode-hook)
+
+;; my-compilation-buffer-search
+; A simple search of the current a project for the current highlighted
+; bit of a compile buffer
+
+;(defun my-compilation-buffer-search()
+;  my-find (buffer-substring point mark))
+
+;(if (locate-library "compile")
+;    (progn
+;      (load-library "compile")
+;      (define-key compilation-mode-map (kbd "<f5>") 'my-compilation-buffer-search)))
+      
+
+
 ;; Some keybindsings for compile-command and recompile
 (global-set-key (kbd "C-c c") 'compile)
 (global-set-key (kbd "C-c r") 'recompile)
@@ -575,6 +608,7 @@
 ;;      compilation-buffer-name-function nil
       compile-auto-highlight    t
       compilation-window-height 15)
+
 
 ;; Version control library. Splendid.
 (setq vc-command-messages t
@@ -1055,3 +1089,5 @@
 (message "Done .emacs")
 
 
+
+(put 'upcase-region 'disabled nil)
