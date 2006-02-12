@@ -1,6 +1,18 @@
+; -*- emacs-lisp -*-
 ;
-; Alex Bennée's .emacs written in -*- emacs-lisp -*-
-; Time-stamp: <17:09 on Friday, 9 December 2005 by alexjb>
+; Alex Bennée's .emacs 
+; 
+; This is my .emacs. It is mainly an amalgem of different hacks
+; acquired over time which I use on many of the machines I work with.
+;
+; It has a cobbled heritage from various sites and wiki's and its
+; probably safest to assume the code is all either GPL or Public
+; Domain. Feel free to use whatever bits may be of use to you in this
+; file that it is my right to license ;-)
+;
+; Changelog:
+;
+;   
 ;
 
 (message ".emacs Start")
@@ -609,7 +621,6 @@
       compile-auto-highlight    t
       compilation-window-height 15)
 
-
 ;; Version control library. Splendid.
 (setq vc-command-messages t
       vc-initial-comment t)
@@ -874,9 +885,9 @@
 	     (imenu-add-to-menubar "Imenu")))
 
 ;; PHP file mode
-(if (locate-library "php-mode-102")
+(if (locate-library "php-mode")
     (progn
-      (load-library "php-mode-102")
+      (load-library "php-mode")
       ;; colourization
       (add-hook 'php-mode-user-hook 'turn-on-font-lock)))
 
