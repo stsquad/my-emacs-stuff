@@ -74,9 +74,19 @@
   '("Postscript Print Buffer" . ps-print-buffer))
 
 ;; Add local search path
+;
+; This is recursive so adding test libraries should be a case of
+; throwing the directory into .emacs.d
+;
 (when (file-exists-p "~/.emacs.d/")
-  (message "Adding local .emacs.d to lib path")
-  (add-to-list 'load-path "~/.emacs.d/"))
+  (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+      (let* ((my-lisp-dir "~/.emacs.d/")
+	     (default-directory my-lisp-dir))
+	(setq load-path (cons my-lisp-dir load-path))
+	(normal-top-level-add-subdirs-to-load-path))))
+
+;;  (message "Adding local .emacs.d to lib path")
+;;  (add-to-list 'load-path "~/.emacs.d/"))
 
 (message "Done Basic Sanity")
 
@@ -700,9 +710,9 @@
   (interactive)
   (message "In my-c-mode-hook")
   (turn-on-auto-fill)
-  (local-set-key (kbd "<f5>") (lambda (search)
-				     (interactive "sSearch C files for:")
-				     (my-grep-find current-project-root find-c-files search)))
+  (global-set-key (kbd "<f5>") (lambda (search)
+                                 (interactive "sSearch C files for:")
+                                 (my-grep-find current-project-root find-c-files search)))
 
   (if I-am-emacs-21
       (cwarn-mode)))
@@ -1017,6 +1027,7 @@
 ;;
 ;; If I define a single press macro keys I may use them more often
 ;;
+(message "Defining Macro Keys")
 
 (global-set-key [(control meta m)] 'call-last-kbd-macro)
 (global-set-key (kbd "<f10>") 'call-last-kbd-macro)
@@ -1027,14 +1038,33 @@
 ;; I have the cedat/ecb stuff on some machines which I'm playing with
 ;; at the moment
 ;;
+;; This broke when I recursivly added paths. Seeing as I don't use it
+;; I'll skip it for the time being
+;;
+(message "Skipping cedet/ecb")
 
-(when (file-exists-p "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
-  (message "Loading cedat stuff....")
-  (load-file "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
-  (add-to-list 'load-path "~/.emacs.d/ecb-2.32/")
-  (defvar ecp-options-version "2.32")
-  (global-set-key (kbd "C-c e") 'ecb-activate)
-  (autoload 'ecb-activate "ecb"))
+;(if (locate-library "cedet")
+;    (progn
+;      (message "Loading cedat stuff....")
+;      (load-file (locate-library "cedet"))
+;      (require 'speedbar)
+;      (require 'cedet)
+;      (if (locate-library "ecb")
+;	  (progn
+;	    (message "Setting up ecb...")
+;	    (defvar ecp-options-version "2.32")
+;	    (global-set-key (kbd "C-c e") 'ecb-activate)
+;	    (autoload 'ecb-activate "ecb")))))
+      
+
+;(when (file-exists-p "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
+;  (message "Loading cedat stuff....")
+;  (load-file "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
+;  (add-to-list 'load-path "~/.emacs.d/ecb-2.32/")
+;  (defvar ecp-options-version "2.32")
+;  (global-set-key (kbd "C-c e") 'ecb-activate)
+;  (autoload 'ecb-activate "ecb"))
+
 ;  (require 'ecb))
 
 ;;
@@ -1089,13 +1119,15 @@
 ;(setq desktop-enable t)
 
 ;;
-;; Run local cusomisations
+;; I always want my work customisations at work or if I'm running on
+;; the VPN at home.
 ;;
 
-(when (file-exists-p "~/.emacs.d/local.el")
+(if (or I-am-at-work (string-match "/export" (pwd)))
+    (when (file-exists-p "~/.emacs.d/transitive.el")
       (progn
-        (message "Loading local customisations...")
-        (load-file "~/.emacs.d/local.el")))
+        (message "Loading Work Customistions...")
+        (load-file "~/.emacs.d/transitive.el"))))
 
 (message "Done .emacs")
 
