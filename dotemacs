@@ -710,10 +710,13 @@
   (interactive)
   (message "In my-c-mode-hook")
   (turn-on-auto-fill)
-  (global-set-key (kbd "<f5>") (lambda (search)
-                                 (interactive "sSearch C files for:")
-                                 (my-grep-find current-project-root find-c-files search)))
-
+  (local-set-key (kbd "<f5>") (lambda (search)
+				     (interactive "sSearch C files for:")
+				     (my-grep-find
+				      current-project-root
+				      find-c-files search)))
+  ; ensure tab width matches c-basic-offset
+  (setq tab-width c-basic-offset)
   (if I-am-emacs-21
       (cwarn-mode)))
   
