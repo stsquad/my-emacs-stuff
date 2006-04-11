@@ -144,6 +144,22 @@
 ;
 ; extracts "Alex"
 
+;; which-lookup
+;
+; Like the shell command of the same name except it trims to 'nil if
+; it can't find anything
+
+(defun which-lookup(name)
+  "Perform a `which` like file look-up"
+  (let
+      ((file (chomp (shell-command-to-string (concat "which " name)))))
+    (if (file-exists-p file)
+	(concat file)
+      ())))
+       
+; (which-lookup "foo") => nil
+; (which-lookup "ispell") => "/usr/bin/ispell"
+
 ;; Find methods
 ;
 ; Define various find methods for searching through code/whatever and
@@ -453,19 +469,14 @@
 		   lazy-lock-stealth-time        3)))
 (global-font-lock-mode t)
 
-;;; Major non-file-related modes
-;; TRAMP
+;; Tramp
+;
+; I use tramp at home. Don't really need at work
+;
 
-; Tramp is in .emacs.d on my work machine
-(when (file-exists-p "~/.emacs.d/tramp")
-  (message "Adding local .emacs.d to lib path")
-  (add-to-list 'load-path "~/.emacs.d/tramp"))
-
-
-(if (locate-library "tramp")
+(if (and (locate-library "tramp") I-am-at-home)
     (progn
-      (load-library "tramp")
-      ))
+      (load-library "tramp")))
 
 ;; Calendar / Diary stuff.
 
@@ -475,40 +486,6 @@
 	calendar-longitude     -2.2466
 	calendar-location-name "Manchester City Center")))
 
-(setq european-calendar-style t
-      mark-holidays-in-calendar t
-      mark-diary-entries-in-calendar t
-      all-christian-calendar-holidays t
-      all-hebrew-calendar-holidays t
-      all-islamic-calendar-holidays t
-
-      appt-audible nil
-      appt-display-duration 10
-      appt-message-warning-time 8
-      appt-display-interval 4)
-
-(add-hook 'diary-hook 'appt-make-list)	;? When does this happen?
-(add-hook 'diary-display-hook 'fancy-diary-display)
-(add-hook 'list-diary-entries-hook
-	  '(lambda ()
-	     (sort-diary-entries)
-	     (include-other-diary-files)))
-(add-hook 'mark-diary-entries-hook 'mark-included-diary-files)
-
-(if (locate-library "todo-mode")
-    (progn
-      (autoload 'todo-mode "todo-mode" "Major mode for editing TODO lists." t)
-      (autoload 'todo-show "todo-mode" "Show TODO items." t)
-      (autoload 'todo-insert-item "todo-mode" "Add TODO item." t)
-      
-      (setq todo-print-function 'ps-print-buffer
-	    todo-save-top-priorities-too nil
-	    todo-time-string-format "[%02d/%02m/%:y]"
-	    todo-entry-prefix-function 'my-todo-entry-timestamp-initials)
-
-      (defun my-todo-entry-timestamp-initials ()
-	(let ((time-stamp-format todo-time-string-format))
-	  (concat (time-stamp-string) " ")))))
 
 ;; Font locking info mode (from Andy.Ling@quantel.com)
 (defvar info-font-lock-keywords
@@ -527,7 +504,7 @@
 
 ;; ediff
 ;
-; Need to setup proberly
+; Need to setup properly
 ;
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
@@ -563,29 +540,40 @@
 ;
 ; Also if I'm on a odd machine I'll skip it as they have the ispell.el
 ; library but not the actual ispell program
+;
+; And I want to use aspell by default as more people have that (and it
+; should be better right?)
+;
 
 ; I'm British, not Amercian damit!
-(defun set-british-dict ()
-  "Set British Dictionary"
-  (ispell-change-dictionary "british")
-  (message "Set ispell to British Dictionary"))
+;(defun set-british-dict ()
+;  "Set British Dictionary"
+;  (ispell-change-dictionary "british")
+;  (message "Set ispell to British Dictionary"))
 
-(defun my-text-mode-hook ()
-  (set-british-dict)
-  (define-key text-mode-map (kbd "<f1>") ispell-word))
-
+;(defun my-text-mode-hook ()
+;  (set-british-dict)
+;  (define-key text-mode-map (kbd "<f1>") ispell-word))
 
 (if (or I-am-at-work I-am-at-home)
     (if (locate-library "ispell")
 	(progn
-	  (message "Doing ispell dict setting")
-
-					; set British dict for all files
-	  (add-hook 'find-file-hooks 'set-british-dict)
-
-					; if we are editing text turn on flyspell mode
-	  (add-hook 'text-mode-hook 'flyspell-mode)))
-  (message "Skipping ispell"))
+	  (let (
+		(ispell-path (which-lookup "ispell"))
+		(aspell-path (which-lookup "aspell")))
+	    (message "Doing ispell dict setting")
+	    (if (or ispell-path aspell-path)
+		(progn
+		  ; select aspell out of preference
+		  (if (eval aspell-path)
+		      (setq ispell-program-name "aspell"))
+		  ; reset British dict on loading file
+		  (add-hook 'find-file-hooks 
+			    '(lambda ()
+			       (ispell-change-dictionary "british")))
+		  ; if we are editing text turn on flyspell mode
+		  (add-hook 'text-mode-hook 'flyspell-mode))
+	      (message "Skipping ispell"))))))
 
 ;; calculator
 ;
@@ -659,9 +647,13 @@
 ;;
 ;; cc-mode stuff
 ;;
-;; I'll define all my basic prefs in my-c-style from which the others
-;; can inherit depending on what I'm working on.
-;;
+; I'll define all my basic prefs in my-c-style from which the others
+; can inherit depending on what I'm working on.
+;
+
+; Need cc-style
+
+(require 'cc-styles)
 
 (defconst my-c-style
   '((c-tab-always-indent . nil)
