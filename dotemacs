@@ -160,13 +160,6 @@
 ; (which-lookup "foo") => nil
 ; (which-lookup "ispell") => "/usr/bin/ispell"
 
-;; Find methods
-;
-; Define various find methods for searching through code/whatever and
-; presenting the results in a buffer that can be navigated in emacs. It uses
-; the existing grep-find mechanics but extends it.
-;
-
 ;; Define a current-project-root
 ;
 ; In most cases I open emacs at the top of a src tree. Searches and compiles
@@ -177,6 +170,35 @@
   (concat (chomp (shell-command-to-string "pwd")))
   "Describes the current project root dir (top of src tree)")
 
+(defun set-project-root ()
+  "Set a primary project root"
+  (interactive)
+  (setq current-project-root
+        (read-file-name "Project Root:")))
+
+;; secondary-project-root
+;
+; Sometimes your working with two source trees. The secondary tree is
+; tracked and useful for bringing up ediff's and the like
+;
+
+(defvar secondary-project-root
+  ()
+  "Describes a secondary project root (say for quick ediff)")
+
+(defun set-secondary-root ()
+  "Set a secondary project root"
+  (interactive)
+  (setq secondary-project-root
+        (read-file-name "Secondary Project Root:")))
+
+
+;; Find methods
+;
+; Define various find methods for searching through code/whatever and
+; presenting the results in a buffer that can be navigated in emacs. It uses
+; the existing grep-find mechanics but extends it.
+;
 
 (defun my-grep-find (root files search)
   (grep-find (concat "find " root files " -print0 |  xargs -0 -e grep -n -e " search)))
@@ -520,6 +542,33 @@
 (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
 
 (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)
+
+
+;; my-ediff-secondary
+;
+; See if we can find the equivilent file in a secondary project root
+; and bring up ediff on it.
+
+(defun my-ediff-secondary ()
+  "Load the secondary equivilent file of this buffer and ediff it"
+  (interactive)
+  (message (concat "buffer name is " (buffer-file-name)))
+  (let
+      (
+       (primary-buffer (buffer-file-name))
+       (secondary-buffer (replace-regexp-in-string
+                          current-project-root secondary-project-root
+                          (buffer-file-name))))
+    ; sanity
+    (if (file-exists-p secondary-buffer)
+        (ediff-files secondary-buffer primary-buffer)
+      (message (concat "Couldn't find secondary buffer: "
+                       secondary-buffer)))))
+
+;(replace-regexp-in-string "/root/to/a" "/root/to/b" "/root/to/a/file.c")
+
+;    (ediff-files secondary-buffer primary-buffer)))
+
 
 ;; diff-mode
 ;
