@@ -192,6 +192,10 @@
   (setq secondary-project-root
         (read-file-name "Secondary Project Root:")))
 
+(defun set-secondary-root-if-not ()
+  "Check is secondary-project-root is defined, if not set it"
+  (if (not secondary-project-root)
+      (set-secondary-root)))
 
 ;; Find methods
 ;
@@ -452,18 +456,6 @@
 (setq time-stamp-format "%02H:%02M on %:a, %:d %:b %:y by %u")
 (add-hook 'write-file-hooks 'time-stamp)
 
-;; HTMLize
-;? Buggy.
-(if (locate-library "htmlize")
-    (progn
-      (setq htmlize-output-type 'font
-	    htmlize-use-rgb-map nil)	;? (if (not I-am-win32 t)?
-      (autoload 'htmlize-buffer "htmlize" "Convert buffer to HTML" t)
-      (autoload 'htmlize-file "htmlize" "Convert file to HTML and save" t)
-      (autoload 'htmlize-many-files "htmlize" "Convert files to HTML" t)
-      (autoload 'htmlize-many-files-dired
-	"htmlize" "Convert files to HTML" t)))
-
 ;; Auto-Insert
 (auto-insert-mode 1)
 (setq auto-insert-alist ())		;? html-helper
@@ -552,6 +544,8 @@
 (defun my-ediff-secondary ()
   "Load the secondary equivilent file of this buffer and ediff it"
   (interactive)
+  ; sanity
+  (set-secondary-root-if-not)
   (message (concat "buffer name is " (buffer-file-name)))
   (let
       (
@@ -866,19 +860,6 @@
 	     (turn-on-auto-fill)
 	     (imenu-add-to-menubar "Imenu")))
 
-(setq tex-default-mode 'latex-mode)	;? Doesn't work.
-(add-hook 'tex-mode-hook
-	  '(lambda ()
-	     (turn-on-auto-fill)
-	     (setq tex-dvi-print-command "dvips"
-		   tex-dvi-view-command 
-		   	(if (eq window-system 'x)
-			    "xdvi"
-			  "dvi2tty * | cat -s"))))
-(add-hook 'latex-mode-hook
-	  '(lambda ()
-	     (imenu-add-to-menubar "Imenu")))
-
 ;; html-helper
 ;;? See skeleton-insert & auto-insert-alist
 ;? if new file && /\.hitop$/
@@ -1031,8 +1012,12 @@
       (global-set-key (kbd "C-x b") 'bs-show)))
 
 ;
-; Fix the crappy list buffers so you don't need to keep switching focus
+; I want the list-buffers to behave like an all showing version of
+; bs-show. There may be some way to frob bs to do this but hey this
+; makes the default not suck if we don't have it.
 ;
+; 1. Ensure focus goes to buffer-list
+; 2. Make C-g behave like it does in bs-show (i.e. give up)
 
 ;Opens list-buffers but with focus on it
 (defun list-buffers-other-win ()
@@ -1040,7 +1025,8 @@
       (interactive)
       (list-buffers)
       (other-window 1)
-      (delete-other-windows))
+      (delete-other-windows)
+      (local-set-key (kbd "C-g") 'kill-this-buffer))
 
 (global-set-key "\C-x\C-b" 'list-buffers-other-win)
 
