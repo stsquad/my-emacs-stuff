@@ -633,6 +633,10 @@
 ;
 ; I want to be able to search straight from the compile mode window
 
+; ensure the default compile command is sensible
+
+(setq compile-command (format "cd %s && make -k" current-project-root))
+
 ;(defun my-compile-mode-hook ()
 ;  )
 ;
