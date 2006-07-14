@@ -556,8 +556,9 @@
     ; sanity
     (if (file-exists-p secondary-buffer)
         (ediff-files secondary-buffer primary-buffer)
-      (message (concat "Couldn't find secondary buffer: "
-                       secondary-buffer)))))
+      (ediff-files (read-file-name (concat "Whats the path to "
+                                           buffer-file-name)
+                                   primary-buffer)))))
 
 ;(replace-regexp-in-string "/root/to/a" "/root/to/b" "/root/to/a/file.c")
 
@@ -566,13 +567,49 @@
 
 ;; diff-mode
 ;
-; Customise a <alt-G> to go to source
+; Here we have some tweaks to the diff-mode for testing a series of
+; patchs and/or applying a whole patch
 ;
+
 (if (locate-library "diff-mode")
     (progn
       (load-library "diff-mode")
-      (define-key diff-mode-map (kbd "M-g") 'diff-goto-source)
       (define-key diff-mode-map (kbd "<next>") 'diff-hunk-next)))
+
+; test-whole-patch
+;
+; Go to the start and run through the whole patch testing to see if
+; hunks are applied. As test-hunk may fail (with an error) at the top
+; of a unlclean diff file I wrap it up my-test-hunk
+
+(defun test-patch-until-fail()
+  "Test the patch from point until we find something not cleanly applied"
+  (interactive)
+  (while (string-match "Hunk already applied" (diff-test-hunk))
+    (diff-hunk-next))
+  (message "oops"))
+
+(defun continue-testing-patch()
+  "Skip the current hunk and continue testing"
+  (interactive)
+  (diff-hunk-next)
+  (test-patch-until-fail))
+
+(defun my-test-hunk()
+  (condition-case nil
+      (diff-test-hunk)
+    (error nil)))
+
+(defun test-whole-patch()
+  "Test if the whole patch has been cleanly"
+  (interactive)
+  (goto-line 0)
+  (if (not (my-test-hunk))
+      (diff-hunk-next))
+  (test-patch-until-fail))
+
+(define-key diff-mode-map (kbd "C-c t") 'test-whole-patch)
+(define-key diff-mode-map (kbd "C-c c") 'continue-testing-patch)
 
 
 ;; ispell
@@ -632,6 +669,15 @@
 ;; Compile Mode Stuff
 ;
 ; I want to be able to search straight from the compile mode window
+
+;
+; Load the compile enhancements if we have them
+;
+; I commmented out the setq compilation-error-regexp-alist-alist in compile+
+;
+(if (and (locate-library "compile-") (locate-library "compile+"))
+    (progn
+      (require 'compile+)))
 
 ; ensure the default compile command is sensible
 
@@ -698,6 +744,7 @@
 ; can inherit depending on what I'm working on.
 ;
 
+(locate-library "cc-mode")
 ; Need cc-style
 
 (require 'cc-styles)
@@ -1142,6 +1189,11 @@
       (require 'saveplace)
       (setq-default save-place t)))
 
+;;
+;; ERC
+;;
+(if (locate-library "erc")
+    (autoload 'erc-select "erc" "Start ERC" t))
 ;;
 ;; Desktop, save files and restore
 ;;
