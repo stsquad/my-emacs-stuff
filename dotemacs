@@ -675,6 +675,14 @@
 ;
 ; I commmented out the setq compilation-error-regexp-alist-alist in compile+
 ;
+(if (locate-library "compile")
+    (progn
+      (load-library "compile")
+;      (define-key compile-mode-map (kbd "<f4>")
+;	'compilation-next-error)
+      ))
+
+
 (if (and (locate-library "compile-") (locate-library "compile+"))
     (progn
       (require 'compile+)))
@@ -683,28 +691,12 @@
 
 (setq compile-command (format "cd %s && make -k" current-project-root))
 
-;(defun my-compile-mode-hook ()
-;  )
-;
-;(add-hook 'compilation-mode-hook 'my-compile-mode-hook)
-
-;; my-compilation-buffer-search
-; A simple search of the current a project for the current highlighted
-; bit of a compile buffer
-
-;(defun my-compilation-buffer-search()
-;  my-find (buffer-substring point mark))
-
-;(if (locate-library "compile")
-;    (progn
-;      (load-library "compile")
-;      (define-key compilation-mode-map (kbd "<f5>") 'my-compilation-buffer-search)))
-      
-
-
 ;; Some keybindsings for compile-command and recompile
 (global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "<f3>")  'compile)
 (global-set-key (kbd "C-c r") 'recompile)
+
+
 
 ;; Compile mode. Or rather, comint, compile and mode-compile.
 (setq compilation-scroll-output t
