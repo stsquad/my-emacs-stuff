@@ -1,6 +1,6 @@
 ; -*- emacs-lisp -*-
 ;
-; Alex Bennée's .emacs 
+; Alex Bennee's .emacs 
 ; 
 ; This is my .emacs. It is mainly an amalgem of different hacks
 ; acquired over time which I use on many of the machines I work with.
@@ -1257,7 +1257,7 @@ problem"
 ;; the VPN at home.
 ;;
 
-(if (or I-am-at-work (string-match "/export" (pwd)))
+(if (or I-am-at-work (string-match "work" (pwd)))
     (when (file-exists-p "~/.emacs.d/transitive.el")
       (progn
         (message "Loading Work Customistions...")
