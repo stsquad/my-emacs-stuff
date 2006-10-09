@@ -6,35 +6,17 @@
 
 ; Needs diff-mode
 
-(require diff-mode)
+(require 'diff-mode)
 
-(message "Setting up my-diff-mode")
+;;
+;; Some utility functions the work ontop of diff-mode
+;;
+;; Not quite working as I want yet
+;;
 
 (defun diff-revert-hunk()
   "Revert an applied hunk"
   (diff-apply-hunk t))
-
-(defvar my-diff-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "n") 'diff-hunk-next)
-    (define-key map (kbd "t") 'diff-test-hunk)
-    (define-key map (kbd "a") 'diff-apply-hunk)
-    (define-key map (kbd "r") 'diff-revert-hunk)
-    (define-key map (kbd "s") 'diff-split-hunk)
-    (define-key map (kbd "RET") 'diff-goto-source)
-  map)
-"Keymap for `my-diff-mode'.")
-  
-(define-derived-mode my-diff-mode diff-mode "My Diff Mode"
-  "A derived version of diff-mode with my own simple keybindings"
-  (message "my-diff-mode entered")
-  ; its ok to able to modify this buffer
-  (setq buffer-read-only nil))
-      
-(setq auto-mode-alist (cons '("\\.diff\\'" . my-diff-mode)
-			    auto-mode-alist))
-
-(message "my-diff-mode created")
 
 
 ; test-whole-patch
@@ -128,4 +110,41 @@ problem"
 ;          ; prompt user to skip or abort
 ;          (if (y-or-n-p "Skip hunk?")
 ;              (diff-hunk-next))))))
+
+
+;; my-diff-mode
+;
+; Define my-diff-mode and associated bits and pieces
+;
+
+(message "Setting up my-diff-mode")
+
+;
+; Define a new key-map
+;
+; It only defines a few of the keys I use as single key presses (to
+; save my RSI).
+;
+(defvar my-diff-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "n") 'diff-hunk-next)
+    (define-key map (kbd "t") 'diff-test-hunk)
+    (define-key map (kbd "a") 'diff-apply-hunk)
+    (define-key map (kbd "r") 'diff-revert-hunk)
+    (define-key map (kbd "s") 'diff-split-hunk)
+    (define-key map (kbd "RET") 'diff-goto-source)
+  map)
+"Keymap for `my-diff-mode'.")
+  
+(define-derived-mode my-diff-mode diff-mode "My Diff Mode"
+  "A derived version of diff-mode with my own simple keybindings"
+  (message "my-diff-mode entered")
+  ; its ok to able to modify this buffer
+  (setq buffer-read-only nil))
+      
+(setq auto-mode-alist (cons '("\\.diff\\'" . my-diff-mode)
+			    auto-mode-alist))
+
+(message "my-diff-mode created")
+
 
