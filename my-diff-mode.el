@@ -16,6 +16,7 @@
 
 (defun diff-revert-hunk()
   "Revert an applied hunk"
+  (interactive)
   (diff-apply-hunk t))
 
 
@@ -128,11 +129,14 @@ problem"
 (defvar my-diff-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "n") 'diff-hunk-next)
+    (define-key map (kbd "p") 'diff-hunk-prev)
     (define-key map (kbd "t") 'diff-test-hunk)
     (define-key map (kbd "a") 'diff-apply-hunk)
     (define-key map (kbd "r") 'diff-revert-hunk)
     (define-key map (kbd "s") 'diff-split-hunk)
     (define-key map (kbd "RET") 'diff-goto-source)
+    (define-key map (kbd "C-c t") 'test-whole-patch)
+    (define-key map (kbd "C-c c") 'continue-testing-patch)
   map)
 "Keymap for `my-diff-mode'.")
   
