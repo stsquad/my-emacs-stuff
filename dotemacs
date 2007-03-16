@@ -44,7 +44,13 @@
 ;; Autoloads
 ;? Put them near their configuration.
 ;? Check that extended modes are available.
-(autoload 'msb-mode "msb" "Fancier buffer-selection menu" t)
+
+(if (locate-library "msb")
+    (progn
+      (autoload 'msb-mode "msb" "Fancier buffer-selection menu" t)
+      ;; fancier buffer menu
+      (setq buffers-menu-max-size nil) ; Don't think this is needed with msb
+      (msb-mode 1)))
 
 ;; Default mode is text-mode,
 (setq default-major-mode 'text-mode)
@@ -343,9 +349,6 @@
 
 (message "Display Done")
 
-;; fancier buffer menu
-(setq buffers-menu-max-size nil) ; Don't think this is needed with msb
-(msb-mode 1)
 
 ;; Prettier unique buffer names.
 (require 'uniquify)
@@ -652,40 +655,32 @@
 ;; Compile Mode Stuff
 ;
 ; I want to be able to search straight from the compile mode window
+;
+; If the compile+/- libs are available I'll require them instead (they
+; bring in compile anyway)
+;
+; I commmented out the setq compilation-error-regexp-alist-alist in
+; compile+ as it seems confused becuase compile.el doesn't have it
 
-;
-; Load the compile enhancements if we have them
-;
-; I commmented out the setq compilation-error-regexp-alist-alist in compile+
-;
 (if (locate-library "compile")
     (progn
-      (load-library "compile")
-;      (define-key compile-mode-map (kbd "<f4>")
-;	'compilation-next-error)
-      ))
-
-
-(if (and (locate-library "compile-") (locate-library "compile+"))
-    (progn
-      (require 'compile+)))
-
-; ensure the default compile command is sensible
-
-(setq compile-command (format "cd %s && make -k" current-project-root))
-
-;; Some keybindsings for compile-command and recompile
-(global-set-key (kbd "C-c c") 'compile)
-(global-set-key (kbd "<f3>")  'compile)
-(global-set-key (kbd "C-c r") 'recompile)
-
-
-
-;; Compile mode. Or rather, comint, compile and mode-compile.
-(setq compilation-scroll-output t
-;;      compilation-buffer-name-function nil
-      compile-auto-highlight    t
-      compilation-window-height 15)
+      (if (and (locate-library "compile-") (locate-library "compile+"))
+	  (require 'compile+)
+	(load-library "compile"))
+      
+      ; ensure the default compile command is sensible
+      (setq compile-command (format "cd %s && make -k" current-project-root))
+      ; Some keybindsings for compile-command and recompile
+      (global-set-key (kbd "C-c c") 'compile)
+      (global-set-key (kbd "<f3>")  'compile)
+      (global-set-key (kbd "C-c r") 'recompile)
+      ; Tweak some variables
+      (setq compilation-scroll-output t
+      ; compilation-buffer-name-function nil
+	    compile-auto-highlight    t
+	    compilation-window-height 10)
+      (message "Setup compile-mode"))
+    (message "Unable to find compile libs..."))
 
 ;; Version control library. Splendid.
 (setq vc-command-messages t
