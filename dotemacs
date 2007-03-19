@@ -795,6 +795,22 @@
 (setq auto-mode-alist (cons '(".*/linux.*/.*\\.[ch]$" . linux-c-mode)
                        auto-mode-alist))
 
+;;
+;; GNU Code
+;;
+(defun gnu-c-mode ()
+  "C mode for GNU stuff"
+  (interactive)
+  (c-mode)
+  (message "Setting Linux C Style")
+  (c-set-style "gnu")
+  (setq tab-width 8)
+  (setq indent-tabs-mode t)
+  (setq c-basic-offset 2))
+  
+(setq auto-mode-alist (cons '(".*binutils.*\\.[ch]$" . gnu-c-mode)
+                       auto-mode-alist))
+
 
 ;;
 ;; End of c-mode customisations
