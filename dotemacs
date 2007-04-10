@@ -302,8 +302,14 @@
 ;; working dir. By default these get broken when emacs writes a new
 ;; file.
 
-(setq backup-by-copying t)
-
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.saves"))   ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)       ; use versioned backups
 
 
 (message "Setting up display")
@@ -578,8 +584,8 @@
     (if (file-exists-p secondary-buffer)
         (ediff-files secondary-buffer primary-buffer)
       (ediff-files (read-file-name (concat "Whats the path to "
-                                           buffer-file-name)
-                                   primary-buffer)))))
+                                           buffer-file-name))
+		   primary-buffer))))
 
 ;(replace-regexp-in-string "/root/to/a" "/root/to/b" "/root/to/a/file.c")
 
