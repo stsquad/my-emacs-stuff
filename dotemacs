@@ -634,25 +634,24 @@
 ;  (set-british-dict)
 ;  (define-key text-mode-map (kbd "<f1>") ispell-word))
 
-(if (or I-am-at-work I-am-at-home)
-    (if (locate-library "ispell")
-	(progn
-	  (let (
-		(ispell-path (which-lookup "ispell"))
-		(aspell-path (which-lookup "aspell")))
-	    (message "Doing ispell dict setting")
-	    (if (or ispell-path aspell-path)
-		(progn
-		  ; select aspell out of preference
-		  (if (eval aspell-path)
-		      (setq ispell-program-name "aspell"))
-		  ; reset British dict on loading file
-		  (add-hook 'find-file-hooks 
-			    '(lambda ()
-			       (ispell-change-dictionary "british")))
-		  ; if we are editing text turn on flyspell mode
-		  (add-hook 'text-mode-hook 'flyspell-mode))
-	      (message "Skipping ispell"))))))
+(if (locate-library "ispell")
+    (progn
+      (let (
+	    (ispell-path (which-lookup "ispell"))
+	    (aspell-path (which-lookup "aspell")))
+	(message "Doing ispell dict setting")
+	(if (or ispell-path aspell-path)
+	    (progn
+					; select aspell out of preference
+	      (if (eval aspell-path)
+		  (setq ispell-program-name "aspell"))
+					; reset British dict on loading file
+	      (add-hook 'find-file-hooks
+			'(lambda ()
+			   (ispell-change-dictionary "british")))
+					; if we are editing text turn on flyspell mode
+	      (add-hook 'text-mode-hook 'flyspell-mode))
+	  (message "Skipping ispell")))))
 
 ;; calculator
 ;
@@ -778,7 +777,7 @@
 			       (case-label after)
 			       (label after)))
     (c-offsets-alist . ((arglist-close . c-lineup-arglist)
-                        (arglist-cont-nonempty . c-lineup-arglist)
+			(arglist-cont-nonempty . c-lineup-arglist)
 			(substatement-open . 0)
 			(statement-cont . ++)
 ;;			(arglist-cont-nonempty . ++)
@@ -1037,7 +1036,7 @@
    ((car delete-these)
     (if (member (car delete-these) from-this-list)
 	(crs-delete-these (cdr delete-these) (delete (car delete-these)
-                                                     from-this-list))
+						     from-this-list))
       (crs-delete-these (cdr delete-these) from-this-list)))
    (t from-this-list)))
 
@@ -1221,7 +1220,7 @@
 ;;
 ;; Desktop, save files and restore
 ;;
-              
+
 ;(desktop-load-default)
 ;(setq history-length 250)
 ;(add-to-list 'desktop-globals-to-save 'file-name-history)
@@ -1233,14 +1232,14 @@
 ;; the VPN at home.
 ;;
 
-(if (or I-am-at-work (string-match "work" (pwd)))
+(if (or I-am-at-work (string-match "dynamite" (pwd)))
     (when (file-exists-p "~/.emacs.d/transitive.el")
       (progn
-        (message "Loading Work Customistions...")
-        (load-file "~/.emacs.d/transitive.el"))))
+	(message "Loading Work Customistions...")
+	(load-file "~/.emacs.d/transitive.el"))))
 
 (message "Done .emacs")
 
 
 
-(put 'upcase-region 'disabled nil)
+;(put 'upcase-region 'disabled nil)
