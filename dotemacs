@@ -10,10 +10,6 @@
 ; Domain. Feel free to use whatever bits may be of use to you in this
 ; file that it is my right to license ;-)
 ;
-; Changelog:
-;
-;   
-;
 
 (message ".emacs Start")
 
@@ -550,17 +546,21 @@
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
 
-(setq diff-switches               "-u"
-      ediff-custom-diff-options   "-U3"
-      ediff-split-window-function 'split-window-horizontally
-      ediff-window-setup-function 'ediff-setup-windows-plain
-      ediff-use-last-dir          t)
+(if (locate-library "ediff")
+    (progn
+      (require 'ediff))
 
-(add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+  (setq diff-switches               "-u"
+	ediff-custom-diff-options   "-U3"
+	ediff-split-window-function 'split-window-horizontally
+	ediff-window-setup-function 'ediff-setup-windows-plain
+	ediff-use-last-dir          t)
 
-(add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+  (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
 
-(add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)
+  (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+
+  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)
 
 
 ;; my-ediff-secondary
@@ -568,28 +568,26 @@
 ; See if we can find the equivilent file in a secondary project root
 ; and bring up ediff on it.
 
-(defun my-ediff-secondary ()
-  "Load the secondary equivilent file of this buffer and ediff it"
-  (interactive)
-  ; sanity
-  (set-secondary-root-if-not)
-  (message (concat "buffer name is " (buffer-file-name)))
-  (let
-      (
-       (primary-buffer (buffer-file-name))
-       (secondary-buffer (replace-regexp-in-string
-                          current-project-root secondary-project-root
-                          (buffer-file-name))))
+  (defun my-ediff-secondary ()
+    "Load the secondary equivilent file of this buffer and ediff it"
+    (interactive)
     ; sanity
-    (if (file-exists-p secondary-buffer)
-        (ediff-files secondary-buffer primary-buffer)
-      (ediff-files (read-file-name (concat "Whats the path to "
-                                           buffer-file-name))
-		   primary-buffer))))
+    (set-secondary-root-if-not)
+    (message (concat "buffer name is " (buffer-file-name)))
+    (let
+	(
+	 (primary-buffer (buffer-file-name))
+	 (secondary-buffer (replace-regexp-in-string
+			    current-project-root secondary-project-root
+			    (buffer-file-name))))
+					; sanity
+      (if (file-exists-p secondary-buffer)
+	  (ediff-files secondary-buffer primary-buffer)
+	(ediff-files (read-file-name
+		      (concat "Whats the path to " buffer-file-name))
+		     primary-buffer))))
 
-;(replace-regexp-in-string "/root/to/a" "/root/to/b" "/root/to/a/file.c")
-
-;    (ediff-files secondary-buffer primary-buffer)))
+  (message "Done ediff customisations"))
 
 ;; ediff-trees
 ;
@@ -721,19 +719,17 @@
       "Minor mode for incremental blame for Git." t))
 
 ;; WoMan - WithOut Man
-(if (locate-library "woman")
-    (progn
-      (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
-      (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
-      (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)
+;
+; This is mostly handy if you are running on window and you don't have
+; man installed.
+;
 
-      (setq woman-imenu-title "Imenu"
-	    woman-imenu t
-	    woman-use-own-frame nil)
-      
-      (add-hook 'dired-mode-hook
-		(lambda ()
-		  (define-key dired-mode-map "W" 'woman-dired-find-file)))))
+(if (not (which-lookup "man"))
+    (if (locate-library "woman")
+	(progn
+	  (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
+	  (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
+	  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t))))
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
@@ -999,6 +995,12 @@
       (load-library "php-mode")
       ;; colourization
       (add-hook 'php-mode-user-hook 'turn-on-font-lock)))
+
+;; Python Mode
+(if (locate-library "python-mode")
+    (progn
+      (load-library "python-mode")))
+
 
 (message "Done various programming modes")
 
