@@ -41,12 +41,12 @@
 ;? Put them near their configuration.
 ;? Check that extended modes are available.
 
-(if (locate-library "msb")
-    (progn
-      (autoload 'msb-mode "msb" "Fancier buffer-selection menu" t)
-      ;; fancier buffer menu
-      (setq buffers-menu-max-size nil) ; Don't think this is needed with msb
-      (msb-mode 1)))
+;(if (locate-library "msb")
+;    (progn
+;      (autoload 'msb-mode "msb" "Fancier buffer-selection menu" t)
+;      ;; fancier buffer menu
+;      (setq buffers-menu-max-size nil) ; Don't think this is needed with msb
+;      (msb-mode 1)))
 
 ;; Default mode is text-mode,
 (setq default-major-mode 'text-mode)
@@ -320,7 +320,7 @@
 	(setq default-frame-alist '((top . 0)
 				    (left . 0)
 				    ;; (left . 1300) ; right hand monitor
-				    (width . 140)
+				    (width . 120)
 				    (height . 55)
 				    (background-color . "DarkSlateGrey")
 				    (foreground-color . "wheat")
@@ -343,11 +343,11 @@
 ; won't take effect until new frames get created (or so I thought, it
 ; appears to take effect right away now!
 
-;(if I-am-in-X
-;    (progn
-;      (new-frame)
-;      (delete-frame)
-;      (message "done frame switch")))
+(if I-am-in-X
+    (progn
+      (new-frame)
+      (delete-frame)
+      (message "done frame switch")))
 
 (message "Display Done")
 
@@ -548,53 +548,55 @@
 
 (if (locate-library "ediff")
     (progn
-      (require 'ediff))
 
-  (setq diff-switches               "-u"
-	ediff-custom-diff-options   "-U3"
-	ediff-split-window-function 'split-window-horizontally
-	ediff-window-setup-function 'ediff-setup-windows-plain
-	ediff-use-last-dir          t)
+      (defun do-ediff-cusomisations ()
+	"Set up my ediff customisations"
+	(setq diff-switches               "-u"
+	      ediff-custom-diff-options   "-U3"
+	      ediff-split-window-function 'split-window-horizontally
+	      ediff-window-setup-function 'ediff-setup-windows-plain
+	      ediff-use-last-dir          t)
 
-  (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+	(add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+	(add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+	(add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display))
 
-  (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+      (autoload 'ediff-files "ediff");
+      (autoload 'ediff-buffers "ediff");
+      
+      ;; my-ediff-secondary
+      ;
+      ; See if we can find the equivilent file in a secondary project root
+      ; and bring up ediff on it.
 
-  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)
-
-
-;; my-ediff-secondary
-;
-; See if we can find the equivilent file in a secondary project root
-; and bring up ediff on it.
-
-  (defun my-ediff-secondary ()
-    "Load the secondary equivilent file of this buffer and ediff it"
-    (interactive)
-    ; sanity
-    (set-secondary-root-if-not)
-    (message (concat "buffer name is " (buffer-file-name)))
-    (let
-	(
-	 (primary-buffer (buffer-file-name))
-	 (secondary-buffer (replace-regexp-in-string
-			    current-project-root secondary-project-root
-			    (buffer-file-name))))
+      (defun my-ediff-secondary ()
+	"Load the secondary equivilent file of this buffer and ediff it"
+	(interactive)
 					; sanity
-      (if (file-exists-p secondary-buffer)
-	  (ediff-files secondary-buffer primary-buffer)
-	(ediff-files (read-file-name
-		      (concat "Whats the path to " buffer-file-name))
-		     primary-buffer))))
+	(set-secondary-root-if-not)
+	(message (concat "buffer name is " (buffer-file-name)))
+	(let
+	    (
+	     (primary-buffer (buffer-file-name))
+	     (secondary-buffer (replace-regexp-in-string
+				current-project-root secondary-project-root
+				(buffer-file-name))))
+					; sanity
+	  (if (file-exists-p secondary-buffer)
+	      (ediff-files secondary-buffer primary-buffer)
+	    (ediff-files (read-file-name
+			  (concat "Whats the path to " buffer-file-name))
+			 primary-buffer))))
 
-  (message "Done ediff customisations"))
+      (message "Done ediff customisations")))
 
 ;; ediff-trees
 ;
 ; This is another library that does a tree view approach
 (if (locate-library "ediff-trees")
-    (progn
-      (load-library "ediff-trees")))
+    (autoload 'ediff-trees "ediff-trees" "Start an tree ediff" t))
+
+;      (load-library "ediff-trees")))
 
 
 ;; diff-mode and its derivitives
@@ -849,7 +851,8 @@
 ;; load the ctags library and bind C-f to something worth using :-)
 (if (locate-library "etags")
     (progn
-      (load-library "etags")
+      (autoload 'find-tag "etags" "Emacs Tags library" t)
+;      (load-library "etags")
       (global-unset-key "\C-f")
       (global-set-key "\C-f" 'find-tag)))
 
@@ -1026,84 +1029,38 @@
     (if (looking-at "\C-z")
         (delete-char 1))))
 
-;;; Fancy buffer cycleing
+
+;; Buffer Selection
 ;
-; this lot may be redundant as most is covered by the bs.el library
-
-
-; necessary support function for buffer burial
-(defun crs-delete-these (delete-these from-this-list)
-  "Delete DELETE-THESE FROM-THIS-LIST."
-  (cond
-   ((car delete-these)
-    (if (member (car delete-these) from-this-list)
-	(crs-delete-these (cdr delete-these) (delete (car delete-these)
-						     from-this-list))
-      (crs-delete-these (cdr delete-these) from-this-list)))
-   (t from-this-list)))
-
-; this is the list of buffers I never want to see
-(defvar crs-hated-buffers
-  '("KILL" "*Compile-Log*"))
-
-; might as well use this for both
-(setq iswitchb-buffer-ignore (append '("^ " "*Buffer") crs-hated-buffers))
-
-(defun crs-hated-buffers ()
-  "List of buffers I never want to see, converted from names to buffers."
-  (delete nil
-	  (append
-	   (mapcar 'get-buffer crs-hated-buffers)
-	   (mapcar (lambda (this-buffer)
-		     (if (string-match "^ " (buffer-name this-buffer))
-			 this-buffer))
-		   (buffer-list)))))
-
-; I'm sick of switching buffers only to find KILL right in front of me
-(defun crs-bury-buffer (&optional n)
-  (interactive)
-  (unless n
-    (setq n 1))
-  (let ((my-buffer-list (crs-delete-these (crs-hated-buffers)
-					  (buffer-list (selected-frame)))))
-    (switch-to-buffer
-     (if (< n 0)
-	 (nth (+ (length my-buffer-list) n)
-	      my-buffer-list)
-       (bury-buffer)
-       (nth n my-buffer-list)))))
-
-(global-set-key (kbd "<C-tab>") 'crs-bury-buffer)
-(global-set-key (kbd "<C-S-iso-lefttab>")
-		(lambda ()
-		  (interactive)
-		  (crs-bury-buffer -1)))
-
+; The buffer selection library (bs.el) is much more friendly than the default.
+; Hence I rebind C-x b to use it.
 ;
-; If we have the bs.el library then rebind C-x b to use bs
-;
+; Configuration can be done with the bs-configurations variable
+
 (if (locate-library "bs")
     (progn
       (load-library "bs")
-      (global-set-key (kbd "C-x b") 'bs-show)))
+      (global-set-key (kbd "C-x b") 'bs-show)
 
-;
-; I want the list-buffers to behave like an all showing version of
-; bs-show. There may be some way to frob bs to do this but hey this
-; makes the default not suck if we don't have it.
-;
-; 1. Ensure focus goes to buffer-list
-; 2. Make C-g behave like it does in bs-show (i.e. give up)
 
-;Opens list-buffers but with focus on it
-(defun list-buffers-other-win ()
+      (defun list-buffers-other-win ()
+	"Opens list-buffers and put focus on it"
+	(interactive)
+	(bs-show "all")))
+
+  ; alternative list-buffers-other-win if no bs-show
+  ; 1. Ensure focus goes to buffer-list
+  ; 2. Make C-g behave like it does in bs-show (i.e. give up)
+  (progn
+    (defun list-buffers-other-win ()
       "Opens list-buffers and put focus on it"
       (interactive)
       (list-buffers)
       (other-window 1)
       (delete-other-windows)
-      (local-set-key (kbd "C-g") 'kill-this-buffer))
+      (local-set-key (kbd "C-g") 'kill-this-buffer))))
 
+; Make C-x C-b list all buffers, whichever way we frob it
 (global-set-key "\C-x\C-b" 'list-buffers-other-win)
 
 (message "Done Buffer Handling Tweaks")
