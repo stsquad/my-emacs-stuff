@@ -120,6 +120,7 @@ problem"
 
 (message "Setting up my-diff-mode")
 
+
 ;
 ; Define a new key-map
 ;
@@ -130,6 +131,8 @@ problem"
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "n") 'diff-hunk-next)
     (define-key map (kbd "p") 'diff-hunk-prev)
+    (define-key map (kbd "k") 'diff-hunk-kill)
+    (define-key map (kbd "d") 'diff-hunk-kill)
     (define-key map (kbd "t") 'diff-test-hunk)
     (define-key map (kbd "a") 'diff-apply-hunk)
     (define-key map (kbd "r") 'diff-revert-hunk)
@@ -147,6 +150,19 @@ problem"
   (setq buffer-read-only nil))
       
 (setq auto-mode-alist (cons '("\\.diff\\'" . my-diff-mode)
+			    auto-mode-alist))
+
+(setq auto-mode-alist (cons '("\\.patch\\'" . my-diff-mode)
+			    auto-mode-alist))
+
+;; Git Patches
+;
+; Auto set my-diff-mode for various forms of git patchs
+
+(setq auto-mode-alist (cons '("0.*.txt" . my-diff-mode)
+			    auto-mode-alist))
+
+(setq auto-mode-alist (cons '(".dotest/0.*" . my-diff-mode)
 			    auto-mode-alist))
 
 (message "my-diff-mode created")
