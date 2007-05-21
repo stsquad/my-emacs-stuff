@@ -313,11 +313,11 @@
 
 
 (message "Setting up display")
-
 ;;; Display hacks
 
 ;; Set the frame size to larger if on a Graphics display (we tell by
 ;; looking at colour cells (must fix to not break emacs20, maybe)
+;(current-frame-configuration)
 (if I-am-in-X
   (if I-am-at-work
       (progn
@@ -325,7 +325,7 @@
 				    (left . 0)
 				    ;; (left . 1300) ; right hand monitor
 				    (width . 120)
-				    (height . 55)
+				    (height . 50)
 				    (background-color . "DarkSlateGrey")
 				    (foreground-color . "wheat")
 				    (vertical-scroll-bars . right)
@@ -435,9 +435,6 @@
 ;; Reduce white space
 (setq-default mode-line-buffer-identification '("%b"))
 
-;; Does exactly what it says on the tin
-;obs (resize-minibuffer-mode t)
-
 ;; Make fill do the Right Thing with full-stops.
 (setq sentence-end-double-space nil)
 
@@ -503,7 +500,7 @@
 	     (setq font-lock-maximum-decoration  t
 		   font-lock-verbose             t
 		   font-lock-support-mode
-		                   (if I-am-emacs-21
+		                   (if (or I-am-emacs-21 I-am-emacs-22)
 				       'jit-lock-mode
 				     'lazy-lock-mode)
 		   lazy-lock-defer-on-scrolling  nil
@@ -784,7 +781,7 @@
     )
   "Alex's C style")
 
-(c-add-style "my-c-style" my-c-style t)
+(c-add-style "my-c-style" my-c-style)
 (setq c-default-style "my-c-style")
 
 ;;
@@ -1161,13 +1158,15 @@
 ;;(if (locate-library "color-theme")
 ;;    (load-library "color-theme"))
 
-;;
 ;; Saveplace - Jump to where I last was when I edit a file
-;;
-(if (locate-library "saveplace")
-    (progn
-      (require 'saveplace)
-      (setq-default save-place t)))
+;
+; Seems to lock up on emacs-snaphsot/22
+
+(unless I-am-emacs-22
+  (if (locate-library "saveplace")
+      (progn
+	(require 'saveplace)
+	(setq-default save-place t))))
 
 ;;
 ;; ERC
