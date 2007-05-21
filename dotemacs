@@ -22,6 +22,8 @@
 ;; Tweak a few paths
 
 (defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
+(defvar I-am-emacs-22 (string-match "GNU Emacs 22" (emacs-version)))
+(defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
 
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
@@ -70,7 +72,9 @@
 (setq-default case-fold-search nil)
 
 ;; Automagically decompress files
-(auto-compression-mode)
+
+(unless I-am-xemacs
+  (auto-compression-mode))
 
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
@@ -353,12 +357,14 @@
 
 
 ;; Prettier unique buffer names.
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+(unless I-am-xemacs
+  (require 'uniquify)
+  (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
 
 ;; Stop the mouse cursor getting in the way. This is great.
-(if 'window-system
-    (mouse-avoidance-mode 'exile))
+(unless I-am-xemacs
+  (if 'window-system
+    (mouse-avoidance-mode 'exile)))
 
 ;; Change the cursor colour in Ovwrt mode
 (defun ins-cursor-set ()
@@ -415,10 +421,11 @@
 
 ;; (display-time) is needed for appt to display in the mode-line, but
 ;; we don't want the time taking up precious space.
-(setq display-time-24hr-format t
+(unless I-am-xemacs
+  (setq display-time-24hr-format t
       display-time-interval    20
       display-time-format "")
-(display-time)
+  (display-time))
 
 ;; Displays current function() in programming modes. 
 (setq which-func-modes t
@@ -429,7 +436,7 @@
 (setq-default mode-line-buffer-identification '("%b"))
 
 ;; Does exactly what it says on the tin
-(resize-minibuffer-mode t)
+;obs (resize-minibuffer-mode t)
 
 ;; Make fill do the Right Thing with full-stops.
 (setq sentence-end-double-space nil)
@@ -506,15 +513,6 @@
 		   lazy-lock-stealth-time        3)))
 (global-font-lock-mode t)
 
-;; Tramp
-;
-; I use tramp at home. Don't really need at work
-;
-
-(if (and (locate-library "tramp") I-am-at-home)
-    (progn
-      (load-library "tramp")))
-
 ;; Calendar / Diary stuff.
 
 (if I-am-at-work
@@ -536,7 +534,7 @@
 	  (lambda ()
 	    (make-local-variable 'font-lock-defaults)
 	    (setq
-;	          font-lock-defaults '(info-font-lock-keywords nil t)
+	          font-lock-defaults '(info-font-lock-keywords nil t)
 		  case-fold-search nil)))
 
 ;; ediff
@@ -1199,6 +1197,3 @@
 
 (message "Done .emacs")
 
-
-
-;(put 'upcase-region 'disabled nil)
