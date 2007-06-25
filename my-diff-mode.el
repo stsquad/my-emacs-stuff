@@ -142,13 +142,16 @@ problem"
     (define-key map (kbd "C-c c") 'continue-testing-patch)
   map)
 "Keymap for `my-diff-mode'.")
-  
+
 (define-derived-mode my-diff-mode diff-mode "My Diff Mode"
   "A derived version of diff-mode with my own simple keybindings"
   (message "my-diff-mode entered")
   ; its ok to able to modify this buffer
   (setq buffer-read-only nil))
-      
+
+
+;; Patches and Diffs
+
 (setq auto-mode-alist (cons '("\\.diff\\'" . my-diff-mode)
 			    auto-mode-alist))
 
