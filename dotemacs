@@ -23,6 +23,9 @@
 
 (defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
 (defvar I-am-emacs-22 (string-match "GNU Emacs 22" (emacs-version)))
+
+(defvar I-am-emacs-21+ (or I-am-emacs-21 I-am-emacs-22))
+
 (defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
 
 ;; Lets define which machine I'm on, therefor if I am at work
@@ -284,9 +287,9 @@
 (global-set-key (kbd "<M-down>") 'enlarge-window)
 (global-set-key (kbd "<M-up>") 'shrink-window)
 
-;; In Emacs 21, home and end go to beginning and end of line. This is
+;; In Emacs 21+, home and end go to beginning and end of line. This is
 ;; clearly the Wrong Thing.
-(if I-am-emacs-21
+(if I-am-emacs-21+
     (progn ()
 	   (global-unset-key [home])
 	   (global-set-key [home] 'beginning-of-buffer)
@@ -347,11 +350,11 @@
 ; won't take effect until new frames get created (or so I thought, it
 ; appears to take effect right away now!
 
-(if I-am-in-X
-    (progn
-      (new-frame)
-      (delete-frame)
-      (message "done frame switch")))
+;(if I-am-in-X
+;    (progn
+;      (new-frame)
+;      (delete-frame)
+;      (message "done frame switch")))
 
 (message "Display Done")
 
@@ -464,7 +467,11 @@
 ;;; Minor modes
 ;; Highlight changes.
 ;? Timer-based M-x highlight-changes-rotate-face
-(setq highlight-changes-colours '("red1" "red2" "red3" "red4"))
+
+(if I-am-emacs-22
+    (setq highlight-changes-colors '("red1" "red2" "red3" "red4"))
+  (setq highlight-changes-colours '("red1" "red2" "red3" "red4")))
+
 (global-highlight-changes 'passive)
 
 ;; Problem is, this only appears to work when h-c-m is 'active. And it
@@ -500,7 +507,7 @@
 	     (setq font-lock-maximum-decoration  t
 		   font-lock-verbose             t
 		   font-lock-support-mode
-		                   (if (or I-am-emacs-21 I-am-emacs-22)
+		                   (if I-am-emacs-21+
 				       'jit-lock-mode
 				     'lazy-lock-mode)
 		   lazy-lock-defer-on-scrolling  nil
@@ -731,8 +738,7 @@
 ;; Dired stuff
 (add-hook 'dired-mode-hook
 		(lambda ()
-		  (setq truncate-lines t)
-		  (auto-show-mode 1)))
+		  (setq truncate-lines t)))
 
 ;;
 ;; cc-mode stuff
@@ -800,7 +806,7 @@
 				      find-c-files search)))
   ; ensure tab width matches c-basic-offset
   (setq tab-width c-basic-offset)
-  (if I-am-emacs-21
+  (if I-am-emacs-21+
       (cwarn-mode)))
   
 (add-hook 'c-mode-common-hook 'my-c-mode-hook)
@@ -1155,8 +1161,12 @@
 ;;
 ;; Eye-candy! - hmm currently breaks on startup...
 
-;;(if (locate-library "color-theme")
-;;    (load-library "color-theme"))
+(if I-am-emacs-22
+    (if (locate-library "color-theme")
+	(progn
+	  (load-library "color-theme")
+	  (if I-am-in-console
+	      (color-theme-dark-laptop)))))
 
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
