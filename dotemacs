@@ -1,7 +1,7 @@
 ; -*- emacs-lisp -*-
 ;
-; Alex Bennee's .emacs 
-; 
+; Alex Bennee's .emacs
+;
 ; This is my .emacs. It is mainly an amalgem of different hacks
 ; acquired over time which I use on many of the machines I work with.
 ;
@@ -186,7 +186,7 @@
   "Set a primary project root"
   (interactive)
   (setq current-project-root
-        (read-file-name "Project Root:")))
+	(read-file-name "Project Root:")))
 
 ;; secondary-project-root
 ;
@@ -202,7 +202,7 @@
   "Set a secondary project root"
   (interactive)
   (setq secondary-project-root
-        (read-file-name "Secondary Project Root:")))
+	(read-file-name "Secondary Project Root:")))
 
 (defun set-secondary-root-if-not ()
   "Check is secondary-project-root is defined, if not set it"
@@ -296,8 +296,7 @@
 	   (global-unset-key [home])
 	   (global-set-key [home] 'beginning-of-buffer)
 	   (global-unset-key [end])
-	   (global-set-key [end] 'end-of-buffer)
-	   ))
+	   (global-set-key [end] 'end-of-buffer)))
 
 (message "Done keymapping")
 
@@ -337,14 +336,14 @@
 				    (tool-bar-lines . nil))))
     ; smaller screen at home
     (progn
-    	(setq default-frame-alist '((top . 0)
-			    (left . 0)
-			    (width . 120)
-			    (height . 50)
-			    (background-color . "DarkSlateGrey")
-			    (foreground-color . "wheat")
-			    (vertical-scroll-bars . right)
-			    (tool-bar-lines . nil))))))
+      (setq default-frame-alist '((top . 0)
+				  (left . 0)
+				  (width . 120)
+				  (height . 50)
+				  (background-color . "DarkSlateGrey")
+				  (foreground-color . "wheat")
+				  (vertical-scroll-bars . right)
+				  (tool-bar-lines . nil))))))
 
 ;; Create new frame
 ;
@@ -567,7 +566,7 @@
 
       (autoload 'ediff-files "ediff");
       (autoload 'ediff-buffers "ediff");
-      
+
       ;; my-ediff-secondary
       ;
       ; See if we can find the equivilent file in a secondary project root
@@ -611,9 +610,20 @@
 
 (if (locate-library "diff-mode")
     (progn
-      (load-library "diff-mode")
       (if (locate-library "my-diff-mode")
-	  (load-library "my-diff-mode"))))
+	  (progn
+	    (autoload 'my-diff-mode "my-diff-mode")
+	    (defalias 'dmode-alias 'my-diff-mode))
+	(autoload 'diff-mode "diff-mode")
+	(defalias 'dmode-alias 'diff-mode))
+
+      ; Which ever version we have we need to set the
+      ; automode up so it loads when we need it
+      (setq auto-mode-alist (append (list
+				     (cons "\\.diff\\'"  'dmode-alias)
+				     (cons "\\.patch\\'" 'dmode-alias)
+				     (cons "0.*.txt" 'dmode-alias)
+				     (cons ".dotest/0.*" 'dmode-alias))))))
 
 ;; ispell
 ;
@@ -998,7 +1008,12 @@
 ;; PHP file mode
 (if (locate-library "php-mode")
     (progn
-      (load-library "php-mode")
+      (autoload 'php-mode "php-mode" "PHP mode" t)
+
+      (setq auto-mode-alist
+	    (append (list (cons "\\.php[s34]?\\'" 'php-mode))
+		    auto-mode-alist))
+
       ;; colourization
       (add-hook 'php-mode-user-hook 'turn-on-font-lock)))
 
