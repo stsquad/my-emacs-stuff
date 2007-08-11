@@ -28,6 +28,8 @@
 
 (defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
 
+(defvar I-am-emacs-21+ (or I-am-emacs-21 I-am-emacs-22))
+
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
 
@@ -377,7 +379,7 @@
        "red"
      "black")))
 
-(if I-am-emacs-21
+(if I-am-emacs-21+
     (blink-cursor-mode -1))
 
 (add-hook 'post-command-hook 'ins-cursor-set)
