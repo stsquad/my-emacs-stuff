@@ -1103,6 +1103,20 @@
 (global-set-key [(meta b)] 'list-bookmarks)
 (global-set-key [(meta a)] 'bookmark-set)
 
+;; bm.el
+;
+(if (locate-library "")
+    (progn
+      (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
+      (autoload 'bm-next     "bm" "Goto bookmark."                     t)
+      (autoload 'bm-previous "bm" "Goto previous bookmark."
+	t)
+
+      (global-set-key (kbd "<C-f2>") 'bm-toggle)
+      (global-set-key (kbd "<f2>")   'bm-next)
+      (global-set-key (kbd "<S-f2>") 'bm-previous)))
+
+
 ;;
 ;; Macro keys
 ;;
