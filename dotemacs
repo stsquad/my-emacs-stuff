@@ -575,6 +575,8 @@
       (defun my-ediff-secondary ()
 	"Load the secondary equivilent file of this buffer and ediff it"
 	(interactive)
+	; ensure customisations have run
+	(do-ediff-cusomisations)
 					; sanity
 	(set-secondary-root-if-not)
 	(message (concat "buffer name is " (buffer-file-name)))
@@ -623,8 +625,9 @@
 				     (cons "\\.diff\\'"  'dmode-alias)
 				     (cons "\\.patch\\'" 'dmode-alias)
 				     (cons "0.*.txt" 'dmode-alias)
-				     (cons ".dotest/0.*" 'dmode-alias))))))
-
+				     (cons ".dotest/0.*"
+					   'dmode-alias))
+				    auto-mode-alist))))
 ;; ispell
 ;
 ; There should be an easier way to set the default
