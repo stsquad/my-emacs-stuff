@@ -1,0 +1,1013 @@
+; Generic .emacs, written in -*- emacs-lisp -*-
+; Time-stamp: <21:26 on Wednesday, 6 February 2002 by alex>
+;
+
+(message ".emacs")
+
+(message "Start")
+
+
+(setq debug-on-error t)
+
+;;;; Start of real code.
+
+;;; Basic sanity
+;; Find out about my environment
+;; Tweak a few paths
+
+(defvar I-am-win32 (eq window-system 'w32))
+(defvar I-am-at-work nil)
+(defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
+
+(if I-am-win32
+    (setq cygnus-directory "S:/SABC.SHR/LCT/bin/cygwin/"
+	  temp-directory "C:/TEMP/"
+	  temporary-file-directory "C:/TEMP/"))
+
+(setq load-path (cons "~/lisp/" load-path))
+
+(if (and I-am-win32 I-am-at-work)
+    (setq load-path (cons "S:/SABC.SHR/LCT/bin/emacs-21.1/site-lisp/w3/"
+			  load-path)))
+
+(if I-am-win32
+    (setq exec-path (append exec-path
+			    (mapcar '(lambda (dir)
+				       (concat cygnus-directory dir))
+				    '("bin" "usr/bin" "usr/local/bin"))
+			    )))
+
+;; Autoloads
+;? Put them near their configuration.
+;? Check that extended modes are available.
+(autoload 'msb-mode "msb" "Fancier buffer-selection menu" t)
+
+(if (locate-library "dict-web")
+    (autoload 'dict "dict-web" "Look up a word or phrase in the Dictionary" t))
+
+(if (locate-library "babel")
+    (progn
+      (autoload 'babel "babel"
+	"Use web translation site to translate message" t)
+      (autoload 'babel-region "babel" "Translate the current region." t)
+      (autoload 'babel-as-string "babel"
+	"Translate MSG, returning a string." t)
+      (autoload 'babel-buffer "babel" "Translate the current buffer." t)))
+
+(if (locate-library "zenirc")
+    (progn
+      (autoload 'zenirc "zenirc" "Waste time using IRC" t)
+      (setq zenirc-server-default "leup489")
+      (add-hook 'zenirc-mode-hook
+		'(lambda ()
+		   (define-key zenirc-mode-map [mouse-2]
+		     'browse-url-at-mouse)))))
+
+;(require 'generic-x)  ; Includes ini-generic-mode
+
+;; Looks like Ed was bored
+(if (locate-library "pyf")
+    (autoload 'pick-your-fish "pyf" "Pick Your Fish!" t))
+(if (locate-library "mc")
+    (autoload 'mc             "mc"  "Mornington Crescent" t))
+
+;; Default mode is text-mode,
+(setq default-major-mode 'text-mode)
+
+;; Make Things Happen. This is supposed to come early, for unclear reasons.
+;? Periodically re-start gnuserver?
+(if (locate-library "gnuserv")
+    (progn
+      (require 'gnuserv)
+      (setq server-done-function 'bury-buffer)
+      ;;? It would be nice to use a new frame
+      ;;? iff (selected-frame) has >2 windows
+      (setq gnuserv-frame (selected-frame))
+      (gnuserv-start)))
+
+;; Don't truncate message buffer. For debugging reasons.
+(setq message-log-max t)
+
+;; Less verbosity
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Prompt for Local Variable lists
+(setq enable-local-variables 'maybe)
+
+;; Silently add trailing newline to file
+(setq require-final-newline t)
+
+;; ^K deletes line, not delete to EOL
+(setq-default kill-whole-line t)
+
+;; Searches are case sensitive
+(setq-default case-fold-search nil)
+
+;; Automagically decompress files
+(auto-compression-mode)
+
+;; Postscript printing
+(if (and I-am-win32 I-am-at-work)
+    (setq printer-name "LPT1"
+	  ps-printer-name nil		; nil means use printer-name
+	  ps-print-header nil		; Don't want a header
+	  ps-print-header-frame nil	; And even if we did, no box
+	  ps-paper-type 'a4
+	  ps-razzle-dazzle t		; Show progress while formatting
+
+	  ps-build-face-reference t	; Set up font alternatives
+	  ps-italic-faces '(font-lock-comment-face
+			    font-lock-string-face
+			    font-lock-variable-name-face)
+	  ps-bold-faces '(font-lock-keyword-face
+			  font-lock-type-face
+			  font-lock-function-name-face
+			  font-lock-builtin-face
+			  font-lock-variable-name-face)
+	  ps-print-color-p nil))
+
+;; Change menu entry so it doesn't use faces.
+(define-key global-map [menu-bar tools print ps-print-buffer]
+  '("Postscript Print Buffer" . ps-print-buffer))
+
+(message "Done Basic Sanity")
+
+
+;;; Miscellaneous functions
+
+(defun local-make-auto-save-file-name ()
+  "Override `make-auto-save-file-name' to auto-save on local drive"
+  (let ((buffer-name)
+	(limit 0))
+    
+    (if buffer-file-name
+	(setq buffer-name buffer-file-name)
+      (setq buffer-name (buffer-name)))
+
+    (while (string-match "[/\\%:]" buffer-name limit)
+      (let* ((character (aref buffer-name (match-beginning 0)))
+	     (replacement
+	      (cond ((eq character ?%) "%%")
+		    ((eq character ?/) "%+")
+		    ((eq character ?:) "%~")
+		    ((eq character ?\\) "%-"))))
+	(setq buffer-name (replace-match replacement t t buffer-name))
+	(setq limit (1+ (match-end 0)))))
+    ;; Generate the file name.
+
+    (if buffer-file-name
+	(concat "C:/TEMP/autosave/"
+		"#"
+		buffer-name
+		"#")
+      (expand-file-name
+       (format "#%s#%s#" buffer-name (make-temp-name "")) "C:/TEMP/autosave/")
+      )))
+
+; Only use this at work
+; (if I-am-at-work
+;     (fset 'make-auto-save-file-name 'local-make-auto-save-file-name))
+
+(defun praise-emacs ()
+  (interactive)
+  (message "Basking in the glory of your praise...")
+  (sleep-for 1)
+  (message "Basking in the glory of your praise...Done."))
+
+(defun fortune ()
+  "Famous unix fortune teller."
+  (shell-command-to-string "/usr/games/fortune"))
+
+(defun my-kill-line ()
+  "Iain's hack to make kill-line work even when you're in the middle of one."
+  (interactive)
+  (beginning-of-line)
+  (call-interactively 'kill-line))
+
+
+(message "Done defuns")
+
+
+;;; keymapping
+;; I'm allowed to bind: C-c [letter], [f5]-[f9]
+
+(global-set-key "\C-cg" 'goto-line)
+
+;; Return => newline-and-indent
+(global-unset-key "\C-m")
+(global-set-key "\C-m" 'newline-and-indent)
+
+;; Make delete do what I expect
+;? Do I still need this?
+(global-unset-key [delete])
+(global-set-key [delete] 'delete-char)
+
+;; C-k deletes whole line
+(global-unset-key "\C-k")
+(global-set-key "\C-k" 'my-kill-line)
+
+;; In Emacs 21, home and end go to beginning and end of line. This is
+;; clearly the Wrong Thing.
+(if I-am-emacs-21
+    (progn ()
+	   (global-unset-key [home])
+	   (global-set-key [home] 'beginning-of-buffer)
+	   (global-unset-key [end])
+	   (global-set-key [end] 'end-of-buffer)
+	   ))
+
+(if I-am-win32
+    (progn     ; Pointy-clinky dialog box to open files from the menus
+      (if (locate-library "dlgopen")
+	  (progn
+	    (autoload 'dlgopen-open-files "dlgopen"
+	      "Use dialog box as file selector" t)
+	    (define-key global-map [menu-bar files open-file]
+	      '("Open File..." . dlgopen-open-files))))
+
+      ; Use an X style font menu instead of the Windows dialog
+      (setq w32-use-w32-font-dialog nil)))
+
+(message "Done keymapping")
+
+
+(message "Setting up display")
+
+;;; Display hacks
+;;; This actually works, except of course the frame has already been created
+(setq default-x-frame-alist '((top . 20) (left . 140)
+			    (width . 90) (height . 60)))
+;;; So lets just force the current frame to the right size!
+(set-frame-size (selected-frame) 100 50)
+
+(message "Display Done")
+
+;; fancier buffer menu
+(setq buffers-menu-max-size nil) ; Don't think this is needed with msb
+(msb-mode 1)
+
+;; Prettier unique buffer names.
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+
+;; Stop the mouse cursor getting in the way. This is great.
+(if 'window-system
+    (mouse-avoidance-mode 'cat-and-mouse))
+
+;; Change the cursor colour in Ovwrt mode
+(defun ins-cursor-set ()
+  "Set cursor colour according to insert mode"
+  (set-cursor-color
+   (if overwrite-mode
+       "red"
+     "black")))
+
+(if I-am-emacs-21
+    (blink-cursor-mode -1))
+
+(add-hook 'post-command-hook 'ins-cursor-set)
+
+(setq frame-title-format "%b")
+(setq  icon-title-format "%b")
+
+(if I-am-emacs-21
+    (progn
+      (autoload 'zone-when-idle "zone")
+      (zone-when-idle 60)))
+
+;; want to reduce the amount of white space in the mode-line
+(setq default-mode-line-format
+      '("-"
+	mode-line-mule-info
+	mode-line-modified
+	" "
+	mode-line-buffer-identification
+	" "
+	global-mode-string
+	"%[("
+	mode-name
+	mode-line-process
+	minor-mode-alist
+	"%n"
+	")%]-"
+	(line-number-mode "L%l-")
+	(column-number-mode "C%c-")
+	(which-func-mode ("" which-func-format))
+	"-%-"))
+
+;; Let's shrink the minor-mode-alist down to size.
+(setcdr (assq 'abbrev-mode minor-mode-alist) '(" Ab"))
+(setcdr (assq 'auto-fill-function minor-mode-alist) '(" Fl"))
+
+;; Not added until the relevant mode is loaded.
+(setq minor-mode-alist (cons '(compilation-in-progress nil)
+				 minor-mode-alist))
+
+;; Uses a separate variable. Isn't that nice?
+(setq eldoc-minor-mode-string nil
+      highlight-changes-passive-string nil)
+
+;; (display-time) is needed for appt to display in the mode-line, but
+;; we don't want the time taking up precious space.
+(setq display-time-24hr-format t
+      display-time-interval    20
+      display-time-format "")
+(display-time)
+
+;; Displays current function() in programming modes. 
+(setq which-func-modes t
+      which-func-format '("[" which-func-current "]-"))
+(which-func-mode)
+
+;; Reduce white space
+(setq-default mode-line-buffer-identification '("%b"))
+
+;; Does exactly what it says on the tin
+(resize-minibuffer-mode t)
+
+;; Make fill do the Right Thing with full-stops.
+(setq sentence-end-double-space nil)
+
+;; Highlights region _all_ the time. Slightly buggy...
+(transient-mark-mode t)
+(delete-selection-mode 1)
+
+;; Shut off annoying beep
+(if I-am-win32
+    (set-message-beep 'silent))
+
+;; Groovy things with matching parentheses
+(show-paren-mode t)
+
+;; Tweaks to scrolling behaviour. Still a bit odd.
+(setq scroll-preserve-screen-position t
+      scroll-conservatively 5
+      scroll-step 1
+      next-line-add-newlines nil)
+(set-scroll-bar-mode 'right)
+
+;; Make pound signs work
+(set-language-environment "Latin-1")
+(setq unibyte-display-via-language-environment t)
+
+;; Allow narrowing.
+(put 'narrow-to-region 'disabled nil)
+
+(message "Done Display Hacks")
+
+
+;;; Minor modes
+;; Highlight changes.
+;? Timer-based M-x highlight-changes-rotate-face
+(setq highlight-changes-colours '("red1" "red2" "red3" "red4"))
+(global-highlight-changes 'passive)
+
+;; Problem is, this only appears to work when h-c-m is 'active. And it
+;; sort of clashes with font-lock then.
+(add-hook 'highlight-changes-enable-hook
+	  '(lambda ()
+	     (add-hook 
+	      'local-write-file-hooks 'highlight-changes-rotate-faces)))
+
+(add-hook 'highlight-changes-disable-hook
+	  '(lambda ()
+	     (remove-hook 
+	      'local-write-file-hooks 'highlight-changes-rotate-faces)))
+
+;; Expands a time-stamp line
+(setq time-stamp-format "%02H:%02M on %:a, %:d %:b %:y by %u")
+(add-hook 'write-file-hooks 'time-stamp)
+
+;; HTMLize
+;? Buggy.
+(if (locate-library "htmlize")
+    (progn
+      (setq htmlize-output-type 'font
+	    htmlize-use-rgb-map nil)	;? (if (not I-am-win32 t)?
+      (autoload 'htmlize-buffer "htmlize" "Convert buffer to HTML" t)
+      (autoload 'htmlize-file "htmlize" "Convert file to HTML and save" t)
+      (autoload 'htmlize-many-files "htmlize" "Convert files to HTML" t)
+      (autoload 'htmlize-many-files-dired
+	"htmlize" "Convert files to HTML" t)))
+
+;; Auto-Insert
+(auto-insert-mode 1)
+(setq auto-insert-alist ())		;? html-helper
+
+;; Speedbar (not that I use it much)
+(add-hook 'speedbar-load-hook
+	  '(lambda ()
+	     (setq speedbar-update-speed 5
+		   speedbar-track-mouse-flag t
+		   speedbar-activity-change-focus t)))
+
+;; Bow down before font-lock
+(add-hook 'font-lock-mode-hook
+	  '(lambda ()
+	     (setq font-lock-maximum-decoration  t
+		   font-lock-verbose             t
+		   font-lock-support-mode
+		                   (if I-am-emacs-21
+				       'jit-lock-mode
+				     'lazy-lock-mode)
+		   lazy-lock-defer-on-scrolling  nil
+		   lazy-lock-defer-contextually  t
+		   lazy-lock-stealth-verbose     t
+		   lazy-lock-stealth-lines       50
+		   lazy-lock-stealth-time        3)))
+(global-font-lock-mode t)
+
+;; And the background colour
+;;(set-background-color "darkgreen")
+
+
+
+
+;;; Major non-file-related modes
+;; TRAMP
+(if (locate-library "tramp")
+    (progn
+      (load-library "tramp")
+      (if I-am-win32
+	  (setq tramp-methods
+		(cons '("pscp"
+			(tramp-connection-function  tramp-open-connection-rsh)
+			(tramp-rsh-program          "plink")
+			(tramp-rcp-program          "pscp")
+			(tramp-remote-sh            "/bin/sh")
+			(tramp-rsh-args     	    ("-ssh" "-v"))
+			(tramp-rcp-args     	    nil)
+			(tramp-rcp-keep-date-arg    "-p")
+			(tramp-su-program           nil)
+			(tramp-su-args              nil)
+			(tramp-encoding-command     nil)
+			(tramp-decoding-command     nil)
+			(tramp-encoding-function    nil)
+			(tramp-decoding-function    nil)
+			(tramp-telnet-program       nil))
+		      tramp-methods)
+		tramp-default-method "pscp")
+	(setq tramp-default-method "scp"))
+      ))
+
+;; Calendar / Diary stuff.
+(setq calendar-latitude      53.42
+      calendar-longitude     -2.92
+      calendar-location-name "Liverpool")
+
+(setq european-calendar-style t
+      mark-holidays-in-calendar t
+      mark-diary-entries-in-calendar t
+      all-christian-calendar-holidays t
+      all-hebrew-calendar-holidays t
+      all-islamic-calendar-holidays t
+
+      appt-audible nil
+      appt-display-duration 10
+      appt-message-warning-time 8
+      appt-display-interval 4)
+
+(add-hook 'diary-hook 'appt-make-list)	;? When does this happen?
+(add-hook 'diary-display-hook 'fancy-diary-display)
+(add-hook 'list-diary-entries-hook
+	  '(lambda ()
+	     (sort-diary-entries)
+	     (include-other-diary-files)))
+(add-hook 'mark-diary-entries-hook 'mark-included-diary-files)
+
+(if (locate-library "todo-mode")
+    (progn
+      (autoload 'todo-mode "todo-mode" "Major mode for editing TODO lists." t)
+      (autoload 'todo-show "todo-mode" "Show TODO items." t)
+      (autoload 'todo-insert-item "todo-mode" "Add TODO item." t)
+      
+      (setq todo-print-function 'ps-print-buffer
+	    todo-save-top-priorities-too nil
+	    todo-time-string-format "[%02d/%02m/%:y]"
+	    todo-entry-prefix-function 'my-todo-entry-timestamp-initials)
+
+      (defun my-todo-entry-timestamp-initials ()
+	(let ((time-stamp-format todo-time-string-format))
+	  (concat (time-stamp-string) " ")))))
+
+;; Font locking info mode (from Andy.Ling@quantel.com)
+(defvar info-font-lock-keywords
+  (list
+   '("^\\* [^:]+:+" . font-lock-function-name-face)
+   '("\\*[Nn]ote\\b[^:]+:+" . font-lock-reference-face)
+   '("  \\(Next\\|Prev\\|Up\\):" . font-lock-reference-face))
+  "Additional expressions to highlight in Info mode")
+
+(add-hook 'Info-mode-hook
+	  (lambda ()
+	    (make-local-variable 'font-lock-defaults)
+	    (setq
+;	          font-lock-defaults '(info-font-lock-keywords nil t)
+		  case-fold-search nil)))
+
+;; ediff
+(setq diff-switches               "-u"
+      ediff-custom-diff-options   "-U3"
+      ediff-split-window-function 'split-window-horizontally
+      ediff-window-setup-function 'ediff-setup-windows-plain
+      ediff-use-last-dir          t)
+
+(if I-am-win32
+    (setq ediff-diff-program
+	  (concat cygnus-directory
+		  "bin/diff.exe")))
+
+(add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+
+(add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+
+(add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)
+;? Also need to find a way to restore it all on
+;  resume. This stuff is all far from bullet-proof.
+
+;; ispell
+(if (and I-am-win32 I-am-at-work)
+    (setq ispell-program-name
+	          (concat cygnus-directory "bin/ispell.exe") )
+
+(flyspell-default-dictionary "english")
+
+;; Compile mode. Or rather, comint, compile and mode-compile.
+(setq compilation-scroll-output t
+      compile-auto-highlight    t
+      compilation-window-height 9)
+
+(if (locate-library "mode-compile")
+    (progn
+      (autoload 'mode-compile "mode-compile"
+	"Compile file in current buffer" t) 
+      (if I-am-win32
+	  (setq mode-compile-exe-file-ext ".exe"))))
+
+;?
+;(setq binary-process-input t)
+;; For the interactive shell
+;(setq explicit-shell-file-name "d:/bin/bash.exe")
+;; For subprocesses invoked via the shell (e.g., "shell -c command")
+;(setq shell-file-name "c:/bin/sh.exe")
+;(setq win32-quote-process-args t)
+;(setq shell-command-switch "-c")
+
+;; Version control library. Splendid.
+(setq vc-command-messages t
+      vc-initial-comment t)
+
+;; Work around gdb ^M problems
+(if I-am-win32
+    (add-hook 'gdb-mode-hook
+	      '(lambda ()
+		 (set-buffer-process-coding-system 'undecided 'undecided))))
+
+;; Elisp list
+(if (locate-library "ell")
+    (progn
+      (setq ell-locate t
+	    ell-goto-addr t)
+      (cond
+       (I-am-at-work			;? And for home?
+	  (setq ell-proxy-host "proxy.gpt.co.uk"
+		ell-proxy-port 8080)))
+      (autoload 'ell-packages "ell" "Display the Emacs lisp list" t)))
+
+;; WoMan - WithOut Man
+(if (locate-library "woman")
+    (progn
+      (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
+      (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
+      (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)
+
+      (if I-am-win32
+	  (setq woman-manpath (list (concat cygnus-directory "usr/man/")
+				    (concat cygnus-directory "usr/local/man/")
+				    )))
+
+      (setq woman-imenu-title "Imenu"
+	    woman-imenu t
+	    woman-use-own-frame nil)
+      
+      (add-hook 'dired-mode-hook
+		(lambda ()
+		  (define-key dired-mode-map "W" 'woman-dired-find-file)))))
+
+;; Dired stuff
+(add-hook 'dired-mode-hook
+		(lambda ()
+		  (setq truncate-lines t)
+		  (auto-show-mode 1)))
+
+;; W3 + browse URL
+;? Variable to customise the buffer it appears in?
+;? Needs work for -home
+(if (locate-library "w3-auto")
+    (progn
+      (require 'w3-auto)
+      (setq w3-do-incremental-display   t
+	    w3-user-fonts-take-precedence t
+	    url-be-asynchronous         nil
+	    url-cookie-confirmation     t
+	    url-privacy-level 'paranoid)
+
+      (setq w3-default-homepage
+	    "http://www-comms-cov.intranet.marconi.com/home/"
+	    url-proxy-services
+	    '(("http" ."proxy.gpt.co.uk:8080")
+	      ("ftp" . "proxy.gpt.co.uk:8080")
+	      ("no_proxy" .
+    "^.*\\(marconicomms\.com\\)\\|\\(marconi\.com\\)\\|\\(gpt\.co\.uk\\)")))
+      
+      (add-hook 'url-local-hook 'url-setup-privacy-info)
+      (add-hook 'w3-mode-hook
+		'(lambda ()
+		   (auto-show-mode 1))))) ; Horizontal scrolling
+
+;; Vcard - for gnus MIME
+(if (locate-library "vcard")
+    (setq vcard-pretty-print-function 'vcard-format-sample-string))
+
+;; Note: There's some sort of incompatibility between the current
+;; versions of Gnus+mm and vcard.el. The following patch to vcard.el
+;; is a quick-and-very-dirty fix:
+
+; --- c:/TEMP/vcard.el	Wed Jun 14 11:06:29 2000
+; +++ c:/TEMP/vcard.el171pvW	Wed Jun 14 11:06:29 2000
+; @@ -168,8 +168,6 @@
+;         (setq vcard (vcard-parse-string vcard)))
+;    (funcall vcard-pretty-print-function vcard))
+; 
+; +fset 'vcard-format-string 'vcard-pretty-print)
+; +
+;  
+;  ;;; Parsing routines
+
+;; Gnus, message and smtpmail
+;? group refresh hook: cursor at top line. <- Hard
+;? Setting gnus-activate-level to < level of groups on news.gpt will
+;? stop gnus querying them automagically.
+;? A few defuns to cite region - "> ", "| ", "    ".
+(setq auto-mode-alist
+      (append (list (cons "\\.SCORE\\'" 'gnus-score-mode)
+		    (cons "\\.ADAPT\\'" 'gnus-score-mode))
+	      auto-mode-alist))
+
+(add-hook 'gnus-load-hook
+          '(lambda ()
+             (if I-am-at-work		; Specifics first
+                 (setq gnus-select-method '(nntp "cvup176.gpt.co.uk")
+                       gnus-secondary-select-methods '((nntp "news.gpt.co.uk")
+                                                       (nntp "news.fore.com"))
+		       gnus-home-score-file
+		           '(
+			     ("^local"   "local.SCORE")
+			     ("^test$"   "local.SCORE")
+			     ("\\.emacs" "emacs.SCORE")
+			     ("\\.perl"  "perl.SCORE")
+			     ("\\.pgp"   "pgp.SCORE")
+			     )
+		       gnus-home-adapt-file
+		           '(
+			     ("^local"   "local.ADAPT")
+			     ("^test$"   "local.ADAPT")
+			     ("\\.emacs" "emacs.ADAPT")
+			     ("\\.perl"  "perl.ADAPT")
+			     ("\\.pgp"   "pgp.ADAPT")
+			     )))
+
+	     (add-hook 'gnus-select-article-hook 'gnus-summary-show-thread)
+
+	     (add-hook 'gnus-group-mode-hook
+			  '(lambda ()
+			     (auto-show-mode 1)))
+	     (add-hook 'gnus-summary-mode-hook
+			  '(lambda ()
+			     (auto-show-mode 1)))
+	     (add-hook 'gnus-article-mode-hook
+			  '(lambda ()
+			     (auto-show-mode 1))) ;? May be borken.
+	     
+	     (put 'gnus-group-exit 'disabled t)	; I keep frobbing it
+
+	     ;; Quite a list. Make it slightly saner...
+	     ;; First - startup
+             (setq gnus-check-new-newsgroups 'ask-server
+                   gnus-read-active-file     nil
+		   gnus-subscribe-newsgroup-method
+		       'gnus-subscribe-randomly
+                   gnus-use-dribble-file     t
+                   gnus-always-read-dribble-file t
+		   gnus-asynchronous t
+		   gnus-prefetched-article-deletion-strategy '(read)
+                   ;; Scoring
+                   gnus-save-score t
+                   gnus-use-adaptive-scoring nil
+                   gnus-summary-zcore-fuzz   10
+		   gnus-score-interactive-default-score 100
+		   ;; Posting
+		   gnus-post-method 'current
+                   gnus-extract-address-components
+		       'mail-extract-address-components
+		   ;; Archiving
+		   gnus-message-archive-group
+		       '((if (message-news-p)
+			     "sent-news"
+			   "sent-mail"))
+		   gnus-message-archive-method
+		       '(nnfolder "archive"
+				  (nnfolder-inhibit-expiry t)
+				  (nnfolder-active-file "~/News/sent/active")
+				  (nnfolder-directory "~/News/sent/"))
+		   ;; Behaviour
+                   gnus-large-newsgroup     300
+                   gnus-auto-select-first   t
+                   gnus-auto-select-next    'quietly
+                   gnus-interactive-exit    nil
+                   gnus-interactive-catchup nil
+		   ;; Appearance
+		   gnus-thread-hide-subtree t
+		   gnus-summary-make-fake-root 'empty
+                   gnus-use-full-window     nil
+		   gnus-break-pages         nil
+                   gnus-thread-indent-level 2
+                   gnus-group-uncollapsed-levels 1
+                   gnus-group-line-format "%M%S%p%P%5y: %(%-25,25c%) %D\n"
+                   gnus-group-mode-line-format "Gnus: %S"
+                   gnus-summary-line-format
+                                     "%U%R%z%I%(%[%4L: %-17,17n%]%) %s\n"
+                   gnus-summary-mode-line-format "Gnus: %p %Z"
+                   gnus-article-mode-line-format "Gnus: [%z:%A] %S"
+                   )))
+
+(add-hook 'message-mode-hook
+          '(lambda ()
+             (setq message-post-method '(nntp "")
+                   message-cite-function
+                           'message-cite-original-without-signature
+                   message-kill-buffer-on-exit t
+;		   message-signature 'sig-generate
+;; Instead, bind C-c C-w directly?
+                   message-send-mail-function 'smtpmail-send-it)
+	     
+             (flyspell-mode 1)
+
+	     (add-hook 'message-sent-hook
+		       '(lambda ()
+			  (gnus-score-followup-thread 1)))))
+
+(setq mm-discouraged-alternatives '("text/html" "text/richtext"))
+
+(if I-am-at-work			;? Fix up for -home
+    (setq smtpmail-default-smtp-server "cvhp152"
+          smtpmail-local-domain "marconicomms.com"))
+
+;; The rest of this rubbish is for gnus-user-agent.
+;; I don't like (require)ing things.
+(if (not I-am-emacs-21)
+    (progn ()
+	   (autoload 'gnus-inews-add-send-actions "gnus-msg")
+	   (autoload 'gnus-configure-posting-styles "gnus-msg")
+	   (autoload 'gnus-setup-message "gnus-msg")
+
+	   (defun gnus-mail (&rest args)
+"Start editing a mail message to be sent gnus style.
+  Use message mode as the underlying agent."
+	     (unless (and (fboundp 'gnus-alive-p) (gnus-alive-p))
+	       (gnus-no-server)
+	       (gnus-group-suspend))
+	     (gnus-setup-message 'message (apply 'message-mail args)))
+
+	   (define-mail-user-agent 'gnus-user-agent
+	     'gnus-mail 'message-send-and-exit
+	     'message-kill-buffer 'message-send-hook)
+
+	   (setq mail-user-agent 'gnus-user-agent)
+	   ))
+
+(message "Done gnus")
+
+
+;;; File modes
+;; New modes - add (imenu-add-to-menubar "Imenu") and (turn-on-auto-fill)
+;;? Or should I put (turn-on-auto-fill) in find-files-hook?
+
+;; cc-mode
+(add-hook 'c-mode-common-hook
+	  '(lambda ()
+	     (defconst stdbgl-c-style
+	       '((c-tab-always-indent . nil)
+		 (c-comment-only-line-offset 0)
+		 (c-basic-offset . 4)
+;		 (c-echo-syntactic-information-p . t)
+		 (c-electric-pound-behavior . (alignleft))
+		 (c-hanging-comment-ender-p . nil)
+		 (c-comment-continuation-stars . "* ")
+		 (c-recognize-knr-p . nil)
+		 (c-cleanup-list . (empty-defun-braces
+				    defun-close-semi
+				    list-close-comma
+				    scope-operator))
+		 (c-hanging-braces-alist . ((brace-list-open)
+					    (brace-list-close)
+					    (block-close . c-snug-do-while)
+					    (substatement-open before after)))
+		 (c-hanging-colons-alist . ((member-init-intro after)
+					    (access-label after)
+					    (inher-intro after)
+					    (case-label after)
+					    (label after)))
+		 (c-offsets-alist . ((arglist-close . c-lineup-arglist)
+				     (substatement-open . 0)
+				     (statement-cont . ++)
+				     (arglist-cont-nonempty . ++)
+;				     (ansi-funcdecl-cont . 0)
+				     (case-label . +)
+				     (block-open . 0)))
+		 )
+	       "Standard BGL C style")
+
+	     (c-add-style "Standard BGL C style" stdbgl-c-style t)
+	     (turn-on-auto-fill)
+	     (c-toggle-auto-state 1)
+	     (imenu-add-to-menubar "Imenu")
+	     (if I-am-emacs-21
+		 (cwarn-mode))
+	     ))
+
+;; tcl
+(add-hook 'tcl-mode-hook
+	  '(lambda ()
+	     (turn-on-auto-fill)
+	     (imenu-add-to-menubar "Imenu")
+	     ))
+
+;; CPerl-mode
+(setq interpreter-mode-alist (append (list (cons "perl" 'cperl-mode)
+					   (cons "perl5" 'cperl-mode)
+					   (cons "miniperl" 'cperl-mode))
+				     interpreter-mode-alist))
+
+(setq auto-mode-alist (append (list 
+			       (cons "\\.\\([pP][Llm]\\|al\\)\\'" 'cperl-mode)
+			       (cons "\\.plx\\'" 'cperl-mode)
+			       (cons "\\.cgi\\'" 'cperl-mode)
+			       (cons "\\.pod\\'" 'cperl-mode)
+			       (cons "/home/iain/perl/.*" 'cperl-mode))
+			      auto-mode-alist))
+
+(setq cperl-info-on-command-no-prompt nil
+      cperl-clobber-lisp-bindings     nil
+      cperl-electric-keywords         t) ; cperl-mode tries to load
+					 ; abbrev before running the hook
+
+(add-hook 'cperl-mode-hook
+	  '(lambda ()
+	     (cperl-set-style "BSD")
+	     (setq cperl-hairy                                 t
+	           cperl-merge-trailing-else                   nil
+	           cperl-tab-always-indent                     nil
+	           cperl-auto-newline                          t
+	           cperl-electric-lbrace-space                 t
+	           cperl-electric-linefeed                     t
+	           cperl-electric-parens                       t
+	           cperl-lazy-help-time                        1
+	           cperl-extra-newline-before-brace            t
+	           cperl-extra-newline-before-brace-multiline  t
+	           cperl-max-help-size                         50)
+	     (turn-on-auto-fill)
+	     (imenu-add-to-menubar "Imenu")
+	     (if (not cperl-lazy-installed)	; Only toggle if it's
+		 (cperl-toggle-autohelp))	; not already set
+	     (if (locate-library "mode-compile")
+		 (define-key cperl-mode-map "\C-cr" 'mode-compile))
+	     (define-key cperl-mode-map "\C-cc" 'cperl-check-syntax)
+	     (define-key cperl-mode-map "\C-j"  'cperl-linefeed)
+	     ))
+
+
+;; Elisp mode
+(setq auto-mode-alist
+      (append (list (cons "\\.emacs\\'" 'emacs-lisp-mode))
+	      auto-mode-alist))
+
+(add-hook 'emacs-lisp-mode-hook
+	  '(lambda ()
+	     (eldoc-mode t)
+	     (turn-on-auto-fill)
+	     (imenu-add-to-menubar "Imenu")))
+
+(setq tex-default-mode 'latex-mode)	;? Doesn't work.
+(add-hook 'tex-mode-hook
+	  '(lambda ()
+	     (turn-on-auto-fill)
+	     (setq tex-dvi-print-command "dvips"
+		   tex-dvi-view-command 
+		   	(if (eq window-system 'x)
+			    "xdvi"
+			  "dvi2tty * | cat -s"))))
+
+(add-hook 'latex-mode-hook
+	  '(lambda ()
+	     (imenu-add-to-menubar "Imenu")))
+
+;; html-helper
+;;? See skeleton-insert & auto-insert-alist
+;? if new file && /\.hitop$/
+;	     (if (eq 0 (string-match "/home/iain/public_html"
+;				     buffer-file-name))
+;		 (insert "<SET NAME=\"TITLE\"  VALUE=\"Title\">\n"
+;			 "<SET NAME=\"BANNER\" VALUE=\"Banner\">\n\n"
+;			 "<DEF NAME=\"MAIN\">\n\n</DEF>\n\n"
+;			 "<FILE SRC=\"${RELPATH}template.hitop\">\n"))
+
+(if (locate-library "html-helper-mode")
+    (progn
+      (autoload 'html-helper-mode "html-helper-mode" "Enhanced HTML mode" t)
+
+      (setq auto-mode-alist
+	    (append (list (cons "\\.s?html?\\'"  'html-helper-mode)
+			  (cons "\\.hitop\\'" 'html-helper-mode)
+			  (cons "\\.live\\'" 'html-helper-mode)
+			  ;;? What about a hitop-mode?
+			  (cons "\\.ht\\'"    'html-helper-mode))
+		    auto-mode-alist)
+	    html-helper-mode-uses-visual-basic nil
+	    html-helper-address-string user-mail-address)
+
+      (add-hook 'html-helper-load-hook
+		'(lambda ()
+		   (if (locate-library "html-helper-imenu")
+		       (progn
+			 (autoload 'html-helper-imenu-setup
+			   "html-helper-imenu")
+			 (setq html-helper-imenu-title "Imenu")
+			 (html-helper-imenu-setup)))
+
+		   (setq tempo-interactive t
+			 html-helper-build-new-buffer nil)
+
+		   (defun my-html-helper-timestamp ()
+		     (let ((time (current-time-string)))
+		       (insert (substring time 4 11)
+			       (substring time -4) " ")))
+		   (setq html-helper-timestamp-hook 'my-html-helper-timestamp)
+		   ))
+
+      (add-hook 'html-helper-mode-hook
+		'(lambda ()
+		   (setq html-helper-basic-offset 4)
+		   
+		   (set
+		    (make-local-variable 'time-stamp-format)
+		    "%:d-%:m-%:y")
+
+		   ;;? Add hitop tags to html-helper-types-to-install?
+		   ;;? This looks quite hairy
+		   (turn-on-auto-fill)))))
+
+(add-hook 'text-mode-hook
+	  '(lambda ()
+	     (turn-on-auto-fill)))
+
+(add-hook 'texinfo-mode-hook
+	  '(lambda ()
+	     (imenu-add-to-menubar "Imenu")))
+
+;; Batch file mode
+(setq auto-mode-alist
+      (append (list (cons "\\.cmd\\'" 'bat-generic-mode)
+		    (cons "\\.nt\\'" 'bat-generic-mode))
+	      auto-mode-alist))
+
+(add-hook 'snmp-common-mode-hook
+	  '(lambda ()
+	     (make-variable-buffer-local 'make-backup-files)
+	     (setq make-backup-files nil)
+	     (imenu-add-to-menubar "Imenu")))
+
+;;; Do This Now
+;; Nicer. I don't need the startup message now.
+;? We can probably use cookie1.el to display a fortune file.
+
+(if I-am-win32
+    (diary))
+(enlarge-window 21)
+
+;; Set up dimensions
+;;(setq default-frame-alist
+;;      '(
+;;; Define here the default geometry or via ~/.Xdefaults.
+;;	(width . 120) (height . 60)
+;;	(cursor-color . "red")
+;;	(cursor-type . box)
+;;	(foreground-color . "wheat")
+;;	(background-color . "dark slate gray")))
+
+
+(message "Done .emacs")
+;))		; Close auto-compilation magic. This appears to be a
+		; little flaky under NT.
+
+(setq debug-on-error nil)
