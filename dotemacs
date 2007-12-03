@@ -685,22 +685,12 @@
 ;
 ; I want to be able to search straight from the compile mode window
 ;
-; If the compile+/- libs are available I'll require them instead (they
-; bring in compile anyway)
-;
-; I commmented out the setq compilation-error-regexp-alist-alist in
-; compile+ as it seems confused becuase compile.el doesn't have it
+; I've tried doing stuff with compile-/compile+ but never got it to work.
 
 (if (locate-library "compile")
     (progn
-;;       (if (and
-;; 	   (locate-library "compile-") (locate-library "compile+"))
-;; 	  (progn
-;; 	    (message "Using enhanced compile libraries")
-;; 	    (require 'compile-)
-;; 	    (require 'compile)
-;; 	    (require 'compile+))
-	(load-library "compile")
+      (autoload 'compile "compile")
+      (autoload 'recompile "compile")
       
       ; ensure the default compile command is sensible
       (setq compile-command (format "cd %s && make -k" current-project-root))
@@ -737,6 +727,8 @@
     (autoload 'git-blame-mode "git-blame"
       "Minor mode for incremental blame for Git." t))
 
+(message "Done GIT hooks")
+
 ;; WoMan - WithOut Man
 ;
 ; This is mostly handy if you are running on window and you don't have
@@ -748,7 +740,8 @@
 	(progn
 	  (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
 	  (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
-	  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t))))
+	  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)))
+  (message "Using man for man pages"))
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
@@ -761,6 +754,8 @@
 ; I'll define all my basic prefs in my-c-style from which the others
 ; can inherit depending on what I'm working on.
 ;
+
+(message "Starting cc-mode customisation")
 
 (locate-library "cc-mode")
 ; Need cc-style
@@ -859,6 +854,7 @@
 (setq auto-mode-alist (cons '(".*binutils.*\\.[ch]$" . gnu-c-mode)
                        auto-mode-alist))
 
+(message "Done with cc-mode customisation")
 
 ;;
 ;; End of c-mode customisations
@@ -1021,10 +1017,11 @@
       (add-hook 'php-mode-user-hook 'turn-on-font-lock)))
 
 ;; Python Mode
+;
+; TODO - automode alist
 (if (locate-library "python-mode")
     (progn
-      (load-library "python-mode")))
-
+      (autoload 'python-mode "python-mode")))
 
 (message "Done various programming modes")
 
@@ -1060,7 +1057,7 @@
 
 (if (locate-library "bs")
     (progn
-      (load-library "bs")
+      (autoload 'bs-show "bs")
       (global-set-key (kbd "C-x b") 'bs-show)
 
 
@@ -1108,12 +1105,11 @@
 
 ;; bm.el
 ;
-(if (locate-library "")
+(if (locate-library "bm")
     (progn
       (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
       (autoload 'bm-next     "bm" "Goto bookmark."                     t)
-      (autoload 'bm-previous "bm" "Goto previous bookmark."
-	t)
+      (autoload 'bm-previous "bm" "Goto previous bookmark." t)
 
       (global-set-key (kbd "<C-f2>") 'bm-toggle)
       (global-set-key (kbd "<f2>")   'bm-next)
