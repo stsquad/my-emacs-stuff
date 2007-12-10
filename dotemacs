@@ -21,14 +21,16 @@
 ;; Find out about my environment
 ;; Tweak a few paths
 
+; This is ugly, but at the current release rate we shouldn't have more
+; than 3 or 4 potential emacsen on a box
 (defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
 (defvar I-am-emacs-22 (string-match "GNU Emacs 22" (emacs-version)))
+(defvar I-am-emacs-23 (string-match "GNU Emacs 23" (emacs-version)))
 
-(defvar I-am-emacs-21+ (or I-am-emacs-21 I-am-emacs-22))
+(defvar I-am-emacs-21+ (or I-am-emacs-21 I-am-emacs-22 I-am-emacs-23))
+(defvar I-am-emacs-22+ (or I-am-emacs-22 I-am-emacs-23))
 
 (defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
-
-(defvar I-am-emacs-21+ (or I-am-emacs-21 I-am-emacs-22))
 
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
@@ -469,7 +471,7 @@
 ;; Highlight changes.
 ;? Timer-based M-x highlight-changes-rotate-face
 
-(if I-am-emacs-22
+(if I-am-emacs-22+
     (setq highlight-changes-colors '("red1" "red2" "red3" "red4"))
   (setq highlight-changes-colours '("red1" "red2" "red3" "red4")))
 
@@ -507,10 +509,7 @@
 	  '(lambda ()
 	     (setq font-lock-maximum-decoration  t
 		   font-lock-verbose             t
-		   font-lock-support-mode
-		                   (if I-am-emacs-21+
-				       'jit-lock-mode
-				     'lazy-lock-mode)
+		   font-lock-support-mode        'jit-lock-mode
 		   lazy-lock-defer-on-scrolling  nil
 		   lazy-lock-defer-contextually  t
 		   lazy-lock-stealth-verbose     t
@@ -1191,7 +1190,7 @@
 ;;
 ;; Eye-candy! - hmm currently breaks on startup...
 
-(if I-am-emacs-22
+(if I-am-emacs-22+
     (if (locate-library "color-theme")
 	(progn
 	  (load-library "color-theme")
