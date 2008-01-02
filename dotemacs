@@ -300,6 +300,11 @@
 	   (global-unset-key [end])
 	   (global-set-key [end] 'end-of-buffer)))
 
+;; Apple Keyboard Mapping
+; When I'm running from the Mac the backspace key actually sends a
+; <deletechar> instead which is very off-putting
+;(global-set-key (kbd "<deletechar>") 'delete-backward-char)
+
 (message "Done keymapping")
 
 ;;; Backup settings
