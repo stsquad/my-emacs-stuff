@@ -1023,7 +1023,9 @@
 	(progn
 	  (load-library "color-theme")
 	  (if I-am-in-console
-	      (color-theme-dark-laptop)))))
+	      (progn
+		(color-theme-initialize)
+		(color-theme-euphoria))))))
 
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
