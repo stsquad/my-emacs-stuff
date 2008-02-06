@@ -238,22 +238,32 @@
 ;(frob-project-root "/home/alexjb/src/")
 ;(frob-project-root "/export/dynamite/SICRectifyFix/dynamite07/")
 
+(defvar have-set-transitive-compile-command-once nil
+  "Have we ever defined a transitive compile command")
+
 (defun set-transitive-compile-command ()
   "Set the compile command for dynamite"
   (interactive)
   (setq compile-command
 	(format "cd %s/%s && make %s"
 		(frob-project-root current-project-root)
-		current-project current-build-flags)))
+		current-project current-build-flags))
+  (setq have-set-transitive-compile-command-once "yes"))
 
-; check we are correctly set
+;; transitive-compile
+;
+; This is our default compile command. We will want to set the compile
+; command if:
+;
+; 1. This is the first time we have tun this command
+; 2. We have changed into a new project root.
+
 (defun transitive-compile ()
-  "A special tranitive version of compile which attempts to set
+  "A special transitive version of compile which attempts to set
 the correct compile command"
   (interactive)
-  (if (check-buffer-for-new-project-root)
+  (if (or (check-buffer-for-new-project-root) (not have-set-transitive-compile-command-once))
       (set-transitive-compile-command))
-  (setq compilation-read-command t)
   (call-interactively 'compile))
 
 (message "defined compile hacks")
@@ -394,16 +404,6 @@ the correct compile command"
 (setq auto-mode-alist (cons '(".*dynamite.*Makefile*" .
                               transitive-makefile-mode)
                             auto-mode-alist))
-
-;
-; Having done all this we will still fail the first compile as our
-; project root has been set. I can frig this by reseting it to a bad
-; value (an 'orrible 'ack) or testing to see if dynamite in my path
-; and setting the compile command now!
-;
-
-(if (string-match "dynamite" (shell-command-to-string "pwd"))
-    (set-transitive-compile-command))
 
 ;
 ; switch-project
