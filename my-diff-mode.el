@@ -152,20 +152,30 @@ problem"
 
 ;; Patches and Diffs
 
-(setq auto-mode-alist (cons '("\\.diff\\'" . my-diff-mode)
+; We want to find files like
+;
+; 0001-Remove-old-pre-SIGNAL_MANAGER-code.patch
+; mypatch.patch
+; adiff.diff
+; .dotest/0001
+;
+; But not files like
+;  ~/.mozilla/firefox/adxbrp73.default/itsalltext/www.bennee.com.3022372z35.txt
+
+(setq auto-mode-alist (cons '("\\.diff$" . my-diff-mode)
 			    auto-mode-alist))
 
-(setq auto-mode-alist (cons '("\\.patch\\'" . my-diff-mode)
+(setq auto-mode-alist (cons '("\\.patch$" . my-diff-mode)
 			    auto-mode-alist))
 
 ;; Git Patches
 ;
 ; Auto set my-diff-mode for various forms of git patchs
 
-(setq auto-mode-alist (cons '("0.*.txt" . my-diff-mode)
-			    auto-mode-alist))
+;(setq auto-mode-alist (cons '("0.*\.txt" . my-diff-mode)
+;			    auto-mode-alist))
 
-(setq auto-mode-alist (cons '(".dotest/0.*" . my-diff-mode)
+(setq auto-mode-alist (cons '("\\.dotest/[0123456789][0123456789][0123456789][0123456789]" . my-diff-mode)
 			    auto-mode-alist))
 
 (message "my-diff-mode created")
