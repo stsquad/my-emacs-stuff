@@ -416,25 +416,6 @@ the correct compile command"
   (set-transitive-compile-command))
 
 
-;; my-search
-;
-; Same as my sc alias, but within emacs
-; (grep-find "find /export/dynamite/cr2787 -iname '*.[chS]' -or -iname '*.cc' -print0 | xargs -0 -e grep -n -e countBefore")
-;
-; Replaces the general purpose my-find so that if the buffer is a new
-; project root it will check that. If we are in a non file buffer
-; (i.e. *scratch* or mini-buffer) it will stick with current-project-root
-;
-
-(defun my-find (search)
-  (interactive "sSearch string:")
-  (grep-find (concat "find "
-                     (if buffer-file-name
-                         (extract-project-root buffer-file-name)
-                       (concat current-project-root))
-                     " \\( -iname '*.[chS]' -or -iname '*.cc' \\) -print0 | xargs -0 -e grep -n -e "
-                     search)))
-
 ;; my-cvs-conflict
 ;
 ; Defines my-dired-script which is a hacked version of find-dired

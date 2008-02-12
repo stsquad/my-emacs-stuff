@@ -61,11 +61,11 @@
   (interactive)
   (message "In my-c-mode-hook")
   (turn-on-auto-fill)
-  (local-set-key (kbd "<f5>") (lambda (search)
-				     (interactive "sSearch C files for:")
-				     (my-grep-find
-				      current-project-root
-				      find-c-files search)))
+
+  ; If I'm working with git-grep this won't be set
+  (if (bound-and-true-p find-c-files)
+      (set-my-find-files find-c-files))
+
   ; ensure tab width matches c-basic-offset
   (setq tab-width c-basic-offset)
   (if I-am-emacs-21+

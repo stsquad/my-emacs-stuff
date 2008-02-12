@@ -217,32 +217,61 @@
 ; presenting the results in a buffer that can be navigated in emacs. It uses
 ; the existing grep-find mechanics but extends it.
 ;
+; If the current project route contains a .git directory then we don't
+; need anything clever to sort through all our code. We can just ask
+; the repo
 
-(defun my-grep-find (root files search)
-  (grep-find (concat "find " root files " -print0 |  xargs -0 -e grep -n -e " search)))
+(if (file-exists-p (concat current-project-root "/.git"))
+    (progn
+      (message "Using git-grep for searches")
+      (setq grep-command "git-grep -n ")
 
-; define the find search strings (note excessive escapeage of ('s)
-(defvar find-c-files
-  (concat " \\( -iname '*.[chS]' -or -iname '*.cc' -or -iname '*.cpp' \\) ")
-  "Search string for C/C++ files")
+      (defun my-find (search)
+        "A search using git-grep"
+        (interactive "sSearch string:")
+        (cd current-project-root)
+        (let ((buffer (concat "*git-grep for " search "*" ))
+              (command (concat "git-grep -n " search)))
+          (shell-command command buffer)
+          (pop-to-buffer buffer)
+          (grep-mode))))
 
-(defvar find-perl-files
-  (concat " \\( -iname '*.pl' -or -iname '*.pm' \\) ")
-  "Search string for Perl files")
+  ; Fall back functions
+  (progn
 
-(defvar find-lisp-files
-  (concat " \\( -iname '*.el' \\) ")
-  "Search string for Lisp Files")
+    ; define the find search strings (note excessive escapeage of ('s)
+    ; We can add mode hooks to change my-find-behaviour
+    
+    (defvar find-c-files
+      (concat " \\( -iname '*.[chS]' -or -iname '*.cc' -or -iname '*.cpp' \\) ")
+      "Search string for C/C++ files")
 
-;
-; my-find
-;
-; Need to improve to be context sensative
-;
-(defun my-find (search)
-  "A search from the current-project-root"
-  (interactive "sSearch string:")
-  (my-grep-find current-project-root find-c-files search))
+    (defvar find-perl-files
+      (concat " \\( -iname '*.pl' -or -iname '*.pm' \\) ")
+      "Search string for Perl files")
+
+    (defvar find-lisp-files
+      (concat " \\( -iname '*.el' \\) ")
+      "Search string for Lisp Files")
+
+    (defvar my-find-files
+      'find-c-files
+      "The current file list I'm searching though")
+
+    (defun set-my-find-files (files)
+      "Set the current file list for my-find"
+      (setq my-find-files files))
+    
+    ; A simpler grep-find that hides the find string from the user
+    (defun my-grep-find (root files search)
+      (grep-find (concat "find " root files " -print0 |  xargs -0 -e grep -n -e " search)))
+
+    (defun my-find (search)
+      "A search from the current-project-root"
+      (interactive "sSearch string:")
+      (my-grep-find current-project-root my-find-files search))))
+
+(global-set-key (kbd "<f5>") 'my-find)
 
 ; my-find-files (find a file name from project root)
 ;
