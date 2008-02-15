@@ -108,6 +108,31 @@
 (message "Defined project variables")
 
 
+(defun extract-string(regex string)
+  "Extract a string in a regex (the bit in ()'s)"
+  (interactive)
+  (let ((s string)) (if (string-match regex s) (match-string 1 s) s)))
+
+; example:
+;(extract-string "DEFAULT_DYNAMITE_BUILD_PATH=\\(.*\\)$" "DEFAULT_DYNAMITE_BUILD_PATH=non-products/A-A/build/ARMle-ARMle-Linux")
+
+;; If we can talk to the build system we can do extra magic
+(when (file-exists-p "~/bin/ajb_build_info.pl")
+
+  (defun set-build ()
+    "Set the build path and flags based on the info stored in the GK
+system"
+    (interactive)
+    (let ( (answer (shell-command-to-string
+		    (concat "~/bin/ajb_build_info.pl -v " (read-string "Build ID:"))) ) )
+      (setq
+       current-project (extract-string
+    "DEFAULT_DYNAMITE_BUILD_PATH=\\(.*\\)$" answer))
+      (setq
+       current-build-flags (extract-string
+           "DEFAULT_DYNAMITE_BUILD_FLAGS=\\(.*\\)$" answer)))))
+    
+
 ;; Transitive Coding Style
 ;
 ; Define the special coding style for Transitive that matchs the
