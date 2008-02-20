@@ -81,7 +81,7 @@
 ;; Automagically decompress files
 
 (unless I-am-xemacs
-  (auto-compression-mode))
+  (auto-compression-mode t))
 
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
@@ -647,6 +647,7 @@
     (progn
       (if (locate-library "my-diff-mode")
 	  (progn
+	    (message "Hooking in my-diff-mode")
 	    (autoload 'my-diff-mode "my-diff-mode")
 	    (defalias 'dmode-alias 'my-diff-mode))
 	(autoload 'diff-mode "diff-mode")
@@ -655,10 +656,9 @@
       ; Which ever version we have we need to set the
       ; automode up so it loads when we need it
       (setq auto-mode-alist (append (list
-				     (cons "\\.diff\\'"  'dmode-alias)
-				     (cons "\\.patch\\'" 'dmode-alias)
-				     (cons "0.*.txt" 'dmode-alias)
-				     (cons ".dotest/0.*"
+				     (cons "\.diff$"  'dmode-alias)
+				     (cons "\.patch$" 'dmode-alias)
+				     (cons "\.dotest/0.*"
 					   'dmode-alias))
 				    auto-mode-alist))))
 ;; ispell
