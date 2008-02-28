@@ -92,7 +92,7 @@
 	(progn
 	  (message "Overidding default build flags from env")
 	  (eval bf))
-      (concat "production BOB=1 LOUD=2")))
+      (concat "production-full BOB=1 LOUD=2")))
   "Describes the current default build flags")
 
 
@@ -116,22 +116,13 @@
 ; example:
 ;(extract-string "DEFAULT_DYNAMITE_BUILD_PATH=\\(.*\\)$" "DEFAULT_DYNAMITE_BUILD_PATH=non-products/A-A/build/ARMle-ARMle-Linux")
 
-;; If we can talk to the build system we can do extra magic
-(when (file-exists-p "~/bin/ajb_build_info.pl")
+(defun extract-value-from-pair(key string)
+  "Extract the value from AAAA=value pairs"
+  (let ((regex (concat key "=\\(.*\\)$")))
+    (extract-string regex string)))
+  
 
-  (defun set-build ()
-    "Set the build path and flags based on the info stored in the GK
-system"
-    (interactive)
-    (let ( (answer (shell-command-to-string
-		    (concat "~/bin/ajb_build_info.pl -v " (read-string "Build ID:"))) ) )
-      (setq
-       current-project (extract-string
-    "DEFAULT_DYNAMITE_BUILD_PATH=\\(.*\\)$" answer))
-      (setq
-       current-build-flags (extract-string
-           "DEFAULT_DYNAMITE_BUILD_FLAGS=\\(.*\\)$" answer)))))
-    
+; example (extract-value-from-pair "DEFAULT_DYNAMITE_BUILD_PATH" "DEFAULT_DYNAMITE_BUILD_PATH=somepath")
 
 ;; Transitive Coding Style
 ;
@@ -274,6 +265,26 @@ system"
 		(frob-project-root current-project-root)
 		current-project current-build-flags))
   (setq have-set-transitive-compile-command-once "yes"))
+
+
+;; If we can talk to the build system we can do extra magic
+(when (file-exists-p "~/bin/ajb_build_info.pl")
+
+  (defun set-build ()
+    "Set the build path and flags based on the info stored in the GK
+system"
+    (interactive)
+    (let ( (answer (shell-command-to-string
+		    (concat "~/bin/ajb_build_info.pl -v " (read-string "Build ID:"))) ) )
+      (setq
+       current-project
+       (extract-value-from-pair "DEFAULT_DYNAMITE_BUILD_PATH" answer))
+      (setq
+       current-build-flags
+       (extract-value-from-pair "DEFAULT_DYNAMITE_BUILD_FLAGS" answer))
+
+      (set-transitive-compile-command))
+    (message (concat "New compile command:" compile-command))))
 
 ;; transitive-compile
 ;
