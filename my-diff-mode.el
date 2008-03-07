@@ -100,17 +100,19 @@ problem"
            (diff-hunk-next)
          (nil))))))
 
-;         (message (format "Unhandled error %s" err))))))
-;      (message "apply-whole-patch: next"))))
+;; diff-apply-and-kill
+;
+; Apply the patch and then kill the hunk in the diff file if it
+; succeded
 
-                   
-;                 message (format "The error message was %s" err))))))
+(defun diff-apply-and-kill()
+  "Apply a patch to the code and then delete from the diff if it
+succeded"
+  (interactive)
+  (save-excursion
+    (diff-apply-hunk))
+  (diff-hunk-kill))
 
-
-;      (if (string-match "Can't find the text to patch" apply-result)
-;          ; prompt user to skip or abort
-;          (if (y-or-n-p "Skip hunk?")
-;              (diff-hunk-next))))))
 
 
 ;; my-diff-mode
@@ -135,6 +137,7 @@ problem"
     (define-key map (kbd "d") 'diff-hunk-kill)
     (define-key map (kbd "t") 'diff-test-hunk)
     (define-key map (kbd "a") 'diff-apply-hunk)
+    (define-key map (kbd "A") 'diff-apply-and-kill)
     (define-key map (kbd "r") 'diff-revert-hunk)
     (define-key map (kbd "s") 'diff-split-hunk)
     (define-key map (kbd "RET") 'diff-goto-source)
