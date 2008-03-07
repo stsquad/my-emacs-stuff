@@ -724,6 +724,11 @@
       "Run the Emacs calculator." t)
      (global-set-key [(control return)] 'calculator)))
 
+;; my-find-binary
+;
+; Handy for dumping objdump into a buffer
+(if (locate-library "my-find-binary")
+    (autoload 'find-binary-file "my-find-binary"))
 
 ;; Version control library
 ;
