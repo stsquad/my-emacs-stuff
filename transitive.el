@@ -300,7 +300,9 @@ the correct compile command"
   (interactive)
   (if (or (check-buffer-for-new-project-root) (not have-set-transitive-compile-command-once))
       (set-transitive-compile-command))
-  (call-interactively 'compile))
+  (call-interactively 'compile)
+  (global-set-key (kbd "C-c c") 'transitive-compile)
+  (global-set-key (kbd "<f3>") 'transitive-compile))
 
 (message "defined compile hacks")
 
