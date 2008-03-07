@@ -320,6 +320,16 @@
 (global-set-key (kbd "<M-down>") 'enlarge-window)
 (global-set-key (kbd "<M-up>") 'shrink-window)
 
+;; Function Keys, I'm currently going over what my Microsoft ergonomic
+;; keyboard has sentsiled on the function keys
+
+; Find help
+(global-set-key (kbd "<C-f1>") 'apropos)
+
+; Make Undo a little less octopedal
+(global-set-key (kbd "<C-f2>") 'undo)
+
+
 ;; In Emacs 21+, home and end go to beginning and end of line. This is
 ;; clearly the Wrong Thing.
 (if I-am-emacs-21+
@@ -960,16 +970,16 @@
 (global-set-key [(meta a)] 'bookmark-set)
 
 ;; bm.el
-;
-(if (locate-library "bm")
-    (progn
-      (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
-      (autoload 'bm-next     "bm" "Goto bookmark."                     t)
-      (autoload 'bm-previous "bm" "Goto previous bookmark." t)
+; I don't seem to use this much
+;(if (locate-library "bm")
+;    (progn
+;      (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
+;      (autoload 'bm-next     "bm" "Goto bookmark."                     t)
+;      (autoload 'bm-previous "bm" "Goto previous bookmark." t)
 
-      (global-set-key (kbd "<C-f2>") 'bm-toggle)
-      (global-set-key (kbd "<f2>")   'bm-next)
-      (global-set-key (kbd "<S-f2>") 'bm-previous)))
+;      (global-set-key (kbd "<C-f2>") 'bm-toggle)
+;      (global-set-key (kbd "<f2>")   'bm-next)
+;      (global-set-key (kbd "<S-f2>") 'bm-previous)))
 
 
 ;;
