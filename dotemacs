@@ -324,12 +324,16 @@
 (global-set-key (kbd "<M-down>") 'enlarge-window)
 (global-set-key (kbd "<M-up>") 'shrink-window)
 
-;; If we are running over ssh lets map some more stuff to move around,
-;; mainly what MacOS sends over the terminal when I'm working on
-;; Fliss' laptop. I wish I could detect that case....
+;; Handle special Mac'isms
+;
+; If we are running over ssh lets map some more stuff to move around,
+; mainly what MacOS sends over the terminal when I'm working on
+; Fliss' laptop. I wish I could detect that case....
+;
+; I also have the same issues if I run in console mode under MacOS
 ;
 ; C-v and M-v scroll up and down, but I rarely remember that
-(if I-am-remote
+(if (or I-am-remote (and I-am-on-MacOSX I-am-in-console))
     (progn
       ; We set the keyboard coding system to utf-8 which makes some
       ; things behave (I'm not totally sure why, must read up more)
@@ -346,7 +350,7 @@
       (global-set-key (kbd "ESC <right>") 'end-of-buffer)
 
       ; done
-      (message "tweaked keys for remote mode")))
+      (message "tweaked keys for remote/macos console mode")))
 
 ;; Make Bookmark handling a little more sane
 ;
