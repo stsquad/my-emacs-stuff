@@ -41,10 +41,11 @@
 ;;
 ;; Lets set some paramters if we are running as a console or under X
 ;;
-;; Why not use window-system? Well the rest of the likes simple bool tests
+;; Why not use window-system? Well the rest of setup likes simple bool tests
 ;;
 (defvar I-am-in-X (eval 'window-system));
 (defvar I-am-in-console (not (eval 'window-system)))
+(defvar I-am-on-MacOSX (string-match "Carbon" (emacs-version)))
 
 ;; Autoloads
 ;? Put them near their configuration.
@@ -101,6 +102,12 @@
 
 ;;  (message "Adding local .emacs.d to lib path")
 ;;  (add-to-list 'load-path "~/.emacs.d/"))
+
+; On Mac we we want to add /sw/bin for fink (where things like
+; aspell live)
+(when I-am-on-MacOSX
+  (if (file-exists-p "/sw/bin")
+      (setenv "PATH" (concat (getenv "PATH") ":/sw/bin"))))
 
 (message "Done Basic Sanity")
 
