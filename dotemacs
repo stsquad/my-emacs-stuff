@@ -46,6 +46,7 @@
 (defvar I-am-in-X (eval 'window-system));
 (defvar I-am-in-console (not (eval 'window-system)))
 (defvar I-am-on-MacOSX (string-match "Carbon" (emacs-version)))
+(defvar I-am-remote (getenv "SSH_TTY"))
 
 ;;
 ;; Basic config variables
@@ -323,6 +324,37 @@
 (global-set-key (kbd "<M-down>") 'enlarge-window)
 (global-set-key (kbd "<M-up>") 'shrink-window)
 
+;; If we are running over ssh lets map some more stuff to move around,
+;; mainly what MacOS sends over the terminal when I'm working on
+;; Fliss' laptop. I wish I could detect that case....
+;
+; C-v and M-v scroll up and down, but I rarely remember that
+(if I-am-remote
+    (progn
+      ; We set the keyboard coding system to utf-8 which makes some
+      ; things behave (I'm not totally sure why, must read up more)
+      (set-keyboard-coding-system 'utf-8)
+
+      ; Re-map £ to # (which is what I want when I hit Shift-3 on the
+      ; Mac
+      (global-set-key (kbd "£") "#")
+      
+      ; this is what I get when I hit Alt-ArrowKeys on the Mac
+      (global-set-key (kbd "ESC <up>") 'scroll-down)
+      (global-set-key (kbd "ESC <down>") 'scroll-up)
+      (global-set-key (kbd "ESC <left>") 'beginning-of-buffer)
+      (global-set-key (kbd "ESC <right>") 'end-of-buffer)
+
+      ; done
+      (message "tweaked keys for remote mode")))
+
+;; Make Bookmark handling a little more sane
+;
+; This overides existing backward-sentence and backward-word default
+; binding
+(global-set-key [(meta b)] 'list-bookmarks)
+(global-set-key [(meta a)] 'bookmark-set)
+
 ;; Function Keys, I'm currently going over what my Microsoft ergonomic
 ;; keyboard has sentsiled on the function keys
 
@@ -332,20 +364,34 @@
 ; Make Undo a little less octopedal
 (global-set-key (kbd "<C-f2>") 'undo)
 
-
 ;; In Emacs 21+, home and end go to beginning and end of line. This is
 ;; clearly the Wrong Thing.
 (if I-am-emacs-21+
-    (progn ()
-	   (global-unset-key [home])
-	   (global-set-key [home] 'beginning-of-buffer)
-	   (global-unset-key [end])
-	   (global-set-key [end] 'end-of-buffer)))
+    (progn
+      (global-unset-key [home])
+      (global-set-key [home] 'beginning-of-buffer)
+      (global-unset-key [end])
+      (global-set-key [end] 'end-of-buffer)))
 
-;; Apple Keyboard Mapping
-; When I'm running from the Mac the backspace key actually sends a
-; <deletechar> instead which is very off-putting
-;(global-set-key (kbd "<deletechar>") 'delete-backward-char)
+;; Macro keys
+; If I define a single press macro keys I may use them more often
+
+(global-set-key [(control meta m)] 'call-last-kbd-macro)
+(global-set-key (kbd "<f10>") 'call-last-kbd-macro)
+(global-set-key (kbd "<C-f11>") 'start-kbd-macro)
+(global-set-key (kbd "<C-f12>") 'end-kbd-macro)
+
+;; insert-sequence-key
+;
+; Handy little key sequence utility so I don't have to guess at the
+; correct kbd incantation
+
+(defun insert-sequence-key (key)
+  "Inserts a keystroke suitable for use in fcns like global-set-key"
+  (interactive "kInsert key chord: ")
+  (insert (format "(kbd \"%s\")" (key-description key))))
+
+(global-set-key (kbd "<C-f8>") 'insert-sequence-key)
 
 (message "Done keymapping")
 
@@ -957,26 +1003,6 @@
 
 (message "Done Buffer Handling Tweaks")
 
-;;
-;; Handy little key sequence utility so I don't have to guess at the
-;; correct kbd incantation
-;;
-
-(defun insert-sequence-key (key)
-  "Inserts a keystroke suitable for use in fcns like global-set-key"
-  (interactive "kInsert key chord: ")
-  (insert (format "(kbd \"%s\")" (key-description key))))
-
-(global-set-key (kbd "<C-f8>") 'insert-sequence-key)
-
-;;
-;; Make Bookmark handling a little more sane
-;;
-;; Rebind from the random octo-keys
-
-(global-set-key [(meta b)] 'list-bookmarks)
-(global-set-key [(meta a)] 'bookmark-set)
-
 ;; bm.el
 ; I don't seem to use this much
 ;(if (locate-library "bm")
@@ -990,17 +1016,6 @@
 ;      (global-set-key (kbd "<S-f2>") 'bm-previous)))
 
 
-;;
-;; Macro keys
-;;
-;; If I define a single press macro keys I may use them more often
-;;
-(message "Defining Macro Keys")
-
-(global-set-key [(control meta m)] 'call-last-kbd-macro)
-(global-set-key (kbd "<f10>") 'call-last-kbd-macro)
-(global-set-key (kbd "<C-f11>") 'start-kbd-macro)
-(global-set-key (kbd "<C-f12>") 'end-kbd-macro)
 
 ;;
 ;; I have the cedat/ecb stuff on some machines which I'm playing with
