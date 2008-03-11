@@ -47,16 +47,12 @@
 (defvar I-am-in-console (not (eval 'window-system)))
 (defvar I-am-on-MacOSX (string-match "Carbon" (emacs-version)))
 
-;; Autoloads
-;? Put them near their configuration.
-;? Check that extended modes are available.
+;;
+;; Basic config variables
+;;
 
-;(if (locate-library "msb")
-;    (progn
-;      (autoload 'msb-mode "msb" "Fancier buffer-selection menu" t)
-;      ;; fancier buffer menu
-;      (setq buffers-menu-max-size nil) ; Don't think this is needed with msb
-;      (msb-mode 1)))
+;; Disable the splash screen
+(setq inhibit-splash-screen t)
 
 ;; Default mode is text-mode,
 (setq default-major-mode 'text-mode)
