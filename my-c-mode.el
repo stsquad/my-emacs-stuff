@@ -173,7 +173,8 @@
 ;
 ; I've tried doing stuff with compile-/compile+ but never got it to work.
 
-(if (locate-library "compile")
+(unless (functionp 'compile)
+  (if (locate-library "compile")
     (progn
       (autoload 'compile "compile")
       (autoload 'recompile "compile")
@@ -190,7 +191,7 @@
 	    compile-auto-highlight    t
 	    compilation-window-height 10)
       (message "Setup compile-mode"))
-    (message "Unable to find compile libs..."))
+    (message "Unable to find compile libs...")))
 
 
 (message "Finished my-c-mode.el customisation")

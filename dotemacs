@@ -838,7 +838,27 @@
 	(load-library "my-c-mode"))
 
       (add-hook 'c-initialization-hook 'my-c-mode-start-hook)))
-    
+
+;;
+;; Compile Mode
+;;
+; my-c-mode stuff will load it if required, but assuming it's already
+; here we might as well bind it
+
+(if (functionp 'compile)
+    (progn
+      ; ensure the default compile command is sensible
+      (setq compile-command (format "cd %s && make -k" current-project-root))
+      ; Some keybindsings for compile-command and recompile
+      (global-set-key (kbd "C-c c") 'compile)
+      (global-set-key (kbd "<f3>")  'compile)
+      (global-set-key (kbd "C-c r") 'recompile)
+      ; Tweak some variables
+      (setq compilation-scroll-output t
+      ; compilation-buffer-name-function nil
+	    compile-auto-highlight    t
+	    compilation-window-height 10)
+      (message "Setup compile-mode")))
 
 ;; Elisp mode
 ;
