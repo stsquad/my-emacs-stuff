@@ -19,26 +19,22 @@
 
 ;;; Basic sanity
 ;; Find out about my environment
-;; Tweak a few paths
 
-; This is ugly, but at the current release rate we shouldn't have more
-; than 3 or 4 potential emacsen on a box
-(defvar I-am-emacs-21 (string-match "GNU Emacs 21" (emacs-version)))
-(defvar I-am-emacs-22 (string-match "GNU Emacs 22" (emacs-version)))
-(defvar I-am-emacs-23 (string-match "GNU Emacs 23" (emacs-version)))
+; Define some variable about what sort of emacs I'm running in
 
-(defvar I-am-emacs-21+ (or I-am-emacs-21 I-am-emacs-22 I-am-emacs-23))
-(defvar I-am-emacs-22+ (or I-am-emacs-22 I-am-emacs-23))
+(defvar I-am-emacs-21+ (>= emacs-major-version 21))
+(defvar I-am-emacs-22  (= emacs-major-version 22))
+(defvar I-am-emacs-22+ (>= emacs-major-version 22))
 
+(defvar I-am-gnuemacs (string-match "GNU Emacs" (emacs-version)))
 (defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
 
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
 
-(defvar I-am-at-work (string-match "transitives" (system-name)))
+(defvar I-am-at-work (string-match "cambridgebroadband" (system-name)))
 (defvar I-am-at-home (string-match "malory" (system-name)))
  
-;;
 ;; Lets set some paramters if we are running as a console or under X
 ;;
 ;; Why not use window-system? Well the rest of setup likes simple bool tests
@@ -1137,17 +1133,6 @@
 ;(add-to-list 'desktop-globals-to-save 'file-name-history)
 ;(desktop-read)
 ;(setq desktop-enable t)
-
-;;
-;; I always want my work customisations at work or if I'm running on
-;; the VPN at home.
-;;
-
-(if (or I-am-at-work (string-match "dynamite" (pwd)))
-    (when (file-exists-p "~/.emacs.d/transitive.el")
-      (progn
-	(message "Loading Work Customistions...")
-	(load-file "~/.emacs.d/transitive.el"))))
 
 (message "Done .emacs")
 
