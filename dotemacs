@@ -147,16 +147,20 @@
   (interactive)
   (let ((s string)) (if (string-match regex s) (match-string 1 s) s)))
 
+; And building on that
+(defun extract-value-from-pair(key string)
+  "Extract the value from AAAA=value pairs"
+  (let ((regex (concat key "=\\(.*\\)$")))
+    (extract-string regex string)))
+
+; examples:
+;  (extract-string "name is \\(\.*\\) " "my name is Alex ok") = Alex
+;  (extract-value-from-pair "AAA" "AAA=xxx") = xxx
+
 ; chomp
 (defun chomp(string)
   "Perform a perl-like chomp"
   (let ((s string)) (if (string-match "\\(.*\\)\n" s) (match-string 1 s) s)))
-
-;
-; example:
-;(extract-string "name is \\(\.*\\) " "my name is Alex ok")
-;
-; extracts "Alex"
 
 ;; which-lookup
 ;
@@ -1133,6 +1137,13 @@
 ;(add-to-list 'desktop-globals-to-save 'file-name-history)
 ;(desktop-read)
 ;(setq desktop-enable t)
+
+(let ((bs (concat current-project-root "/build-system")))
+  (if (file-exists-p bs)
+      (if (locate-library "cbnl")
+	  (load-library "cbnl"))))
+  
+
 
 (message "Done .emacs")
 
