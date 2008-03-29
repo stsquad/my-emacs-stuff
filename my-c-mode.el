@@ -15,7 +15,8 @@
 (require 'cc-styles)
 
 (defconst my-c-style
-  '((c-tab-always-indent . nil)
+  '((indent-tabs-mode . nil)
+    (c-tab-always-indent . nil)
     (c-indent-level 3)
     (c-comment-only-line-offset 0)
     (c-basic-offset . 4)
@@ -44,13 +45,53 @@
 ;;			(arglist-cont-nonempty . ++)
 ;		     (ansi-funcdecl-cont . 0)
 			(case-label . +)
-			(block-open . 0)))
-    (indent-tabs-mode . nil)
-    )
+			(block-open . 0))))
   "Alex's C style")
 
+; We don't set this as the default style as it gets in the way when
+; editing Random C code.
+
 (c-add-style "my-c-style" my-c-style)
-(setq c-default-style "my-c-style")
+
+; GTKG
+(defconst gtkg-style
+  '(
+    "my-c-style"
+    (c-basic-offset . 4)
+    (c-tab-always-indent . t))
+  "Style for GTK Gnutella Development")
+
+
+;; my-c-style-guesser
+;
+; Go through the list of patterns and see if we know what style
+; we want to run. Otherwise we shall guess on the state of the file.
+;
+
+(defvar my-c-styles-alist
+  (mapc
+   (lambda (elt)
+     (cons (purecopy (car elt)) (cdr elt)))
+   '(
+     (".*/linux.*/.*\\.[ch]$" . linux)  
+     (".*binutils.*\\.[ch]$" . gnu)
+     (".*gtk-gnutella.*" . gtkg-style)
+     (".*mysrc.*$" . my-c-style)))
+  "A list of reg-ex to styles for my-c-style-guesser")
+
+; You can add to the alist with something like:
+; (setq my-c-styles-alist (cons '(".*mysrc.*$" . my-c-style) my-c-styles-alist))
+   
+(defun my-c-style-guesser(filename)
+  "Guess the C style we should use based on the path of the buffer"
+  (message (concat "my-c-style-guesser " filename))
+  (assoc-default filename my-c-styles-alist 'string-match))
+
+; examples
+; (my-c-style-guesser "/home/alex/src/kernel/linux-2.6/drivers/ide/ide-cd.c")
+; (my-c-style-guesser "/home/alex/mysrc/mysrc.old/c/binmerge/binmerge.c")
+; (my-c-style-guesser "/home/alex/src/gtk-gnutella/gtk2-gnutella/src/core/bitzi.c")
+; (my-c-style-guesser "/home/alex/src/cvsps.git/cvsps.c")
 
 ;;
 ;; my-c-mode-hook is called every time
@@ -66,6 +107,17 @@
   (if (bound-and-true-p find-c-files)
       (set-my-find-files find-c-files))
 
+  ; Set the c-style if we can
+  (message (format "looking for style for buffer %s" (buffer-file-name)))
+  
+  (let ((style (my-c-style-guesser (buffer-file-name))))
+    (message (format "Found style:%s" style))
+    (if style
+	(c-set-style style)
+      ; fallback
+      (message "Falling back to defaults")
+      (c-set-style "user")))
+
   ; ensure tab width matches c-basic-offset
   (setq tab-width c-basic-offset)
   (if I-am-emacs-21+
@@ -73,38 +125,6 @@
   
 (add-hook 'c-mode-common-hook 'my-c-mode-hook)
 
-;;
-;; Linux Kernel C-mode
-;;
-(defun linux-c-mode ()
-  "C mode with adjusted defaults for use with the Linux kernel."
-  (interactive)
-  (c-mode)
-  (message "Setting Linux C Style")
-  (c-set-style "K&R")
-  (setq tab-width 8)
-  (setq indent-tabs-mode t)
-  (setq c-basic-offset 8))
-
-;; if its got linux in the path then its a kernel file
-(setq auto-mode-alist (cons '(".*/linux.*/.*\\.[ch]$" . linux-c-mode)
-                       auto-mode-alist))
-
-;;
-;; GNU Code
-;;
-(defun gnu-c-mode ()
-  "C mode for GNU stuff"
-  (interactive)
-  (c-mode)
-  (message "Setting Linux C Style")
-  (c-set-style "gnu")
-  (setq tab-width 8)
-  (setq indent-tabs-mode t)
-  (setq c-basic-offset 2))
-  
-(setq auto-mode-alist (cons '(".*binutils.*\\.[ch]$" . gnu-c-mode)
-                       auto-mode-alist))
 
 (message "Done with cc-mode customisation")
 
