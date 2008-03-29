@@ -825,40 +825,39 @@
 		(lambda ()
 		  (setq truncate-lines t)))
 
-;;
 ;; cc-mode stuff
 ;;
 ;
 ; This is now all pulled in from my-c-mode.el which is loaded on
-; demand if we actually activate cc-mode.
+; demand if we actually activate cc-mode. However some distros may
+; have already loaded cc-mode in which case we had better customise it
+; straight away.
 
 (if (locate-library "my-c-mode")
-    (progn
-      (defun my-c-mode-start-hook ()
-	(load-library "my-c-mode"))
+    (if (fboundp 'c-common-init)
+	(load-library "my-c-mode")
+      (add-hook 'c-initialization-hook '(lambda() (load-library "my-c-mode")))
 
-      (add-hook 'c-initialization-hook 'my-c-mode-start-hook)))
+      ;;
+      ;; Compile Mode
+      ;;
+      ; my-c-mode stuff will load it if required, but assuming it's already
+      ; here we might as well bind it
 
-;;
-;; Compile Mode
-;;
-; my-c-mode stuff will load it if required, but assuming it's already
-; here we might as well bind it
-
-(if (functionp 'compile)
-    (progn
-      ; ensure the default compile command is sensible
-      (setq compile-command (format "cd %s && make -k" current-project-root))
-      ; Some keybindsings for compile-command and recompile
-      (global-set-key (kbd "C-c c") 'compile)
-      (global-set-key (kbd "<f3>")  'compile)
-      (global-set-key (kbd "C-c r") 'recompile)
-      ; Tweak some variables
-      (setq compilation-scroll-output t
-      ; compilation-buffer-name-function nil
-	    compile-auto-highlight    t
-	    compilation-window-height 10)
-      (message "Setup compile-mode")))
+      (if (functionp 'compile)
+	  (progn
+          ; ensure the default compile command is sensible
+	    (setq compile-command (format "cd %s && make -k" current-project-root))
+	    ; Some keybindsings for compile-command and recompile
+	    (global-set-key (kbd "C-c c") 'compile)
+	    (global-set-key (kbd "<f3>")  'compile)
+	    (global-set-key (kbd "C-c r") 'recompile)
+            ; Tweak some variables
+	    (setq compilation-scroll-output t
+            ; compilation-buffer-name-function nil
+		  compile-auto-highlight    t
+		  compilation-window-height 10)
+	    (message "Setup compile-mode")))))
 
 ;; Elisp mode
 ;
@@ -879,15 +878,18 @@
 	     (turn-on-auto-fill)
 	     (imenu-add-to-menubar "Imenu")))
 
+;; Auto-compile my .emacs
 ;
-; Auto-compile my .emacs
-;
+; Given that I tend to edit in my vc-repo (to which .emacs links) we
+; straight awaywant to resolve where ~/.emacs resolves to first
+
 (defun autocompile nil
   "compile itself if ~/.emacs"
   (interactive)
   (require 'bytecomp)
-  (if (string= (buffer-file-name) (expand-file-name (concat default-directory ".emacs")))
-      (byte-compile-file (buffer-file-name))))
+  (let ((dotemacs (expand-file-name "~/.emacs")))
+    (if (string= (buffer-file-name) (file-chase-links dotemacs))
+      (byte-compile-file dotemacs))))
 
 (add-hook 'after-save-hook 'autocompile)
 
