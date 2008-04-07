@@ -49,14 +49,15 @@
     "-C common/libdbg -f Makefile"
     "-C net-snmp -f Makefile.net-snmp"
     "-C third-party/libxml -f ../local-config/Makefile.libxml"
-    "-C nms-manager-apps -f Makefile")
+    "-C nms-manager-apps -f Makefile"
+    "build-nms-apps")
   "A List of CBNL build targets")
 
 ;; current-build-target
 ;
 ; *CHANGE* You can set your default build target here
 (defvar current-build-target
-  (concat "-C nms-manager-apps -f Makefile")
+  (concat "build-nms-apps")
   "Describes the current build target")
 
 ;; current-build-flags
