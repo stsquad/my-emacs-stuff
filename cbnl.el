@@ -136,5 +136,12 @@
   (set-cbnl-compile-command))
 
 
+(message "Keyboard Hacks")
+
+;;
+; On BOB under screen I get stange backspace behaviour
+(if (string-match "bob" (system-name))
+    (normal-erase-is-backspace-mode 1))
+
 (message "Done with cbnl customisations")
 
