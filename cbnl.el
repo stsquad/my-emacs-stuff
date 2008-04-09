@@ -144,5 +144,59 @@
 (if (string-match "bob" (system-name))
     (normal-erase-is-backspace-mode 1))
 
+;;
+;
+; We have a number of c styles, my-c-mode.el defines a guesser
+; variable which we can use for this stuff.
+
+(message "Additional coding styles")
+
+; Need cc-style
+(require 'cc-styles)
+
+
+;
+; Define the coding style for nms-manager-apps
+;
+(defconst cbnl-nms-style
+  '((indent-tabs-mode . nil)
+    (c-tab-always-indent . nil)
+    (c-indent-level 3)
+    (c-comment-only-line-offset 0)
+    (c-basic-offset . 2)
+;    (c-echo-syntactic-information-p . t) - this is only useful for debugging
+    (c-electric-pound-behavior . (alignleft))
+    (c-hanging-comment-ender-p . nil)
+    (c-comment-continuation-stars . "* ")
+    (c-recognize-knr-p . nil)
+    (c-cleanup-list . (empty-defun-braces
+		       defun-close-semi
+		       list-close-comma
+		       scope-operator))
+    (c-hanging-braces-alist . ((brace-list-open)
+			       (brace-list-close)
+			       (block-close . c-snug-do-while)
+			       (substatement-open before after)))
+    (c-hanging-colons-alist . ((member-init-intro after)
+			       (access-label after)
+			       (inher-intro after)
+			       (case-label after)
+			       (label after)))
+    (c-offsets-alist . ((arglist-close . c-lineup-arglist)
+			(arglist-cont-nonempty . c-lineup-arglist)
+			(substatement-open . 0)
+			(statement-cont . ++)
+;;			(arglist-cont-nonempty . ++)
+;		     (ansi-funcdecl-cont . 0)
+			(case-label . +)
+			(block-open . 0))))
+  "CBNL NMS Apps")
+
+(c-add-style "cbnl-nms-style" cbnl-nms-style)
+
+; Add it to my style guesser list if it exists
+(if (boundp 'my-c-styles-alist)
+    (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . cbnl-nms-style) my-c-styles-alist)))
+
 (message "Done with cbnl customisations")
 
