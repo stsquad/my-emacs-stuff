@@ -194,9 +194,12 @@
 
 (c-add-style "cbnl-nms-style" cbnl-nms-style)
 
-; Add it to my style guesser list if it exists
-(if (boundp 'my-c-styles-alist)
-    (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . cbnl-nms-style) my-c-styles-alist)))
+; Add it to my style guesser list if it exists, forcing the load of
+; my-c-mode.el
+
+(require 'my-c-mode)
+
+(setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
 
 (message "Done with cbnl customisations")
 

@@ -73,10 +73,10 @@
    (lambda (elt)
      (cons (purecopy (car elt)) (cdr elt)))
    '(
-     (".*/linux.*/.*\\.[ch]$" . linux)  
-     (".*binutils.*\\.[ch]$" . gnu)
-     (".*gtk-gnutella.*" . gtkg-style)
-     (".*mysrc.*$" . my-c-style)))
+     (".*/linux.*/.*\\.[ch]$" . "linux")  
+     (".*binutils.*\\.[ch]$"  . "gnu")
+     (".*gtk-gnutella.*"      . "gtkg-style")
+     (".*mysrc.*$"            . "my-c-style")))
   "A list of reg-ex to styles for my-c-style-guesser")
 
 ; You can add to the alist with something like:
@@ -92,6 +92,7 @@
 ; (my-c-style-guesser "/home/alex/mysrc/mysrc.old/c/binmerge/binmerge.c")
 ; (my-c-style-guesser "/home/alex/src/gtk-gnutella/gtk2-gnutella/src/core/bitzi.c")
 ; (my-c-style-guesser "/home/alex/src/cvsps.git/cvsps.c")
+; (my-c-style-guesser "nms-manager-apps/vsalarmd/snmp_interface.c")
 
 ;;
 ;; my-c-mode-hook is called every time
@@ -215,3 +216,5 @@
 
 
 (message "Finished my-c-mode.el customisation")
+
+(provide 'my-c-mode)
