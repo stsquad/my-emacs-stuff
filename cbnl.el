@@ -66,13 +66,13 @@
 
 (defvar cbnl-build-flags
   '("VECTASTARBUILD=1 CROSS_COMPILE=ppc8xx"
-    "GTK=2 PLATFORM=Linux_Desktop_x86_64"
+    "GTK=2 PLATFORM=Linux_Desktop"
     "GTK=2")
   "Describes the current build flags")
 
 
 (defvar current-build-flags
-  (concat "GTK=2 PLATFORM=Linux_Desktop_x86_64")
+  (concat "GTK=2 PLATFORM=Linux_Desktop")
   "Describes the current default build flags")
 
 (message "Defined CBNL project variables")
