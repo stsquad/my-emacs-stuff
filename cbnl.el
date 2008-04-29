@@ -201,5 +201,15 @@
 
 (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
 
+;; TAGs support
+;
+(defadvice find-tag (before c-tag-file activate)
+  "Automatically create tags file."
+  (let ((tag-file (concat current-project-root "/TAGS")))
+     (unless (file-exists-p tag-file)
+       (shell-command (concat "cd " current-project-root "; find include/common/ include/ems/ nms-manager-apps/ -iname \"*.[ch]\" | etags -o " current-project-root "/TAGS -")))
+     (visit-tags-table tag-file)))
+
+
 (message "Done with cbnl customisations")
 
