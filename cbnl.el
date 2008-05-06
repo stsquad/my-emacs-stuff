@@ -159,12 +159,16 @@
 ; Define the coding style for nms-manager-apps
 ;
 (defconst cbnl-nms-style
-  '((indent-tabs-mode . nil)
+  '(
+    ; Display the cc-style syntax point, useful for debugging
+    (c-echo-syntactic-information-p . t)
+
+    ; No tabs, 2 space indent level
+    (indent-tabs-mode . nil)
     (c-tab-always-indent . nil)
-    (c-indent-level 3)
-    (c-comment-only-line-offset 0)
     (c-basic-offset . 2)
-;    (c-echo-syntactic-information-p . t) - this is only useful for debugging
+    
+    (c-comment-only-line-offset 0)
     (c-electric-pound-behavior . (alignleft))
     (c-hanging-comment-ender-p . nil)
     (c-comment-continuation-stars . "* ")
@@ -173,23 +177,30 @@
 		       defun-close-semi
 		       list-close-comma
 		       scope-operator))
+    ; "To specify which kinds of braces you want auto-newlines put around"
     (c-hanging-braces-alist . ((brace-list-open)
 			       (brace-list-close)
 			       (block-close . c-snug-do-while)
 			       (substatement-open before after)))
+
+    ; 
     (c-hanging-colons-alist . ((member-init-intro after)
 			       (access-label after)
 			       (inher-intro after)
 			       (case-label after)
 			       (label after)))
+
+    ; Define the offsets for various states
     (c-offsets-alist . ((arglist-close . c-lineup-arglist)
 			(arglist-cont-nonempty . c-lineup-arglist)
 			(substatement-open . 0)
 			(statement-cont . ++)
-;;			(arglist-cont-nonempty . ++)
-;		     (ansi-funcdecl-cont . 0)
 			(case-label . +)
-			(block-open . 0))))
+			; Block open/close braces should be on the same line
+			; as the open/close statement, so de-indent
+			(defun-block-intro . +)
+			(block-open . 0)
+			(block-close . 0))))
   "CBNL NMS Apps")
 
 (c-add-style "cbnl-nms-style" cbnl-nms-style)
