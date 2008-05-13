@@ -119,8 +119,6 @@
       (message "Falling back to defaults")
       (c-set-style "user")))
 
-  ; ensure tab width matches c-basic-offset
-  (setq tab-width c-basic-offset)
   (if I-am-emacs-21+
       (cwarn-mode)))
   
