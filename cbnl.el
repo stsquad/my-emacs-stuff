@@ -164,9 +164,11 @@
     (c-echo-syntactic-information-p . t)
 
     ; No tabs, 2 space indent level
-    (indent-tabs-mode . nil)
-    (c-tab-always-indent . nil)
     (c-basic-offset . 2)
+    (indent-tabs-mode . nil)
+
+    ; only indent if point left of line
+    (c-tab-always-indent . nil)
     
     (c-comment-only-line-offset 0)
     (c-electric-pound-behavior . (alignleft))
@@ -211,6 +213,7 @@
 (require 'my-c-mode)
 
 (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
+(setq my-c-styles-alist (cons '(".*include/ems/.*$" . "cbnl-nms-style") my-c-styles-alist))
 
 ;; TAGs support
 ;
