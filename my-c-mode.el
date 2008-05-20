@@ -120,7 +120,10 @@
       (c-set-style "user")))
 
   (if I-am-emacs-21+
-      (cwarn-mode)))
+      (cwarn-mode))
+
+  ; enable tab completions
+  (my-tab-fix))
   
 (add-hook 'c-mode-common-hook 'my-c-mode-hook)
 

@@ -653,8 +653,7 @@
 	(setq diff-switches               "-u"
 	      ediff-custom-diff-options   "-U3"
 	      ediff-split-window-function 'split-window-horizontally
-	      ediff-window-setup-function 'ediff-setup-windows-plain
-	      ediff-use-last-dir          t)
+	      ediff-window-setup-function 'ediff-setup-windows-plain)
 
 	(add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
 	(add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
@@ -842,6 +841,27 @@
 		(lambda ()
 		  (setq truncate-lines t)))
 
+;; tab completion everywhere
+; from http://www.emacsblog.org/2007/03/12/tab-completion-everywhere/
+;
+; Be smart about if we should use completion or tab
+
+(defun indent-or-expand (arg)
+  "Either indent according to mode, or expand the word preceding
+point."
+  (interactive "*P")
+  (if (and
+       (or (bobp) (= ?w (char-syntax (char-before))))
+       (or (eobp) (not (= ?w (char-syntax (char-after))))))
+      (dabbrev-expand arg)
+    (indent-according-to-mode)))
+
+(defun my-tab-fix ()
+  (local-set-key [tab] 'indent-or-expand))
+
+(add-hook 'sh-mode-hook         'my-tab-fix)
+(add-hook 'emacs-lisp-mode-hook 'my-tab-fix)
+
 ;; cc-mode stuff
 ;;
 ;
@@ -992,24 +1012,6 @@
 ;; enable the mouse wheel
 (autoload 'mwheel-install "mwheel" "Enable wheely mouse")
 (mwheel-install)
-
-
-;; Convert dos to unix text files
-;; from: elf@ee.ryerson.ca (Luis Fernandes)
-;; 22 May 1997
-
-;;; Usage: M-x dos2unix
-;;;
-(defun dos2unix ()
-  "Convert this entire buffer from MS-DOS text file format to UNIX."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (replace-regexp "\r$" "" nil)
-    (goto-char (1- (point-max)))
-    (if (looking-at "\C-z")
-        (delete-char 1))))
-
 
 ;; Buffer Selection
 ;
