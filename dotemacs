@@ -170,12 +170,15 @@
 (defun which-lookup(name)
   "Perform a `which` like file look-up"
   (let
-      ((file (chomp (shell-command-to-string (concat "which " name)))))
-    (if (file-exists-p file)
-	(concat file)
+      ((file (chomp
+	      (shell-command-to-string
+	       (concat "which " name)))))
+    (if (and (file-exists-p file) (> (length file) 0))
+        (concat file)
       ())))
-       
+
 ; (which-lookup "foo") => nil
+; (which-lookup "emacs") = "/usr/bin/emacs"
 ; (which-lookup "ispell") => "/usr/bin/ispell"
 
 ;; Define a current-project-root
