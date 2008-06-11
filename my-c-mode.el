@@ -189,6 +189,9 @@
 	     (message "Ran cperl-mode hook")))
 
 
+(add-hook 'perl-mode-hook         'my-tab-fix)
+
+
 ;; Compile Mode Stuff
 ;
 ; I want to be able to search straight from the compile mode window
