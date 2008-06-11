@@ -12,6 +12,7 @@
 (message "Starting my-c-mode.el customisation")
 
 ; Need cc-style
+(require 'cc-mode)
 (require 'cc-styles)
 
 (defconst my-c-style
@@ -108,25 +109,35 @@
   (if (bound-and-true-p find-c-files)
       (set-my-find-files find-c-files))
 
-  ; Set the c-style if we can
-  (message (format "looking for style for buffer %s" (buffer-file-name)))
+  ; Set the c-style if we can. I think mmm-mode gets in the way of
+  ; buffer-file-name for setting sub-modes, so check we have one first
+  (if (eval buffer-file-name)
+      (progn
+	(message (format "looking for style for buffer %s" (buffer-file-name)))
   
-  (let ((style (my-c-style-guesser (buffer-file-name))))
-    (message (format "Found style:%s" style))
-    (if style
-	(c-set-style style)
-      ; fallback
-      (message "Falling back to defaults")
-      (c-set-style "user")))
+	(let ((style (my-c-style-guesser (buffer-file-name))))
+	  (message (format "Found style:%s" style))
+	  (if style
+	      (c-set-style style)
+					; fallback
+	    (message "Falling back to defaults")
+	    (c-set-style "user")))))
 
   (if I-am-emacs-21+
-      (cwarn-mode))
+      (cwarn-mode)))
 
-  ; enable tab completions
-  (my-tab-fix))
-  
-(add-hook 'c-mode-common-hook 'my-c-mode-hook)
+(add-hook 'c-mode-hook 'my-c-mode-hook)
 
+; enable tab completions for cc-mode languages
+(add-hook 'c-mode-hook 'my-tab-fix)
+
+;
+; Java stuff
+;
+(add-hook 'java-mode-hook (lambda () 
+			    (setq c-basic-offset 3
+				  tab-width 3
+				  indent-tabs-mode t)))
 
 (message "Done with cc-mode customisation")
 

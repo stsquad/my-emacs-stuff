@@ -853,6 +853,7 @@
   "Either indent according to mode, or expand the word preceding
 point."
   (interactive "*P")
+;  (message (concat "arg is:" arg))
   (if (and
        (or (bobp) (= ?w (char-syntax (char-before))))
        (or (eobp) (not (= ?w (char-syntax (char-after))))))
@@ -872,11 +873,16 @@ point."
 ; demand if we actually activate cc-mode. However some distros may
 ; have already loaded cc-mode in which case we had better customise it
 ; straight away.
+;
+; As we may load my-c-mode directly we only load it on the hook if
+; it's not already there
 
 (if (locate-library "my-c-mode")
     (if (fboundp 'c-common-init)
 	(load-library "my-c-mode")
-      (add-hook 'c-initialization-hook '(lambda() (load-library "my-c-mode")))
+      (add-hook 'c-initialization-hook '(lambda()
+					  (unless (featurep 'my-c-mode)
+					    (load-library "my-c-mode"))))
 
       ;;
       ;; Compile Mode
@@ -898,6 +904,44 @@ point."
 		  compile-auto-highlight    t
 		  compilation-window-height 10)
 	    (message "Setup compile-mode")))))
+
+
+;; Web Development Modes
+;
+; Everything is autoloaded from html-helper-mode, if the autoload
+; isn't setup we won't get far.
+
+(if (locate-library "my-web-mode")
+    (if (fboundp 'html-helper-mode-version)
+	(load-library "my-web-mode")
+      ; If we haven't loaded html-helper-mode yet we had better make
+      ; sure it's on the system
+      (if (locate-library "html-helper-mode")
+	  (progn
+
+	    ; Ensure the autoloads are setup (Ubuntu doesn't for the
+	    ; anything other than html-helper-mode)
+
+	    (if (not (fboundp 'html-helper-mode))
+		(autoload
+		  'html-helper-mode "html-helper-mode"
+		  "Enhanced HTML mode" t))
+
+	    (if (not (fboundp 'jsp-html-helper-mode))
+		(autoload
+		  'jsp-html-helper-mode "html-helper-mode"
+		  "JSP with Enhanced HTML mode" t))
+
+	    (if (not (fboundp 'php-html-helper-mode))
+		(autoload
+		  'php-html-helper-mode "html-helper-mode"
+		  "PHP with Enhanced HTML mode" t))
+
+	    ; Add our web-mode hook on html-helper-mode loading
+	    (add-hook 'html-helper-load-hook '(lambda()
+						(unless (featurep 'my-web-mode)
+						  (load-library "my-web-mode"))))))))
+
 
 ;; Elisp mode
 ;
@@ -933,54 +977,6 @@ point."
 
 (add-hook 'after-save-hook 'autocompile)
 
-;; html-helper
-;;? See skeleton-insert & auto-insert-alist
-;? if new file && /\.hitop$/
-;	     (if (eq 0 (string-match "/home/iain/public_html"
-;				     buffer-file-name))
-;		 (insert "<SET NAME=\"TITLE\"  VALUE=\"Title\">\n"
-;			 "<SET NAME=\"BANNER\" VALUE=\"Banner\">\n\n"
-;			 "<DEF NAME=\"MAIN\">\n\n</DEF>\n\n"
-;			 "<FILE SRC=\"${RELPATH}template.hitop\">\n"))
-
-(if (locate-library "html-helper-mode")
-    (progn
-      (autoload 'html-helper-mode "html-helper-mode" "Enhanced HTML mode" t)
-
-      (setq auto-mode-alist
-	    (append (list (cons "\\.s?html?\\'"  'html-helper-mode))
-		    auto-mode-alist))
-
-      (add-hook 'html-helper-load-hook
-		'(lambda ()
-		   (if (locate-library "html-helper-imenu")
-		       (progn
-			 (autoload 'html-helper-imenu-setup
-			   "html-helper-imenu")
-			 (setq html-helper-imenu-title "Imenu")
-			 (html-helper-imenu-setup)))
-
-		   (setq tempo-interactive t
-			 html-helper-build-new-buffer nil)
-
-		   (defun my-html-helper-timestamp ()
-		     (let ((time (current-time-string)))
-		       (insert (substring time 4 11)
-			       (substring time -4) " ")))
-		   (setq html-helper-timestamp-hook 'my-html-helper-timestamp)
-		   ))
-
-      (add-hook 'html-helper-mode-hook
-		'(lambda ()
-		   (setq html-helper-basic-offset 4)
-		   
-		   (set
-		    (make-local-variable 'time-stamp-format)
-		    "%:d-%:m-%:y")
-
-		   ;;? Add hitop tags to html-helper-types-to-install?
-		   ;;? This looks quite hairy
-		   (turn-on-auto-fill)))))
 
 (add-hook 'text-mode-hook
 	  '(lambda ()
@@ -989,18 +985,6 @@ point."
 (add-hook 'texinfo-mode-hook
 	  '(lambda ()
 	     (imenu-add-to-menubar "Imenu")))
-
-;; PHP file mode
-(if (locate-library "php-mode")
-    (progn
-      (autoload 'php-mode "php-mode" "PHP mode" t)
-
-      (setq auto-mode-alist
-	    (append (list (cons "\\.php[s34]?\\'" 'php-mode))
-		    auto-mode-alist))
-
-      ;; colourization
-      (add-hook 'php-mode-user-hook 'turn-on-font-lock)))
 
 ;; Python Mode
 ;
