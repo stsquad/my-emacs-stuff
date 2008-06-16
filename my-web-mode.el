@@ -26,87 +26,45 @@
 
 (set-face-background 'mmm-default-submode-face "DimGray")
 
-; reset the alist
-;(setq mmm-mode-ext-classes-alist nil)
 
-;; set up an mmm group for editing JSP pages
+;; Use JDE out of preference
+;
+; JDE does better than mmm-mode for JSP
 
-(mmm-add-group
- 'jsp-pages
- '((jsp-code
-    :submode java-mode
-    :match-face (("<%!" . mmm-declaration-submode-face)
-   		 ("<%=" . mmm-output-submode-face)
-   		 ("<%"  . mmm-code-submode-face))
-    :front "<%[!]?"
-    :back "%>"
-    :insert ((?% jsp-code nil @ "<%" @ " " _ " " @ "%>" @)
-    	     (?! jsp-declaration nil @ "<%!" @ " " _ " " @ "%>" @)
-    	     (?= jsp-expression nil @ "<%=" @ " " _ " " @ "%>" @))
-    )
-   (jsp-directive
-    :submode text-mode
-    :face mmm-special-submode-face
-    :front "<%@"
-    :back "%>"
-    :insert ((?@ jsp-directive nil @ "<%@" @ " " _ " " @ "%>" @))
-    )
-   ))
+(if (featurep 'jde)
+    (progn
+      (setq auto-mode-alist
+	    (append (list (cons "\\.jsp$" 'jde-mode)
+			  auto-mode-alist)))
 
+      ; TODO:
+      ; We still fail as we are being added on the html-helper-mode hook we had
+      ; better check if we are a jsp buffer and switch mode
+      )
 
-; hook mmm-mode to jsp-html-helper-mode
-(add-to-list 'mmm-mode-ext-classes-alist '(jsp-html-helper-mode "\\.jsp$" jsp-pages))
+  ;; set up an mmm group for editing JSP pages
 
-
-;; html-helper
-;;? See skeleton-insert & auto-insert-alist
-;? if new file && /\.hitop$/
-;	     (if (eq 0 (string-match "/home/iain/public_html"
-;				     buffer-file-name))
-;		 (insert "<SET NAME=\"TITLE\"  VALUE=\"Title\">\n"
-;			 "<SET NAME=\"BANNER\" VALUE=\"Banner\">\n\n"
-;			 "<DEF NAME=\"MAIN\">\n\n</DEF>\n\n"
-;			 "<FILE SRC=\"${RELPATH}template.hitop\">\n"))
-
-;; (if (locate-library "html-helper-mode")
-;;     (progn
-;;       (autoload 'html-helper-mode "html-helper-mode" "Enhanced HTML mode" t)
-
-;;       (setq auto-mode-alist
-;; 	    (append (list (cons "\\.s?html?\\'"  'html-helper-mode)
-;; 			  (cons "\.jsp$"      'html-helper-mode))
-;; 		    auto-mode-alist))
-
-;;       (add-hook 'html-helper-load-hook
-;; 		'(lambda ()
-;; 		   (if (locate-library "html-helper-imenu")
-;; 		       (progn
-;; 			 (autoload 'html-helper-imenu-setup
-;; 			   "html-helper-imenu")
-;; 			 (setq html-helper-imenu-title "Imenu")
-;; 			 (html-helper-imenu-setup)))
-
-;; 		   (setq tempo-interactive t
-;; 			 html-helper-build-new-buffer nil)
-
-;; 		   (defun my-html-helper-timestamp ()
-;; 		     (let ((time (current-time-string)))
-;; 		       (insert (substring time 4 11)
-;; 			       (substring time -4) " ")))
-;; 		   (setq html-helper-timestamp-hook 'my-html-helper-timestamp)
-;; 		   ))
-
-;;       (add-hook 'html-helper-mode-hook
-;; 		'(lambda ()
-;; 		   (setq html-helper-basic-offset 4)
-		   
-;; 		   (set
-;; 		    (make-local-variable 'time-stamp-format)
-;; 		    "%:d-%:m-%:y")
-
-;; 		   ;;? Add hitop tags to html-helper-types-to-install?
-;; 		   ;;? This looks quite hairy
-;; 		   (turn-on-auto-fill)))))
+  (mmm-add-group
+   'jsp-pages
+   '((jsp-code
+      :submode 'java-mode
+      :match-face (("<%!" . mmm-declaration-submode-face)
+		   ("<%=" . mmm-output-submode-face)
+		   ("<%"  . mmm-code-submode-face))
+      :front "<%[!]?"
+      :back "%>"
+      :insert ((?% jsp-code nil @ "<%" @ " " _ " " @ "%>" @)
+	       (?! jsp-declaration nil @ "<%!" @ " " _ " " @ "%>" @)
+	       (?= jsp-expression nil @ "<%=" @ " " _ " " @ "%>" @))
+      )
+     (jsp-directive
+      :submode text-mode
+      :face mmm-special-submode-face
+      :front "<%@"
+      :back "%>"
+      :insert ((?@ jsp-directive nil @ "<%@" @ " " _ " " @ "%>" @))
+      )
+     )))
 
 
 (message "Done with my-web-mode.el customisations")
