@@ -427,25 +427,26 @@
 (if I-am-in-X
   (if I-am-at-work
       (progn
-	(setq default-frame-alist '((top . 0)
-				    (left . 0)
-				    ;; (left . 1300) ; right hand monitor
-				    (width . 120)
-				    (height . 50)
+	(setq initial-frame-alist '((menu-bar-lines . 1)
+				    (tool-bar-lines . nil)
+				    (width . 176)
+				    (height . 68)
+				    (left . 1200) ; right hand monitor
 				    (background-color . "DarkSlateGrey")
 				    (foreground-color . "wheat")
-				    (vertical-scroll-bars . right)
-				    (tool-bar-lines . nil))))
-    ; smaller screen at home
+				    (vertical-scroll-bars . right))))
+	
+    ; different screens at home
     (progn
-      (setq default-frame-alist '((top . 0)
+      (setq default-frame-alist '((menu-bar-lines . 1)
+				  (tool-bar-lines . nil)
+				  (top . 0)
 				  (left . 0)
 				  (width . 120)
 				  (height . 50)
 				  (background-color . "DarkSlateGrey")
 				  (foreground-color . "wheat")
-				  (vertical-scroll-bars . right)
-				  (tool-bar-lines . nil))))))
+				  (vertical-scroll-bars . right))))))
 
 ;; Create new frame
 ;
