@@ -50,14 +50,14 @@
     "-C net-snmp -f Makefile.net-snmp"
     "-C third-party/libxml -f ../local-config/Makefile.libxml"
     "-C nms-manager-apps -f Makefile"
-    "build-nms-apps")
+    "build-nms")
   "A List of CBNL build targets")
 
 ;; current-build-target
 ;
 ; *CHANGE* You can set your default build target here
 (defvar current-build-target
-  (concat "build-nms-apps")
+  (concat "build-nms")
   "Describes the current build target")
 
 ;; current-build-flags
@@ -66,13 +66,14 @@
 
 (defvar cbnl-build-flags
   '("VECTASTARBUILD=1 CROSS_COMPILE=ppc8xx"
-    "GTK=2 PLATFORM=Linux_Desktop"
+    "PLATFORM=Linux_Desktop"
+    "PLATFORM=Linux_Desktop EMSDEBUG=1"
     "GTK=2")
   "Describes the current build flags")
 
 
 (defvar current-build-flags
-  (concat "GTK=2 PLATFORM=Linux_Desktop")
+  (concat "PLATFORM=Linux_Desktop EMSDEBUG=1")
   "Describes the current default build flags")
 
 (message "Defined CBNL project variables")
