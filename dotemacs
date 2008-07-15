@@ -907,6 +907,13 @@ point."
 	    (message "Setup compile-mode")))))
 
 
+;; Makefiles
+;
+; The auto-mode-alist isn't quite set-up to handle Makefile.something
+(setq auto-mode-alist
+      (append (list (cons "Makefile\.*" 'makefile-gmake-mode))
+	      auto-mode-alist))
+
 ;; Web Development Modes
 ;
 ; I have an enormous hack which  is autoloaded from html-helper-mode,
