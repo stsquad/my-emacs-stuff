@@ -94,6 +94,7 @@
 ; (my-c-style-guesser "/home/alex/src/gtk-gnutella/gtk2-gnutella/src/core/bitzi.c")
 ; (my-c-style-guesser "/home/alex/src/cvsps.git/cvsps.c")
 ; (my-c-style-guesser "nms-manager-apps/vsalarmd/snmp_interface.c")
+; (my-c-style-guesser "/export/src/parsecvs.git/tree.c")
 
 ;;
 ;; my-c-mode-hook is called every time
