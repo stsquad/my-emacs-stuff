@@ -922,7 +922,9 @@ point."
 ; However if nxml-mode is about lets just use that
 
 (if (file-exists-p "~/.emacs.d/nxml/autostart.el")
-    (load-file "~/.emacs.d/nxml/autostart.el")
+    (progn
+      (load-file "~/.emacs.d/nxml/autostart.el")
+      (setq nxhtml-skip-welcome t))
   (if (locate-library "my-web-mode")
       (if (fboundp 'html-helper-mode-version)
 	  (load-library "my-web-mode")
