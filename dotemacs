@@ -428,8 +428,8 @@
 (if I-am-in-X
   (if I-am-at-work
       (progn
-	(setq initial-frame-alist '((menu-bar-lines . 1)
-				    (tool-bar-lines . nil)
+	(setq default-frame-alist '((menu-bar-lines . 1)
+				    (tool-bar-lines . 0)
 				    (width . 176)
 				    (height . 68)
 				    (left . 1200) ; right hand monitor
@@ -440,7 +440,7 @@
     ; different screens at home
     (progn
       (setq default-frame-alist '((menu-bar-lines . 1)
-				  (tool-bar-lines . nil)
+				  (tool-bar-lines . 0)
 				  (top . 0)
 				  (left . 0)
 				  (width . 120)
@@ -567,31 +567,6 @@
 (put 'narrow-to-region 'disabled nil)
 
 (message "Done Display Hacks")
-
-
-;;; Minor modes
-;; Highlight changes.
-;? Timer-based M-x highlight-changes-rotate-face
-
-(if I-am-emacs-22+
-    (setq highlight-changes-colors '("red1" "red2" "red3" "red4"))
-  (setq highlight-changes-colours '("red1" "red2" "red3" "red4")))
-
-(if I-am-emacs-23+
-    (global-highlight-changes-mode t)
-  (global-highlight-changes 'passive))
-
-;; Problem is, this only appears to work when h-c-m is 'active. And it
-;; sort of clashes with font-lock then.
-(add-hook 'highlight-changes-enable-hook
-	  '(lambda ()
-	     (add-hook 
-	      'local-write-file-hooks 'highlight-changes-rotate-faces)))
-
-(add-hook 'highlight-changes-disable-hook
-	  '(lambda ()
-	     (remove-hook 
-	      'local-write-file-hooks 'highlight-changes-rotate-faces)))
 
 ;; Expands a time-stamp line
 (setq time-stamp-format "%02H:%02M on %:a, %:d %:b %:y by %u")
