@@ -25,6 +25,7 @@
 (defvar I-am-emacs-21+ (>= emacs-major-version 21))
 (defvar I-am-emacs-22  (= emacs-major-version 22))
 (defvar I-am-emacs-22+ (>= emacs-major-version 22))
+(defvar I-am-emacs-23+ (>= emacs-major-version 23))
 
 (defvar I-am-gnuemacs (string-match "GNU Emacs" (emacs-version)))
 (defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
@@ -576,7 +577,9 @@
     (setq highlight-changes-colors '("red1" "red2" "red3" "red4"))
   (setq highlight-changes-colours '("red1" "red2" "red3" "red4")))
 
-(global-highlight-changes 'passive)
+(if I-am-emacs-23+
+    (global-highlight-changes-mode t)
+  (global-highlight-changes 'passive))
 
 ;; Problem is, this only appears to work when h-c-m is 'active. And it
 ;; sort of clashes with font-lock then.
