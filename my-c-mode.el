@@ -178,7 +178,7 @@
 (add-hook 'cperl-mode-hook
 	  '(lambda ()
 	     (cperl-set-style "BSD")
-	     (setq cperl-hairy                                 t
+	     (setq cperl-hairy                                 nil
 	           cperl-merge-trailing-else                   nil
 	           cperl-tab-always-indent                     nil
 	           cperl-auto-newline                          nil
@@ -218,10 +218,6 @@
       
       ; ensure the default compile command is sensible
       (setq compile-command (format "cd %s && make -k" current-project-root))
-      ; Some keybindsings for compile-command and recompile
-      (global-set-key (kbd "C-c c") 'compile)
-      (global-set-key (kbd "<f3>")  'compile)
-      (global-set-key (kbd "C-c r") 'recompile)
       ; Tweak some variables
       (setq compilation-scroll-output t
       ; compilation-buffer-name-function nil
@@ -229,6 +225,11 @@
 	    compilation-window-height 10)
       (message "Setup compile-mode"))
     (message "Unable to find compile libs...")))
+
+; Always set the global keybindings
+(global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "<f3>")  'compile)
+(global-set-key (kbd "C-c r") 'recompile)
 
 
 (message "Finished my-c-mode.el customisation")
