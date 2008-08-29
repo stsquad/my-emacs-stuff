@@ -45,6 +45,23 @@
 (defvar I-am-on-MacOSX (string-match "Carbon" (emacs-version)))
 (defvar I-am-remote (getenv "SSH_TTY"))
 
+;; Custom command line options
+;
+; These are not handled until the end of .emacs
+
+; Emacs takes a load of time to start up so we may want a server
+(defun load-my-server (arg)
+  "Load my-emacs-server if possible in response to a -server argument
+on the command line"
+  (if (locate-library "my-emacs-server")
+      (load-library "my-emacs-server")
+    (message (format "Skipping my-emacs-server %S"
+		     (locate-library "my-emacs-server")))))
+
+(add-to-list 'command-switch-alist '("server" . load-my-server))
+
+;(message (format "command line processed %S" command-line-processed))
+
 ;;
 ;; Basic config variables
 ;;
@@ -1143,44 +1160,6 @@ point."
   (if (file-exists-p bs)
       (if (locate-library "cbnl")
 	  (load-library "cbnl"))))
-
-;;
-;; Emacs Server
-;;
-; Emacs takes a load of time to start up, lets consider if we should
-; start the server up. We also want to ensure new files appear in new
-; frames and bind C-c C-k to kill the client session without warning
-
-(if I-am-in-X
-    (progn
-      
-      ; start server, kill any existing ones
-;      (server-start t)
-      (server-start)
-      
-      (defun my-server-switch-hook ()
-	"My hook to run on server switch"
-	(message "my-server-switch-hook")
-	(let ((server-buf (current-buffer)))
-                  (bury-buffer)
-                  (switch-to-buffer-other-frame server-buf))
-	(local-set-key (kbd "C-x C-c") 'server-edit)
-	(local-set-key (kbd "C-x k") 'server-edit))
-
-      (add-hook 'server-switch-hook 'my-server-switch-hook)
-
-      ; kill new buffers when done
-      (custom-set-variables '(server-kill-new-buffers t))
-
-      (defun my-server-done-hook ()
-	"My hook when the server is done"
-	(delete-frame))
-
-      (add-hook 'server-done-hook 'my-server-done-hook)
-
-      (message "Started emacs-server")))
-
-
 
 (message "Done .emacs")
 
