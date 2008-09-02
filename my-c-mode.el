@@ -75,6 +75,8 @@
      (cons (purecopy (car elt)) (cdr elt)))
    '(
      (".*/linux.*/.*\\.[ch]$" . "linux")  
+     (".*/.*kernel.*/.*\\.[ch]$" . "linux")
+     (".*/.*linux/.*\\.[ch]$" . "linux")
      (".*binutils.*\\.[ch]$"  . "gnu")
      (".*gtk-gnutella.*"      . "gtkg-style")
      (".*mysrc.*$"            . "my-c-style")))
@@ -82,7 +84,7 @@
 
 ; You can add to the alist with something like:
 ; (setq my-c-styles-alist (cons '(".*mysrc.*$" . my-c-style) my-c-styles-alist))
-   
+
 (defun my-c-style-guesser(filename)
   "Guess the C style we should use based on the path of the buffer"
   (message (concat "my-c-style-guesser " filename))
@@ -95,6 +97,10 @@
 ; (my-c-style-guesser "/home/alex/src/cvsps.git/cvsps.c")
 ; (my-c-style-guesser "nms-manager-apps/vsalarmd/snmp_interface.c")
 ; (my-c-style-guesser "/export/src/parsecvs.git/tree.c")
+; (my-c-style-guesser "/eng/ajb/ft-kernel.git/net/atm/common.c")
+; (my-c-style-guesser "/export/csrc/ppc-linux/common.c")
+; (my-c-style-guesser "/export/csrc/intel-linux/common.c")
+
 
 ;;
 ;; my-c-mode-hook is called every time
