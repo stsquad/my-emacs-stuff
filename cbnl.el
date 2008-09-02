@@ -218,11 +218,21 @@
 
 ;; TAGs support
 ;
+; This used to just do a global TAGS file but there is a lot of
+; duplicated code in the code base so really I need to do a TAGS file
+; per app.
+;
+
+;(file-name-directory buffer-file-name) )
+
+
 (defadvice find-tag (before c-tag-file activate)
-  "Automatically create tags file."
-  (let ((tag-file (concat current-project-root "/TAGS")))
+  "Automatically create tags file for an app."
+  (let* ((app-dir (file-name-directory buffer-file-name))
+	(tag-file (concat  app-dir "TAGS")))
      (unless (file-exists-p tag-file)
-       (shell-command (concat "cd " current-project-root "; find include/common/ include/ems/ nms-manager-apps/ -iname \"*.[ch]\" | etags -o " current-project-root "/TAGS -")))
+       (shell-command
+	(concat "cd " current-project-root "; find include/common/ include/ems/ nms-manager-apps/lib* " app-dir " -iname\"*.[ch]\" | etags -o " tag-file " -")))
      (visit-tags-table tag-file)))
 
 
