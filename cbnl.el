@@ -169,7 +169,7 @@
     (indent-tabs-mode . nil)
 
     ; only indent if point left of line
-    (c-tab-always-indent . nil)
+    (c-tab-always-indent . t)
     
     (c-comment-only-line-offset 0)
     (c-electric-pound-behavior . (alignleft))
@@ -224,16 +224,19 @@
 ;
 
 ;(file-name-directory buffer-file-name) )
-
+; (string-match "/lib" "nms-manager-apps/libgrok")
+; (string-match "/lib" "/export/csrc/work.git/nms-manager-apps/vsbs/")
 
 (defadvice find-tag (before c-tag-file activate)
   "Automatically create tags file for an app."
   (let* ((app-dir (file-name-directory buffer-file-name))
-	(tag-file (concat  app-dir "TAGS")))
-     (unless (file-exists-p tag-file)
-       (shell-command
-	(concat "cd " current-project-root "; find include/common/ include/ems/ nms-manager-apps/lib* " app-dir " -iname\"*.[ch]\" | etags -o " tag-file " -")))
-     (visit-tags-table tag-file)))
+	 (tag-file (concat  app-dir "TAGS")))
+    (unless (or	 (string-match "/lib" app-dir)
+		 (string-match "/include" app-dir))
+      (unless  (file-exists-p tag-file)
+	(shell-command
+	 (concat "cd " current-project-root "; find include/common/ include/ems/ nms-manager-apps/lib* " app-dir " -iname\"*.[ch]\" | etags -o " tag-file " -")))
+      (visit-tags-table tag-file))))
 
 
 (message "Done with cbnl customisations")
