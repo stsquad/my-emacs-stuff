@@ -135,10 +135,6 @@
 
 (add-hook 'c-mode-hook 'my-c-mode-hook)
 
-; enable tab completions for cc-mode languages
-(add-hook 'c-mode-hook 'my-tab-fix)
-
-;
 ; Java stuff
 ; (OpenNMS standards http://www.opennms.org/index.php/Code_conventions)
 (add-hook 'java-mode-hook (lambda () 
@@ -205,9 +201,6 @@
 	     (define-key cperl-mode-map "\C-cc" 'cperl-check-syntax)
 	     (define-key cperl-mode-map "\C-j"  'cperl-linefeed)
 	     (message "Ran cperl-mode hook")))
-
-
-(add-hook 'perl-mode-hook         'my-tab-fix)
 
 
 ;; Compile Mode Stuff
