@@ -863,7 +863,8 @@ expression of the same type as those required by around advices"
 			ad-do-it
 			(when (and (= p (point))
 				   (not (bolp))
-				   (looking-at "\\_>"))
+				   (looking-at "\\_>")
+				   (not (minibufferp)))
 			  (dabbrev-expand nil))))
 
 
