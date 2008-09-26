@@ -925,7 +925,11 @@ expression of the same type as those required by around advices"
 (if (file-exists-p "~/.emacs.d/nxml/autostart.el")
     (progn
       (load-file "~/.emacs.d/nxml/autostart.el")
-      (setq nxhtml-skip-welcome t))
+      (setq nxhtml-skip-welcome t)
+      (custom-set-faces
+       '(mumamo-background-chunk-major ((((class color) (min-colors 88)
+					  (background dark)) nil)))
+       '(mumamo-background-chunk-submode ((((class color) (min-colors 88) (background dark)) (:background "gray10"))))))
   (if (locate-library "my-web-mode")
       (if (fboundp 'html-helper-mode-version)
 	  (load-library "my-web-mode")
