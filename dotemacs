@@ -840,6 +840,10 @@ on the command line"
 		(lambda ()
 		  (setq truncate-lines t)))
 
+;; Tab Completions
+;
+; Using Advice ()
+
 (defmacro ad-add-advice-to-key (key expr)
   "Around advice the key KEY with expression EXPR. KEY should be
 a key in the format accepted by key-binding and such, and EXPR an
