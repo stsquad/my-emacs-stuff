@@ -227,17 +227,23 @@
 ; (string-match "/lib" "nms-manager-apps/libgrok")
 ; (string-match "/lib" "/export/csrc/work.git/nms-manager-apps/vsbs/")
 
-(defadvice find-tag (before c-tag-file activate)
-  "Automatically create tags file for an app."
+(defun create-cbnl-tags ()
+  (interactive)
   (let* ((app-dir (file-name-directory buffer-file-name))
 	 (tag-file (concat  app-dir "TAGS")))
     (unless (or	 (string-match "/lib" app-dir)
 		 (string-match "/include" app-dir))
       (unless  (file-exists-p tag-file)
-	(shell-command
-	 (concat "cd " current-project-root "; find include/common/ include/ems/ nms-manager-apps/lib* " app-dir " -iname\"*.[ch]\" | etags -o " tag-file " -")))
+	(let* ((find-paths (concat "include/common/ include/ems/ nms-manager-apps/lib* " app-dir))
+	       (command (concat "cd " current-project-root "; find "  find-paths  " -iname \"*.[ch]\" | etags -o " tag-file " -")))
+	  (message (concat "Creating tags with:" command))
+	  (shell-command command)))
       (visit-tags-table tag-file))))
 
+
+(defadvice find-tag (before c-tag-file activate)
+  "Automatically create tags file for an app."
+  (create-cbnl-tags))
 
 (message "Done with cbnl customisations")
 
