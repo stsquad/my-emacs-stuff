@@ -937,7 +937,14 @@ expression of the same type as those required by around advices"
    '(mumamo-background-chunk-submode ((((class color)
 					(min-colors 88) (background dark)) (:background
 					"gray10")))))))
-      
+
+(if (locate-library "htmlize")
+    (progn
+      (load-library "htmlize")
+      (setq htmlize-output-type 'inline-css)))
+
+
+
 ;;;   (if (locate-library "my-web-mode")
 ;;;       (if (fboundp 'html-helper-mode-version)
 ;;; 	  (load-library "my-web-mode")
