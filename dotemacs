@@ -1153,7 +1153,6 @@ expression of the same type as those required by around advices"
 	  (load-library "color-theme")
 	  (if I-am-in-console
 	      (progn
-		(color-theme-initialize)
 		(color-theme-euphoria))))))
 
 ;; Saveplace - Jump to where I last was when I edit a file
