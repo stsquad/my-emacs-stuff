@@ -24,16 +24,18 @@
 (defun my-server-switch-hook ()
   "My hook to run on server switch"
   (message "my-server-switch-hook")
-  (let ((server-buf (current-buffer)))
-    (bury-buffer)
-    (iconify-frame)
-    (switch-to-buffer-other-frame server-buf))
+  (if I-am-in-X
+      (let ((server-buf (current-buffer)))
+	(bury-buffer)
+	(iconify-frame)
+	(switch-to-buffer-other-frame server-buf)))
   (local-set-key (kbd "C-x C-c") 'server-edit)
   (local-set-key (kbd "C-x k") 'server-edit))
 
 (defun my-server-done-hook ()
   "My hook when the server is done"
-  (delete-frame))
+    (if I-am-in-X
+	(delete-frame)))
 
 (defun my-server-kill-emacs-hook ()
   "Clean up server files when we exit"
