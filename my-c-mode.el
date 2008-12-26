@@ -62,6 +62,27 @@
     (c-tab-always-indent . t))
   "Style for GTK Gnutella Development")
 
+(c-add-style "gtkg-style" gtkg-style)
+
+; Rockbox
+(defconst rockbox-c-style
+  '(
+    "my-c-style" ; derive from my-c-style
+    (c-basic-offset . 4)
+    (c-comment-only-line-offset . 0)
+    (c-hanging-braces-alist     . ((substatement-open before after)))
+    (c-offsets-alist . ((topmost-intro        . 0)
+			(topmost-intro-cont   . 0)
+			(substatement         . +)
+			(substatement-open    . 0)
+			(statement-case-intro . +)
+			(statement-case-open  . 0)
+			(case-label           . +)
+			))
+    )
+  "Rockbox C Programming Style")
+
+(c-add-style "rockbox-c-style" rockbox-c-style)
 
 ;; my-c-style-guesser
 ;
@@ -79,6 +100,7 @@
      (".*/.*linux/.*\\.[ch]$" . "linux")
      (".*binutils.*\\.[ch]$"  . "gnu")
      (".*gtk-gnutella.*"      . "gtkg-style")
+     (".*rockbox.*\\.[ch]$"   . "rockbox-c-style")
      (".*mysrc.*$"            . "my-c-style")))
   "A list of reg-ex to styles for my-c-style-guesser")
 
@@ -100,7 +122,7 @@
 ; (my-c-style-guesser "/eng/ajb/ft-kernel.git/net/atm/common.c")
 ; (my-c-style-guesser "/export/csrc/ppc-linux/common.c")
 ; (my-c-style-guesser "/export/csrc/intel-linux/common.c")
-
+; (my-c-style-guesser "/home/alex/src/rockbox/rockbox.git-svn/apps/playlist.c")
 
 ;;
 ;; my-c-mode-hook is called every time
@@ -128,7 +150,7 @@
 	      (c-set-style style)
 					; fallback
 	    (message "Falling back to defaults")
-	    (c-set-style "user")))))
+	    (c-set-style "my-c-style")))))
 
   (if I-am-emacs-21+
       (cwarn-mode)))
