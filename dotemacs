@@ -248,15 +248,15 @@ on the command line"
 
 (if (file-exists-p (concat current-project-root "/.git"))
     (progn
-      (message "Using git-grep for searches")
-      (setq grep-command "git-grep -n ")
+      (message "Using git grep for searches")
+      (setq grep-command "git grep -n ")
 
       (defun my-find (search)
         "A search using git-grep"
         (interactive "sSearch string:")
         (cd current-project-root)
-        (let ((buffer (concat "*git-grep for " search "*" ))
-              (command (concat "git-grep -n " search)))
+        (let ((buffer (concat "*git grep for " search "*" ))
+              (command (concat "git grep -n " search)))
           (shell-command command buffer)
           (pop-to-buffer buffer)
           (grep-mode))))
@@ -354,6 +354,8 @@ on the command line"
 ; I also have the same issues if I run in console mode under MacOS
 ;
 ; C-v and M-v scroll up and down, but I rarely remember that
+;
+; FIXME: This breaks if I ssh and resume an existing screen session
 (if (or I-am-remote (and I-am-on-MacOSX I-am-in-console))
     (progn
       ; We set the keyboard coding system to utf-8 which makes some
