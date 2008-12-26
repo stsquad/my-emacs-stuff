@@ -355,25 +355,30 @@ on the command line"
 ;
 ; C-v and M-v scroll up and down, but I rarely remember that
 ;
-; FIXME: This breaks if I ssh and resume an existing screen session
+; FIXME: This breaks if I ssh and resume an existing screen session,
+;tweaked by adding an interactive function to do the keys
+
+(defun my-tweak-macos-keys ()
+  (interactive)
+					; We set the keyboard coding system to utf-8 which makes some
+					; things behave (I'm not totally sure why, must read up more)
+  (set-keyboard-coding-system 'utf-8)
+
+					; Re-map £ to # (which is what I want when I hit Shift-3 on the
+					; Mac
+  (global-set-key (kbd "£") "#")
+  
+					; this is what I get when I hit Alt-ArrowKeys on the Mac
+  (global-set-key (kbd "ESC <up>") 'scroll-down)
+  (global-set-key (kbd "ESC <down>") 'scroll-up)
+  (global-set-key (kbd "ESC <left>") 'beginning-of-buffer)
+  (global-set-key (kbd "ESC <right>") 'end-of-buffer)
+
+					; done
+  (message "tweaked keys for remote/macos console mode"))
+
 (if (or I-am-remote (and I-am-on-MacOSX I-am-in-console))
-    (progn
-      ; We set the keyboard coding system to utf-8 which makes some
-      ; things behave (I'm not totally sure why, must read up more)
-      (set-keyboard-coding-system 'utf-8)
-
-      ; Re-map £ to # (which is what I want when I hit Shift-3 on the
-      ; Mac
-      (global-set-key (kbd "£") "#")
-      
-      ; this is what I get when I hit Alt-ArrowKeys on the Mac
-      (global-set-key (kbd "ESC <up>") 'scroll-down)
-      (global-set-key (kbd "ESC <down>") 'scroll-up)
-      (global-set-key (kbd "ESC <left>") 'beginning-of-buffer)
-      (global-set-key (kbd "ESC <right>") 'end-of-buffer)
-
-      ; done
-      (message "tweaked keys for remote/macos console mode")))
+    (my-tweak-macos-keys))
 
 ;; Make Bookmark handling a little more sane
 ;
