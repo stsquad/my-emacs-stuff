@@ -50,9 +50,10 @@
 ; These are not handled until the end of .emacs
 
 ; Emacs takes a load of time to start up so we may want a server
-(defun load-my-server (arg)
+(defun load-my-server (&optional arg)
   "Load my-emacs-server if possible in response to a -server argument
 on the command line"
+  (interactive)
   (if (locate-library "my-emacs-server")
       (load-library "my-emacs-server")
     (message (format "Skipping my-emacs-server %S"

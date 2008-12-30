@@ -15,10 +15,12 @@
 ; Check for a running server, we do this by looking for the server
 ; socket "/tmp/emacs${UID}/server"
 
+
 (defun is-server-running ()
   "Check is an emacs-server process is already running"
+  (interactive)
   (let ((socket-path (concat server-socket-dir "/server")))
-    (file-exists-p socket-path)))
+    (server-running-p socket-path)))
 
 ;; Hooks
 (defun my-server-switch-hook ()
