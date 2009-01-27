@@ -54,4 +54,5 @@
 ; (assoc-default "ELF" binary-helper-alist 'string-match)
 
 ;(find-binary-file "/bin/ls")
+;(find-binary-file "~/src/rockbox/ipod.build/apps/codecs/aac.elf")
 
