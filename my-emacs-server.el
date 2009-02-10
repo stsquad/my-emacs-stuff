@@ -20,7 +20,10 @@
   "Check is an emacs-server process is already running"
   (interactive)
   (let ((socket-path (concat server-socket-dir "/server")))
-    (server-running-p socket-path)))
+    (if (functionp 'server-running-p)
+	(server-running-p socket-path)
+      ; fall back, not as reliable
+      (file-exists-p socket-path))))
 
 ;; Hooks
 (defun my-server-switch-hook ()
