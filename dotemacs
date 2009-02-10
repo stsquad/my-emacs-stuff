@@ -931,21 +931,21 @@ expression of the same type as those required by around advices"
 
 ;; Web Development Modes
 ;
-; I have an enormous hack which  is autoloaded from html-helper-mode,
-; if the autoload isn't setup we won't get far.
-;
-; However if nxml-mode is about lets just use that
+; I have an enormous hack (my-web-mode) which didn't work very well.
+; Use nxhtml-mode instead. However it only works with emacs23
+; (the emacs22 autoload fails due to missing files)
 
-(if (file-exists-p "~/.emacs.d/nxhtml/autostart.el")
-    (progn
-      (load-file "~/.emacs.d/nxhtml/autostart.el")
-      (setq nxhtml-skip-welcome t)
-      (custom-set-faces
-   '(mumamo-background-chunk-major ((((class color) (min-colors 88)
-				      (background dark)) nil)))
-   '(mumamo-background-chunk-submode ((((class color)
-					(min-colors 88) (background dark)) (:background
-					"gray10")))))))
+(if I-am-emacs-23+
+    (if (file-exists-p "~/.emacs.d/nxhtml/autostart.el")
+	(progn
+	  (load-file "~/.emacs.d/nxhtml/autostart.el")
+	  (setq nxhtml-skip-welcome t)
+	  (custom-set-faces
+	   '(mumamo-background-chunk-major ((((class color) (min-colors 88)
+					      (background dark)) nil)))
+	   '(mumamo-background-chunk-submode ((((class color)
+						(min-colors 88) (background dark)) (:background
+						"gray10"))))))))
 
 (if (locate-library "htmlize")
     (progn
@@ -978,38 +978,6 @@ plus add font-size: 8pt"
 
       (global-set-key [(f6)] (lambda (beg end)
                          (interactive "r") (my-htmlize-region beg end)))))
-
-;;;   (if (locate-library "my-web-mode")
-;;;       (if (fboundp 'html-helper-mode-version)
-;;; 	  (load-library "my-web-mode")
-;;;         ; If we haven't loaded html-helper-mode yet we had better make
-;;; 	; sure it's on the system
-;;; 	(if (locate-library "html-helper-mode")
-;;; 	    (progn
-
-;;; 	      ; Ensure the autoloads are setup (Ubuntu doesn't for the
-;;; 	      ; anything other than html-helper-mode)
-
-;;; 	      (if (not (fboundp 'html-helper-mode))
-;;; 		  (autoload
-;;; 		    'html-helper-mode "html-helper-mode"
-;;; 		    "Enhanced HTML mode" t))
-
-;;; 	      (if (not (fboundp 'jsp-html-helper-mode))
-;;; 		  (autoload
-;;; 		    'jsp-html-helper-mode "html-helper-mode"
-;;; 		    "JSP with Enhanced HTML mode" t))
-
-;;; 	      (if (not (fboundp 'php-html-helper-mode))
-;;; 		  (autoload
-;;; 		    'php-html-helper-mode "html-helper-mode"
-;;; 		    "PHP with Enhanced HTML mode" t))
-
-;;; 					; Add our web-mode hook on html-helper-mode loading
-;;; 	      (add-hook 'html-helper-load-hook '(lambda()
-;;; 						  (unless (featurep 'my-web-mode)
-;;; 						    (load-library "my-web-mode")))))))))
-
 
 
 ;; Elisp mode
