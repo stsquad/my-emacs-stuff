@@ -59,7 +59,7 @@ on the command line"
     (message (format "Skipping my-emacs-server %S"
 		     (locate-library "my-emacs-server")))))
 
-(add-to-list 'command-switch-alist '("server" . load-my-server))
+(add-to-list 'command-switch-alist '("--server" . load-my-server))
 
 ;(message (format "command line processed %S" command-line-processed))
 
@@ -1161,6 +1161,7 @@ expression of the same type as those required by around advices"
 	  (load-library "color-theme")
 	  (if I-am-in-console
 	      (progn
+		(color-theme-initialize)
 		(color-theme-euphoria))))))
 
 ;; Saveplace - Jump to where I last was when I edit a file
