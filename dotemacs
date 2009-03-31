@@ -764,7 +764,7 @@ on the command line"
 	    (progn
 					; select aspell out of preference
 	      (if (eval aspell-path)
-		  (setq ispell-program-name "aspell"))
+		  (setq ispell-program-name aspell-path))
 					; reset British dict on loading file
 	      (add-hook 'find-file-hooks
 			'(lambda ()
