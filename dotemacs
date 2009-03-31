@@ -42,7 +42,8 @@
 ;;
 (defvar I-am-in-X (eval 'window-system));
 (defvar I-am-in-console (not (eval 'window-system)))
-(defvar I-am-on-MacOSX (string-match "Carbon" (emacs-version)))
+(defvar I-am-on-MacOSX (or (string-match "Carbon" (emacs-version))
+			   (string-match "apple-darwin" (emacs-version))))
 (defvar I-am-remote (getenv "SSH_TTY"))
 
 ;; Custom command line options
