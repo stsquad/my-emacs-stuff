@@ -11,6 +11,39 @@
 ; file that it is my right to license ;-)
 ;
 
+;; Compiled .emacs work around
+;
+; If I've updated via an SCM there is a chance the compiled
+; code is out of date. In which case we really should unlink
+; the .elc file and recompile the .emacs
+;
+; I also want to auto compile any .el. As we work with a vc-repo (to
+; which .emacs links) we  straight away want to resolve where ~/.emacs
+; resolves to first
+
+
+(defun autocompile nil
+  "compile itself if ~/.emacs"
+  (interactive)
+  (require 'bytecomp)
+  (let ((dotemacs (expand-file-name "~/.emacs")))
+    (if (string= (buffer-file-name) (file-chase-links dotemacs))
+      (byte-compile-file dotemacs))))
+
+(add-hook 'after-save-hook 'autocompile)
+
+; check the compiled version not out of date
+(if (string-match ".elc" user-init-file)
+    (progn
+      (let* ((src-file (file-name-sans-extension user-init-file)))
+	(if (file-exists-p src-file)
+	  (if (file-newer-than-file-p src-file user-init-file)
+	      (progn
+		(message "working around newer source file")
+		(byte-compile-file src-file)
+		(load src-file)))))))
+		
+	
 (message (concat user-init-file " start"))
 
 (setq debug-on-error t)
@@ -998,21 +1031,6 @@ plus add font-size: 8pt"
 	     (eldoc-mode t)
 	     (turn-on-auto-fill)
 	     (imenu-add-to-menubar "Imenu")))
-
-;; Auto-compile my .emacs
-;
-; Given that I tend to edit in my vc-repo (to which .emacs links) we
-; straight awaywant to resolve where ~/.emacs resolves to first
-
-(defun autocompile nil
-  "compile itself if ~/.emacs"
-  (interactive)
-  (require 'bytecomp)
-  (let ((dotemacs (expand-file-name "~/.emacs")))
-    (if (string= (buffer-file-name) (file-chase-links dotemacs))
-      (byte-compile-file dotemacs))))
-
-(add-hook 'after-save-hook 'autocompile)
 
 
 (add-hook 'text-mode-hook
