@@ -47,20 +47,19 @@
   (if (is-server-running)
       (delete-file (concat server-socket-dir "/server"))))
 
-(unless (is-server-running)
-      (server-start)
+(server-start)
       
-      ; kill new buffers when done
-      (custom-set-variables '(server-kill-new-buffers t))
+					; kill new buffers when done
+(custom-set-variables '(server-kill-new-buffers t))
       
-      ; hook functions
-      (add-hook 'server-switch-hook 'my-server-switch-hook)
-      (add-hook 'server-done-hook 'my-server-done-hook)
-      (add-hook 'kill-emacs-hook 'my-server-kill-emacs-hook)
+					; hook functions
+(add-hook 'server-switch-hook 'my-server-switch-hook)
+(add-hook 'server-done-hook 'my-server-done-hook)
+(add-hook 'kill-emacs-hook 'my-server-kill-emacs-hook)
 
-      ; minimise the frame
-      (iconify-frame)
+					; minimise the frame
+(iconify-frame)
       
-      (message "Started emacs-server"))
+(message "Started emacs-server")
 
 
