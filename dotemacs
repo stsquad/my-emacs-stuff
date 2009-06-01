@@ -1191,20 +1191,20 @@ plus add font-size: 8pt"
 ;;
 (if (locate-library "erc")
     (autoload 'erc-select "erc" "Start ERC" t))
-;;
-;; Desktop, save files and restore
-;;
 
-;(desktop-load-default)
-;(setq history-length 250)
-;(add-to-list 'desktop-globals-to-save 'file-name-history)
-;(desktop-read)
-;(setq desktop-enable t)
-
+;;
+;; CBNL Stuff
+;;
 (let ((bs (concat current-project-root "/build-system")))
   (if (file-exists-p bs)
       (if (locate-library "cbnl")
 	  (load-library "cbnl"))))
+
+;; Finally enable desktop mode
+; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
+
+(setq desktop-dirname current-project-root)
+(desktop-save-mode 1)
 
 (message "Done .emacs")
 
