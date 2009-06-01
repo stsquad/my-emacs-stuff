@@ -229,8 +229,10 @@
 
 (defun create-cbnl-tags ()
   (interactive)
+  (message "create-cbnl-tags")
   (let* ((app-dir (file-name-directory buffer-file-name))
 	 (tag-file (concat  app-dir "TAGS")))
+    (message "app-dir:%s tag-file:%s" app-dir tag-file)
     (unless (or	 (string-match "/lib" app-dir)
 		 (string-match "/include" app-dir))
       (unless  (file-exists-p tag-file)
@@ -238,6 +240,7 @@
 	       (command (concat "cd " current-project-root "; find "  find-paths  " -iname \"*.[ch]\" | etags -o " tag-file " -")))
 	  (message (concat "Creating tags with:" command))
 	  (shell-command command)))
+      (message "Visiting: %s" tag-file)
       (visit-tags-table tag-file))))
 
 
