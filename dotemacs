@@ -89,7 +89,9 @@
 on the command line"
   (interactive)
   (if (locate-library "my-emacs-server")
-      (load-library "my-emacs-server")
+      (progn
+	(load-library "my-emacs-server")
+	(my-server-start))
     (message (format "Skipping my-emacs-server %S"
 		     (locate-library "my-emacs-server")))))
 
