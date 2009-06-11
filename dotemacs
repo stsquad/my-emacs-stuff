@@ -690,20 +690,20 @@ on the command line"
 
 (if (locate-library "ediff")
     (progn
+      (autoload 'ediff-files "ediff")
+      (autoload 'ediff-buffers "ediff")
 
-      (defun do-ediff-cusomisations ()
-	"Set up my ediff customisations"
-	(setq diff-switches               "-u"
-	      ediff-custom-diff-options   "-U3"
-	      ediff-split-window-function 'split-window-horizontally
-	      ediff-window-setup-function 'ediff-setup-windows-plain)
+      (eval-after-load "ediff" '(progn
+				  (message "doing ediff customisation")
+				  (setq diff-switches               "-u"
+					ediff-custom-diff-options   "-U3"
+					ediff-split-window-function 'split-window-horizontally
+					ediff-window-setup-function 'ediff-setup-windows-plain)
 
-	(add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
-	(add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
-	(add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display))
+				  (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+				  (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+				  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
 
-      (autoload 'ediff-files "ediff");
-      (autoload 'ediff-buffers "ediff");
 
       ;; my-ediff-secondary
       ;
@@ -713,9 +713,7 @@ on the command line"
       (defun my-ediff-secondary ()
 	"Load the secondary equivilent file of this buffer and ediff it"
 	(interactive)
-	; ensure customisations have run
-	(do-ediff-cusomisations)
-					; sanity
+	; sanity
 	(set-secondary-root-if-not)
 	(message (concat "buffer name is " (buffer-file-name)))
 	(let
@@ -1205,8 +1203,10 @@ plus add font-size: 8pt"
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
 
-(setq desktop-dirname current-project-root)
-(desktop-save-mode 1)
+(if I-am-emacs-22+
+    (progn
+     (setq desktop-dirname current-project-root)
+     (desktop-save-mode 1)))
 
 (message "Done .emacs")
 
