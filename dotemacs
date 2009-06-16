@@ -1032,10 +1032,16 @@ plus add font-size: 8pt"
 	     (turn-on-auto-fill)
 	     (imenu-add-to-menubar "Imenu")))
 
-
+; I don't want all text-mode stuff to be auto-fill as editing text
+; boxes can screw with the formatting (especially if html is involved)
 (add-hook 'text-mode-hook
 	  '(lambda ()
-	     (turn-on-auto-fill)))
+	     (if (string-match "itsalltext" (buffer-file-name))
+		 (progn
+		   (message "enabling long lines for itsalltext")
+		   (longlines-mode 1)
+		   (longlines-show-hard-newlines))
+	       (turn-on-auto-fill))))
 
 (add-hook 'texinfo-mode-hook
 	  '(lambda ()
