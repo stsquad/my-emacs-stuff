@@ -1214,7 +1214,17 @@ plus add font-size: 8pt"
 ;; ERC
 ;;
 (if (locate-library "erc")
-    (autoload 'erc-select "erc" "Start ERC" t))
+    (progn
+      (autoload 'erc-select "erc" "Start ERC" t)
+      (eval-after-load "erc" '(progn
+				  (message "Doing ERC Customisation")
+
+				  ; tracking
+				  (erc-track-mode t)
+				  (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
+								  "324" "329" "332" "333" "353" "477"))
+				  ;; don't show any of this
+				  (setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))))))
 
 ;;
 ;; CBNL Stuff
