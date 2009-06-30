@@ -68,6 +68,7 @@
 
 (defvar I-am-at-work (string-match "cambridgebroadband" (system-name)))
 (defvar I-am-at-home (string-match "malory" (system-name)))
+(defvar I-am-on-netbook (string-match "trent" (system-name)))
  
 ;; Lets set some paramters if we are running as a console or under X
 ;;
@@ -487,9 +488,20 @@ on the command line"
 ;; looking at colour cells (must fix to not break emacs20, maybe)
 ;(current-frame-configuration)
 (if I-am-in-X
-  (if I-am-at-work
-      (progn
+    (cond
+     ((symbolp 'I-am-on-netbook)
 	(setq default-frame-alist '((menu-bar-lines . 1)
+				    (tool-bar-lines . 0)
+				    (width . 120)
+				    (height . 28)
+				    (left . 0) ;
+				    (background-color . "DarkSlateGrey")
+				    (foreground-color . "wheat")
+				    (vertical-scroll-bars . left))))
+       
+      
+     ((symbolp I-am-at-work)
+      (setq default-frame-alist '((menu-bar-lines . 1)
 				    (tool-bar-lines . 0)
 				    (width . 176)
 				    (height . 68)
@@ -499,7 +511,7 @@ on the command line"
 				    (vertical-scroll-bars . right))))
 	
     ; different screens at home
-    (progn
+     ((symbolp I-am-at-home)
       (setq default-frame-alist '((menu-bar-lines . 1)
 				  (tool-bar-lines . 0)
 				  (top . 0)
@@ -509,7 +521,6 @@ on the command line"
 				  (background-color . "DarkSlateGrey")
 				  (foreground-color . "wheat")
 				  (vertical-scroll-bars . right))))))
-
 ;; Create new frame
 ;
 ; This is a hack to get around the fact that default-frame-alist
