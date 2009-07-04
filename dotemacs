@@ -98,6 +98,13 @@ on the command line"
 
 (add-to-list 'command-switch-alist '("--server" . load-my-server))
 
+; However we need to avoid some things if we are going to start the
+; server
+(let ((cl-args command-line-args))
+  (while cl-args
+    (if (string-match "--server" (pop cl-args))
+	(setq will-start-server t))))
+
 ;(message (format "command line processed %S" command-line-processed))
 
 ;;
@@ -492,8 +499,8 @@ on the command line"
      ((symbolp 'I-am-on-netbook)
 	(setq default-frame-alist '((menu-bar-lines . 1)
 				    (tool-bar-lines . 0)
-				    (width . 120)
-				    (height . 28)
+				    (width . 160)
+;				    (height . 28)
 				    (left . 0) ;
 				    (background-color . "DarkSlateGrey")
 				    (foreground-color . "wheat")
@@ -1220,10 +1227,11 @@ plus add font-size: 8pt"
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
 
-(if I-am-emacs-22+
-    (progn
-     (setq desktop-dirname current-project-root)
-     (desktop-save-mode 1)))
+(unless will-start-server
+  (if I-am-emacs-22+
+      (progn
+	(setq desktop-dirname current-project-root)
+	(desktop-save-mode 1))))
 
 (message "Done .emacs")
 
