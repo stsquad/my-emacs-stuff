@@ -1198,7 +1198,7 @@ plus add font-size: 8pt"
 	  (if I-am-in-console
 	      (progn
 		(color-theme-initialize)
-		(color-theme-euphoria))))))
+		(color-theme-midnight))))))
 
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
