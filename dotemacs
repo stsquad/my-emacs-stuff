@@ -81,7 +81,7 @@
 (defvar I-am-remote (getenv "SSH_TTY"))
 
 ;; Server stuff
-(defvar will-start-server)
+(defvar will-start-server nil)
 
 ;; Custom command line options
 ;
