@@ -168,8 +168,8 @@
     (c-basic-offset . 2)
     (indent-tabs-mode . nil)
 
-    ; only indent if point left of line
-    (c-tab-always-indent . t)
+    ; only indent if point left of line, otherwise insert whitespace
+    (c-tab-always-indent . nil)
     
     (c-comment-only-line-offset 0)
     (c-electric-pound-behavior . (alignleft))
