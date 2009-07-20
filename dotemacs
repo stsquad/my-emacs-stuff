@@ -80,6 +80,9 @@
 			   (string-match "apple-darwin" (emacs-version))))
 (defvar I-am-remote (getenv "SSH_TTY"))
 
+;; Server stuff
+(defvar will-start-server)
+
 ;; Custom command line options
 ;
 ; These are not handled until the end of .emacs
@@ -966,9 +969,9 @@ expression of the same type as those required by around advices"
 	    (global-set-key (kbd "<f3>")  'compile)
 	    (global-set-key (kbd "C-c r") 'recompile)
             ; Tweak some variables
+	    (if I-am-emacs-23+
+		(setq compilation-auto-jump-to-first-error t))
 	    (setq compilation-scroll-output t
-            ; compilation-buffer-name-function nil
-		  compile-auto-highlight    t
 		  compilation-window-height 10)
 	    (message "Setup compile-mode")))))
 
@@ -1197,7 +1200,7 @@ plus add font-size: 8pt"
 	  (load-library "color-theme")
 	  (if I-am-in-console
 	      (progn
-		(color-theme-initialize)
+;		(color-theme-initialize)
 		(color-theme-midnight))))))
 
 ;; Saveplace - Jump to where I last was when I edit a file
@@ -1240,8 +1243,8 @@ plus add font-size: 8pt"
 (unless will-start-server
   (if I-am-emacs-22+
       (progn
-	(setq desktop-dirname current-project-root)
-	(desktop-save-mode 1))))
+	(desktop-save-mode 1)
+	(setq desktop-dirname current-project-root))))
 
 (message "Done .emacs")
 
