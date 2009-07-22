@@ -658,6 +658,17 @@ on the command line"
 (auto-insert-mode 1)
 (setq auto-insert-alist ())		;? html-helper
 
+;; I hate tabs - they are set in cc-mode but not everything respects that
+(setq indent-tabs-mode nil)
+
+(if I-am-emacs-23+
+    (progn
+      (setq whitespace-chars '(trailing tabs space-before-tab
+					indentation empty
+					space-after-tab)
+	    whitespace-style '(color mark))))
+
+
 ;; Speedbar (not that I use it much)
 (add-hook 'speedbar-load-hook
 	  '(lambda ()
@@ -1247,4 +1258,3 @@ plus add font-size: 8pt"
 	(setq desktop-dirname current-project-root))))
 
 (message "Done .emacs")
-
