@@ -1069,7 +1069,7 @@ plus add font-size: 8pt"
 (add-hook 'text-mode-hook
 	  '(lambda ()
 	     (if (buffer-file-name)
-		 (if string-match "itsalltext" (buffer-file-name)
+		 (if (string-match "itsalltext" (buffer-file-name))
 		     (progn
 		       (message "enabling long lines for itsalltext")
 		       (longlines-mode 1)
