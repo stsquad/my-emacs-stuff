@@ -1068,12 +1068,13 @@ plus add font-size: 8pt"
 ; boxes can screw with the formatting (especially if html is involved)
 (add-hook 'text-mode-hook
 	  '(lambda ()
-	     (if (string-match "itsalltext" (buffer-file-name))
-		 (progn
-		   (message "enabling long lines for itsalltext")
-		   (longlines-mode 1)
-		   (longlines-show-hard-newlines))
-	       (turn-on-auto-fill))))
+	     (if (buffer-file-name)
+		 (if string-match "itsalltext" (buffer-file-name)
+		     (progn
+		       (message "enabling long lines for itsalltext")
+		       (longlines-mode 1)
+		       (longlines-show-hard-newlines))
+		     (turn-on-auto-fill)))))
 
 (add-hook 'texinfo-mode-hook
 	  '(lambda ()
