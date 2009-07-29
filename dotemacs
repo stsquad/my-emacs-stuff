@@ -1213,7 +1213,10 @@ plus add font-size: 8pt"
 	  (if I-am-in-console
 	      (progn
 ;		(color-theme-initialize)
-		(color-theme-midnight))))))
+		(color-theme-midnight)
+		; some tweaks
+		(set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+		(set-face-background 'region "blue"))))))
 
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
