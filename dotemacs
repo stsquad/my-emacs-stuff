@@ -71,9 +71,10 @@
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
  
 ;; Lets set some paramters if we are running as a console or under X
-;;
-;; Why not use window-system? Well the rest of setup likes simple bool tests
-;;
+;
+; Note these are not useful for --daemon invocations and should now be
+; deprecated in favour of "live" tests on window-system
+;
 (defvar I-am-in-X (eval 'window-system));
 (defvar I-am-in-console (not (eval 'window-system)))
 (defvar I-am-on-MacOSX (or (string-match "Carbon" (emacs-version))
@@ -246,6 +247,16 @@ on the command line"
 ; (which-lookup "foo") => nil
 ; (which-lookup "emacs") = "/usr/bin/emacs"
 ; (which-lookup "ispell") => "/usr/bin/ispell"
+
+;; maybe-load-library
+;
+; A little less the using (require 'lib)
+
+(defun maybe-load-library (libname)
+  "Try and load library 'libname' if it is in the path"
+  (if (locate-library libname)
+      (load-library libname)
+    (message "Library %s not found" libname)))
 
 ;; Define a current-project-root
 ;
@@ -492,56 +503,80 @@ on the command line"
 
 
 (message "Setting up display")
+
 ;;; Display hacks
-
-;; Set the frame size to larger if on a Graphics display (we tell by
-;; looking at colour cells (must fix to not break emacs20, maybe)
-;(current-frame-configuration)
-(if I-am-in-X
-    (cond
-     ((symbolp 'I-am-on-netbook)
-	(setq default-frame-alist '((menu-bar-lines . 1)
-				    (tool-bar-lines . 0)
-				    (width . 160)
-;				    (height . 28)
-				    (left . 0) ;
-				    (background-color . "DarkSlateGrey")
-				    (foreground-color . "wheat")
-				    (vertical-scroll-bars . left))))
-       
-      
-     ((symbolp I-am-at-work)
-      (setq default-frame-alist '((menu-bar-lines . 1)
-				    (tool-bar-lines . 0)
-				    (width . 176)
-				    (height . 68)
-				    (left . 1200) ; right hand monitor
-				    (background-color . "DarkSlateGrey")
-				    (foreground-color . "wheat")
-				    (vertical-scroll-bars . right))))
-	
-    ; different screens at home
-     ((symbolp I-am-at-home)
-      (setq default-frame-alist '((menu-bar-lines . 1)
-				  (tool-bar-lines . 0)
-				  (top . 0)
-				  (left . 0)
-				  (width . 120)
-				  (height . 50)
-				  (background-color . "DarkSlateGrey")
-				  (foreground-color . "wheat")
-				  (vertical-scroll-bars . right))))))
-;; Create new frame
 ;
-; This is a hack to get around the fact that default-frame-alist
-; won't take effect until new frames get created (or so I thought, it
-; appears to take effect right away now!
+; With --daemon mode using start-up evaluation is no longer useful as
+; the .emacs will almost certainly run without window-system meaning
+; anything. Instead we should do things on the fly as new frames are
+; created.
 
-;(if I-am-in-X
-;    (progn
-;      (new-frame)
-;      (delete-frame)
-;      (message "done frame switch")))
+; First we need the colour-theme package
+
+(if I-am-emacs-22+
+    (maybe-load-library "color-theme"))
+
+; Define the default frames sizes, shouldn't apply to a tty invocation
+; TODO: handle remote sessions better, probably by probing remote X
+; geometry somehow.
+(cond
+ ((eval I-am-on-netbook)
+  (setq default-frame-alist '((menu-bar-lines . 1)
+			      (tool-bar-lines . 0)
+			      (width . 160)
+			      (height . 28)
+			      (left . 0) ;
+			      (background-color . "DarkSlateGrey")
+			      (foreground-color . "wheat")
+			      (vertical-scroll-bars . left))))
+ 
+ 
+ ((eval I-am-at-work)
+  (setq default-frame-alist '((menu-bar-lines . 1)
+			      (tool-bar-lines . 0)
+			      (width . 176)
+			      (height . 68)
+			      (left . 1200) ; right hand monitor
+			      (background-color . "DarkSlateGrey")
+			      (foreground-color . "wheat")
+			      (vertical-scroll-bars . right))))
+ 
+					; different screens at home
+ ((eval I-am-at-home)
+  (setq default-frame-alist '((menu-bar-lines . 1)
+			      (tool-bar-lines . 0)
+			      (top . 0)
+			      (left . 0)
+			      (width . 120)
+			      (height . 50)
+			      (background-color . "DarkSlateGrey")
+			      (foreground-color . "wheat")
+			      (vertical-scroll-bars . right)))))
+
+; This is a bit hacky and I'm sure can be done better. However I don't
+; seem to be able to see a value for window-system in
+; after-make-frame-functions even though once the frame is created
+; (window-system) => x, however tty only appear for a tty frame
+
+(defun my-new-frame-colours(frame)
+  "Set the colour scheme of a new frame"
+  (message "my-new-frame-colours sees %s" (frame-parameter frame 'tty))
+  (if (frame-parameter frame 'tty)
+      (progn
+	(if (symbolp 'color-theme-modnight)
+	    (progn
+	      (color-theme-midnight)
+         ; some tweaks
+	      (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+	      (set-face-background 'region "blue"))))
+    ; otherwise we are in an X frame
+    ; We define a gnome-ish colour setup above, but if we have
+    ; themes lets do it better
+    (if (symbolp 'color-theme-gnome2)
+	(color-theme-gnome2))))
+
+; Lets hook into the frame function
+(add-hook 'after-make-frame-functions 'my-new-frame-colours)
 
 (message "Display Done")
 
@@ -1176,48 +1211,6 @@ plus add font-size: 8pt"
 
 ;  (require 'ecb))
 
-;;
-;; rect-mark.el
-;;
-;; A handy library for marking rectangle areas
-;; (currently in ~/.emacs.d)
-;;
-;; See http://www.emacswiki.org/cgi-bin/wiki/RectangleMark
-;;
-
-(if (locate-library "rect-mark")
-    (progn
-;      (load-library "rect-mark")
-      (global-set-key (kbd "C-x r C-SPC") 'rm-set-mark)
-      (global-set-key (kbd "C-x r C-x") 'rm-exchange-point-and-mark)
-      (global-set-key (kbd "C-x r C-w") 'rm-kill-region)
-      (global-set-key (kbd "C-x r M-w") 'rm-kill-ring-save)
-      (autoload 'rm-set-mark "rect-mark"
-	"Set mark for rectangle." t)
-      (autoload 'rm-exchange-point-and-mark "rect-mark"
-	"Exchange point and mark for rectangle." t)
-      (autoload 'rm-kill-region "rect-mark"
-	"Kill a rectangular region and save it in the kill ring." t)
-      (autoload 'rm-kill-ring-save "rect-mark"
-	"Copy a rectangular region to the kill ring." t)))
-
-;;
-;; color-theme
-;;
-;; Eye-candy! - hmm currently breaks on startup...
-
-(if I-am-emacs-22+
-    (if (locate-library "color-theme")
-	(progn
-	  (load-library "color-theme")
-	  (if I-am-in-console
-	      (progn
-;		(color-theme-initialize)
-		(color-theme-midnight)
-		; some tweaks
-		(set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
-		(set-face-background 'region "blue"))))))
-
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
 ; Seems to lock up on emacs-snaphsot/22
@@ -1255,7 +1248,7 @@ plus add font-size: 8pt"
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
 
-(unless will-start-server
+(unless (or will-start-server (daemonp))
   (if I-am-emacs-22+
       (progn
 	(desktop-save-mode 1)
