@@ -67,7 +67,7 @@
 ;; (this of course falls down when logging on remotely via tramp)
 
 (defvar I-am-at-work (string-match "cambridgebroadband" (system-name)))
-(defvar I-am-at-home (string-match "malory" (system-name)))
+(defvar I-am-at-home (string-match "danny" (system-name)))
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
  
 ;; Lets set some paramters if we are running as a console or under X
