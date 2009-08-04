@@ -563,7 +563,7 @@ on the command line"
   (message "my-new-frame-colours sees %s" (frame-parameter frame 'tty))
   (if (frame-parameter frame 'tty)
       (progn
-	(if (symbolp 'color-theme-modnight)
+	(if (boundp 'color-theme-modnight)
 	    (progn
 	      (color-theme-midnight)
          ; some tweaks
@@ -572,7 +572,7 @@ on the command line"
     ; otherwise we are in an X frame
     ; We define a gnome-ish colour setup above, but if we have
     ; themes lets do it better
-    (if (symbolp 'color-theme-gnome2)
+    (if (boundp 'color-theme-gnome2)
 	(color-theme-gnome2))))
 
 ; Lets hook into the frame function
