@@ -514,7 +514,8 @@ on the command line"
 ; First we need the colour-theme package
 
 (if I-am-emacs-22+
-    (maybe-load-library "color-theme"))
+    (if (maybe-load-library "color-theme")
+	(color-theme-initialize)))
 
 ; Define the default frames sizes, shouldn't apply to a tty invocation
 ; TODO: handle remote sessions better, probably by probing remote X
@@ -563,7 +564,7 @@ on the command line"
   (message "my-new-frame-colours sees %s" (frame-parameter frame 'tty))
   (if (frame-parameter frame 'tty)
       (progn
-	(if (boundp 'color-theme-modnight)
+	(if (fboundp 'color-theme-midnight)
 	    (progn
 	      (color-theme-midnight)
          ; some tweaks
@@ -723,14 +724,6 @@ on the command line"
 		   lazy-lock-stealth-lines       50
 		   lazy-lock-stealth-time        3)))
 (global-font-lock-mode t)
-
-;; Calendar / Diary stuff.
-
-(if I-am-at-work
-    (progn
-      (setq calendar-latitude  53.4834
-	calendar-longitude     -2.2466
-	calendar-location-name "Manchester City Center")))
 
 
 ;; Font locking info mode (from Andy.Ling@quantel.com)
