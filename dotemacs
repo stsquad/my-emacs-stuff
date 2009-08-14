@@ -559,25 +559,32 @@ on the command line"
 ; after-make-frame-functions even though once the frame is created
 ; (window-system) => x, however tty only appear for a tty frame
 
+(defun my-set-tty-colours ()
+  "Set the colours for tty mode"
+  (if (fboundp 'color-theme-midnight)
+      (progn
+	(color-theme-midnight)
+	; some tweaks
+	(set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+	(set-face-background 'region "blue"))))
+
+(defun my-set-x-colours()
+  "Set the colours for X windows mode"
+  (if (fboundp 'color-theme-gnome2)
+	(color-theme-gnome2)))
+
 (defun my-new-frame-colours(frame)
   "Set the colour scheme of a new frame"
-  (message "my-new-frame-colours sees %s" (frame-parameter frame 'tty))
   (if (frame-parameter frame 'tty)
-      (progn
-	(if (fboundp 'color-theme-midnight)
-	    (progn
-	      (color-theme-midnight)
-         ; some tweaks
-	      (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
-	      (set-face-background 'region "blue"))))
-    ; otherwise we are in an X frame
-    ; We define a gnome-ish colour setup above, but if we have
-    ; themes lets do it better
-    (if (boundp 'color-theme-gnome2)
-	(color-theme-gnome2))))
-
+      (my-set-tty-colours)
+    (my-set-x-colours)))
+  
 ; Lets hook into the frame function
 (add-hook 'after-make-frame-functions 'my-new-frame-colours)
+
+; And set the tty colours if we started in tty mode
+(if I-am-in-console
+    (my-set-tty-colours))
 
 (message "Display Done")
 
