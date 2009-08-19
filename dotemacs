@@ -515,7 +515,8 @@ on the command line"
 
 (if I-am-emacs-22+
     (if (maybe-load-library "color-theme")
-	(color-theme-initialize)))
+	(if (fboundp 'color-theme-initialize)
+	    (color-theme-initialize))))
 
 ; Define the default frames sizes, shouldn't apply to a tty invocation
 ; TODO: handle remote sessions better, probably by probing remote X
