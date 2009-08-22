@@ -33,15 +33,16 @@
 (add-hook 'after-save-hook 'autocompile)
 
 ; check the compiled version not out of date
-(if (string-match ".elc" user-init-file)
-    (progn
-      (let* ((src-file (file-name-sans-extension user-init-file)))
-	(if (file-exists-p src-file)
-	  (if (file-newer-than-file-p src-file user-init-file)
-	      (progn
-		(message "working around newer source file")
-		(byte-compile-file src-file)
-		(load src-file)))))))
+(if user-init-file
+    (if (string-match ".elc" user-init-file)
+	(progn
+	  (let* ((src-file (file-name-sans-extension user-init-file)))
+	    (if (file-exists-p src-file)
+		(if (file-newer-than-file-p src-file user-init-file)
+		    (progn
+		      (message "working around newer source file")
+		      (byte-compile-file src-file)
+		      (load src-file))))))))
 		
 	
 (message (concat user-init-file " start"))
