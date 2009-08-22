@@ -94,12 +94,8 @@
   "Load my-emacs-server if possible in response to a -server argument
 on the command line"
   (interactive)
-  (if (locate-library "my-emacs-server")
-      (progn
-	(load-library "my-emacs-server")
-	(my-server-start))
-    (message (format "Skipping my-emacs-server %S"
-		     (locate-library "my-emacs-server")))))
+  (if (load-library "my-emacs-server")
+      (my-server-start)))
 
 (add-to-list 'command-switch-alist '("--server" . load-my-server))
 
