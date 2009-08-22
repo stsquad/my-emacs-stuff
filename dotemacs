@@ -863,10 +863,8 @@ on the command line"
 					; select aspell out of preference
 	      (if (eval aspell-path)
 		  (setq ispell-program-name aspell-path))
-					; reset British dict on loading file
-	      (add-hook 'find-file-hooks
-			'(lambda ()
-			   (ispell-change-dictionary "british")))
+
+	      (setq ispell-dictionary "british")
 
 	      ;; flyspell mode
 	      ; I think this has been in emacs a while, but best practice to check
