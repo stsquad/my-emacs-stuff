@@ -515,16 +515,30 @@ on the command line"
 	(if (fboundp 'color-theme-initialize)
 	    (color-theme-initialize))))
 
+(defvar my-last-theme 'nil
+  "Last color theme we set")
+
+(defun my-color-theme-set (theme)
+  "Set colour theme but don't bother if we already have"
+  (if (eq my-last-theme theme)
+      (message "my-color-theme-set: theme already set")
+    (if (fboundp theme)
+	(progn
+	  (funcall theme)
+	  (setq my-last-theme theme)))))
+
 ; Define the default frames sizes, shouldn't apply to a tty invocation
 ; TODO: handle remote sessions better, probably by probing remote X
 ; geometry somehow.
 (cond
  ((eval I-am-on-netbook)
+  (message "setting default frame for netbook")
   (setq default-frame-alist '((menu-bar-lines . 1)
 			      (tool-bar-lines . 0)
-			      (width . 160)
-			      (height . 28)
-			      (left . 0) ;
+			      (width . 80)
+			      (height . 25)
+			      (left . 0)
+			      (top . 25) 
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . left))))
@@ -559,17 +573,14 @@ on the command line"
 
 (defun my-set-tty-colours ()
   "Set the colours for tty mode"
-  (if (fboundp 'color-theme-midnight)
-      (progn
-	(color-theme-midnight)
-	; some tweaks
-	(set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
-	(set-face-background 'region "blue"))))
+  (my-color-theme-set 'color-theme-midnight)
+  ; some tweaks
+  (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+  (set-face-background 'region "blue"))
 
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
-  (if (fboundp 'color-theme-gnome2)
-	(color-theme-gnome2)))
+  (my-color-theme-set 'color-theme-gnome2))
 
 (defun my-new-frame-colours(frame)
   "Set the colour scheme of a new frame"
@@ -583,6 +594,20 @@ on the command line"
 ; And set the tty colours if we started in tty mode
 (if I-am-in-console
     (my-set-tty-colours))
+
+; Fullscreen
+(defun fullscreen (&optional f)
+  (interactive)
+  (set-frame-parameter f 'fullscreen
+		       (if (frame-parameter f 'fullscreen) nil 'fullboth)))
+
+(global-set-key [f11] 'fullscreen)
+
+;; (defun switch-full-screen ()
+;;   (interactive)
+;;   (shell-command "wmctrl -r :ACTIVE: -btoggle,fullscreen"))
+
+;; (global-set-key [f11] 'switch-full-screen)
 
 (message "Display Done")
 
