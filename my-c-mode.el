@@ -84,6 +84,16 @@
 
 (c-add-style "rockbox-c-style" rockbox-c-style)
 
+; GIT
+(defconst git-c-style
+  '(
+    "my-c-style"
+    (c-basic-offset . 8)
+    (indent-tabs-mode . t))
+  "GIT C programming style")
+
+(c-add-style "git-c-style" git-c-style)
+
 ;; my-c-style-guesser
 ;
 ; Go through the list of patterns and see if we know what style
