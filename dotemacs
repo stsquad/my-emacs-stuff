@@ -1122,6 +1122,17 @@ plus add font-size: 8pt"
 
 ; I don't want all text-mode stuff to be auto-fill as editing text
 ; boxes can screw with the formatting (especially if html is involved)
+
+(defun my-toggle-line-modes()
+  "Toggle longlines/auto-fill mode"
+  (interactive)
+  (if longlines-mode
+      (progn
+	(longlines-mode 0)
+	(turn-on-auto-fill))
+    (longlines-mode)
+    (longlines-show-hard-newlines)))
+
 (add-hook 'text-mode-hook
 	  '(lambda ()
 	     (if (buffer-file-name)
@@ -1129,8 +1140,10 @@ plus add font-size: 8pt"
 		     (progn
 		       (message "enabling long lines for itsalltext")
 		       (longlines-mode 1)
-		       (longlines-show-hard-newlines))
-		     (turn-on-auto-fill)))))
+		       (longlines-show-hard-newlines)
+		       ; But we want to toggle
+		       (local-set-key (kbd "C-l") 'my-toggle-line-modes)))
+		     (turn-on-auto-fill))))
 
 (add-hook 'texinfo-mode-hook
 	  '(lambda ()
