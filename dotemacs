@@ -533,7 +533,7 @@ on the command line"
 (cond
  ((eval I-am-on-netbook)
   (message "setting default frame for netbook")
-  (setq default-frame-alist '((menu-bar-lines . 1)
+  (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
 			      (width . 80)
 			      (height . 25)
@@ -545,7 +545,7 @@ on the command line"
  
  
  ((eval I-am-at-work)
-  (setq default-frame-alist '((menu-bar-lines . 1)
+  (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
 			      (width . 176)
 			      (height . 68)
@@ -556,7 +556,7 @@ on the command line"
  
 					; different screens at home
  ((eval I-am-at-home)
-  (setq default-frame-alist '((menu-bar-lines . 1)
+  (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
 			      (top . 0)
 			      (left . 0)
@@ -609,8 +609,11 @@ on the command line"
 
 ;; (global-set-key [f11] 'switch-full-screen)
 
-(message "Display Done")
+;; Disable the menu and tool bars, they just take up space.
+(menu-bar-mode 0)
+(tool-bar-mode 0)
 
+(message "Display Done")
 
 ;; Prettier unique buffer names.
 (unless I-am-xemacs
@@ -651,7 +654,6 @@ on the command line"
 	" "
 	mode-line-buffer-identification
 	" "
-	global-mode-string
 	"%[("
 	mode-name
 	mode-line-process
@@ -661,7 +663,10 @@ on the command line"
 	(line-number-mode "L%l-")
 	(column-number-mode "C%c-")
 	(which-func-mode ("" which-func-format))
-	"-%-"))
+	"---"
+	global-mode-string
+	"-%-"
+	))
 
 ;; Let's shrink the minor-mode-alist down to size.
 (setcdr (assq 'abbrev-mode minor-mode-alist) '(" Ab"))
@@ -678,10 +683,10 @@ on the command line"
 ;; (display-time) is needed for appt to display in the mode-line, but
 ;; we don't want the time taking up precious space.
 (unless I-am-xemacs
-  (setq display-time-24hr-format t
-      display-time-interval    20
-      display-time-format "")
-  (display-time))
+  (setq display-time-interval 20
+	display-time-format 'nil
+	display-time-string-forms '( 24-hours ":" minutes " "day "/" month))
+  (display-time-mode))
 
 ;; Displays current function() in programming modes. 
 (setq which-func-modes t
@@ -708,7 +713,7 @@ on the command line"
       next-line-add-newlines nil)
 
 ;; Make pound signs work
-(set-language-environment "Latin-1")
+(set-language-environment "UTF-8")
 (setq unibyte-display-via-language-environment t)
 
 ;; Allow narrowing.
