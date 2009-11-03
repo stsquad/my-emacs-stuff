@@ -137,9 +137,14 @@ on the command line"
 (setq-default case-fold-search nil)
 
 ;; Automagically decompress files
-
 (unless I-am-xemacs
   (auto-compression-mode t))
+
+;; Seriously the kernel TAGS is >10Mb 
+(setq large-file-warning-threshold 40000000)
+
+;; ido-mode - better buffer selection
+(ido-mode t)
 
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
@@ -587,7 +592,15 @@ on the command line"
   (if (frame-parameter frame 'tty)
       (my-set-tty-colours)
     (my-set-x-colours)))
-  
+
+;; from http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=dotemacs;hb=HEAD
+(defun my-color-theme () 
+  (interactive)
+  (ecase (intern (completing-read "Theme: " '("gnome" "tty" "dark")))
+    (gnome (my-color-theme-set 'color-theme-gnome2))
+    (tty   (my-set-tty-colours))
+    (dark  (my-color-theme-set 'color-theme-arjen))))
+
 ; Lets hook into the frame function
 (add-hook 'after-make-frame-functions 'my-new-frame-colours)
 
@@ -691,7 +704,7 @@ on the command line"
 ;; Displays current function() in programming modes. 
 (setq which-func-modes t
       which-func-format '("[" which-func-current "]-"))
-(which-func-mode)
+(which-func-mode t)
 
 ;; Reduce white space
 (setq-default mode-line-buffer-identification '("%b"))
