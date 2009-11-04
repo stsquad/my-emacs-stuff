@@ -1047,7 +1047,7 @@ expression of the same type as those required by around advices"
 
       (if (functionp 'compile)
 	  (progn
-          ; ensure the default compile command is sensible
+	    ; ensure the default compile command is sensible
 	    (setq compile-command (format "cd %s && make -k" current-project-root))
 	    ; Some keybindsings for compile-command and recompile
 	    (global-set-key (kbd "C-c c") 'compile)
@@ -1058,6 +1058,10 @@ expression of the same type as those required by around advices"
 		(setq compilation-auto-jump-to-first-error t))
 	    (setq compilation-scroll-output t
 		  compilation-window-height 10)
+
+	    (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
+	    (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
+
 	    (message "Setup compile-mode")))))
 
 
