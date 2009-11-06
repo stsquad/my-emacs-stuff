@@ -406,6 +406,10 @@ on the command line"
 (global-set-key (kbd "<M-down>") 'enlarge-window)
 (global-set-key (kbd "<M-up>") 'shrink-window)
 
+;; Handle next/prev error on keymap / and * (with numlock off)
+(global-set-key (kbd "M-O o") 'previous-error)
+(global-set-key (kbd "M-O j") 'next-error)
+
 ;; Handle special Mac'isms
 ;
 ; If we are running over ssh lets map some more stuff to move around,
