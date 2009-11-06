@@ -1059,8 +1059,9 @@ expression of the same type as those required by around advices"
 	    (setq compilation-scroll-output t
 		  compilation-window-height 10)
 
-	    (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
-	    (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
+	    (add-hook 'compilation-mode-hook '(lambda()
+						(define-key compilation-mode-map (kbd "n") 'compilation-next-error)
+						(define-key compilation-mode-map (kbd "p") 'compilation-previous-error)))
 
 	    (message "Setup compile-mode")))))
 
