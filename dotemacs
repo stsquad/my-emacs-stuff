@@ -536,22 +536,34 @@ on the command line"
 	  (funcall theme)
 	  (setq my-last-theme theme)))))
 
+;; These values work around bugs with fullscreen which doesn't set the
+; frame parameters properly
+(defvar normal-width)
+(defvar normal-height)
+(defvar fullscreen-width)
+(defvar fullscreen-height)
+
 ; Define the default frames sizes, shouldn't apply to a tty invocation
 ; TODO: handle remote sessions better, probably by probing remote X
 ; geometry somehow.
 (cond
  ((eval I-am-on-netbook)
+  ;; With menu bars 86x24
+  ;; Full screen 92x26
   (message "setting default frame for netbook")
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
-			      (width . 80)
-			      (height . 25)
+			      (width . 86)
+			      (height . 24)
 			      (left . 0)
 			      (top . 25) 
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
-			      (vertical-scroll-bars . left))))
- 
+			      (vertical-scroll-bars . left)))
+  (setq normal-width 86)
+  (setq normal-height 24)
+  (setq fullscreen-width 92)
+  (setq fullscreen-height 26))
  
  ((eval I-am-at-work)
   (setq default-frame-alist '((menu-bar-lines . 0)
@@ -613,12 +625,32 @@ on the command line"
     (my-set-tty-colours))
 
 ; Fullscreen
-(defun fullscreen (&optional f)
+(defun toggle-fullscreen (&optional f)
   (interactive)
-  (set-frame-parameter f 'fullscreen
-		       (if (frame-parameter f 'fullscreen) nil 'fullboth)))
+  (unless f
+    (setq f (selected-frame)))
+  (if (frame-parameter f 'fullscreen)
+      (progn
+	; FS->Normal
+	(message "Fullscreen->Normal")
+	(set-frame-parameter f 'fullscreen nil)
+	(set-frame-width (selected-frame) 86)
+	(set-frame-height (selected-frame) 24))
+    ; Normal->FS
+    (message "Normal->Fullscreen")
+    (set-frame-parameter f 'fullscreen 'fullboth)
+    (set-frame-width f fullscreen-width)
+    (set-frame-height f fullscreen-height)))
 
-(global-set-key [f11] 'fullscreen)
+;; (defun toggle-fullscreen (&optional f)
+;;   (interactive)
+;;   (set-frame-parameter f 'fullscreen
+;; 		       (if (frame-parameter f 'fullscreen)
+;; 			   nil 'fullboth))
+;;   (set-frame-height (selected-frame) (frame-height))
+;;   (set-frame-width (selected-frame) (frame-width)))
+
+(global-set-key [f11] 'toggle-fullscreen)
 
 ;; (defun switch-full-screen ()
 ;;   (interactive)
