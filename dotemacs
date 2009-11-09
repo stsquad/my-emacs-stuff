@@ -260,42 +260,8 @@ on the command line"
       (load-library libname)
     (message "Library %s not found" libname)))
 
-;; Define a current-project-root
-;
-; In most cases I open emacs at the top of a src tree. Searches and compiles
-; can then use this as a starting point
-;
-; change with (setq current-project-root (chomp (shell-command-to-string "pwd")))
-(defvar current-project-root
-  (concat (chomp (shell-command-to-string "pwd")))
-  "Describes the current project root dir (top of src tree)")
-
-(defun set-project-root ()
-  "Set a primary project root"
-  (interactive)
-  (setq current-project-root
-	(read-file-name "Project Root:")))
-
-;; secondary-project-root
-;
-; Sometimes your working with two source trees. The secondary tree is
-; tracked and useful for bringing up ediff's and the like
-;
-
-(defvar secondary-project-root
-  ()
-  "Describes a secondary project root (say for quick ediff)")
-
-(defun set-secondary-root ()
-  "Set a secondary project root"
-  (interactive)
-  (setq secondary-project-root
-	(read-file-name "Secondary Project Root:")))
-
-(defun set-secondary-root-if-not ()
-  "Check is secondary-project-root is defined, if not set it"
-  (if (not secondary-project-root)
-      (set-secondary-root)))
+;; Development related stuff, including project root
+(load-library "my-devel")
 
 ;; Find methods
 ;
@@ -1055,59 +1021,6 @@ expression of the same type as those required by around advices"
 				   (not (minibufferp)))
 			  (dabbrev-expand nil))))
 
-
-
-;; cc-mode stuff
-;;
-;
-; This is now all pulled in from my-c-mode.el which is loaded on
-; demand if we actually activate cc-mode. However some distros may
-; have already loaded cc-mode in which case we had better customise it
-; straight away.
-;
-; As we may load my-c-mode directly we only load it on the hook if
-; it's not already there
-
-(if (locate-library "my-c-mode")
-    (if (fboundp 'c-common-init)
-	(load-library "my-c-mode")
-      (add-hook 'c-initialization-hook '(lambda()
-					  (unless (featurep 'my-c-mode)
-					    (load-library "my-c-mode"))))
-
-      ;;
-      ;; Compile Mode
-      ;;
-      ; my-c-mode stuff will load it if required, but assuming it's already
-      ; here we might as well bind it
-
-      (if (functionp 'compile)
-	  (progn
-	    ; ensure the default compile command is sensible
-	    (setq compile-command (format "cd %s && make -k" current-project-root))
-	    ; Some keybindsings for compile-command and recompile
-	    (global-set-key (kbd "C-c c") 'compile)
-	    (global-set-key (kbd "<f3>")  'compile)
-	    (global-set-key (kbd "C-c r") 'recompile)
-            ; Tweak some variables
-	    (if I-am-emacs-23+
-		(setq compilation-auto-jump-to-first-error t))
-	    (setq compilation-scroll-output t
-		  compilation-window-height 10)
-
-	    (add-hook 'compilation-mode-hook '(lambda()
-						(define-key compilation-mode-map (kbd "n") 'compilation-next-error)
-						(define-key compilation-mode-map (kbd "p") 'compilation-previous-error)))
-
-	    (message "Setup compile-mode")))))
-
-
-;; Makefiles
-;
-; The auto-mode-alist isn't quite set-up to handle Makefile.something
-(setq auto-mode-alist
-      (append (list (cons "Makefile\.*" 'makefile-gmake-mode))
-	      auto-mode-alist))
 
 ;; Web Development Modes
 ;

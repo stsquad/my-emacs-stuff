@@ -9,6 +9,8 @@
 
 (message "Doing local CNBL Customisations")
 
+(require 'my-c-mode)
+
 ;; Sanity
 
 (if (or (not (functionp 'chomp))
