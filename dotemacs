@@ -374,7 +374,10 @@ on the command line"
 
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
+(global-set-key [kp-divide] 'previous-error)
 (global-set-key (kbd "M-O j") 'next-error)
+(global-set-key [kp-multiply] 'next-error)
+
 
 ;; Handle special Mac'isms
 ;
