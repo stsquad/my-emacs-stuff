@@ -48,17 +48,26 @@
   (interactive)
   (message "my-first-compile: start")
   (cond
+   ; Work
    ((file-exists-p (concat current-project-root "/build-system"))
     (load-library "cbnl"))
+   ; Android
    ((file-exists-p (concat current-project-root
 			   "/AndroidManifest.xml"))
     (load-library "my-android"))
-   ((file-exists-p (concat current-project-root "/Makefile"))
-    (load-library "my-c-mode"))
+   ; Rockbox
    ((file-exists-p (concat current-project-root "/rbutil"))
     (load-library "my-c-mode")
     (setq compile-command (format
-			   "cd %s/../ipodsim.build && make -k" current-project-root)))
+			   "cd %s/../ipodsim.build && make -k"
+			   current-project-root)))
+   ; OpenNMS
+   ((and (file-exists-p (concat current-project-root "/build.sh"))
+	 (file-exists-p (concat current-project-root "/pom.xml")))
+    (load-library "my-onms"))
+   ; Generic Makefile driven C
+   ((file-exists-p (concat current-project-root "/Makefile"))
+    (load-library "my-c-mode"))
    (t
     (setq compile-command (format
 			   "cd %s && make -k" current-project-root))))
