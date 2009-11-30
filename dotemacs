@@ -90,12 +90,14 @@
 ; These are not handled until the end of .emacs
 
 ; Emacs takes a load of time to start up so we may want a server
+
+(autoload 'my-server-start "my-emacs-server")
+
 (defun load-my-server (&optional arg)
   "Load my-emacs-server if possible in response to a -server argument
 on the command line"
   (interactive)
-  (if (load-library "my-emacs-server")
-      (my-server-start)))
+  (my-server-start))
 
 (add-to-list 'command-switch-alist '("--server" . load-my-server))
 
@@ -1032,9 +1034,8 @@ expression of the same type as those required by around advices"
 ; (the emacs22 autoload fails due to missing files)
 
 (if I-am-emacs-23+
-    (if (file-exists-p "~/.emacs.d/nxhtml/autostart.el")
+    (if (maybe-load-library "~/.emacs.d/nxhtml/autostart.el")
 	(progn
-	  (load-file "~/.emacs.d/nxhtml/autostart.el")
 	  (setq nxhtml-skip-welcome t)
 	  (custom-set-faces
 	   '(mumamo-background-chunk-major ((((class color) (min-colors 88)
@@ -1098,6 +1099,8 @@ plus add font-size: 8pt"
 ; I don't want all text-mode stuff to be auto-fill as editing text
 ; boxes can screw with the formatting (especially if html is involved)
 
+(require 'longlines)
+
 (defun my-toggle-line-modes()
   "Toggle longlines/auto-fill mode"
   (interactive)
@@ -1119,6 +1122,14 @@ plus add font-size: 8pt"
 		       ; But we want to toggle
 		       (local-set-key (kbd "C-l") 'my-toggle-line-modes)))
 		     (turn-on-auto-fill))))
+
+;; Enable mail-mode for mutt spawned files
+(add-to-list 'auto-mode-alist '("/mutt" . mail-mode))
+
+(add-hook 'mail-mode-hook
+	  '(lambda ()
+	     (local-set-key (kbd "C-l") 'my-toggle-line-modes)
+	     (turn-on-auto-fill)))
 
 (add-hook 'texinfo-mode-hook
 	  '(lambda ()
