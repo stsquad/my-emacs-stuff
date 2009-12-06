@@ -55,11 +55,14 @@
     (load-library "my-android"))
    ((file-exists-p (concat current-project-root "/Makefile"))
     (load-library "my-c-mode"))
+   ((file-exists-p (concat current-project-root "/rbutil"))
+    (load-library "my-c-mode")
+    (setq compile-command (format
+			   "cd %s/../ipodsim.build && make -k" current-project-root)))
    (t
-    (setq compile-command (format "cd %s && make -k"
-				  current-project-root))
-    (compile)))
-  (message "my-first-compile: done"))
+    (setq compile-command (format
+			   "cd %s && make -k" current-project-root))))
+  (compile (eval compile-command)))
 		   
 (global-set-key (kbd "C-c c") 'my-first-compile)
 (global-set-key (kbd "<f3>")  'my-first-compile)
