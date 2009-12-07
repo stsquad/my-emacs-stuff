@@ -524,14 +524,14 @@ on the command line"
   (message "setting default frame for netbook")
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
-			      (width . 86)
+			      (width . 90)
 			      (height . 24)
 			      (left . 0)
-			      (top . 25) 
+			      (top . 0) 
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . left)))
-  (setq normal-width 86)
+  (setq normal-width 90)
   (setq normal-height 24)
   (setq fullscreen-width 92)
   (setq fullscreen-height 26))
@@ -621,7 +621,8 @@ on the command line"
 ;;   (set-frame-height (selected-frame) (frame-height))
 ;;   (set-frame-width (selected-frame) (frame-width)))
 
-(global-set-key [f11] 'toggle-fullscreen)
+(if I-am-in-X
+    (global-set-key [f11] 'toggle-fullscreen))
 
 ;; (defun switch-full-screen ()
 ;;   (interactive)
@@ -631,7 +632,8 @@ on the command line"
 
 ;; Disable the menu and tool bars, they just take up space.
 (menu-bar-mode 0)
-;(tool-bar-mode 0)
+(if I-am-in-X
+    (tool-bar-mode 0))
 
 (message "Display Done")
 
