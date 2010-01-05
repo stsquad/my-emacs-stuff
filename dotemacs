@@ -631,9 +631,8 @@ on the command line"
 ;; (global-set-key [f11] 'switch-full-screen)
 
 ;; Disable the menu and tool bars, they just take up space.
-(menu-bar-mode 0)
-(if I-am-in-X
-    (tool-bar-mode 0))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 
 (message "Display Done")
 
