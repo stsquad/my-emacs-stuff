@@ -1112,17 +1112,23 @@ plus add font-size: 8pt"
     (longlines-mode)
     (longlines-show-hard-newlines)))
 
+; For most web-forms I want longlines-mode by default
+;
+; It's All Text: /home/ajb/.mozilla/firefox/hgd0onxt.default/itsalltext/.2e2i2y3b2c.txt
+; Emacs Chrome: /tmp/tmpcUbYA_.txt
+
 (add-hook 'text-mode-hook
 	  '(lambda ()
+             ; Allow toggling
+	     (local-set-key (kbd "C-l") 'my-toggle-line-modes)
 	     (if (buffer-file-name)
-		 (if (string-match "itsalltext" (buffer-file-name))
+		 (if (or (string-match "itsalltext" (buffer-file-name))
+			 (string-match "/tmp/tmp" (buffer-file-name)))
 		     (progn
-		       (message "enabling long lines for itsalltext")
+		       (message "enabling long lines for web")
 		       (longlines-mode 1)
 		       (longlines-show-hard-newlines)
-		       ; But we want to toggle
-		       (local-set-key (kbd "C-l") 'my-toggle-line-modes)))
-		     (turn-on-auto-fill))))
+		     (turn-on-auto-fill))))))
 
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/mutt" . mail-mode))
