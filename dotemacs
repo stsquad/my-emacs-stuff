@@ -166,6 +166,20 @@ on the command line"
 
 ;;  (message "Adding local .emacs.d to lib path")
 ;;  (add-to-list 'load-path "~/.emacs.d/"))
+;; maybe-load-library
+;
+; A little less the using (require 'lib)
+
+(defun maybe-load-library (libname)
+  "Try and load library 'libname' if it is in the path"
+  (if (locate-library libname)
+      (load-library libname)
+    (message "Library %s not found" libname)))
+
+;; Do we want an edit-server?
+(if (and (daemonp) (maybe-load-library "edit_server"))
+    (edit-server-start))
+
 
 ; On Mac we we want to add /sw/bin for fink (where things like
 ; aspell live)
@@ -252,15 +266,6 @@ on the command line"
 ; (which-lookup "emacs") = "/usr/bin/emacs"
 ; (which-lookup "ispell") => "/usr/bin/ispell"
 
-;; maybe-load-library
-;
-; A little less the using (require 'lib)
-
-(defun maybe-load-library (libname)
-  "Try and load library 'libname' if it is in the path"
-  (if (locate-library libname)
-      (load-library libname)
-    (message "Library %s not found" libname)))
 
 ;; Development related stuff, including project root
 (load-library "my-devel")
