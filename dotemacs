@@ -173,8 +173,7 @@ on the command line"
 (defun maybe-load-library (libname)
   "Try and load library 'libname' if it is in the path"
   (if (locate-library libname)
-      (load-library libname)
-    (message "Library %s not found" libname)))
+      (load-library libname)))
 
 ;; Do we want an edit-server?
 (if (and (daemonp) (maybe-load-library "edit_server"))
