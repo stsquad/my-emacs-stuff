@@ -176,7 +176,7 @@ on the command line"
       (load-library libname)))
 
 ;; Do we want an edit-server?
-(if (and (daemonp) (maybe-load-library "edit_server"))
+(if (and (daemonp) (maybe-load-library "edit-server"))
     (edit-server-start))
 
 
