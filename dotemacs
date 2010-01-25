@@ -1125,14 +1125,15 @@ plus add font-size: 8pt"
 	  '(lambda ()
              ; Allow toggling
 	     (local-set-key (kbd "C-l") 'my-toggle-line-modes)
-	     (if (buffer-file-name)
-		 (if (or (string-match "itsalltext" (buffer-file-name))
-			 (string-match "/tmp/tmp" (buffer-file-name)))
-		     (progn
-		       (message "enabling long lines for web")
-		       (longlines-mode 1)
-		       (longlines-show-hard-newlines)
-		     (turn-on-auto-fill))))))
+	     (if (or (not buffer-file-name)
+		     (and (buffer-file-name)
+			  (or (string-match "itsalltext" (buffer-file-name))
+			      (string-match "/tmp/tmp" (buffer-file-name)))))
+		 (progn
+		   (message "enabling long lines for web")
+		   (longlines-mode 1)
+		   (longlines-show-hard-newlines)
+		   (turn-on-auto-fill)))))
 
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/mutt" . mail-mode))
