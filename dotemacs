@@ -384,6 +384,8 @@ on the command line"
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
 
+;; iMenu find
+(global-set-key (kbd "C-f") 'imenu)
 
 ;; Handle special Mac'isms
 ;
