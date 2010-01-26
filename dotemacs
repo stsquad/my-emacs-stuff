@@ -148,6 +148,10 @@ on the command line"
 ;; ido-mode - better buffer selection
 (ido-mode t)
 
+;; Stop popping up the file dialog, very annoying when compile-mode
+;; want to find an error in a non-existent file
+(setq use-file-dialog 'nil)
+
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
   '("Postscript Print Buffer" . ps-print-buffer))
@@ -1285,7 +1289,8 @@ plus add font-size: 8pt"
 (unless (or will-start-server (daemonp))
   (if I-am-emacs-22+
       (progn
-	(desktop-save-mode 1)
-	(setq desktop-dirname current-project-root))))
+	(setq desktop-dirname current-project-root
+	      desktop-save 'ask-if-new)
+	(desktop-save-mode 1))))
 
 (message "Done .emacs")
