@@ -181,7 +181,8 @@ on the command line"
 
 ;; Do we want an edit-server?
 (if (and (daemonp) (maybe-load-library "edit-server"))
-    (edit-server-start))
+    (add-hook 'emacs-startup-hook '(lambda ()
+				     (edit-server-start))))
 
 
 ; On Mac we we want to add /sw/bin for fink (where things like
