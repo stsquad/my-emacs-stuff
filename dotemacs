@@ -156,6 +156,9 @@ on the command line"
 (define-key global-map [menu-bar tools print ps-print-buffer]
   '("Postscript Print Buffer" . ps-print-buffer))
 
+;; You can pretty much guarantee tramp implies over ssh
+(setq tramp-default-method "ssh")
+
 ;; Add local search path
 ;
 ; This is recursive so adding test libraries should be a case of
@@ -1215,40 +1218,6 @@ plus add font-size: 8pt"
 ;      (global-set-key (kbd "<f2>")   'bm-next)
 ;      (global-set-key (kbd "<S-f2>") 'bm-previous)))
 
-
-
-;;
-;; I have the cedat/ecb stuff on some machines which I'm playing with
-;; at the moment
-;;
-;; This broke when I recursivly added paths. Seeing as I don't use it
-;; I'll skip it for the time being
-;;
-(message "Skipping cedet/ecb")
-
-;(if (locate-library "cedet")
-;    (progn
-;      (message "Loading cedat stuff....")
-;      (load-file (locate-library "cedet"))
-;      (require 'speedbar)
-;      (require 'cedet)
-;      (if (locate-library "ecb")
-;	  (progn
-;	    (message "Setting up ecb...")
-;	    (defvar ecp-options-version "2.32")
-;	    (global-set-key (kbd "C-c e") 'ecb-activate)
-;	    (autoload 'ecb-activate "ecb")))))
-      
-
-;(when (file-exists-p "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
-;  (message "Loading cedat stuff....")
-;  (load-file "~/.emacs.d/cedet-1.0pre3/common/cedet.el")
-;  (add-to-list 'load-path "~/.emacs.d/ecb-2.32/")
-;  (defvar ecp-options-version "2.32")
-;  (global-set-key (kbd "C-c e") 'ecb-activate)
-;  (autoload 'ecb-activate "ecb"))
-
-;  (require 'ecb))
 
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
