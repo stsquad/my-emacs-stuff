@@ -167,13 +167,6 @@
 
 (add-hook 'c-mode-hook 'my-c-mode-hook)
 
-; Java stuff
-; (OpenNMS standards http://www.opennms.org/index.php/Code_conventions)
-(add-hook 'java-mode-hook (lambda () 
-			    (setq c-basic-offset 4
-				  tab-width 4
-				  indent-tabs-mode nil)))
-
 (message "Done with cc-mode customisation")
 
 ;;
