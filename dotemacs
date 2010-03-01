@@ -90,6 +90,8 @@
 ; These are not handled until the end of .emacs
 
 ; Emacs takes a load of time to start up so we may want a server
+;
+; This is mostly obviated by Emacs 23 --daemon mode
 
 (autoload 'my-server-start "my-emacs-server")
 
@@ -382,9 +384,14 @@ on the command line"
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-c\C-m" 'execute-extended-command)
 
-;; The default window size keys are silly
+;; Window navigation and size control
+(if (maybe-load-library "windmove")
+    (windmove-default-keybindings))
+
 (global-set-key (kbd "<M-down>") 'enlarge-window)
+(global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "<M-up>") 'shrink-window)
+(global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
 
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
@@ -553,8 +560,8 @@ on the command line"
  ((eval I-am-at-work)
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
-			      (width . 176)
-			      (height . 68)
+			      (width . 167)
+			      (height . 50)
 			      (left . 1200) ; right hand monitor
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
