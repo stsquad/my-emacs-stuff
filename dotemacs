@@ -264,13 +264,10 @@ on the command line"
 (defun which-lookup(name-or-list)
   "Perform a `which` like file look-up, returning the first hit or
 'nil if no match found"
-  (let ((l (if (listp name-or-list)
-               name-or-list
-             (list name-or-list))))
-    (loop for x in l
+    (loop for x in (if (listp name-or-list) name-or-list (list name-or-list))
       do (let ((path (chomp (shell-command-to-string (concat "which " x)))))
            (if (and (file-exists-p path) (> (length path) 0))
-		 (return path))))))
+		 (return path)))))
 
 ; (which-lookup "foo") => nil
 ; (which-lookup "emacs") = "/usr/bin/emacs"
