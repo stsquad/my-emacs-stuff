@@ -261,20 +261,21 @@ on the command line"
 ; Like the shell command of the same name except it trims to 'nil if
 ; it can't find anything
 
-(defun which-lookup(name)
-  "Perform a `which` like file look-up"
-  (let
-      ((file (chomp
-	      (shell-command-to-string
-	       (concat "which " name)))))
-    (if (and (file-exists-p file) (> (length file) 0))
-        (concat file)
-      ())))
+(defun which-lookup(name-or-list)
+  "Perform a `which` like file look-up, returning the first hit or
+'nil if no match found"
+  (let ((l (if (listp name-or-list)
+               name-or-list
+             (list name-or-list))))
+    (loop for x in l
+      do (let ((path (chomp (shell-command-to-string (concat "which " x)))))
+           (if (and (file-exists-p path) (> (length path) 0))
+		 (return path))))))
 
 ; (which-lookup "foo") => nil
 ; (which-lookup "emacs") = "/usr/bin/emacs"
-; (which-lookup "ispell") => "/usr/bin/ispell"
-
+; (which-lookup '("aspell" "ispell")) => "/usr/bin/aspell"
+; (which-lookup '("ack-grep" "ack" "grep"))
 
 ;; Development related stuff, including project root
 (load-library "my-devel")
@@ -282,68 +283,45 @@ on the command line"
 ;; Find methods
 ;
 ; Define various find methods for searching through code/whatever and
-; presenting the results in a buffer that can be navigated in emacs. It uses
-; the existing grep-find mechanics but extends it.
+; presenting the results in a buffer that can be navigated in emacs.
+;
+; If ack.el is available we shall use that, otherwise we will fall
+; back to using grep. ack may be called ack-grep in some cases
 ;
 ; If the current project route contains a .git directory then we don't
 ; need anything clever to sort through all our code. We can just ask
 ; the repo
 
-(if (file-exists-p (concat current-project-root "/.git"))
-    (progn
-      (message "Using git grep for searches")
-      (setq grep-command "git grep -n ")
-
-      (defun my-find (search)
-        "A search using git-grep"
-        (interactive "sSearch string:")
-        (cd current-project-root)
-        (let ((buffer (concat "*git grep for " search "*" ))
-              (command (concat "git grep -n " search)))
-          (shell-command command buffer)
-          (pop-to-buffer buffer)
-          (grep-mode))))
-
-  ; Fall back functions
-  (progn
-
-    ; define the find search strings (note excessive escapeage of ('s)
-    ; We can add mode hooks to change my-find-behaviour
-    
-    (defvar find-c-files
-      (concat " \\( -iname '*.[chS]' -or -iname '*.cc' -or -iname '*.cpp' \\) ")
-      "Search string for C/C++ files")
-
-    (defvar find-perl-files
-      (concat " \\( -iname '*.pl' -or -iname '*.pm' \\) ")
-      "Search string for Perl files")
-
-    (defvar find-lisp-files
-      (concat " \\( -iname '*.el' \\) ")
-      "Search string for Lisp Files")
-
-    (defvar my-find-files
-      'find-c-files
-      "The current file list I'm searching though")
-
-    (defun set-my-find-files (files)
-      "Set the current file list for my-find"
-      (setq my-find-files files))
-    
-    ; A simpler grep-find that hides the find string from the user
-    (defun my-grep-find (root files search)
-      (grep-find (concat "find " root files " -print0 |  xargs -0 -e grep -n -e " search)))
-
-    (defun my-find (search)
-      "A search from the current-project-root"
-      (interactive "sSearch string:")
-      (my-grep-find current-project-root my-find-files search))))
-
-(global-set-key (kbd "<f5>") 'my-find)
+(let ((ack-bin (which-lookup '("ack-grep" "ack"))))
+  (if (and ack-bin (maybe-load-library "ack"))
+      (progn
+        (setq ack-guess-type 't
+              ack-command (concat ack-bin " --nocolor --nogroup"))
+        (global-set-key (kbd "<f5>") 'ack))
+    ; otherwise fall-back
+    (if (file-exists-p (concat current-project-root "/.git"))
+        (progn
+          (message "Using git grep for searches")
+          (setq grep-command "git grep -n ")
+          (global-set-key (kbd "<f5>") '(lambda (search)
+                                          (interactive "sSearch string:")
+                                          (cd current-project-root)
+                                          (let ((buffer (concat "*git grep for " search "*" ))
+                                                (command (concat "git grep -n " search)))
+                                            (shell-command command buffer)
+                                            (pop-to-buffer buffer)
+                                            (grep-mode)))))
+      ; otherwise a simple grep will have to do
+      (global-set-key (kbd "<f5>") '(lambda (search)
+                                      (interactive "sSearch string:")
+                                      (grep-find (concat "find "
+                                                         current-project-root
+                                                         " -print0 |  xargs -0 -e grep -n -e "
+                                                         search)))))))
 
 ; my-find-files (find a file name from project root)
 ;
-; exteneds fine-name-dired to use project root
+; extends find-name-dired to use project root
 
 ;(defun my-find-files (filespec)
 ;  (interactive "sSearch file:")
