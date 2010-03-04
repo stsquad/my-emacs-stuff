@@ -904,17 +904,12 @@ on the command line"
 
 (if (locate-library "ispell")
     (progn
-      (let (
-	    (ispell-path (which-lookup "ispell"))
-	    (aspell-path (which-lookup "aspell")))
-	(message "Doing ispell dict setting")
-	(if (or ispell-path aspell-path)
+      ; aspell is preferred
+      (let (spell-path (which-lookup '("aspell" "ispell")))
+	(if spell-path
 	    (progn
-					; select aspell out of preference
-	      (if (eval aspell-path)
-		  (setq ispell-program-name aspell-path))
-
-	      (setq ispell-dictionary "british")
+              (setq ispell-program-name spell-path
+                    ispell-dictionary "british")
 
 	      ;; flyspell mode
 	      ; I think this has been in emacs a while, but best practice to check
