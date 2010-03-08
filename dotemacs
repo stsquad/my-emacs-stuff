@@ -261,6 +261,8 @@ on the command line"
 ; Like the shell command of the same name except it trims to 'nil if
 ; it can't find anything
 
+(require 'cl)
+
 (defun which-lookup(name-or-list)
   "Perform a `which` like file look-up, returning the first hit or
 'nil if no match found"
