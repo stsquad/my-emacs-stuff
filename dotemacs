@@ -936,6 +936,13 @@ on the command line"
       "Run the Emacs calculator." t)
      (global-set-key [(control return)] 'calculator)))
 
+;; GPG Support
+;
+(if (maybe-load-library "epa-file")
+    (progn
+      (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
+      (epa-file-enable)))
+
 ;; my-find-binary
 ;
 ; Handy for dumping objdump into a buffer
