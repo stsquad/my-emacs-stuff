@@ -1143,7 +1143,9 @@ plus add font-size: 8pt"
 ; TODO - automode alist
 (if (locate-library "python-mode")
     (progn
-      (autoload 'python-mode "python-mode")))
+      (autoload 'python-mode "python-mode")
+      (add-hook 'python-mode-hook '(lambda ()
+				     (require 'my-python-mode)))))
 
 (message "Done various programming modes")
 
@@ -1245,3 +1247,5 @@ plus add font-size: 8pt"
 	(desktop-save-mode 1))))
 
 (message "Done .emacs")
+
+(put 'upcase-region 'disabled nil)
