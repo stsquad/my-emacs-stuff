@@ -17,7 +17,8 @@
   "Set a primary project root"
   (interactive)
   (setq current-project-root
-	(read-file-name "Project Root:")))
+	(read-file-name "Project Root:"))
+  (global-set-key (kbd "C-c c") 'my-first-compile))
 
 ;; secondary-project-root
 ;
