@@ -113,6 +113,9 @@
 ; And actually do it
 (set-cbnl-compile-command)
 
+(global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "<f3>")  'compile)
+
 ;; Switch Targets/Flags
 ;
 ; Allow easy swithcing based on history
