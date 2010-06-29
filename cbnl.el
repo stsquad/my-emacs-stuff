@@ -52,7 +52,9 @@
     "-C net-snmp -f Makefile.net-snmp"
     "-C third-party/libxml -f ../local-config/Makefile.libxml"
     "-C nms-manager-apps -f Makefile"
-    "build-nms")
+    "build-nms"
+    "pkg-nms"
+    "release")
   "A List of CBNL build targets")
 
 ;; current-build-target
@@ -70,6 +72,7 @@
   '("VECTASTARBUILD=1 CROSS_COMPILE=ppc8xx"
     "PLATFORM=Linux_Desktop"
     "PLATFORM=Linux_Desktop EMSDEBUG=1"
+    "PLATFORM=Linux_OE_RC"
     "GTK=2")
   "Describes the current build flags")
 
@@ -85,10 +88,13 @@
 ; I only expect to start in a working directory of checked out src
 ; tree. So there should be a `pwd`/build-system
 
-(let ((bs (concat current-project-root "/build-system")))
-  (if (not (file-exists-p bs))
-      (warn "current-project-root is not a CBNL project directory")
-    (message (concat "Project directory is " current-project-root))))
+(defun project-is-cbnl-project (path)
+  "Return true if the current project path is a CBNL build tree"
+  (file-exists-p (concat path "/build-system")))
+
+(if (not (project-is-cbnl-project current-project-root))
+    (warn "current-project-root is not a CBNL project directory")
+  (message (concat "Project directory is " current-project-root)))
 
 ;; set-cbnl-compile-command
 ;
@@ -221,6 +227,12 @@
 (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*include/ems/.*$" . "cbnl-nms-style") my-c-styles-alist))
 
+; (my-c-style-guesser "nms-manager-apps/vsalarmd/snmp_interface.c")
+; (my-c-style-guesser "/export/csrc/work.git/e1mon/ifTable.c")
+; (my-c-style-guesser "/export/csrc/work.git/third-party/br2684/br2684ctrl.c")
+; (my-c-style-guesser "/export/csrc/work.git/intel-linux/kernel/context.c")
+
+
 ;; TAGs support
 ;
 ; This used to just do a global TAGS file but there is a lot of
@@ -251,7 +263,12 @@
 
 (defadvice find-tag (before c-tag-file activate)
   "Automatically create tags file for an app."
-  (create-cbnl-tags))
+  ; Only do this if current file is in project, and the project is a
+  ; CBNL one
+  (if (and (string-match current-project-root (file-name-directory
+					       buffer-file-name))
+	   (project-is-cbnl-project current-project-root))
+      (create-cbnl-tags)))
 
 (message "Done with cbnl customisations")
 
