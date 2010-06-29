@@ -875,6 +875,7 @@ on the command line"
       (setq auto-mode-alist (append (list
 				     (cons "\.diff$"  'dmode-alias)
 				     (cons "\.patch$" 'dmode-alias)
+				     (cons "\.rej$" 'dmode-alias)
 				     (cons "\.dotest/0.*"
 					   'dmode-alias))
 				    auto-mode-alist))))
