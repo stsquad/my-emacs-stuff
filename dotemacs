@@ -281,56 +281,18 @@ on the command line"
 
 ;; Find methods
 ;
-; Define various find methods for searching through code/whatever and
-; presenting the results in a buffer that can be navigated in emacs.
-;
 ; If ack.el is available we shall use that, otherwise we will fall
 ; back to using grep. ack may be called ack-grep in some cases
 ;
-; If the current project route contains a .git directory then we don't
-; need anything clever to sort through all our code. We can just ask
-; the repo
+; Some of the project handling modes may tweak this behaviour.
 
 (let ((ack-bin (which-lookup '("ack-grep" "ack"))))
   (if (and ack-bin (maybe-load-library "ack"))
       (progn
         (setq ack-guess-type 't
               ack-command (concat ack-bin " --nocolor --nogroup"))
-        (global-set-key (kbd "<f5>") 'ack))
-    ; otherwise fall-back
-    (if (file-exists-p (concat current-project-root "/.git"))
-        (progn
-          (message "Using git grep for searches")
-          (setq grep-command "git grep -n ")
-          (global-set-key (kbd "<f5>") '(lambda (search)
-                                          (interactive "sSearch string:")
-                                          (cd current-project-root)
-                                          (let ((buffer (concat "*git grep for " search "*" ))
-                                                (command (concat "git grep -n " search)))
-                                            (shell-command command buffer)
-                                            (pop-to-buffer buffer)
-                                            (grep-mode)))))
-      ; otherwise a simple grep will have to do
-      (global-set-key (kbd "<f5>") '(lambda (search)
-                                      (interactive "sSearch string:")
-                                      (grep-find (concat "find "
-                                                         current-project-root
-                                                         " -print0 |  xargs -0 -e grep -n -e "
-                                                         search)))))))
+        (global-set-key (kbd "<f5>") 'ack))))
 
-; my-find-files (find a file name from project root)
-;
-; extends find-name-dired to use project root
-
-;(defun my-find-files (filespec)
-;  (interactive "sSearch file:")
-;  (grep-find (concat "find " current-project-root " -iname '" filespec "*' -printf '%p:0:\n'")))
-
-(defun my-find-files (filespec)
-   (interactive "sSearch for filespec:")
-   (find-name-dired current-project-root filespec))
-
-(global-set-key (kbd "<f6>") 'my-find-files)
 
 (message "Done defuns")
 
@@ -819,29 +781,6 @@ on the command line"
 				  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
 
 
-      ;; my-ediff-secondary
-      ;
-      ; See if we can find the equivilent file in a secondary project root
-      ; and bring up ediff on it.
-
-      (defun my-ediff-secondary ()
-	"Load the secondary equivilent file of this buffer and ediff it"
-	(interactive)
-	; sanity
-	(set-secondary-root-if-not)
-	(message (concat "buffer name is " (buffer-file-name)))
-	(let
-	    (
-	     (primary-buffer (buffer-file-name))
-	     (secondary-buffer (replace-regexp-in-string
-				current-project-root secondary-project-root
-				(buffer-file-name))))
-					; sanity
-	  (if (file-exists-p secondary-buffer)
-	      (ediff-files secondary-buffer primary-buffer)
-	    (ediff-files (read-file-name
-			  (concat "Whats the path to " buffer-file-name))
-			 primary-buffer))))
 
       (message "Done ediff customisations")))
 
@@ -1229,13 +1168,6 @@ plus add font-size: 8pt"
 				  ;; don't show any of this
 				  (setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))))))
 
-;;
-;; CBNL Stuff
-;;
-(let ((bs (concat current-project-root "/build-system")))
-  (if (file-exists-p bs)
-      (if (locate-library "cbnl")
-	  (load-library "cbnl"))))
 
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
@@ -1243,7 +1175,7 @@ plus add font-size: 8pt"
 (unless (or will-start-server (daemonp))
   (if I-am-emacs-22+
       (progn
-	(setq desktop-dirname current-project-root
+	(setq desktop-dirname (concat (chomp (shell-command-to-string "pwd")))
 	      desktop-save 'ask-if-new)
 	(desktop-save-mode 1))))
 
