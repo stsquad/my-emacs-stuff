@@ -33,3 +33,12 @@
   (look-for "../rockbox.git/rbutil")
   :common-compiles ('("make" "make install" "make fullzip")))
 
+; Turn on eproject on various dev modes
+
+(add-hook 'c-mode-common-hook 'eproject-maybe-turn-on)
+(add-hook 'makefile-mode-hook 'eproject-maybe-turn-on)
+(add-hook 'java-mode-hook 'eproject-maybe-turn-on)
+
+; Hook in compile
+(global-set-key (kbd "C-c c") 'eproject-compile)
+(global-set-key (kbd "C-c r") 'recompile)
