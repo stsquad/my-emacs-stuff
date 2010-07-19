@@ -1158,15 +1158,28 @@ plus add font-size: 8pt"
 (if (locate-library "erc")
     (progn
       (autoload 'erc-select "erc" "Start ERC" t)
-      (eval-after-load "erc" '(progn
-				  (message "Doing ERC Customisation")
-
-				  ; tracking
-				  (erc-track-mode t)
-				  (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
-								  "324" "329" "332" "333" "353" "477"))
-				  ;; don't show any of this
-				  (setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))))))
+      (eval-after-load
+	  "erc"
+	'(progn
+	   (erc-track-mode t)
+	   (erc-autojoin-mode 1)
+           (add-hook 'erc-text-matched-hook 'erc-beep-on-match)
+           (add-hook 'erc-text-matched-hook
+              (lambda (match-type nickuserhost message)
+                (cond
+                  ((eq match-type 'current-nick)
+                    (play-sound-file "/usr/share/sounds/ubuntu/stereo/message-new-instant.ogg"))
+                  ((eq match-type 'keyword)
+                    (play-sound-file "/usr/share/sounds/ubuntu/stereo/message-new-instant.ogg")))))
+	   (setq erc-beep-match-types '(current-nick keyword)
+                 erc-autojoin-channels-alist
+		 '(("freenode.net" "#emacs"
+		    "#rockbox" "#linuxoutlaws")
+		   ("irc.srcf.ucam.org" "#mage"))
+		 erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
+					   "324" "329" "332" "333" "353" "477")
+		 erc-hide-list '("JOIN" "PART"
+				 "QUIT" "NICK"))))))
 
 
 ;; Finally enable desktop mode
