@@ -497,11 +497,12 @@ on the command line"
   (setq fullscreen-height 26))
  
  ((eval I-am-at-work)
+  (set-frame-font "DejaVu Sans Mono-14")
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
-			      (width . 167)
-			      (height . 50)
-			      (left . 1200) ; right hand monitor
+			      (width . 163)
+			      (height . 46)
+			      (left . 1441) ; right hand monitor
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . right))))

@@ -271,4 +271,4 @@
       (create-cbnl-tags)))
 
 (message "Done with cbnl customisations")
-
+(provide 'cbnl)
