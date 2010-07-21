@@ -34,7 +34,16 @@
   (look-for "../rockbox.git/rbutil")
   :common-compiles ("make" "make install" "make fullzip"))
 
+; Hook in compile
 (global-set-key (kbd "C-c c") 'compile)
 (define-key eproject-mode-map (kbd "C-c c") 'eproject-compile) 
 (global-set-key (kbd "C-c r") 'recompile)
-  
+
+;; Turn on eproject on various dev modes
+;
+; In theory eproject should already be catching this when major modes
+; are switched. But this does make sure.
+(add-hook 'c-mode-common-hook 'eproject-maybe-turn-on)
+(add-hook 'makefile-mode-hook 'eproject-maybe-turn-on)
+(add-hook 'java-mode-hook 'eproject-maybe-turn-on)
+
