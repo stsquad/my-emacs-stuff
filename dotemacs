@@ -506,8 +506,15 @@ on the command line"
 			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . right)
 			      (font . "DejaVu Sans Mono-14")))
- 
-					; different screens at home
+  (if (boundp 'edit-server-new-frame-alist)
+      (setq edit-server-new-frame-alist '((name . "Emacs TEXTAREA")
+					  (width . 80)
+					  (height . 30)
+					  (left . 1480)
+					  (top . 8)
+					  (minibuffer . t)
+					  (menu-bar-lines . t)))))
+; different screens at home
  ((eval I-am-at-home)
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
