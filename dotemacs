@@ -510,8 +510,8 @@ on the command line"
       (setq edit-server-new-frame-alist '((name . "Emacs TEXTAREA")
 					  (width . 80)
 					  (height . 30)
-					  (left . 1480)
-					  (top . 8)
+					  (left . 1902)
+					  (top . 222)
 					  (minibuffer . t)
 					  (menu-bar-lines . t)))))
 ; different screens at home
