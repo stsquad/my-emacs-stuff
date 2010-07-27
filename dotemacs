@@ -602,6 +602,9 @@ on the command line"
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 
+; Re-use existing frames if buffer already exists in one
+(setq-default display-buffer-reuse-frames t)
+
 (message "Display Done")
 
 ;; Prettier unique buffer names.
@@ -1104,36 +1107,15 @@ plus add font-size: 8pt"
 
 ;; Buffer Selection
 ;
-; The buffer selection library (bs.el) is much more friendly than the default.
-; Hence I rebind C-x b to use it.
-;
-; Configuration can be done with the bs-configurations variable
+; Time was I used the he buffer selection library (bs.el), then I
+; started using ido. Now I'm giving lusty-explorer a go if it is in my
+; search path. Otherwise leave it with ido-mode which has been in
+; emacs since version 22.
 
-(if (locate-library "bs")
-    (progn
-      (autoload 'bs-show "bs")
-      (global-set-key (kbd "C-x b") 'bs-show)
-
-
-      (defun list-buffers-other-win ()
-	"Opens list-buffers and put focus on it"
-	(interactive)
-	(bs-show "all")))
-
-  ; alternative list-buffers-other-win if no bs-show
-  ; 1. Ensure focus goes to buffer-list
-  ; 2. Make C-g behave like it does in bs-show (i.e. give up)
-  (progn
-    (defun list-buffers-other-win ()
-      "Opens list-buffers and put focus on it"
-      (interactive)
-      (list-buffers)
-      (other-window 1)
-      (delete-other-windows)
-      (local-set-key (kbd "C-g") 'kill-this-buffer))))
-
-; Make C-x C-b list all buffers, whichever way we frob it
-(global-set-key "\C-x\C-b" 'list-buffers-other-win)
+(when (require 'lusty-explorer nil 'noerror)
+  ;; overrride the normal file-opening, buffer switching
+  (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
+  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
 
 (message "Done Buffer Handling Tweaks")
 
