@@ -276,6 +276,29 @@ on the command line"
 ; (which-lookup '("aspell" "ispell")) => "/usr/bin/aspell"
 ; (which-lookup '("ack-grep" "ack" "grep"))
 
+; uses common lisp
+(defun find-valid-file (list-of-files)
+  "Go though a list of files and return the first one that is present"
+  (loop for path in list-of-files
+	until (file-exists-p path)
+	finally return path))
+
+; the 'elisp' way
+(defun find-valid-file-elisp-way (list-of-files)
+  "Go though a list of files and return the first one that is present"
+  (let (r '())
+    (mapc '(lambda (f)
+	     (if (file-exists-p f) (add-to-list 'r f)))
+	  list-of-files)
+    (car r)))
+
+; using 'cl-macs 
+(defun find-valid-file-dolist-way (list-of-files)
+  "Go though a list of files and return the first one that is present"
+  (dolist (f list-of-files)
+    (if (file-exists-p f)
+	(return f))))
+
 ;; Development related stuff, including project root
 (load-library "my-devel")
 
@@ -1115,7 +1138,8 @@ plus add font-size: 8pt"
 (when (require 'lusty-explorer nil 'noerror)
   ;; overrride the normal file-opening, buffer switching
   (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
+  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer)
+  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer-other-window))
 
 (message "Done Buffer Handling Tweaks")
 
@@ -1153,14 +1177,26 @@ plus add font-size: 8pt"
 	'(progn
 	   (erc-track-mode t)
 	   (erc-autojoin-mode 1)
-           (add-hook 'erc-text-matched-hook 'erc-beep-on-match)
-           (add-hook 'erc-text-matched-hook
-              (lambda (match-type nickuserhost message)
-                (cond
-                  ((eq match-type 'current-nick)
-                    (play-sound-file "/usr/share/sounds/ubuntu/stereo/message-new-instant.ogg"))
-                  ((eq match-type 'keyword)
-                    (play-sound-file "/usr/share/sounds/ubuntu/stereo/message-new-instant.ogg")))))
+	   (add-hook 'erc-text-matched-hook
+		     (lambda (match-type nickuserhost message)
+					; find sounds
+		       (let ((msg-sound (find-valid-file
+					 '("/usr/share/sounds/purple/receive.wav"
+					   "/usr/share/sounds/ekiga/newmessage.wav"
+					   "/usr/share/sounds/generic.wav")))
+			     (alert-sound (find-valid-file
+					   '("/usr/share/sounds/purple/alert.wav"
+					     "/usr/share/sounds/ekiga/voicemail.wav"
+					     "/usr/share/sounds/question.wav"))))
+			 (cond
+			  ((eq match-type 'current-nick)
+			   (if msg-sound
+			       (play-sound-file msg-sound)
+			     (erc-beep-on-match match-type nickuserhost message)))
+			  ((eq match-type 'keyword)
+			   (if alart-sound
+			       (play-sound-file alert-sound)
+			     (erc-beep-on-match match-type nickuserhost message)))))))
 	   (setq erc-beep-match-types '(current-nick keyword)
                  erc-autojoin-channels-alist
 		 '(("freenode.net" "#emacs"
