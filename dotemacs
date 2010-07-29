@@ -1130,16 +1130,23 @@ plus add font-size: 8pt"
 
 ;; Buffer Selection
 ;
-; Time was I used the he buffer selection library (bs.el), then I
-; started using ido. Now I'm giving lusty-explorer a go if it is in my
-; search path. Otherwise leave it with ido-mode which has been in
-; emacs since version 22.
+; Use lusty-explorer if I can, otherwise leave it to ido-mode which
+; has been in emacs since version 22.
+;
+; Still have a bs-show "all" bound to C-x C-b for when I want to see
+; everything
 
 (when (require 'lusty-explorer nil 'noerror)
   ;; overrride the normal file-opening, buffer switching
   (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer)
-  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer-other-window))
+  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
+
+(when (require 'bs nil 'noerror)
+  (defun list-buffers-other-win ()
+    "Opens list-buffers and put focus on it"
+    (interactive)
+    (bs-show "all"))
+  (global-set-key (kbd "C-x C-b") 'list-buffers-other-win))
 
 (message "Done Buffer Handling Tweaks")
 
@@ -1194,7 +1201,7 @@ plus add font-size: 8pt"
 			       (play-sound-file msg-sound)
 			     (erc-beep-on-match match-type nickuserhost message)))
 			  ((eq match-type 'keyword)
-			   (if alart-sound
+			   (if alert-sound
 			       (play-sound-file alert-sound)
 			     (erc-beep-on-match match-type nickuserhost message)))))))
 	   (setq erc-beep-match-types '(current-nick keyword)
