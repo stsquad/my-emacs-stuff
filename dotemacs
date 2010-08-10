@@ -890,6 +890,7 @@ on the command line"
 		  (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
 		  (add-hook 'message-mode-hook 'turn-on-flyspell)
 		  (add-hook 'text-mode-hook 'turn-on-flyspell)
+		  (add-hook 'mail-mode-hook 'turn-on-flyspell)
 		  (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
 		  (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
 		  (defun turn-on-flyspell ()
@@ -1101,7 +1102,7 @@ plus add font-size: 8pt"
 		   (turn-on-auto-fill)))))
 
 ;; Enable mail-mode for mutt spawned files
-(add-to-list 'auto-mode-alist '("/mutt" . mail-mode))
+(add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
 
 (add-hook 'mail-mode-hook
 	  '(lambda ()
@@ -1226,5 +1227,3 @@ plus add font-size: 8pt"
 	(desktop-save-mode 1))))
 
 (message "Done .emacs")
-
-(put 'upcase-region 'disabled nil)
