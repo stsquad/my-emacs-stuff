@@ -83,7 +83,7 @@
 ;
 ; We may have bound a more elegant solution to search earlier
 ;
-(unless (global-key-binding (kbd "<f5>"))
+(unless (global-key-binding (kbd "<f5>")
     ; otherwise fall-back
     (if (file-exists-p (concat current-project-root "/.git"))
         (progn
