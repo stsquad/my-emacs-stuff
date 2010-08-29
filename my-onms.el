@@ -32,12 +32,13 @@
 
 (setq my-c-styles-alist (cons '(".*opennms.*java$" . my-onms-style) my-c-styles-alist))
 
-(setq compile-command (format
-		       "cd %s && ./build.sh install assembly:directory-inline"
-		       current-project-root))
-
 (add-hook 'java-mode-hook (lambda () 
 			    (c-set-style "my-onms-style")))
 
 (global-set-key (kbd "C-c c") 'compile)
 (global-set-key (kbd "<f3>")  'compile)
+
+(if (boundp 'current-project-root)
+    (setq compile-command (format
+			   "cd %s && ./build.sh install assembly:directory-inline"
+			   current-project-root)))

@@ -16,8 +16,8 @@
 		    "make release PLATFORM=Linux_OE_RC"
 		    "make -C packaging PLATFORM=Linux_OE_RC"))
 
-					;      (add-hook cbnl-tree-project-file-visit-hook '(lambda ()
-					;						    (require 'cbnl)))
+(add-hook 'cbnl-tree-project-file-visit-hook '(lambda ()
+					       (require 'cbnl)))
 
 (define-project-type debian-package
   (generic)
@@ -33,6 +33,17 @@
   (generic-git)
   (look-for "../rockbox.git/rbutil")
   :common-compiles ("make" "make install" "make fullzip"))
+
+(define-project-type opennms
+  (generic-git)
+  (and 
+   (look-for "opennms-daemon")
+   (look-for "build.sh"))
+  :common-compiles ("./build.sh install assembly:directory-inline"))
+
+(add-hook 'opennms-project-file-visit-hook '(lambda ()
+					     (load-library "my-onms")))
+
 
 ; Hook in compile
 (global-set-key (kbd "C-c c") 'compile)
