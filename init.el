@@ -67,7 +67,7 @@
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
 
-(defvar I-am-at-work (string-match "cambridgebroadband" (system-name)))
+(defvar I-am-at-work (string-match "sloy" (system-name)))
 (defvar I-am-at-home (string-match "danny" (system-name)))
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
  
@@ -524,7 +524,7 @@ on the command line"
 			      (tool-bar-lines . 0)
 			      (width . 163)
 			      (height . 46)
-			      (left . 1441) ; right hand monitor
+			      (left . 0) ; one monitor (for now)
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . right)
