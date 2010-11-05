@@ -1013,7 +1013,10 @@ expression of the same type as those required by around advices"
 					      (background dark)) nil)))
 	   '(mumamo-background-chunk-submode ((((class color)
 						(min-colors 88) (background dark)) (:background
-						"gray10"))))))))
+						"gray10")))))
+	  (if (maybe-load-library "js2-mode")
+	      (defalias 'javascript-mode 'js2-mode "js2-mode is
+    aliased to javascript mode")))))
 
 (if (locate-library "htmlize")
     (progn

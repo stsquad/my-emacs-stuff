@@ -22,7 +22,8 @@
 (define-project-type debian-package
   (generic)
   (look-for "debian")
-  :common-compiles ("dpkg-buildpackage -rfakeroot"))
+  :common-compiles ("dpkg-buildpackage -rfakeroot"
+		    "dpkg-buildpackage -rfakeroot -k834BE2B6"))
 
 (define-project-type android-package
   (generic)
@@ -43,6 +44,13 @@
 
 (add-hook 'opennms-project-file-visit-hook '(lambda ()
 					     (load-library "my-onms")))
+
+(define-project-type chrome-extension
+  (generic)
+  (look-for "manifest.json"))
+
+(add-hook 'chrome-extension-visit-hook '(lambda ()
+					  (maybe-load-library "js2-mode")))
 
 
 ; Hook in compile
