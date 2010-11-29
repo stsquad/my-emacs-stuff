@@ -154,13 +154,10 @@
 
 (defadvice find-tag (before c-tag-file activate)
   "Automatically create tags file for an app."
-  (if (and (boundp 'eproject-root)
-	   (project-is-cbnl-project eproject-root))
-      (create-cbnl-tags eproject-root)
-    (if (and (string-match current-project-root
-			   (file-name-directory buffer-file-name))
-	     (project-is-cbnl-project current-project-root))
-      (create-cbnl-tags current-project-root))))
+  (if (boundp 'eproject-root)
+      (if (project-is-cbnl-project eproject-root)
+	  (create-cbnl-tags eproject-root)
+	(visit-tags-table (concat eproject-root "/TAGS")))))
 
 (message "Done with cbnl customisations")
 (provide 'cbnl)
