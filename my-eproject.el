@@ -60,7 +60,9 @@
   (look-for "Documentation/CodingStyle")
   :common-compile ("ARCH=x86 make" "make" "ARCH=x86 make TAGS"))
 
-(add-hook 'kernel-visit-hook '(lambda () require 'my-c-mode))
+(add-hook 'kernel-visit-hook '(lambda ()
+				(require 'my-c-mode)
+				(c-set-style "linux")))
 
 ; Hook in compile
 (global-set-key (kbd "C-c c") 'compile)
