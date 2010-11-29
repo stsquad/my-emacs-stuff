@@ -1154,18 +1154,11 @@ plus add font-size: 8pt"
 
 (message "Done Buffer Handling Tweaks")
 
-;; bm.el
-; I don't seem to use this much
-;(if (locate-library "bm")
-;    (progn
-;      (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
-;      (autoload 'bm-next     "bm" "Goto bookmark."                     t)
-;      (autoload 'bm-previous "bm" "Goto previous bookmark." t)
-
-;      (global-set-key (kbd "<C-f2>") 'bm-toggle)
-;      (global-set-key (kbd "<f2>")   'bm-next)
-;      (global-set-key (kbd "<S-f2>") 'bm-previous)))
-
+(if I-am-at-work
+    (progn
+      (setenv "DEBEMAIL" "Alex.Bennee@cambridgebroadband.com")
+      (setenv "DEBFULLNAME" "Alex Bennée")))
+  
 
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
