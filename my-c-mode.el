@@ -111,7 +111,7 @@
      (".*binutils.*\\.[ch]$"  . "gnu")
      (".*gtk-gnutella.*"      . "gtkg-style")
      (".*rockbox.*\\.[ch]$"   . "rockbox-c-style")
-     (".*mysrc.*$"            . "my-c-style")))
+     (".*mysrc.*\\.[ch]$"     . "my-c-style")))
   "A list of reg-ex to styles for my-c-style-guesser")
 
 ; You can add to the alist with something like:
