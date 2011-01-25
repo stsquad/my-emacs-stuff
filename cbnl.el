@@ -132,17 +132,18 @@
 ; (string-match "/lib" "nms-manager-apps/libgrok")
 ; (string-match "/lib" "/export/csrc/work.git/nms-manager-apps/vsbs/")
 
-(defun create-cbnl-tags (root)
-  (interactive)
+(defun create-cbnl-tags (root current-filename)
+  (interactive "DProject Root: 
+GFilename: ")
   (message "create-cbnl-tags")
-  (let* ((app-dir (file-name-directory buffer-file-name))
+  (let* ((app-dir (file-name-directory current-filename))
 	 (tag-file (concat  app-dir "TAGS")))
     (message "app-dir:%s tag-file:%s" app-dir tag-file)
     (unless (or	 (string-match "/lib" app-dir)
 		 (string-match "/include" app-dir))
       (unless  (file-exists-p tag-file)
 	(let* ((find-paths (concat "include/common/ include/ems/ nms-manager-apps/lib* " app-dir))
-	       (command (concat "cd " root "; find "  find-paths  " -iname \"*.[ch]\" | etags -o " tag-file " -L -")))
+	       (command (concat "cd " root "; find "  find-paths  " -iname \"*.[ch]\" | etags -o " tag-file " -")))
 	  (message (concat "Creating tags with:" command))
 	  (shell-command command)))
       (message "Visiting: %s" tag-file)
@@ -156,7 +157,7 @@
   "Automatically create tags file for an app."
   (if (boundp 'eproject-root)
       (if (project-is-cbnl-project eproject-root)
-	  (create-cbnl-tags eproject-root)
+	  (create-cbnl-tags eproject-root buffer-file-name)
 	(visit-tags-table (concat eproject-root "/TAGS")))))
 
 (message "Done with cbnl customisations")
