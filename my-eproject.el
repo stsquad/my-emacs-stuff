@@ -40,7 +40,7 @@
   (and 
    (look-for "opennms-daemon")
    (look-for "build.sh"))
-  :common-compiles ("./build.sh install assembly:directory-inline"))
+  :common-compiles ("./compile.pl && ./assemble.pl -Dbuild.profile=dir"))
 
 (add-hook 'opennms-project-file-visit-hook '(lambda ()
 					     (load-library "my-onms")))
