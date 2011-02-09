@@ -112,6 +112,7 @@
 
 (require 'my-c-mode)
 
+(setq my-c-styles-alist (cons '(".*mibgroup/.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*include/ems/.*$" . "cbnl-nms-style") my-c-styles-alist))
 
