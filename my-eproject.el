@@ -12,6 +12,7 @@
    (look-for "build-system"))
   :common-compiles ("make build-nms PLATFORM=Linux_Desktop"
 		    "make build-nms PLATFORM=Linux_Desktop EMSDEBUG=1"
+		    "make build-nms PLATFORM=Linux_Desktop EMSDEBUG=1 VNMS=0"
 		    "make pkg-nms PLATFORM=Linux_Desktop"
 		    "make release PLATFORM=Linux_OE_RC"
 		    "make -C packaging PLATFORM=Linux_OE_RC"))
