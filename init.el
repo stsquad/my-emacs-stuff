@@ -933,19 +933,20 @@ on the command line"
 
 ; Git Hooks, prefer magit
 
-(if (and (not (locate-library "magit"))
-	 (locate-library "vc-git.el"))
-    (progn 
-      (add-to-list 'vc-handled-backends 'GIT) 
+(if (locate-library "magit")
+    (autoload 'magit-status "magit" "magit front end" t)
+  (if (locate-library "vc-git.el")
+      (progn 
+	(add-to-list 'vc-handled-backends 'GIT) 
 
       ; Also the git-blame and git-status stuff
-      (if (locate-library "git")
-	  (autoload 'git-status "git"
-	    "Git Status" t))
+	(if (locate-library "git")
+	    (autoload 'git-status "git"
+	      "Git Status" t))
 
-      (if (locate-library "git-blame")
-	  (autoload 'git-blame-mode "git-blame"
-	    "Minor mode for incremental blame for Git." t))))
+	(if (locate-library "git-blame")
+	    (autoload 'git-blame-mode "git-blame"
+	      "Minor mode for incremental blame for Git." t)))))
 
 (message "Done GIT hooks")
 
