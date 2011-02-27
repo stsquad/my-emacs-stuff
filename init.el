@@ -67,7 +67,7 @@
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
 
-(defvar I-am-at-work (string-match "cambridgebroadband" (system-name)))
+(defvar I-am-at-work (string-match "sloy" (system-name)))
 (defvar I-am-at-home (string-match "danny" (system-name)))
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
  
@@ -515,7 +515,7 @@ on the command line"
 			      (tool-bar-lines . 0)
 			      (width . 163)
 			      (height . 46)
-			      (left . 1441) ; right hand monitor
+			      (left . 0) ; one monitor (for now)
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . right)
@@ -922,19 +922,21 @@ on the command line"
 (setq vc-command-messages t
       vc-initial-comment t)
 
-; Git Hooks
+; Git Hooks, prefer magit
 
-(if (locate-library "vc-git.el")
-    (add-to-list 'vc-handled-backends 'GIT)) 
+(if (and (not (locate-library "magit"))
+	 (locate-library "vc-git.el"))
+    (progn 
+      (add-to-list 'vc-handled-backends 'GIT) 
 
-; Also the git-blame and git-status stuff
-(if (locate-library "git")
-    (autoload 'git-status "git"
-	 "Git Status" t))
+      ; Also the git-blame and git-status stuff
+      (if (locate-library "git")
+	  (autoload 'git-status "git"
+	    "Git Status" t))
 
-(if (locate-library "git-blame")
-    (autoload 'git-blame-mode "git-blame"
-      "Minor mode for incremental blame for Git." t))
+      (if (locate-library "git-blame")
+	  (autoload 'git-blame-mode "git-blame"
+	    "Minor mode for incremental blame for Git." t))))
 
 (message "Done GIT hooks")
 
@@ -1004,7 +1006,10 @@ expression of the same type as those required by around advices"
 					      (background dark)) nil)))
 	   '(mumamo-background-chunk-submode ((((class color)
 						(min-colors 88) (background dark)) (:background
-						"gray10"))))))))
+						"gray10")))))
+	  (if (maybe-load-library "js2-mode")
+	      (defalias 'javascript-mode 'js2-mode "js2-mode is
+    aliased to javascript mode")))))
 
 (if (locate-library "htmlize")
     (progn
@@ -1142,18 +1147,11 @@ plus add font-size: 8pt"
 
 (message "Done Buffer Handling Tweaks")
 
-;; bm.el
-; I don't seem to use this much
-;(if (locate-library "bm")
-;    (progn
-;      (autoload 'bm-toggle   "bm" "Toggle bookmark in current buffer." t)
-;      (autoload 'bm-next     "bm" "Goto bookmark."                     t)
-;      (autoload 'bm-previous "bm" "Goto previous bookmark." t)
-
-;      (global-set-key (kbd "<C-f2>") 'bm-toggle)
-;      (global-set-key (kbd "<f2>")   'bm-next)
-;      (global-set-key (kbd "<S-f2>") 'bm-previous)))
-
+(if I-am-at-work
+    (progn
+      (setenv "DEBEMAIL" "Alex.Bennee@cambridgebroadband.com")
+      (setenv "DEBFULLNAME" "Alex Bennée")))
+  
 
 ;; Saveplace - Jump to where I last was when I edit a file
 ;
@@ -1175,7 +1173,7 @@ plus add font-size: 8pt"
 	  "erc"
 	'(progn
 	   (erc-track-mode t)
-	   (erc-autojoin-mode 1)
+	   (erc-autojoin-mode 'nil)
 	   (add-hook 'erc-text-matched-hook
 		     (lambda (match-type nickuserhost message)
 					; find sounds

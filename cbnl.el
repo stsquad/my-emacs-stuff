@@ -17,137 +17,25 @@
 	(not (functionp 'extract-string)))
     (error "Need some string munging functions defined"))
 
+;; Sanity
+;
+; I only expect to start in a working directory of checked out src
+; tree. So there should be a `pwd`/build-system. This assumption is
+; slightly broken for eproject
+
+(defun project-is-cbnl-project (path)
+  "Return true if the current project path is a CBNL build tree"
+  (file-exists-p (concat path "/build-system")))
+
 ;; Project Root variables
 ;
 ; These are defined in my .emacs and are re-implemented here for
 ; portability reasons.
 ;
 ; The current project root, used to build stuff later
-(if (not (bound-and-true-p current-project-root))
-    (progn
-
-      (defvar current-project-root
-	(concat (chomp (shell-command-to-string "pwd")))
-	"Describes the current project root dir (top of src tree)")
-
-      (defvar project-root-history 'current-project-root
-	"A history of projects I have been to")
-
-      ; this is redefined later to someting smarter
-      (defun set-project-root ()
-	"Set a primary project root"
-	(interactive)
-	(setq current-project-root
-	      (read-file-name "Project Root:")))))
-
-;; Project Variables
-;
-; These two variables are used to suply the make target invocation
-; for something in vectastar. The full string includes 
-
-(defvar cbnl-build-targets
-  '("-C common/libasync -f Makefile"
-    "-C common/libtimer -f Makefile"
-    "-C common/libdbg -f Makefile"
-    "-C net-snmp -f Makefile.net-snmp"
-    "-C third-party/libxml -f ../local-config/Makefile.libxml"
-    "-C nms-manager-apps -f Makefile"
-    "build-nms"
-    "pkg-nms"
-    "release")
-  "A List of CBNL build targets")
-
-;; current-build-target
-;
-; *CHANGE* You can set your default build target here
-(defvar current-build-target
-  (concat "build-nms")
-  "Describes the current build target")
-
-;; current-build-flags
-;
-; *CHANGE* You can set your default build flags here.
-
-(defvar cbnl-build-flags
-  '("VECTASTARBUILD=1 CROSS_COMPILE=ppc8xx"
-    "PLATFORM=Linux_Desktop"
-    "PLATFORM=Linux_Desktop EMSDEBUG=1"
-    "PLATFORM=Linux_OE_RC"
-    "GTK=2")
-  "Describes the current build flags")
-
-
-(defvar current-build-flags
-  (concat "PLATFORM=Linux_Desktop EMSDEBUG=1")
-  "Describes the current default build flags")
-
-(message "Defined CBNL project variables")
-
-;; Sanity
-;
-; I only expect to start in a working directory of checked out src
-; tree. So there should be a `pwd`/build-system
-
-(defun project-is-cbnl-project (path)
-  "Return true if the current project path is a CBNL build tree"
-  (file-exists-p (concat path "/build-system")))
-
-(if (not (project-is-cbnl-project current-project-root))
-    (warn "current-project-root is not a CBNL project directory")
-  (message (concat "Project directory is " current-project-root)))
-
-;; set-cbnl-compile-command
-;
-; Construct a compile command for building something in the CBNL
-; environment. The compile command is of the form:
-;
-; cd "current-project-root" && make "current-build-target" "current-build-flags"
-;
-; e.g.
-;
-; cd /eng/ajb/reference.cvs && make -C nms-manager-apps -f Makefile GTK=2
-
-(defun set-cbnl-compile-command ()
-  "Set the compile command for a cbnl project"
-  (interactive)
-  (setq compile-command
-	(format "cd %s && make %s %s"
-		current-project-root
-		current-build-target
-		current-build-flags)))
-
-; And actually do it
-(set-cbnl-compile-command)
-
-(global-set-key (kbd "C-c c") 'compile)
-(global-set-key (kbd "<f3>")  'compile)
-
-;; Switch Targets/Flags
-;
-; Allow easy swithcing based on history
-
-; set-current-build-target
-(defun set-current-build-target ()
-  "Switch build target"
-  (interactive)
-  (setq current-build-target
-	(read-string "New target:"
-		     nil
-		     'cbnl-build-targets
-		     0))
-  (set-cbnl-compile-command))
-
-; set-current-build-flags
-(defun set-current-build-flags ()
-  "Switch build flags"
-  (interactive)
-  (setq current-build-flags
-	(read-string "New flags:"
-		     nil
-		     'cbnl-build-flags
-		     0))
-  (set-cbnl-compile-command))
-
+(if (and (not (bound-and-true-p current-project-root))
+	 (not (bound-and-true-p eproject-root)))
+    (require 'cbnl-project))
 
 (message "Keyboard Hacks")
 
@@ -224,6 +112,7 @@
 
 (require 'my-c-mode)
 
+(setq my-c-styles-alist (cons '(".*mibgroup/.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*include/ems/.*$" . "cbnl-nms-style") my-c-styles-alist))
 
@@ -244,31 +133,33 @@
 ; (string-match "/lib" "nms-manager-apps/libgrok")
 ; (string-match "/lib" "/export/csrc/work.git/nms-manager-apps/vsbs/")
 
-(defun create-cbnl-tags ()
-  (interactive)
+(defun create-cbnl-tags (root current-filename)
+  (interactive "DProject Root: 
+GFilename: ")
   (message "create-cbnl-tags")
-  (let* ((app-dir (file-name-directory buffer-file-name))
+  (let* ((app-dir (file-name-directory current-filename))
 	 (tag-file (concat  app-dir "TAGS")))
     (message "app-dir:%s tag-file:%s" app-dir tag-file)
     (unless (or	 (string-match "/lib" app-dir)
 		 (string-match "/include" app-dir))
       (unless  (file-exists-p tag-file)
 	(let* ((find-paths (concat "include/common/ include/ems/ nms-manager-apps/lib* " app-dir))
-	       (command (concat "cd " current-project-root "; find "  find-paths  " -iname \"*.[ch]\" | etags -o " tag-file " -")))
+	       (command (concat "cd " root "; find "  find-paths  " -iname \"*.[ch]\" | etags -o " tag-file " -")))
 	  (message (concat "Creating tags with:" command))
 	  (shell-command command)))
       (message "Visiting: %s" tag-file)
       (visit-tags-table tag-file))))
 
 
+; Only do this if current file is in project, and the project is a
+; CBNL one. Handle both eproject and old style stuff
+
 (defadvice find-tag (before c-tag-file activate)
   "Automatically create tags file for an app."
-  ; Only do this if current file is in project, and the project is a
-  ; CBNL one
-  (if (and (string-match current-project-root (file-name-directory
-					       buffer-file-name))
-	   (project-is-cbnl-project current-project-root))
-      (create-cbnl-tags)))
+  (if (boundp 'eproject-root)
+      (if (project-is-cbnl-project eproject-root)
+	  (create-cbnl-tags eproject-root buffer-file-name)
+	(visit-tags-table (concat eproject-root "/TAGS")))))
 
 (message "Done with cbnl customisations")
 (provide 'cbnl)
