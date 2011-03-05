@@ -547,7 +547,16 @@ on the command line"
 			      (height . 50)
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
-			      (vertical-scroll-bars . right)))))
+			      (vertical-scroll-bars . right)))
+  (if (boundp 'edit-server-new-frame-alist)
+      (setq edit-server-new-frame-alist '((name . "Emacs TEXTAREA")
+					  (width . 80)
+					  (height . 30)
+					  (left . 394)
+					  (top . 167)
+					  (minibuffer . t)
+					  (menu-bar-lines . t))))))
+
 
 ; This is a bit hacky and I'm sure can be done better. However I don't
 ; seem to be able to see a value for window-system in
