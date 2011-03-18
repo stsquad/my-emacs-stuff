@@ -932,12 +932,13 @@ on the command line"
       vc-initial-comment t)
 
 ; Git Hooks, prefer magit
-
 (if (locate-library "magit")
-    (autoload 'magit-status "magit" "magit front end" t)
+    (progn
+      (remq 'Git vc-handled-backends)
+      (autoload 'magit-status "magit" "magit front end" t))
   (if (locate-library "vc-git.el")
       (progn 
-	(add-to-list 'vc-handled-backends 'GIT) 
+	(add-to-list 'vc-handled-backends 'Git) 
 
       ; Also the git-blame and git-status stuff
 	(if (locate-library "git")
