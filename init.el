@@ -940,23 +940,21 @@ on the command line"
 (setq vc-command-messages t
       vc-initial-comment t)
 
-; Git Hooks, prefer magit
-(if (locate-library "magit")
-    (progn
-      (remq 'Git vc-handled-backends)
-      (autoload 'magit-status "magit" "magit front end" t))
-  (if (locate-library "vc-git.el")
-      (progn 
-	(add-to-list 'vc-handled-backends 'Git) 
+; Git Hooks, prefer magit over vc enabled git
+(if (and (locate-library "vc-git.el")
+	 (not (locate-library "magit")))
+    (add-to-list 'vc-handled-backends 'Git)
+  (remq 'Git vc-handled-backends)
+  (autoload 'magit-status "magit" "magit front end" t))
 
-      ; Also the git-blame and git-status stuff
-	(if (locate-library "git")
-	    (autoload 'git-status "git"
-	      "Git Status" t))
+; Also the git-blame and git-status stuff
+(if (locate-library "git")
+    (autoload 'git-status "git"
+      "Git Status" t))
 
-	(if (locate-library "git-blame")
-	    (autoload 'git-blame-mode "git-blame"
-	      "Minor mode for incremental blame for Git." t)))))
+(if (locate-library "git-blame")
+    (autoload 'git-blame-mode "git-blame"
+      "Minor mode for incremental blame for Git." t))
 
 (message "Done GIT hooks")
 
