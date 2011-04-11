@@ -1186,43 +1186,10 @@ plus add font-size: 8pt"
 ;;
 ;; ERC
 ;;
-(if (locate-library "erc")
-    (progn
-      (autoload 'erc-select "erc" "Start ERC" t)
-      (eval-after-load
-	  "erc"
-	'(progn
-	   (erc-track-mode t)
-	   (erc-autojoin-mode 'nil)
-	   (add-hook 'erc-text-matched-hook
-		     (lambda (match-type nickuserhost message)
-					; find sounds
-		       (let ((msg-sound (find-valid-file
-					 '("/usr/share/sounds/purple/receive.wav"
-					   "/usr/share/sounds/ekiga/newmessage.wav"
-					   "/usr/share/sounds/generic.wav")))
-			     (alert-sound (find-valid-file
-					   '("/usr/share/sounds/purple/alert.wav"
-					     "/usr/share/sounds/ekiga/voicemail.wav"
-					     "/usr/share/sounds/question.wav"))))
-			 (cond
-			  ((eq match-type 'current-nick)
-			   (if msg-sound
-			       (play-sound-file msg-sound)
-			     (erc-beep-on-match match-type nickuserhost message)))
-			  ((eq match-type 'keyword)
-			   (if alert-sound
-			       (play-sound-file alert-sound)
-			     (erc-beep-on-match match-type nickuserhost message)))))))
-	   (setq erc-beep-match-types '(current-nick keyword)
-                 erc-autojoin-channels-alist
-		 '(("freenode.net" "#emacs"
-		    "#rockbox" "#linuxoutlaws")
-		   ("irc.srcf.ucam.org" "#mage"))
-		 erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
-					   "324" "329" "332" "333" "353" "477")
-		 erc-hide-list '("JOIN" "PART"
-				 "QUIT" "NICK"))))))
+(when (locate-library "erc")
+  (autoload 'erc-select "erc" "Start ERC" t)
+  (eval-after-load
+      "erc" (maybe-load-library "my-erc")))
 
 
 ;; Finally enable desktop mode
