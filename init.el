@@ -944,7 +944,7 @@ on the command line"
 (if (and (locate-library "vc-git.el")
 	 (not (locate-library "magit")))
     (add-to-list 'vc-handled-backends 'Git)
-  (remq 'Git vc-handled-backends)
+  (setq vc-handled-backends (remq 'Git vc-handled-backends))
   (autoload 'magit-status "magit" "magit front end" t))
 
 ; Also the git-blame and git-status stuff
