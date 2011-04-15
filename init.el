@@ -538,7 +538,16 @@ on the command line"
 			      (height . 50)
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
-			      (vertical-scroll-bars . right)))))
+			      (vertical-scroll-bars . right)))
+  (if (boundp 'edit-server-new-frame-alist)
+      (setq edit-server-new-frame-alist '((name . "Emacs TEXTAREA")
+					  (width . 80)
+					  (height . 30)
+					  (left . 394)
+					  (top . 167)
+					  (minibuffer . t)
+					  (menu-bar-lines . t))))))
+
 
 ; This is a bit hacky and I'm sure can be done better. However I don't
 ; seem to be able to see a value for window-system in
@@ -922,21 +931,21 @@ on the command line"
 (setq vc-command-messages t
       vc-initial-comment t)
 
-; Git Hooks, prefer magit
+; Git Hooks, prefer magit over vc enabled git
+(if (and (locate-library "vc-git.el")
+	 (not (locate-library "magit")))
+    (add-to-list 'vc-handled-backends 'Git)
+  (setq vc-handled-backends (remq 'Git vc-handled-backends))
+  (autoload 'magit-status "magit" "magit front end" t))
 
-(if (and (not (locate-library "magit"))
-	 (locate-library "vc-git.el"))
-    (progn 
-      (add-to-list 'vc-handled-backends 'GIT) 
+; Also the git-blame and git-status stuff
+(if (locate-library "git")
+    (autoload 'git-status "git"
+      "Git Status" t))
 
-      ; Also the git-blame and git-status stuff
-      (if (locate-library "git")
-	  (autoload 'git-status "git"
-	    "Git Status" t))
-
-      (if (locate-library "git-blame")
-	  (autoload 'git-blame-mode "git-blame"
-	    "Minor mode for incremental blame for Git." t))))
+(if (locate-library "git-blame")
+    (autoload 'git-blame-mode "git-blame"
+      "Minor mode for incremental blame for Git." t))
 
 (message "Done GIT hooks")
 
@@ -1166,43 +1175,10 @@ plus add font-size: 8pt"
 ;;
 ;; ERC
 ;;
-(if (locate-library "erc")
-    (progn
-      (autoload 'erc-select "erc" "Start ERC" t)
-      (eval-after-load
-	  "erc"
-	'(progn
-	   (erc-track-mode t)
-	   (erc-autojoin-mode 'nil)
-	   (add-hook 'erc-text-matched-hook
-		     (lambda (match-type nickuserhost message)
-					; find sounds
-		       (let ((msg-sound (find-valid-file
-					 '("/usr/share/sounds/purple/receive.wav"
-					   "/usr/share/sounds/ekiga/newmessage.wav"
-					   "/usr/share/sounds/generic.wav")))
-			     (alert-sound (find-valid-file
-					   '("/usr/share/sounds/purple/alert.wav"
-					     "/usr/share/sounds/ekiga/voicemail.wav"
-					     "/usr/share/sounds/question.wav"))))
-			 (cond
-			  ((eq match-type 'current-nick)
-			   (if msg-sound
-			       (play-sound-file msg-sound)
-			     (erc-beep-on-match match-type nickuserhost message)))
-			  ((eq match-type 'keyword)
-			   (if alert-sound
-			       (play-sound-file alert-sound)
-			     (erc-beep-on-match match-type nickuserhost message)))))))
-	   (setq erc-beep-match-types '(current-nick keyword)
-                 erc-autojoin-channels-alist
-		 '(("freenode.net" "#emacs"
-		    "#rockbox" "#linuxoutlaws")
-		   ("irc.srcf.ucam.org" "#mage"))
-		 erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
-					   "324" "329" "332" "333" "353" "477")
-		 erc-hide-list '("JOIN" "PART"
-				 "QUIT" "NICK"))))))
+(when (locate-library "erc")
+  (autoload 'erc-select "erc" "Start ERC" t)
+  (eval-after-load
+      "erc" (maybe-load-library "my-erc")))
 
 
 ;; Finally enable desktop mode

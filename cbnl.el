@@ -115,12 +115,13 @@
 (setq my-c-styles-alist (cons '(".*mibgroup/.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*include/ems/.*$" . "cbnl-nms-style") my-c-styles-alist))
+(setq my-c-styles-alist (cons '("/export/csrc/.*\.git/.*[ch]$" . "cbnl-nms-style") my-c-styles-alist))
 
 ; (my-c-style-guesser "nms-manager-apps/vsalarmd/snmp_interface.c")
 ; (my-c-style-guesser "/export/csrc/work.git/e1mon/ifTable.c")
 ; (my-c-style-guesser "/export/csrc/work.git/third-party/br2684/br2684ctrl.c")
 ; (my-c-style-guesser "/export/csrc/work.git/intel-linux/kernel/context.c")
-
+; (my-c-style-guesser "/export/csrc/rc/rc-work.git/librc/output_enum.c")
 
 ;; TAGs support
 ;
