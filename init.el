@@ -1029,37 +1029,34 @@ expression of the same type as those required by around advices"
 	      (defalias 'javascript-mode 'js2-mode "js2-mode is
     aliased to javascript mode")))))
 
-(if (locate-library "htmlize")
-    (progn
-      (load-library "htmlize")
-      (setq htmlize-output-type 'inline-css)
+(when (maybe-load-library "htmlize")
+  (setq htmlize-output-type 'inline-css)
 
-
-      ; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
-      (defun my-htmlize-region (beg end)
-	"Htmlize region and put into <pre> tag style that is left in <body> tag
+; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
+  (defun my-htmlize-region (beg end)
+    "Htmlize region and put into <pre> tag style that is left in <body> tag
 plus add font-size: 8pt"
-	(interactive "r")
-	(let* ((buffer-faces (htmlize-faces-in-buffer))
-	       (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
-	       (pre-tag (format
-			 "<pre style=\"%s font-size: 8pt\">"
-			 (mapconcat #'identity (htmlize-css-specs
-						(gethash 'default face-map)) " ")))
-	       (htmlized-reg (htmlize-region-for-paste beg end)))
-	  (switch-to-buffer-other-window "*htmlized output*")
+    (interactive "r")
+    (let* ((buffer-faces (htmlize-faces-in-buffer))
+	   (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
+	   (pre-tag (format
+		     "<pre style=\"%s font-size: 8pt\">"
+		     (mapconcat #'identity (htmlize-css-specs
+					    (gethash 'default face-map)) " ")))
+	   (htmlized-reg (htmlize-region-for-paste beg end)))
+      (switch-to-buffer-other-window "*htmlized output*")
 					; clear buffer
-	  (kill-region (point-min) (point-max))
+      (kill-region (point-min) (point-max))
 					; set mode to have syntax highlighting
-	  (nxml-mode)
-	  (save-excursion
-	    (insert htmlized-reg))
-	  (while (re-search-forward "<pre>" nil t)
-	    (replace-match pre-tag nil nil))
-	  (goto-char (point-min))))
+      (nxml-mode)
+      (save-excursion
+	(insert htmlized-reg))
+      (while (re-search-forward "<pre>" nil t)
+	(replace-match pre-tag nil nil))
+      (goto-char (point-min))))
 
-      (global-set-key [(f6)] (lambda (beg end)
-                         (interactive "r") (my-htmlize-region beg end)))))
+  (global-set-key [(f6)] (lambda (beg end)
+			   (interactive "r") (my-htmlize-region beg end))))
 
 
 ;; Elisp mode
