@@ -94,6 +94,17 @@
 
 (c-add-style "git-c-style" git-c-style)
 
+; EasyTag
+(defconst easytag-c-style
+  '(
+    "my-c-style"
+    (indent-tabs-mode . nil)
+    (c-basic-offset . 4)
+    (c-comment-only-line-offset . 0))
+  "EasyTag Programming Style")
+
+(c-add-style "easytag-c-style" easytag-c-style)
+
 ;; my-c-style-guesser
 ;
 ; Go through the list of patterns and see if we know what style
@@ -111,11 +122,13 @@
      (".*binutils.*\\.[ch]$"  . "gnu")
      (".*gtk-gnutella.*"      . "gtkg-style")
      (".*rockbox.*\\.[ch]$"   . "rockbox-c-style")
-     (".*mysrc.*\\.[ch]$"     . "my-c-style")))
+     (".*mysrc.*\\.[ch]$"     . "my-c-style")
+     (".*easytag.*/src/.*\\.[ch]$". "easytag-c-style")))
   "A list of reg-ex to styles for my-c-style-guesser")
 
 ; You can add to the alist with something like:
 ; (setq my-c-styles-alist (cons '(".*mysrc.*$" . my-c-style) my-c-styles-alist))
+; (setq my-c-styles-alist (cons '(".*easytag.*/src/.*\\.[ch]$". "easytag-c-style") my-c-styles-alist))
 
 (defun my-c-style-guesser(filename)
   "Guess the C style we should use based on the path of the buffer"
@@ -134,6 +147,7 @@
 ; (my-c-style-guesser "/export/csrc/ppc-linux/common.c")
 ; (my-c-style-guesser "/export/csrc/intel-linux/common.c")
 ; (my-c-style-guesser "/home/alex/src/rockbox/rockbox.git-svn/apps/playlist.c")
+; (my-c-style-guesser "/home/alex/src/easytag.git/src/et_core.c")
 
 ;;
 ;; my-c-mode-hook is called every time
