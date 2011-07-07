@@ -570,9 +570,16 @@ on the command line"
   (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
   (set-face-background 'region "blue"))
 
+(defvar my-default-x-theme
+  "Default theme for X frames"
+  'color-theme-gnome)
+
+(if (maybe-load-library "zenburn")
+    (set 'my-default-x-theme 'zenburn-theme))
+
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
-  (my-color-theme-set 'color-theme-gnome2))
+  (my-color-theme-set 'my-default-x-theme))
 
 (defun my-new-frame-colours(frame)
   "Set the colour scheme of a new frame"
