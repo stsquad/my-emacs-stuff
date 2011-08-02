@@ -575,7 +575,9 @@ on the command line"
   'color-theme-gnome)
 
 (if (maybe-load-library "zenburn")
-    (set 'my-default-x-theme 'zenburn-theme))
+    (set 'my-default-x-theme 'zenburn-theme)
+  (if (maybe-load-library "color-theme-zenburn")
+      (set 'my-default-x-theme 'color-theme-zenburn)))
 
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
@@ -590,7 +592,8 @@ on the command line"
 ;; from http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=dotemacs;hb=HEAD
 (defun my-color-theme () 
   (interactive)
-  (ecase (intern (completing-read "Theme: " '("gnome" "tty" "dark")))
+  (ecase (intern (completing-read "Theme: " '("desktop" "gnome" "tty" "dark")))
+    (desktop (my-set-x-colours))
     (gnome (my-color-theme-set 'color-theme-gnome2))
     (tty   (my-set-tty-colours))
     (dark  (my-color-theme-set 'color-theme-arjen))))
