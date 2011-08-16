@@ -780,6 +780,7 @@ on the command line"
 
 ;; I hate tabs - they are set in cc-mode but not everything respects that
 (setq indent-tabs-mode nil)
+(setq tab-always-indent 'complete)
 
 (if I-am-emacs-23+
     (progn
