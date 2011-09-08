@@ -65,6 +65,17 @@
 				(require 'my-c-mode)
 				(c-set-style "linux")))
 
+(define-project-type easytag
+  (generic-git)
+  (look-for "src/et_core.c"))
+
+(add-hook 'easytag-visit-hook '(lambda ()
+				(require 'my-c-mode)
+				(c-set-style "easytag")))
+				 
+  
+
+
 ; Hook in compile
 (global-set-key (kbd "C-c c") 'compile)
 (define-key eproject-mode-map (kbd "C-c c") 'eproject-compile) 

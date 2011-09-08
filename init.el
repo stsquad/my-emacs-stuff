@@ -173,6 +173,24 @@ on the command line"
 	(setq load-path (cons my-lisp-dir load-path))
 	(normal-top-level-add-subdirs-to-load-path))))
 
+;; Add site-lisp to search path
+;
+; This is a work-around function for when I'm running bleeding
+; emacs from the source tree but still want Debian's developer
+; tools. I'd caution about having too many extra packages about that
+; have been merged into the source tree (cedet etc) lest it get
+; confused.
+
+(defun load-debian-site-lisp()
+  "Attempt to load Debian's site-lisp if it's there"
+  (interactive)
+  (when (and (not (member "/usr/share/emacs/site-lisp" load-path))
+	     (fboundp 'normal-top-level-add-subdirs-to-load-path))
+    (let* ((default-directory "/usr/share/emacs/site-lisp"))
+      (normal-top-level-add-subdirs-to-load-path))))
+
+(load-debian-site-lisp)
+
 ;;  (message "Adding local .emacs.d to lib path")
 ;;  (add-to-list 'load-path "~/.emacs.d/"))
 ;; maybe-load-library
@@ -561,9 +579,18 @@ on the command line"
   (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
   (set-face-background 'region "blue"))
 
+(defvar my-default-x-theme
+  "Default theme for X frames"
+  'color-theme-gnome)
+
+(if (maybe-load-library "zenburn")
+    (set 'my-default-x-theme 'zenburn-theme)
+  (if (maybe-load-library "color-theme-zenburn")
+      (set 'my-default-x-theme 'color-theme-zenburn)))
+
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
-  (my-color-theme-set 'color-theme-gnome2))
+  (my-color-theme-set 'my-default-x-theme))
 
 (defun my-new-frame-colours(frame)
   "Set the colour scheme of a new frame"
@@ -574,7 +601,8 @@ on the command line"
 ;; from http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=dotemacs;hb=HEAD
 (defun my-color-theme () 
   (interactive)
-  (ecase (intern (completing-read "Theme: " '("gnome" "tty" "dark")))
+  (ecase (intern (completing-read "Theme: " '("desktop" "gnome" "tty" "dark")))
+    (desktop (my-set-x-colours))
     (gnome (my-color-theme-set 'color-theme-gnome2))
     (tty   (my-set-tty-colours))
     (dark  (my-color-theme-set 'color-theme-arjen))))
@@ -746,6 +774,7 @@ on the command line"
 
 ;; I hate tabs - they are set in cc-mode but not everything respects that
 (setq indent-tabs-mode nil)
+(setq tab-always-indent 'complete)
 
 (if I-am-emacs-23+
     (progn
@@ -1020,37 +1049,34 @@ expression of the same type as those required by around advices"
 	      (defalias 'javascript-mode 'js2-mode "js2-mode is
     aliased to javascript mode")))))
 
-(if (locate-library "htmlize")
-    (progn
-      (load-library "htmlize")
-      (setq htmlize-output-type 'inline-css)
+(when (maybe-load-library "htmlize")
+  (setq htmlize-output-type 'inline-css)
 
-
-      ; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
-      (defun my-htmlize-region (beg end)
-	"Htmlize region and put into <pre> tag style that is left in <body> tag
+; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
+  (defun my-htmlize-region (beg end)
+    "Htmlize region and put into <pre> tag style that is left in <body> tag
 plus add font-size: 8pt"
-	(interactive "r")
-	(let* ((buffer-faces (htmlize-faces-in-buffer))
-	       (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
-	       (pre-tag (format
-			 "<pre style=\"%s font-size: 8pt\">"
-			 (mapconcat #'identity (htmlize-css-specs
-						(gethash 'default face-map)) " ")))
-	       (htmlized-reg (htmlize-region-for-paste beg end)))
-	  (switch-to-buffer-other-window "*htmlized output*")
+    (interactive "r")
+    (let* ((buffer-faces (htmlize-faces-in-buffer))
+	   (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
+	   (pre-tag (format
+		     "<pre style=\"%s font-size: 8pt\">"
+		     (mapconcat #'identity (htmlize-css-specs
+					    (gethash 'default face-map)) " ")))
+	   (htmlized-reg (htmlize-region-for-paste beg end)))
+      (switch-to-buffer-other-window "*htmlized output*")
 					; clear buffer
-	  (kill-region (point-min) (point-max))
+      (kill-region (point-min) (point-max))
 					; set mode to have syntax highlighting
-	  (nxml-mode)
-	  (save-excursion
-	    (insert htmlized-reg))
-	  (while (re-search-forward "<pre>" nil t)
-	    (replace-match pre-tag nil nil))
-	  (goto-char (point-min))))
+      (nxml-mode)
+      (save-excursion
+	(insert htmlized-reg))
+      (while (re-search-forward "<pre>" nil t)
+	(replace-match pre-tag nil nil))
+      (goto-char (point-min))))
 
-      (global-set-key [(f6)] (lambda (beg end)
-                         (interactive "r") (my-htmlize-region beg end)))))
+  (global-set-key [(f6)] (lambda (beg end)
+			   (interactive "r") (my-htmlize-region beg end))))
 
 
 ;; Elisp mode
@@ -1179,7 +1205,6 @@ plus add font-size: 8pt"
   (autoload 'erc-select "erc" "Start ERC" t)
   (eval-after-load
       "erc" (maybe-load-library "my-erc")))
-
 
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
