@@ -173,6 +173,7 @@ on the command line"
 	(setq load-path (cons my-lisp-dir load-path))
 	(normal-top-level-add-subdirs-to-load-path))))
 
+
 ;; Add site-lisp to search path
 ;
 ; This is a work-around function for when I'm running bleeding
@@ -317,8 +318,13 @@ on the command line"
     (if (file-exists-p f)
 	(return f))))
 
-;; Development related stuff, including project root
+;; Load sub-mdoules
+;
+; Development related stuff, including project root
 (load-library "my-devel")
+; Org configuration
+(maybe-load-library "my-org")
+
 
 ;; Find methods
 ;
