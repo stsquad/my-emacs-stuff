@@ -502,6 +502,9 @@ on the command line"
 	(if (fboundp 'color-theme-initialize)
 	    (color-theme-initialize))))
 
+(when (and I-am-emacs-23+ (or I-am-at-home I-am-at-work))
+  (setq font-use-system-font 't))
+
 (defvar my-last-theme 'nil
   "Last color theme we set")
 
@@ -520,6 +523,7 @@ on the command line"
 (defvar normal-height)
 (defvar fullscreen-width)
 (defvar fullscreen-height)
+
 
 ; Define the default frames sizes, shouldn't apply to a tty invocation
 ; TODO: handle remote sessions better, probably by probing remote X
@@ -546,13 +550,12 @@ on the command line"
  ((eval I-am-at-work)
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
-			      (width . 163)
-			      (height . 46)
+			      (width . 187)
+			      (height . 68)
 			      (left . 0) ; one monitor (for now)
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
-			      (vertical-scroll-bars . right)
-			      (font . "DejaVu Sans Mono-14")))
+			      (vertical-scroll-bars . right)))
   (if (boundp 'edit-server-new-frame-alist)
       (setq edit-server-new-frame-alist '((name . "Emacs TEXTAREA")
 					  (width . 80)
@@ -778,6 +781,9 @@ on the command line"
 (put 'narrow-to-region 'disabled nil)
 
 (message "Done Display Hacks")
+
+;; Don't prompt me to revert something
+(global-auto-revert-mode 1)
 
 ;; Expands a time-stamp line
 (setq time-stamp-format "%02H:%02M on %:a, %:d %:b %:y by %u")
