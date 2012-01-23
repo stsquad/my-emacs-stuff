@@ -6,7 +6,7 @@
 (require 'eproject-extras)
 
 (define-project-type cbnl-tree
-  (generic-git)
+  (generic)
   (and
    (look-for "Makefile.cleanenv")
    (look-for "build-system"))
@@ -93,17 +93,17 @@
   "Do a find across the project"
   (interactive "sSearch string:")
 
-  (if (file-exists-p (concat eproject-root "/.git"))
+  (if (file-exists-p (concat eproject-root ".git"))
       (let ((buffer (concat "*git grep for " search "*" ))
 	    (command (concat "git grep -n " search)))
 	(setq grep-command "git grep -n ")
 	(message "Using git grep for searches")
 	(shell-command command buffer)
 	(pop-to-buffer buffer)
-	(grep-mode)))
-  (grep-find (concat
-	      "find "
-	      eproject-root " -print0 |  xargs -0 -e grep -n -e " search)))
+	(grep-mode))
+    (grep-find (concat
+		"find "
+		eproject-root " -print0 |  xargs -0 -e grep -n -e " search))))
   
 
 (unless (global-key-binding (kbd "<f5>"))
