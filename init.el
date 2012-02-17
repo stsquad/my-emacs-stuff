@@ -1051,15 +1051,8 @@ expression of the same type as those required by around advices"
     (if (maybe-load-library "~/.emacs.d/nxhtml/autostart.el")
 	(progn
 	  (setq nxhtml-skip-welcome t)
-	  (custom-set-faces
-	   '(mumamo-background-chunk-major ((((class color) (min-colors 88)
-					      (background dark)) nil)))
-	   '(mumamo-background-chunk-submode ((((class color)
-						(min-colors 88) (background dark)) (:background
-						"gray10")))))
 	  (if (maybe-load-library "js2-mode")
-	      (defalias 'javascript-mode 'js2-mode "js2-mode is
-    aliased to javascript mode")))))
+	      (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode")))))
 
 (when (maybe-load-library "htmlize")
   (setq htmlize-output-type 'inline-css)
@@ -1185,12 +1178,20 @@ plus add font-size: 8pt"
   (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
   (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
 
-(when (require 'bs nil 'noerror)
-  (defun list-buffers-other-win ()
-    "Opens list-buffers and put focus on it"
-    (interactive)
-    (bs-show "all"))
-  (global-set-key (kbd "C-x C-b") 'list-buffers-other-win))
+;; ibuffer has been around for some time
+(global-set-key (kbd "C-x C-b") 'ibuffer-bs-show)
+
+(setq ibuffer-saved-filters
+      (quote (("csrc" ((filename . "/export/csrc/*")))
+	      ("tramp" ((filename . "\\/ssh:")))
+	      ("irc" ((mode . erc-mode)))
+	      ("magit" ((mode . magit-status-mode))) 
+	      ("programming" ((or (mode . emacs-lisp-mode)
+				  (mode . cperl-mode)
+				  (mode . c-mode)
+				  (mode . java-mode)
+				  (mode . idl-mode)
+				  (mode . lisp-mode)))))))
 
 (message "Done Buffer Handling Tweaks")
 
@@ -1227,5 +1228,10 @@ plus add font-size: 8pt"
 	(setq desktop-dirname (concat (chomp (shell-command-to-string "pwd")))
 	      desktop-save 'ask-if-new)
 	(desktop-save-mode 1))))
+
+;; Load any hand-made customisations
+(setq custom-file "~/.emacs.d/my-custom.el")
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (message "Done .emacs")

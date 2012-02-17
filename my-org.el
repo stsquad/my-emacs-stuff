@@ -2,6 +2,7 @@
 ;;
 ;;
 
+;; Clocking behaviour
 (setq org-clock-persist 't
       org-clock-in-resume 't                 ; resume currently open clock
       org-clock-persist-query-resume 'nil    ; don't ask me about it
@@ -9,10 +10,22 @@
 
 (org-clock-persistence-insinuate)
 
+;; TODO Hierarchy
+(setq org-provide-todo-statistics 'ALL-HEADLINES
+      org-hierarchical-todo-statistics 'nil)
+
+; summarise TODOs
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+
+(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+
 (when (and (daemonp) I-am-at-work)
   (setq
-   org-agenda-files (quote ("~/Documents/org/clock.org")))
-  (find-file "~/Documents/org/clock.org")
+   org-agenda-files (quote ("/ssh:alex@bennee.com:/home/alex/doc/org/work.org")))
+  (find-file "/ssh:alex@bennee.com:/home/alex/doc/org/work.org")
   (org-agenda-file-to-front))
 
 ;; From: Mark Belmont  http://code.google.com/p/marcshacks/source/browse/elisp/personal/marcshacks.el
