@@ -60,6 +60,7 @@
 (defvar I-am-emacs-22  (= emacs-major-version 22))
 (defvar I-am-emacs-22+ (>= emacs-major-version 22))
 (defvar I-am-emacs-23+ (>= emacs-major-version 23))
+(defvar I-am-emacs-24+ (>= emacs-major-version 24))
 
 (defvar I-am-gnuemacs (string-match "GNU Emacs" (emacs-version)))
 (defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
@@ -149,6 +150,26 @@ on the command line"
 
 ;; You can pretty much guarantee tramp implies over ssh
 (setq tramp-default-method "ssh")
+
+;; Packaging, if we have it
+
+
+
+(when (and I-am-emacs-24+ (require 'package "package" 'nil))
+  (package-initialize)
+  (add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+
+  ; list of packages I care about
+  (defvar ajb-packages
+    '(ack-and-a-half expand-region magit magithub python
+		     solarized-theme zenburn-theme))
+
+  ; check what's installed
+  (defun ajb-packages-installed-p ()
+    (loop for p in ajb-packages
+	  when (not (package-installed-p p)) do (return nil)
+	  finally (return t))))
 
 ;; Add local search path
 ;
