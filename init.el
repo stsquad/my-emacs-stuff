@@ -85,32 +85,24 @@
 ;; Server stuff
 (defvar will-start-server nil)
 
-;; Custom command line options
+;; Custom command line options, handle --server
 ;
 ; These are not handled until the end of .emacs
+; This is legacy code obviated by --daemon mode in Emacs 23
 
-; Emacs takes a load of time to start up so we may want a server
-;
-; This is mostly obviated by Emacs 23 --daemon mode
+(unless I-am-emacs-23+
+  (autoload 'my-server-start "my-emacs-server")
 
-(autoload 'my-server-start "my-emacs-server")
-
-(defun load-my-server (&optional arg)
-  "Load my-emacs-server if possible in response to a -server argument
+  (defun load-my-server (&optional arg)
+    "Load my-emacs-server if possible in response to a -server argument
 on the command line"
-  (interactive)
-  (my-server-start))
+    (interactive)
+    (my-server-start))
 
-(add-to-list 'command-switch-alist '("--server" . load-my-server))
-
-; However we need to avoid some things if we are going to start the
-; server
-(let ((cl-args command-line-args))
-  (while cl-args
-    (if (string-match "--server" (pop cl-args))
-	(setq will-start-server t))))
-
-;(message (format "command line processed %S" command-line-processed))
+  (add-to-list 'command-switch-alist '("--server" . load-my-server))
+  ; will-start-server causes some things to be skipped later
+  (mapc '(lambda (f) (when (string-match "--server" f)
+		       (setq will-start-server t))) command-line-args))
 
 ;;
 ;; Basic config variables
