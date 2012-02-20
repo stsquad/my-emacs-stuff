@@ -139,9 +139,6 @@ on the command line"
 ;; Seriously the kernel TAGS is >10Mb 
 (setq large-file-warning-threshold 40000000)
 
-;; ido-mode - better buffer selection
-(ido-mode t)
-
 ;; Stop popping up the file dialog, very annoying when compile-mode
 ;; want to find an error in a non-existent file
 (setq use-file-dialog 'nil)
@@ -1174,10 +1171,13 @@ plus add font-size: 8pt"
 ; Still have a bs-show "all" bound to C-x C-b for when I want to see
 ; everything
 
-(when (require 'lusty-explorer nil 'noerror)
-  ;; overrride the normal file-opening, buffer switching
-  (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
+(if (require 'lusty-explorer nil 'noerror)
+    (progn
+      ;; overrride the normal file-opening, buffer switching
+      (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
+      (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
+  ;; ido-mode - better buffer selection
+  (ido-mode t))
 
 ;; ibuffer has been around for some time
 (global-set-key (kbd "C-x C-b") 'ibuffer-bs-show)
