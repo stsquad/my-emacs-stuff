@@ -484,6 +484,9 @@ on the command line"
 ; anything. Instead we should do things on the fly as new frames are
 ; created.
 
+; winner mode to remember window layouts
+(winner-mode 't)
+
 ; First we need the colour-theme package
 
 (if I-am-emacs-22+
