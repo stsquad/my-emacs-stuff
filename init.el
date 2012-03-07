@@ -60,6 +60,7 @@
 (defvar I-am-emacs-22  (= emacs-major-version 22))
 (defvar I-am-emacs-22+ (>= emacs-major-version 22))
 (defvar I-am-emacs-23+ (>= emacs-major-version 23))
+(defvar I-am-emacs-24+ (>= emacs-major-version 24))
 
 (defvar I-am-gnuemacs (string-match "GNU Emacs" (emacs-version)))
 (defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
@@ -85,32 +86,24 @@
 ;; Server stuff
 (defvar will-start-server nil)
 
-;; Custom command line options
+;; Custom command line options, handle --server
 ;
 ; These are not handled until the end of .emacs
+; This is legacy code obviated by --daemon mode in Emacs 23
 
-; Emacs takes a load of time to start up so we may want a server
-;
-; This is mostly obviated by Emacs 23 --daemon mode
+(unless I-am-emacs-23+
+  (autoload 'my-server-start "my-emacs-server")
 
-(autoload 'my-server-start "my-emacs-server")
-
-(defun load-my-server (&optional arg)
-  "Load my-emacs-server if possible in response to a -server argument
+  (defun load-my-server (&optional arg)
+    "Load my-emacs-server if possible in response to a -server argument
 on the command line"
-  (interactive)
-  (my-server-start))
+    (interactive)
+    (my-server-start))
 
-(add-to-list 'command-switch-alist '("--server" . load-my-server))
-
-; However we need to avoid some things if we are going to start the
-; server
-(let ((cl-args command-line-args))
-  (while cl-args
-    (if (string-match "--server" (pop cl-args))
-	(setq will-start-server t))))
-
-;(message (format "command line processed %S" command-line-processed))
+  (add-to-list 'command-switch-alist '("--server" . load-my-server))
+  ; will-start-server causes some things to be skipped later
+  (mapc '(lambda (f) (when (string-match "--server" f)
+		       (setq will-start-server t))) command-line-args))
 
 ;;
 ;; Basic config variables
@@ -147,9 +140,6 @@ on the command line"
 ;; Seriously the kernel TAGS is >10Mb 
 (setq large-file-warning-threshold 40000000)
 
-;; ido-mode - better buffer selection
-(ido-mode t)
-
 ;; Stop popping up the file dialog, very annoying when compile-mode
 ;; want to find an error in a non-existent file
 (setq use-file-dialog 'nil)
@@ -160,6 +150,26 @@ on the command line"
 
 ;; You can pretty much guarantee tramp implies over ssh
 (setq tramp-default-method "ssh")
+
+;; Packaging, if we have it
+
+
+
+(when (and I-am-emacs-24+ (require 'package "package" 'nil))
+  (package-initialize)
+  (add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+
+  ; list of packages I care about
+  (defvar ajb-packages
+    '(ack-and-a-half expand-region magit magithub python
+		     solarized-theme zenburn-theme))
+
+  ; check what's installed
+  (defun ajb-packages-installed-p ()
+    (loop for p in ajb-packages
+	  when (not (package-installed-p p)) do (return nil)
+	  finally (return t))))
 
 ;; Add local search path
 ;
@@ -484,6 +494,9 @@ on the command line"
 ; the .emacs will almost certainly run without window-system meaning
 ; anything. Instead we should do things on the fly as new frames are
 ; created.
+
+; winner mode to remember window layouts
+(winner-mode 't)
 
 ; First we need the colour-theme package
 
@@ -1173,10 +1186,13 @@ plus add font-size: 8pt"
 ; Still have a bs-show "all" bound to C-x C-b for when I want to see
 ; everything
 
-(when (require 'lusty-explorer nil 'noerror)
-  ;; overrride the normal file-opening, buffer switching
-  (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
+(if (require 'lusty-explorer nil 'noerror)
+    (progn
+      ;; overrride the normal file-opening, buffer switching
+      (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
+      (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
+  ;; ido-mode - better buffer selection
+  (ido-mode t))
 
 ;; ibuffer has been around for some time
 (global-set-key (kbd "C-x C-b") 'ibuffer-bs-show)
