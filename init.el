@@ -151,9 +151,10 @@ on the command line"
 ;; You can pretty much guarantee tramp implies over ssh
 (setq tramp-default-method "ssh")
 
+;; Move the custom file out of init.el
+(setq custom-file "~/.emacs.d/my-custom.el")
+
 ;; Packaging, if we have it
-
-
 
 (when (and I-am-emacs-24+ (require 'package "package" 'nil))
   (package-initialize)
@@ -523,12 +524,10 @@ on the command line"
 
 (defun my-color-theme-set (theme)
   "Set colour theme but don't bother if we already have"
-  (if (eq my-last-theme theme)
-      (message "my-color-theme-set: theme already set")
-    (if (fboundp theme)
-	(progn
-	  (funcall theme)
-	  (setq my-last-theme theme)))))
+  (unless (eq my-last-theme theme)
+    (when (fboundp theme)
+      (funcall theme)
+      (setq my-last-theme theme))))
 
 ;; These values work around bugs with fullscreen which doesn't set the
 ; frame parameters properly
@@ -607,12 +606,12 @@ on the command line"
   "Set the colours for tty mode"
   (my-color-theme-set 'color-theme-midnight)
   ; some tweaks
-  (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+;  (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
   (set-face-background 'region "blue"))
 
 (defvar my-default-x-theme
-  "Default theme for X frames"
-  'color-theme-gnome)
+  nil
+  "Default theme for X frames")
 
 (if (maybe-load-library "zenburn")
     (set 'my-default-x-theme 'zenburn-theme)
@@ -1255,7 +1254,6 @@ plus add font-size: 8pt"
 	(desktop-save-mode 1))))
 
 ;; Load any hand-made customisations
-(setq custom-file "~/.emacs.d/my-custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
 
