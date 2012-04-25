@@ -390,6 +390,22 @@ on the command line"
 (global-set-key (kbd "<M-up>") 'shrink-window)
 (global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
 
+;; Allow windows to be dedicated to one thing interactively
+;; Toggle window dedication
+(defun toggle-window-dedicated ()
+  "Toggle whether the current active window is dedicated or not"
+  (interactive)
+  (message
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window 
+                                 (not (window-dedicated-p window))))
+       "Window '%s' is dedicated"
+     "Window '%s' is normal")
+   (current-buffer)))
+
+;; Press [pause] key in each window you want to "freeze"
+(global-set-key [pause] 'toggle-window-dedicated)
+
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
 (global-set-key [kp-divide] 'previous-error)
