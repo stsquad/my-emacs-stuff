@@ -993,6 +993,10 @@ on the command line"
 (setq vc-command-messages t
       vc-initial-comment t)
 
+; I like to use .git/.bzr etc in my directory names
+(setq completion-ignored-extensions
+      (remove ".git/" (remove ".bzr/" (remove ".svn/" completion-ignored-extensions))))
+
 ; Git Hooks, prefer magit over vc enabled git
 (if (and (locate-library "vc-git.el")
 	 (not (locate-library "magit")))
