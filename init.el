@@ -154,6 +154,21 @@ on the command line"
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 
+;; Let's try CEDET one more time
+; early in config to avoid clashing with built-in...
+(let* ((cedet-devel (concat (getenv "HOME")
+			    "/.emacs.d/cedet.git/cedet-devel-load.el")))
+  (when (file-exists-p cedet-devel)
+    (load-file cedet-devel)
+
+    ;; Add further minor-modes to be enabled by semantic-mode.
+    ;; See doc-string of `semantic-default-submodes' for other things
+    ;; you can use here.
+    (add-to-list 'semantic-default-submodes 'global-semantic-idle-summary-mode)
+    (add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+    ;; Enable Semantic
+    (semantic-mode 1)))
+
 ;; Packaging, if we have it
 
 (when (and I-am-emacs-24+ (require 'package "package" 'nil))
