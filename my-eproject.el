@@ -4,6 +4,7 @@
 
 (require 'eproject)
 (require 'eproject-extras)
+(require 'eproject-compile)
 
 (define-project-type cbnl-tree
   (generic)

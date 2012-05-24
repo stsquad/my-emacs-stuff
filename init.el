@@ -151,9 +151,25 @@ on the command line"
 ;; You can pretty much guarantee tramp implies over ssh
 (setq tramp-default-method "ssh")
 
+;; Move the custom file out of init.el
+(setq custom-file "~/.emacs.d/my-custom.el")
+
+;; Let's try CEDET one more time
+; early in config to avoid clashing with built-in...
+(let* ((cedet-devel (concat (getenv "HOME")
+			    "/.emacs.d/cedet.git/cedet-devel-load.el")))
+  (when (file-exists-p cedet-devel)
+    (load-file cedet-devel)
+
+    ;; Add further minor-modes to be enabled by semantic-mode.
+    ;; See doc-string of `semantic-default-submodes' for other things
+    ;; you can use here.
+    (add-to-list 'semantic-default-submodes 'global-semantic-idle-summary-mode)
+    (add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+    ;; Enable Semantic
+    (semantic-mode 1)))
+
 ;; Packaging, if we have it
-
-
 
 (when (and I-am-emacs-24+ (require 'package "package" 'nil))
   (package-initialize)
@@ -379,6 +395,22 @@ on the command line"
 (global-set-key (kbd "<M-up>") 'shrink-window)
 (global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
 
+;; Allow windows to be dedicated to one thing interactively
+;; Toggle window dedication
+(defun toggle-window-dedicated ()
+  "Toggle whether the current active window is dedicated or not"
+  (interactive)
+  (message
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window 
+                                 (not (window-dedicated-p window))))
+       "Window '%s' is dedicated"
+     "Window '%s' is normal")
+   (current-buffer)))
+
+;; Press [pause] key in each window you want to "freeze"
+(global-set-key [pause] 'toggle-window-dedicated)
+
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
 (global-set-key [kp-divide] 'previous-error)
@@ -513,12 +545,10 @@ on the command line"
 
 (defun my-color-theme-set (theme)
   "Set colour theme but don't bother if we already have"
-  (if (eq my-last-theme theme)
-      (message "my-color-theme-set: theme already set")
-    (if (fboundp theme)
-	(progn
-	  (funcall theme)
-	  (setq my-last-theme theme)))))
+  (unless (eq my-last-theme theme)
+    (when (fboundp theme)
+      (funcall theme)
+      (setq my-last-theme theme))))
 
 ;; These values work around bugs with fullscreen which doesn't set the
 ; frame parameters properly
@@ -598,12 +628,12 @@ on the command line"
   "Set the colours for tty mode"
   (my-color-theme-set 'color-theme-midnight)
   ; some tweaks
-  (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
+;  (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
   (set-face-background 'region "blue"))
 
 (defvar my-default-x-theme
-  "Default theme for X frames"
-  'color-theme-gnome)
+  nil
+  "Default theme for X frames")
 
 (if (maybe-load-library "zenburn")
     (set 'my-default-x-theme 'zenburn-theme)
@@ -985,12 +1015,17 @@ on the command line"
 (setq vc-command-messages t
       vc-initial-comment t)
 
+; I like to use .git/.bzr etc in my directory names
+(setq completion-ignored-extensions
+      (remove ".git/" (remove ".bzr/" (remove ".svn/" completion-ignored-extensions))))
+
 ; Git Hooks, prefer magit over vc enabled git
 (if (and (locate-library "vc-git.el")
 	 (not (locate-library "magit")))
     (add-to-list 'vc-handled-backends 'Git)
   (setq vc-handled-backends (remq 'Git vc-handled-backends))
-  (autoload 'magit-status "magit" "magit front end" t))
+  (autoload 'magit-status "magit" "magit front end" t)
+  (global-set-key (kbd "C-x g") 'magit-status))
 
 ; Also the git-blame and git-status stuff
 (if (locate-library "git")
@@ -1246,7 +1281,6 @@ plus add font-size: 8pt"
 	(desktop-save-mode 1))))
 
 ;; Load any hand-made customisations
-(setq custom-file "~/.emacs.d/my-custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
 
