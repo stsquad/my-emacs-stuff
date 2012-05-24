@@ -59,3 +59,9 @@
   (interactive)
   (erc-tls :server "irc.pl0rt.org" :port 6697
 	   :nick "ajb" :full-name "Alex"))
+
+(defun my-erc-work()
+  "Connect to engbot"
+  (interactive)
+  (erc :server "engbot"
+       :nick "ajb" :full-name "Alex"))
