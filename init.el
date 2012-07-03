@@ -1034,7 +1034,8 @@ on the command line"
     (add-to-list 'vc-handled-backends 'Git)
   (setq vc-handled-backends (remq 'Git vc-handled-backends))
   (autoload 'magit-status "magit" "magit front end" t)
-  (global-set-key (kbd "C-x g") 'magit-status))
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (setq magit-status-buffer-switch-function 'switch-to-buffer))
 
 ; Also the git-blame and git-status stuff
 (if (locate-library "git")
