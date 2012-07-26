@@ -407,6 +407,8 @@ on the command line"
 (global-set-key (kbd "<M-up>") 'shrink-window)
 (global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
 
+(global-set-key (kbd "<C-tab>") 'bury-buffer)
+
 ;; Allow windows to be dedicated to one thing interactively
 ;; Toggle window dedication
 (defun toggle-window-dedicated ()
