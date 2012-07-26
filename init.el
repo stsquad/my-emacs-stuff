@@ -1243,7 +1243,13 @@ plus add font-size: 8pt"
   (ido-mode t))
 
 ;; ibuffer has been around for some time
-(global-set-key (kbd "C-x C-b") 'ibuffer-bs-show)
+(defun my-ibuffer-bs-show ()
+  "Emulate `bs-show' from the bs.el package."
+  (interactive)
+  (ibuffer nil "*Ibuffer-my-bs*" '((filename . ".*")) nil t)
+  (define-key (current-local-map) "a" 'ibuffer-bs-toggle-all))
+
+(global-set-key (kbd "C-x C-b") 'my-ibuffer-bs-show)
 
 (setq ibuffer-saved-filters
       (quote (("csrc" ((filename . "/export/csrc/*")))
