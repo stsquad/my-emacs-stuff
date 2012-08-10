@@ -544,12 +544,12 @@ on the command line"
 ; winner mode to remember window layouts
 (winner-mode 't)
 
-; First we need the colour-theme package
+; First we need the colour-theme package (but emacs 24 has it's own themes)
 
-(if I-am-emacs-22+
-    (if (maybe-load-library "color-theme")
-	(if (fboundp 'color-theme-initialize)
-	    (color-theme-initialize))))
+(when (and I-am-emacs-22+ (not I-am-emacs-24+))
+    (when (and (maybe-load-library "color-theme")
+	       (fboundp 'color-theme-initialize))
+	    (color-theme-initialize)))
 
 (when (and I-am-emacs-23+ (or I-am-at-home I-am-at-work))
   (setq font-use-system-font 't))
@@ -557,12 +557,17 @@ on the command line"
 (defvar my-last-theme 'nil
   "Last color theme we set")
 
-(defun my-color-theme-set (theme)
+(defun my-colour-theme-set (theme)
   "Set colour theme but don't bother if we already have"
   (unless (eq my-last-theme theme)
-    (when (fboundp theme)
-      (funcall theme)
-      (setq my-last-theme theme))))
+    (cond
+     ((and (fboundp 'load-theme) ; Emacs 24
+	   (custom-theme-name-valid-p theme))
+      (load-theme theme t))
+     ((fboundp theme)
+      (funcall theme))
+     (t (message "my-colour-theme-set: confused")))
+    (setq my-last-theme theme)))
 
 ;; These values work around bugs with fullscreen which doesn't set the
 ; frame parameters properly
@@ -640,45 +645,46 @@ on the command line"
 
 (defun my-set-tty-colours ()
   "Set the colours for tty mode"
-  (my-color-theme-set 'color-theme-midnight)
-  ; some tweaks
-;  (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
-  (set-face-background 'region "blue"))
+  (my-colour-theme-set 'manoj-dark))
 
 (defvar my-default-x-theme
   nil
   "Default theme for X frames")
 
-(if (maybe-load-library "zenburn")
-    (set 'my-default-x-theme 'zenburn-theme)
-  (if (maybe-load-library "color-theme-zenburn")
-      (set 'my-default-x-theme 'color-theme-zenburn)))
+(cond
+ ((and I-am-emacs-24+ (load-theme 'zenburn t))
+  (set 'my-default-x-theme 'zenburn))
+ ((maybe-load-library "zenburn")
+  (set 'my-default-x-theme 'zenburn-theme))
+ ((maybe-load-library "color-theme-zenburn")
+  (set 'my-default-x-theme 'color-theme-zenburn))
+ (t (message ("failed to find a zenburn theme"))))
 
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
-  (my-color-theme-set 'my-default-x-theme))
+  (my-colour-theme-set my-default-x-theme))
 
-(defun my-new-frame-colours(frame)
+(defun my-new-frame-colours(&optional frame)
   "Set the colour scheme of a new frame"
   (if (frame-parameter frame 'tty)
       (my-set-tty-colours)
     (my-set-x-colours)))
 
 ;; from http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=dotemacs;hb=HEAD
-(defun my-color-theme () 
+(defun my-colour-theme () 
   (interactive)
   (ecase (intern (completing-read "Theme: " '("desktop" "gnome" "tty" "dark")))
     (desktop (my-set-x-colours))
-    (gnome (my-color-theme-set 'color-theme-gnome2))
-    (tty   (my-set-tty-colours))
-    (dark  (my-color-theme-set 'color-theme-arjen))))
+    (gnome (my-colour-theme-set 'color-theme-gnome2))
+    (tty   (my-colour-theme-set 'tango-dark))
+    (dark  (my-colour-theme-set 'manoj-dark))))
 
 ; Lets hook into the frame function
 (add-hook 'after-make-frame-functions 'my-new-frame-colours)
 
 ; And set the tty colours if we started in tty mode
-(if I-am-in-console
-    (my-set-tty-colours))
+;(if I-am-in-console
+;    (my-set-tty-colours))
 
 ; Fullscreen
 (defun toggle-fullscreen (&optional f)
