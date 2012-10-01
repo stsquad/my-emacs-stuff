@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: EMS Application
+# key: ems
+# --
+{{EMS App|name=$0}}

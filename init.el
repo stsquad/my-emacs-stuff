@@ -232,9 +232,17 @@ on the command line"
       (load-library libname)))
 
 ;; Do we want an edit-server?
-(if (and (daemonp) (maybe-load-library "edit-server"))
+(when (and (daemonp) (maybe-load-library "edit-server"))
+    (when (maybe-load-library "mediawiki")
+      (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" . mediawiki-mode)))
     (add-hook 'emacs-startup-hook '(lambda ()
 				     (edit-server-start))))
+
+;; Do we have snippets?
+(when (and (maybe-load-library "yasnippet")
+	   (file-exists-p "~/.emacs.d/my-snippets"))
+  (setq yas-snippet-dirs "~/.emacs.d/my-snippets")
+  (yas-global-mode))
 
 
 ; On Mac we we want to add /sw/bin for fink (where things like

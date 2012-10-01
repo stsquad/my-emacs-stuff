@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: VectaStar Daemon
+# key: vsd
+# --
+{{VectaStar Daemon|name=$1|purpose=$2|hardware=${3:$$(yas/choose-value '("APC" "AP" "RT" "APC/AP/RT"))|code=${4:$1}|agentx=$0}}
