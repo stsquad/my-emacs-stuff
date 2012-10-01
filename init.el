@@ -1242,6 +1242,8 @@ plus add font-size: 8pt"
 ; Still have a bs-show "all" bound to C-x C-b for when I want to see
 ; everything
 
+(require 'midnight)
+
 (if (require 'lusty-explorer nil 'noerror)
     (progn
       ;; overrride the normal file-opening, buffer switching
