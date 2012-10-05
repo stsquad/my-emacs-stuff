@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: vs_dbg_msg_filtered
+# key: vdbf
+# --
+vs_dbg_msg_filtered(${1:$$(yas/choose-value '("EMS_SNMP" "EMS_WARNING|EMS_SNMP" "LIBGROK_SNMP"))}, "%s: $2", __FUNCTION__, $0);
