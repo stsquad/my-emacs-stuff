@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Trac Keyword
+# key: tk
+# --
+{{TracKeyword|keyword=$1|description=$0 See [[$1]]}}

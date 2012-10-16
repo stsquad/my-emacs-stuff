@@ -175,6 +175,8 @@ on the command line"
   (package-initialize)
   (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/") t)
+  (add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
   ; list of packages I care about
   (defvar ajb-packages
@@ -230,9 +232,17 @@ on the command line"
       (load-library libname)))
 
 ;; Do we want an edit-server?
-(if (and (daemonp) (maybe-load-library "edit-server"))
+(when (and (daemonp) (maybe-load-library "edit-server"))
+    (when (maybe-load-library "mediawiki")
+      (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" . mediawiki-mode)))
     (add-hook 'emacs-startup-hook '(lambda ()
 				     (edit-server-start))))
+
+;; Do we have snippets?
+(when (and (maybe-load-library "yasnippet")
+	   (file-exists-p "~/.emacs.d/my-snippets"))
+  (setq yas-snippet-dirs "~/.emacs.d/my-snippets")
+  (yas-global-mode))
 
 
 ; On Mac we we want to add /sw/bin for fink (where things like
@@ -395,6 +405,8 @@ on the command line"
 (global-set-key (kbd "<M-up>") 'shrink-window)
 (global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
 
+(global-set-key (kbd "<C-tab>") 'bury-buffer)
+
 ;; Allow windows to be dedicated to one thing interactively
 ;; Toggle window dedication
 (defun toggle-window-dedicated ()
@@ -530,12 +542,12 @@ on the command line"
 ; winner mode to remember window layouts
 (winner-mode 't)
 
-; First we need the colour-theme package
+; First we need the colour-theme package (but emacs 24 has it's own themes)
 
-(if I-am-emacs-22+
-    (if (maybe-load-library "color-theme")
-	(if (fboundp 'color-theme-initialize)
-	    (color-theme-initialize))))
+(when (and I-am-emacs-22+ (not I-am-emacs-24+))
+    (when (and (maybe-load-library "color-theme")
+	       (fboundp 'color-theme-initialize))
+	    (color-theme-initialize)))
 
 (when (and I-am-emacs-23+ (or I-am-at-home I-am-at-work))
   (setq font-use-system-font 't))
@@ -543,12 +555,17 @@ on the command line"
 (defvar my-last-theme 'nil
   "Last color theme we set")
 
-(defun my-color-theme-set (theme)
+(defun my-colour-theme-set (theme)
   "Set colour theme but don't bother if we already have"
   (unless (eq my-last-theme theme)
-    (when (fboundp theme)
-      (funcall theme)
-      (setq my-last-theme theme))))
+    (cond
+     ((and (fboundp 'load-theme) ; Emacs 24
+	   (custom-theme-name-valid-p theme))
+      (load-theme theme t))
+     ((fboundp theme)
+      (funcall theme))
+     (t (message "my-colour-theme-set: confused")))
+    (setq my-last-theme theme)))
 
 ;; These values work around bugs with fullscreen which doesn't set the
 ; frame parameters properly
@@ -584,9 +601,10 @@ on the command line"
  ((eval I-am-at-work)
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
-			      (width . 187)
-			      (height . 68)
-			      (left . 0) ; one monitor (for now)
+			      (width . 201)
+			      (height . 55)
+			      (top . 24)
+			      (left . 65) ; one monitor (for now)
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . right)))
@@ -626,45 +644,46 @@ on the command line"
 
 (defun my-set-tty-colours ()
   "Set the colours for tty mode"
-  (my-color-theme-set 'color-theme-midnight)
-  ; some tweaks
-;  (set-face-attribute 'show-paren-match-face nil :weight 'extra-bold)
-  (set-face-background 'region "blue"))
+  (my-colour-theme-set 'manoj-dark))
 
 (defvar my-default-x-theme
   nil
   "Default theme for X frames")
 
-(if (maybe-load-library "zenburn")
-    (set 'my-default-x-theme 'zenburn-theme)
-  (if (maybe-load-library "color-theme-zenburn")
-      (set 'my-default-x-theme 'color-theme-zenburn)))
+(cond
+ ((and I-am-emacs-24+ (load-theme 'zenburn t))
+  (set 'my-default-x-theme 'zenburn))
+ ((maybe-load-library "zenburn")
+  (set 'my-default-x-theme 'zenburn-theme))
+ ((maybe-load-library "color-theme-zenburn")
+  (set 'my-default-x-theme 'color-theme-zenburn))
+ (t (message ("failed to find a zenburn theme"))))
 
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
-  (my-color-theme-set 'my-default-x-theme))
+  (my-colour-theme-set my-default-x-theme))
 
-(defun my-new-frame-colours(frame)
+(defun my-new-frame-colours(&optional frame)
   "Set the colour scheme of a new frame"
   (if (frame-parameter frame 'tty)
       (my-set-tty-colours)
     (my-set-x-colours)))
 
 ;; from http://www.littleredbat.net/mk/cgi-bin/gitweb/gitweb.cgi?p=elisp.git;a=blob;f=dotemacs;hb=HEAD
-(defun my-color-theme () 
+(defun my-colour-theme () 
   (interactive)
   (ecase (intern (completing-read "Theme: " '("desktop" "gnome" "tty" "dark")))
     (desktop (my-set-x-colours))
-    (gnome (my-color-theme-set 'color-theme-gnome2))
-    (tty   (my-set-tty-colours))
-    (dark  (my-color-theme-set 'color-theme-arjen))))
+    (gnome (my-colour-theme-set 'color-theme-gnome2))
+    (tty   (my-colour-theme-set 'tango-dark))
+    (dark  (my-colour-theme-set 'manoj-dark))))
 
 ; Lets hook into the frame function
 (add-hook 'after-make-frame-functions 'my-new-frame-colours)
 
 ; And set the tty colours if we started in tty mode
-(if I-am-in-console
-    (my-set-tty-colours))
+;(if I-am-in-console
+;    (my-set-tty-colours))
 
 ; Fullscreen
 (defun toggle-fullscreen (&optional f)
@@ -1025,7 +1044,8 @@ on the command line"
     (add-to-list 'vc-handled-backends 'Git)
   (setq vc-handled-backends (remq 'Git vc-handled-backends))
   (autoload 'magit-status "magit" "magit front end" t)
-  (global-set-key (kbd "C-x g") 'magit-status))
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (setq magit-status-buffer-switch-function 'switch-to-buffer))
 
 ; Also the git-blame and git-status stuff
 (if (locate-library "git")
@@ -1221,6 +1241,8 @@ plus add font-size: 8pt"
 ; Still have a bs-show "all" bound to C-x C-b for when I want to see
 ; everything
 
+(require 'midnight)
+
 (if (require 'lusty-explorer nil 'noerror)
     (progn
       ;; overrride the normal file-opening, buffer switching
@@ -1230,7 +1252,13 @@ plus add font-size: 8pt"
   (ido-mode t))
 
 ;; ibuffer has been around for some time
-(global-set-key (kbd "C-x C-b") 'ibuffer-bs-show)
+(defun my-ibuffer-bs-show ()
+  "Emulate `bs-show' from the bs.el package."
+  (interactive)
+  (ibuffer nil "*Ibuffer-my-bs*" '((filename . ".*")) nil t)
+  (define-key (current-local-map) "a" 'ibuffer-bs-toggle-all))
+
+(global-set-key (kbd "C-x C-b") 'my-ibuffer-bs-show)
 
 (setq ibuffer-saved-filters
       (quote (("csrc" ((filename . "/export/csrc/*")))

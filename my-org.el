@@ -1,6 +1,5 @@
 ;; org-mode related configuration bits
 ;;
-;;
 
 ;; Clocking behaviour
 (setq org-clock-persist 't
@@ -26,9 +25,19 @@
 
 (when (and (daemonp) I-am-at-work)
   (setq
-   org-agenda-files (quote ("/ssh:alex@bennee.com:/home/alex/doc/org/work.org")))
-  (find-file "/ssh:alex@bennee.com:/home/alex/doc/org/work.org")
-  (org-agenda-file-to-front))
+   org-agenda-files (quote
+  ("/ssh:alex@bennee.com:/home/alex/doc/org/work.org"))))
+
+(defun my-switch-to-org ()
+  "Bring my default org buffer to the current window"
+  (interactive)
+  (switch-to-buffer
+   (find-file "/ssh:alex@bennee.com:/home/alex/doc/org/work.org")))
+
+
+;(global-set-key (kbd "C-x o") 'my-switch-to-org)
+; add binding to bury-buffer... C-x k?
+
 
 ;; From: Mark Belmont  http://code.google.com/p/marcshacks/source/browse/elisp/personal/marcshacks.el
 
