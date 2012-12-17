@@ -1258,6 +1258,7 @@ plus add font-size: 8pt"
 ; everything
 
 (require 'midnight)
+(setq midnight-mode 't)
 
 (if (require 'lusty-explorer nil 'noerror)
     (progn
