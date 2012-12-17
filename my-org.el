@@ -6,7 +6,7 @@
       org-clock-in-resume 't                 ; resume currently open clock
       org-clock-persist-query-resume 'nil    ; don't ask me about it
       org-log-into-drawer 't                 ; roll clocks up into drawers
-      org-clock-idle-time 10)
+      org-clock-idle-time 'nil)
 
 (org-clock-persistence-insinuate)
 
