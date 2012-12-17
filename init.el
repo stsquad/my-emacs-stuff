@@ -149,7 +149,8 @@ on the command line"
   '("Postscript Print Buffer" . ps-print-buffer))
 
 ;; You can pretty much guarantee tramp implies over ssh
-(setq tramp-default-method "ssh")
+;(setq tramp-default-method "ssh")
+(setq tramp-default-method "scpc")
 
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
