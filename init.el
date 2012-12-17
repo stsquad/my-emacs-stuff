@@ -1133,12 +1133,10 @@ expression of the same type as those required by around advices"
 ; Use nxhtml-mode instead. However it only works with emacs23
 ; (the emacs22 autoload fails due to missing files)
 
-(if I-am-emacs-23+
-    (if (maybe-load-library "~/.emacs.d/nxhtml/autostart.el")
-	(progn
-	  (setq nxhtml-skip-welcome t)
-	  (if (maybe-load-library "js2-mode")
-	      (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode")))))
+(when (and I-am-emacs-23+ (maybe-load-library "~/.emacs.d/nxhtml/autostart.el"))
+  (setq nxhtml-skip-welcome t)
+  (when (maybe-load-library "js2-mode")
+    (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode")))
 
 (when (maybe-load-library "htmlize")
   (setq htmlize-output-type 'inline-css)
