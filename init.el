@@ -416,7 +416,8 @@ on the command line"
 (global-set-key (kbd "<M-up>") 'shrink-window)
 (global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
 
-(global-set-key (kbd "<C-tab>") 'bury-buffer)
+;(global-set-key (kbd "<C-tab>") 'bury-buffer)
+(global-set-key (kbd "<C-tab>") 'pop-global-mark)
 
 ;; Allow windows to be dedicated to one thing interactively
 ;; Toggle window dedication
