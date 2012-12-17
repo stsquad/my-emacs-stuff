@@ -60,7 +60,7 @@
 (define-project-type kernel
   (generic-git)
   (look-for "Documentation/CodingStyle")
-  :common-compile ("ARCH=x86 make" "make" "ARCH=x86 make TAGS"))
+  :common-compiles ("ARCH=x86 make" "make" "ARCH=x86 make TAGS"))
 
 (add-hook 'kernel-visit-hook '(lambda ()
 				(require 'my-c-mode)
@@ -75,6 +75,12 @@
 				(c-set-style "easytag")))
 				 
   
+(define-project-type wireshark
+  (generic-git)
+  (look-for "rawshark.c")
+  :common-compiles ("make" "make install"))
+
+(add-hook 'wireshark-visit-hook '(require 'my-c-mode))
 
 
 ; Hook in compile
@@ -96,7 +102,7 @@
 
   (if (file-exists-p (concat eproject-root ".git"))
       (let ((buffer (concat "*git grep for " search "*" ))
-	    (command (concat "git grep -n " search)))
+	    (command (format "git grep -n %s -- %s" search eproject-root)))
 	(setq grep-command "git grep -n ")
 	(message "Using git grep for searches")
 	(shell-command command buffer)
