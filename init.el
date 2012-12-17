@@ -444,6 +444,9 @@ on the command line"
 ;; iMenu find
 (global-set-key (kbd "C-f") 'imenu)
 
+; Occur stuff
+(global-set-key (kbd "C-c o") 'occur)
+
 ;; Handle special Mac'isms
 ;
 ; If we are running over ssh lets map some more stuff to move around,
