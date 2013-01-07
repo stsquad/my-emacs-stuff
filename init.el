@@ -1082,13 +1082,12 @@ on the command line"
 ; man installed.
 ;
 
-(if (not (which-lookup "man"))
-    (if (locate-library "woman")
-	(progn
-	  (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
-	  (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
-	  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)))
-  (message "Using man for man pages"))
+(when (and (not (which-lookup "man"))
+	   (locate-library "woman"))
+  (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
+  (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
+  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)
+  (message "Enabling woman for man pages"))
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
