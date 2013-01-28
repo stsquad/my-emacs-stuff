@@ -229,8 +229,8 @@ on the command line"
 
 (defun maybe-load-library (libname)
   "Try and load library 'libname' if it is in the path"
-  (if (locate-library libname)
-      (load-library libname)))
+  (when (locate-library libname)
+    (load-library libname)))
 
 ;; Do we want an edit-server?
 (when (and (daemonp) (maybe-load-library "edit-server"))
@@ -915,8 +915,7 @@ on the command line"
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
 
-(if (locate-library "ediff")
-    (progn
+(when (locate-library "ediff")
       (autoload 'ediff-files "ediff")
       (autoload 'ediff-buffers "ediff")
 
@@ -930,10 +929,7 @@ on the command line"
 				  (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
 				  (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
 				  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
-
-
-
-      (message "Done ediff customisations")))
+      (message "Done ediff customisations"))
 
 ;; ediff-trees
 ;
@@ -1022,23 +1018,21 @@ on the command line"
 ; If we have the calculator library available lets load it in
 ;
 
-(if (locate-library "calculator")
-    (progn
-     (autoload 'calculator "calculator"
-      "Run the Emacs calculator." t)
-     (global-set-key [(control return)] 'calculator)))
+(when (locate-library "calculator")
+  (autoload 'calculator "calculator"
+    "Run the Emacs calculator." t)
+  (global-set-key [(control return)] 'calculator))
 
 ;; GPG Support
 ;
-(if (maybe-load-library "epa-file")
-    (progn
-      (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
-      (epa-file-enable)))
+(when (maybe-load-library "epa-file")
+  (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
+  (epa-file-enable))
 
 ;; my-find-binary
 ;
 ; Handy for dumping objdump into a buffer
-(if (locate-library "my-find-binary")
+(when (locate-library "my-find-binary")
     (autoload 'find-binary-file "my-find-binary"))
 
 ;; Version control library
@@ -1235,11 +1229,10 @@ plus add font-size: 8pt"
 ;; Python Mode
 ;
 ; TODO - automode alist
-(if (locate-library "python-mode")
-    (progn
-      (autoload 'python-mode "python-mode")
-      (add-hook 'python-mode-hook '(lambda ()
-				     (require 'my-python-mode)))))
+(when (locate-library "python-mode.el" 't) ; else clash with ac stuff...
+  (autoload 'python-mode "python-mode")
+  (add-hook 'python-mode-hook '(lambda ()
+				 (require 'my-python-mode))))
 
 (message "Done various programming modes")
 
@@ -1318,11 +1311,10 @@ plus add font-size: 8pt"
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
 
 (unless (or will-start-server (daemonp))
-  (if I-am-emacs-22+
-      (progn
-	(setq desktop-dirname (concat (chomp (shell-command-to-string "pwd")))
-	      desktop-save 'ask-if-new)
-	(desktop-save-mode 1))))
+  (when I-am-emacs-22+
+    (setq desktop-dirname (concat (chomp (shell-command-to-string "pwd")))
+	  desktop-save 'ask-if-new)
+    (desktop-save-mode 1)))
 
 ;; Load any hand-made customisations
 (when (file-exists-p custom-file)
