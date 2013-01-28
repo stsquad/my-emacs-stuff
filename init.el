@@ -947,17 +947,16 @@ on the command line"
 ; patchs and/or applying a whole patch
 ;
 
-(if (locate-library "diff-mode")
-    (progn
-      (if (locate-library "my-diff-mode")
-	  (progn
-	    (message "Hooking in my-diff-mode")
-	    (autoload 'my-diff-mode "my-diff-mode")
-	    (defalias 'dmode-alias 'my-diff-mode))
-	(autoload 'diff-mode "diff-mode")
-	(defalias 'dmode-alias 'diff-mode))
+(when (locate-library "diff-mode")
+  (if (locate-library "my-diff-mode")
+      (progn
+	(message "Hooking in my-diff-mode")
+	(autoload 'my-diff-mode "my-diff-mode")
+	(defalias 'dmode-alias 'my-diff-mode))
+    (autoload 'diff-mode "diff-mode")
+    (defalias 'dmode-alias 'diff-mode))
 
-      ; Which ever version we have we need to set the
+					; Which ever version we have we need to set the
       ; automode up so it loads when we need it
       (setq auto-mode-alist (append (list
 				     (cons "\.diff$"  'dmode-alias)
