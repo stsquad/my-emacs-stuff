@@ -30,7 +30,8 @@
     (if (string= (buffer-file-name) (file-chase-links dotemacs))
       (byte-compile-file dotemacs))))
 
-(add-hook 'after-save-hook 'autocompile)
+;not the speed saving you might think...
+;(add-hook 'after-save-hook 'autocompile)
 
 ; check the compiled version not out of date
 (if user-init-file
