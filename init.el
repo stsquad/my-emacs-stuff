@@ -709,7 +709,7 @@ on the command line"
   (set 'my-default-x-theme 'zenburn-theme))
  ((maybe-load-library "color-theme-zenburn")
   (set 'my-default-x-theme 'color-theme-zenburn))
- (t (message ("failed to find a zenburn theme"))))
+ (t (message "failed to find a zenburn theme")))
 
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
