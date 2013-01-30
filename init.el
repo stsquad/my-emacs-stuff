@@ -255,6 +255,7 @@ on the command line"
   (require 'auto-complete-config)
   (ac-config-default)
   (setq ac-menu-map 't)
+  (ac-set-trigger-key "M-/") ; override dabrev-expand
   (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers)))
 
 ;; Tab Completions
