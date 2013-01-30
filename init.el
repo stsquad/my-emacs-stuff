@@ -183,7 +183,7 @@ on the command line"
   ; list of packages I care about
   (defvar ajb-packages
     '(ack-and-a-half expand-region magit magithub python
-		     solarized-theme zenburn-theme))
+		     solarized-theme zenburn-theme dynamic-fonts))
 
   ; check what's installed
   (defun ajb-packages-installed-p ()
@@ -589,6 +589,21 @@ on the command line"
 
 (when (and I-am-emacs-23+ (or I-am-at-home I-am-at-work))
   (setq font-use-system-font 't))
+
+;; Do we have dynamic fonts?
+; FIXME: why does this not set-up correctly on start-up?
+(when (maybe-load-library "dynamic-fonts")
+  (setq dynamic-fonts-preferred-proportional-fonts
+	'("Source Sans Pro" "DejaVu Sans" "Helvetica"))
+  (setq dynamic-fonts-preferred-monospace-fonts
+	'("Source Code Pro" "Inconsolata" "Monaco" "Consolas" "Menlo"
+	  "DejaVu Sans Mono" "Droid Sans Mono Pro" "Droid Sans Mono"))
+  (if initial-window-system
+      (dynamic-fonts-setup)
+    (add-to-list 'after-make-frame-functions
+		 (lambda (frame)
+		   (message "setting up fonts for new frame....")
+		   (dynamic-fonts-setup)))))
 
 (defvar my-last-theme 'nil
   "Last color theme we set")
