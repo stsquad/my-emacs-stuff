@@ -240,12 +240,34 @@ on the command line"
     (add-hook 'emacs-startup-hook '(lambda ()
 				     (edit-server-start))))
 
+;;
+;; Load any global modes/extensions that are used throughout emacs.
+;; This includes snippets and auto-completion libraries.
+;;
+
 ;; Do we have snippets?
 (when (and (maybe-load-library "yasnippet")
 	   (file-exists-p "~/.emacs.d/my-snippets"))
-  (setq yas-snippet-dirs "~/.emacs.d/my-snippets")
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets")
   (yas-global-mode))
 
+(when (maybe-load-library "auto-complete")
+  (require 'auto-complete-config)
+  (ac-config-default)
+  (setq ac-menu-map 't)
+  (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers)))
+
+;; Tab Completions
+; Use smart-tab-mode if we have it
+; (disabled, currently over complicates interaction of ac and yasnippet)
+
+;(when (locate-library "smart-tab")
+;    (setq smart-tab-completion-functions-alist '((text-mode . dabbrev-completion)))
+;    (setq smart-tab-using-hippie-expand 't)
+;    (smart-tab-mode 't))
+
+(when (maybe-load-library "ace-jump-mode")
+  (global-set-key (kbd "C-j") 'ace-jump-mode))
 
 ; On Mac we we want to add /sw/bin for fink (where things like
 ; aspell live)
@@ -1087,38 +1109,6 @@ on the command line"
 (add-hook 'dired-mode-hook
 		(lambda ()
 		  (setq truncate-lines t)))
-
-;; Tab Completions
-;
-; Using Advice ()
-
-(defmacro ad-add-advice-to-key (key expr)
-  "Around advice the key KEY with expression EXPR. KEY should be
-a key in the format accepted by key-binding and such, and EXPR an
-expression of the same type as those required by around advices"
-  `(add-hook 'pre-command-hook
-	     (lambda ()
-	       (when (equal (this-command-keys-vector) ,key)
-		 (ad-add-advice this-command
-				'(azerrswdf ;arbitrary advice name
-				  nil	    ;not protected
-				  t	    ;activated
-				  (lambda ()
-				    ,expr
-				    (ad-unadvise this-command)))
-				'around
-				'last)
-		 (ad-activate this-command)))))
-
-(ad-add-advice-to-key [9]
-		      (let ((p (point)))
-			ad-do-it
-			(when (and (= p (point))
-				   (not (bolp))
-				   (looking-at "\\_>")
-				   (not (minibufferp)))
-			  (dabbrev-expand nil))))
-
 
 ;; Web Development Modes
 ;
