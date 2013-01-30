@@ -813,26 +813,30 @@ on the command line"
 ;      (zone-when-idle 60)))
 
 ;; want to reduce the amount of white space in the mode-line
-(setq default-mode-line-format
+(setq global-mode-string
+      '("" org-mode-line-string))
+
+(setq-default mode-line-format
       '("-"
 	mode-line-mule-info
 	mode-line-modified
 	" "
 	mode-line-buffer-identification
 	" "
+	"%l/%c "
 	"%[("
 	mode-name
 	mode-line-process
 	minor-mode-alist
 	"%n"
 	")%]-"
-	(line-number-mode "L%l-")
-	(column-number-mode "C%c-")
-	(which-func-mode ("" which-func-format))
 	"---"
 	global-mode-string
 	"-%-"
 	))
+
+(which-function-mode 'nil)
+
 
 ;; Let's shrink the minor-mode-alist down to size.
 (setcdr (assq 'abbrev-mode minor-mode-alist) '(" Ab"))
