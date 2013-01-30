@@ -1005,7 +1005,7 @@ on the command line"
 				     (cons "\.rej$" 'dmode-alias)
 				     (cons "\.dotest/0.*"
 					   'dmode-alias))
-				    auto-mode-alist))))
+				    auto-mode-alist)))
 ;; ispell
 ;
 ; There should be an easier way to set the default
