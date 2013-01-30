@@ -1303,10 +1303,12 @@ plus add font-size: 8pt"
 ; Seems to lock up on emacs-snaphsot/22
 
 (unless I-am-emacs-22
-  (if (locate-library "saveplace")
-      (progn
-	(require 'saveplace)
-	(setq-default save-place t))))
+  (when (maybe-load-library "saveplace")
+    (setq-default save-place t)))
+
+;; Lets use mark-tools if we can
+(when (maybe-load-library "mark-tools")
+  (global-set-key (kbd "C-x m") 'list-marks))
 
 ;;
 ;; ERC
