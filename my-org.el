@@ -23,17 +23,43 @@
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
+(setq ajb-work-org-file "/ssh:alex@bennee.com:/home/alex/doc/org/work.org")
+
 (when (and (daemonp) I-am-at-work)
   (setq
-   org-agenda-files (quote
-  ("/ssh:alex@bennee.com:/home/alex/doc/org/work.org"))))
+   org-agenda-files '(ajb-work-org-file)))
 
 (defun my-switch-to-org ()
   "Bring my default org buffer to the current window"
   (interactive)
   (switch-to-buffer
-   (find-file "/ssh:alex@bennee.com:/home/alex/doc/org/work.org")))
+   (find-file ajb-work-org-file)))
 
+(defun ajb-get-trac-summary (id)
+  "Fetch the bug summary directly from trac"
+  (let ((url (format "http://engbot/bugs/ticket/%d?format=csv" id)))
+    (with-current-buffer (url-retrieve-synchronously url)
+      (goto-line 1)
+      (re-search-forward (format "%d," id))
+      (buffer-substring (point) (- (re-search-forward ",") 1)))))
+
+(defun ajb-format-trac-item (type &optional id)
+  "Format a ORG TODO item for a given trac item"
+  (interactive "nTrac ID:")
+  (when (not id)
+    (setq id (read-number "Trac ID:")))
+  (format
+   "*** TODO %s [[http://engbot/bugs/ticket/%d][%d]] - %s\n"
+   type id id (ajb-get-trac-summary id)))
+
+;; Capture Templates
+(setq org-capture-templates
+      '(("b" "Bug" entry (file+headline ajb-work-org-file "Bug Fixing")
+             "%(ajb-format-trac-item \"Bug\")" :clock-in)
+	("f" "Feature" entry (file+headline ajb-work-org-file "Development")
+             "%(ajb-format-trac-item \"Feature\")" :clock-in)))
+
+(global-set-key (kbd "C-c C-o") 'org-capture)
 
 ;(global-set-key (kbd "C-x o") 'my-switch-to-org)
 ; add binding to bury-buffer... C-x k?
