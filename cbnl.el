@@ -115,7 +115,6 @@
 (setq my-c-styles-alist (cons '(".*mibgroup/.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*nms-manager-apps.*$" . "cbnl-nms-style") my-c-styles-alist))
 (setq my-c-styles-alist (cons '(".*include/ems/.*$" . "cbnl-nms-style") my-c-styles-alist))
-(setq my-c-styles-alist (cons '("/export/csrc/.*\.git/.*[ch]$" . "cbnl-nms-style") my-c-styles-alist))
 
 ; (my-c-style-guesser "nms-manager-apps/vsalarmd/snmp_interface.c")
 ; (my-c-style-guesser "/export/csrc/work.git/e1mon/ifTable.c")
