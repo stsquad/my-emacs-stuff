@@ -17,6 +17,10 @@
 	(not (functionp 'extract-string)))
     (error "Need some string munging functions defined"))
 
+;; SNMP mode
+(when (locate-library "snmp-mode")
+  (add-to-list 'auto-mode-alist '("MIB.txt\\'" . snmp-mode)))
+
 ;; Sanity
 ;
 ; I only expect to start in a working directory of checked out src
