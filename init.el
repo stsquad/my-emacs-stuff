@@ -1251,6 +1251,14 @@ plus add font-size: 8pt"
 (autoload 'mwheel-install "mwheel" "Enable wheely mouse")
 (mwheel-install)
 
+
+;; Multiple cursors
+;
+(when (maybe-load-library "multiple-cursors")
+  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "M-+") 'mc/edit-lines))
+
 ;; Buffer Selection
 ;
 ; Use lusty-explorer if I can, otherwise leave it to ido-mode which
