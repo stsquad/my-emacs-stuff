@@ -30,7 +30,8 @@
     (if (string= (buffer-file-name) (file-chase-links dotemacs))
       (byte-compile-file dotemacs))))
 
-(add-hook 'after-save-hook 'autocompile)
+;not the speed saving you might think...
+;(add-hook 'after-save-hook 'autocompile)
 
 ; check the compiled version not out of date
 (if user-init-file
@@ -149,7 +150,8 @@ on the command line"
   '("Postscript Print Buffer" . ps-print-buffer))
 
 ;; You can pretty much guarantee tramp implies over ssh
-(setq tramp-default-method "ssh")
+;(setq tramp-default-method "ssh")
+(setq tramp-default-method "scpc")
 
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
@@ -181,7 +183,7 @@ on the command line"
   ; list of packages I care about
   (defvar ajb-packages
     '(ack-and-a-half expand-region magit magithub python
-		     solarized-theme zenburn-theme))
+		     solarized-theme zenburn-theme dynamic-fonts))
 
   ; check what's installed
   (defun ajb-packages-installed-p ()
@@ -228,8 +230,8 @@ on the command line"
 
 (defun maybe-load-library (libname)
   "Try and load library 'libname' if it is in the path"
-  (if (locate-library libname)
-      (load-library libname)))
+  (when (locate-library libname)
+    (load-library libname)))
 
 ;; Do we want an edit-server?
 (when (and (daemonp) (maybe-load-library "edit-server"))
@@ -238,12 +240,35 @@ on the command line"
     (add-hook 'emacs-startup-hook '(lambda ()
 				     (edit-server-start))))
 
+;;
+;; Load any global modes/extensions that are used throughout emacs.
+;; This includes snippets and auto-completion libraries.
+;;
+
 ;; Do we have snippets?
 (when (and (maybe-load-library "yasnippet")
 	   (file-exists-p "~/.emacs.d/my-snippets"))
-  (setq yas-snippet-dirs "~/.emacs.d/my-snippets")
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets")
   (yas-global-mode))
 
+(when (maybe-load-library "auto-complete")
+  (require 'auto-complete-config)
+  (ac-config-default)
+  (setq ac-menu-map 't)
+  (ac-set-trigger-key "M-/") ; override dabrev-expand
+  (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers)))
+
+;; Tab Completions
+; Use smart-tab-mode if we have it
+; (disabled, currently over complicates interaction of ac and yasnippet)
+
+;(when (locate-library "smart-tab")
+;    (setq smart-tab-completion-functions-alist '((text-mode . dabbrev-completion)))
+;    (setq smart-tab-using-hippie-expand 't)
+;    (smart-tab-mode 't))
+
+(when (maybe-load-library "ace-jump-mode")
+  (global-set-key (kbd "C-j") 'ace-jump-mode))
 
 ; On Mac we we want to add /sw/bin for fink (where things like
 ; aspell live)
@@ -405,7 +430,8 @@ on the command line"
 (global-set-key (kbd "<M-up>") 'shrink-window)
 (global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
 
-(global-set-key (kbd "<C-tab>") 'bury-buffer)
+;(global-set-key (kbd "<C-tab>") 'bury-buffer)
+(global-set-key (kbd "<C-tab>") 'pop-global-mark)
 
 ;; Allow windows to be dedicated to one thing interactively
 ;; Toggle window dedication
@@ -431,6 +457,9 @@ on the command line"
 
 ;; iMenu find
 (global-set-key (kbd "C-f") 'imenu)
+
+; Occur stuff
+(global-set-key (kbd "C-c o") 'occur)
 
 ;; Handle special Mac'isms
 ;
@@ -552,6 +581,21 @@ on the command line"
 (when (and I-am-emacs-23+ (or I-am-at-home I-am-at-work))
   (setq font-use-system-font 't))
 
+;; Do we have dynamic fonts?
+; FIXME: why does this not set-up correctly on start-up?
+(when (maybe-load-library "dynamic-fonts")
+  (setq dynamic-fonts-preferred-proportional-fonts
+	'("Source Sans Pro" "DejaVu Sans" "Helvetica"))
+  (setq dynamic-fonts-preferred-monospace-fonts
+	'("Source Code Pro" "Inconsolata" "Monaco" "Consolas" "Menlo"
+	  "DejaVu Sans Mono" "Droid Sans Mono Pro" "Droid Sans Mono"))
+  (if initial-window-system
+      (dynamic-fonts-setup)
+    (add-to-list 'after-make-frame-functions
+		 (lambda (frame)
+		   (message "setting up fonts for new frame....")
+		   (dynamic-fonts-setup)))))
+
 (defvar my-last-theme 'nil
   "Last color theme we set")
 
@@ -657,7 +701,7 @@ on the command line"
   (set 'my-default-x-theme 'zenburn-theme))
  ((maybe-load-library "color-theme-zenburn")
   (set 'my-default-x-theme 'color-theme-zenburn))
- (t (message ("failed to find a zenburn theme"))))
+ (t (message "failed to find a zenburn theme")))
 
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
@@ -761,26 +805,30 @@ on the command line"
 ;      (zone-when-idle 60)))
 
 ;; want to reduce the amount of white space in the mode-line
-(setq default-mode-line-format
+(setq global-mode-string
+      '("" org-mode-line-string))
+
+(setq-default mode-line-format
       '("-"
 	mode-line-mule-info
 	mode-line-modified
 	" "
 	mode-line-buffer-identification
 	" "
+	"%l/%c "
 	"%[("
 	mode-name
 	mode-line-process
 	minor-mode-alist
 	"%n"
 	")%]-"
-	(line-number-mode "L%l-")
-	(column-number-mode "C%c-")
-	(which-func-mode ("" which-func-format))
 	"---"
 	global-mode-string
 	"-%-"
 	))
+
+(which-function-mode 'nil)
+
 
 ;; Let's shrink the minor-mode-alist down to size.
 (setcdr (assq 'abbrev-mode minor-mode-alist) '(" Ab"))
@@ -901,8 +949,7 @@ on the command line"
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
 
-(if (locate-library "ediff")
-    (progn
+(when (locate-library "ediff")
       (autoload 'ediff-files "ediff")
       (autoload 'ediff-buffers "ediff")
 
@@ -916,10 +963,7 @@ on the command line"
 				  (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
 				  (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
 				  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
-
-
-
-      (message "Done ediff customisations")))
+      (message "Done ediff customisations"))
 
 ;; ediff-trees
 ;
@@ -936,17 +980,16 @@ on the command line"
 ; patchs and/or applying a whole patch
 ;
 
-(if (locate-library "diff-mode")
-    (progn
-      (if (locate-library "my-diff-mode")
-	  (progn
-	    (message "Hooking in my-diff-mode")
-	    (autoload 'my-diff-mode "my-diff-mode")
-	    (defalias 'dmode-alias 'my-diff-mode))
-	(autoload 'diff-mode "diff-mode")
-	(defalias 'dmode-alias 'diff-mode))
+(when (locate-library "diff-mode")
+  (if (locate-library "my-diff-mode")
+      (progn
+	(message "Hooking in my-diff-mode")
+	(autoload 'my-diff-mode "my-diff-mode")
+	(defalias 'dmode-alias 'my-diff-mode))
+    (autoload 'diff-mode "diff-mode")
+    (defalias 'dmode-alias 'diff-mode))
 
-      ; Which ever version we have we need to set the
+					; Which ever version we have we need to set the
       ; automode up so it loads when we need it
       (setq auto-mode-alist (append (list
 				     (cons "\.diff$"  'dmode-alias)
@@ -954,7 +997,7 @@ on the command line"
 				     (cons "\.rej$" 'dmode-alias)
 				     (cons "\.dotest/0.*"
 					   'dmode-alias))
-				    auto-mode-alist))))
+				    auto-mode-alist)))
 ;; ispell
 ;
 ; There should be an easier way to set the default
@@ -1008,23 +1051,21 @@ on the command line"
 ; If we have the calculator library available lets load it in
 ;
 
-(if (locate-library "calculator")
-    (progn
-     (autoload 'calculator "calculator"
-      "Run the Emacs calculator." t)
-     (global-set-key [(control return)] 'calculator)))
+(when (locate-library "calculator")
+  (autoload 'calculator "calculator"
+    "Run the Emacs calculator." t)
+  (global-set-key [(control return)] 'calculator))
 
 ;; GPG Support
 ;
-(if (maybe-load-library "epa-file")
-    (progn
-      (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
-      (epa-file-enable)))
+(when (maybe-load-library "epa-file")
+  (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
+  (epa-file-enable))
 
 ;; my-find-binary
 ;
 ; Handy for dumping objdump into a buffer
-(if (locate-library "my-find-binary")
+(when (locate-library "my-find-binary")
     (autoload 'find-binary-file "my-find-binary"))
 
 ;; Version control library
@@ -1044,7 +1085,11 @@ on the command line"
     (add-to-list 'vc-handled-backends 'Git)
   (setq vc-handled-backends (remq 'Git vc-handled-backends))
   (autoload 'magit-status "magit" "magit front end" t)
-  (global-set-key (kbd "C-x g") 'magit-status)
+  (global-set-key (kbd "C-x g") '(lambda ()
+				   (interactive)
+				   (if buffer-file-name
+				       (magit-status (file-name-directory (file-chase-links buffer-file-name)))
+				     (magit-status))))
   (setq magit-status-buffer-switch-function 'switch-to-buffer))
 
 ; Also the git-blame and git-status stuff
@@ -1064,50 +1109,17 @@ on the command line"
 ; man installed.
 ;
 
-(if (not (which-lookup "man"))
-    (if (locate-library "woman")
-	(progn
-	  (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
-	  (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
-	  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)))
-  (message "Using man for man pages"))
+(when (and (not (which-lookup "man"))
+	   (locate-library "woman"))
+  (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
+  (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
+  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)
+  (message "Enabling woman for man pages"))
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
 		(lambda ()
 		  (setq truncate-lines t)))
-
-;; Tab Completions
-;
-; Using Advice ()
-
-(defmacro ad-add-advice-to-key (key expr)
-  "Around advice the key KEY with expression EXPR. KEY should be
-a key in the format accepted by key-binding and such, and EXPR an
-expression of the same type as those required by around advices"
-  `(add-hook 'pre-command-hook
-	     (lambda ()
-	       (when (equal (this-command-keys-vector) ,key)
-		 (ad-add-advice this-command
-				'(azerrswdf ;arbitrary advice name
-				  nil	    ;not protected
-				  t	    ;activated
-				  (lambda ()
-				    ,expr
-				    (ad-unadvise this-command)))
-				'around
-				'last)
-		 (ad-activate this-command)))))
-
-(ad-add-advice-to-key [9]
-		      (let ((p (point)))
-			ad-do-it
-			(when (and (= p (point))
-				   (not (bolp))
-				   (looking-at "\\_>")
-				   (not (minibufferp)))
-			  (dabbrev-expand nil))))
-
 
 ;; Web Development Modes
 ;
@@ -1115,12 +1127,10 @@ expression of the same type as those required by around advices"
 ; Use nxhtml-mode instead. However it only works with emacs23
 ; (the emacs22 autoload fails due to missing files)
 
-(if I-am-emacs-23+
-    (if (maybe-load-library "~/.emacs.d/nxhtml/autostart.el")
-	(progn
-	  (setq nxhtml-skip-welcome t)
-	  (if (maybe-load-library "js2-mode")
-	      (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode")))))
+(when (and I-am-emacs-23+ (maybe-load-library "~/.emacs.d/nxhtml/autostart.el"))
+  (setq nxhtml-skip-welcome t)
+  (when (maybe-load-library "js2-mode")
+    (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode")))
 
 (when (maybe-load-library "htmlize")
   (setq htmlize-output-type 'inline-css)
@@ -1220,11 +1230,10 @@ plus add font-size: 8pt"
 ;; Python Mode
 ;
 ; TODO - automode alist
-(if (locate-library "python-mode")
-    (progn
-      (autoload 'python-mode "python-mode")
-      (add-hook 'python-mode-hook '(lambda ()
-				     (require 'my-python-mode)))))
+(when (locate-library "python-mode.el" 't) ; else clash with ac stuff...
+  (autoload 'python-mode "python-mode")
+  (add-hook 'python-mode-hook '(lambda ()
+				 (require 'my-python-mode))))
 
 (message "Done various programming modes")
 
@@ -1232,6 +1241,14 @@ plus add font-size: 8pt"
 ;; enable the mouse wheel
 (autoload 'mwheel-install "mwheel" "Enable wheely mouse")
 (mwheel-install)
+
+
+;; Multiple cursors
+;
+(when (maybe-load-library "multiple-cursors")
+  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "M-+") 'mc/edit-lines))
 
 ;; Buffer Selection
 ;
@@ -1242,6 +1259,7 @@ plus add font-size: 8pt"
 ; everything
 
 (require 'midnight)
+(setq midnight-mode 't)
 
 (if (require 'lusty-explorer nil 'noerror)
     (progn
@@ -1285,10 +1303,12 @@ plus add font-size: 8pt"
 ; Seems to lock up on emacs-snaphsot/22
 
 (unless I-am-emacs-22
-  (if (locate-library "saveplace")
-      (progn
-	(require 'saveplace)
-	(setq-default save-place t))))
+  (when (maybe-load-library "saveplace")
+    (setq-default save-place t)))
+
+;; Lets use mark-tools if we can
+(when (maybe-load-library "mark-tools")
+  (global-set-key (kbd "C-x m") 'list-marks))
 
 ;;
 ;; ERC
@@ -1302,11 +1322,10 @@ plus add font-size: 8pt"
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
 
 (unless (or will-start-server (daemonp))
-  (if I-am-emacs-22+
-      (progn
-	(setq desktop-dirname (concat (chomp (shell-command-to-string "pwd")))
-	      desktop-save 'ask-if-new)
-	(desktop-save-mode 1))))
+  (when I-am-emacs-22+
+    (setq desktop-dirname (concat (chomp (shell-command-to-string "pwd")))
+	  desktop-save 'ask-if-new)
+    (desktop-save-mode 1)))
 
 ;; Load any hand-made customisations
 (when (file-exists-p custom-file)

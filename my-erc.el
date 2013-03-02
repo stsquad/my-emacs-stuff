@@ -46,9 +46,8 @@
 (erc-autojoin-mode 'nil)
 
 (setq erc-beep-match-types '(current-nick keyword)
-      erc-autojoin-channels-alist
-      '(("irc.pl0rt.org" "#blue")
-	("irc.srcf.ucam.org" "#mage"))
+      erc-autojoin-channels-alist '(("irc.pl0rt.org" "#blue")
+				    ("engbot" "#eng"))
       erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
 				"324" "329" "332" "333" "353" "477")
       erc-hide-list '("JOIN" "PART"
