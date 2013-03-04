@@ -34,17 +34,14 @@
 ;(add-hook 'after-save-hook 'autocompile)
 
 ; check the compiled version not out of date
-(if user-init-file
-    (if (string-match ".elc" user-init-file)
-	(progn
-	  (let* ((src-file (file-name-sans-extension user-init-file)))
-	    (if (file-exists-p src-file)
-		(if (file-newer-than-file-p src-file user-init-file)
-		    (progn
-		      (message "working around newer source file")
-		      (byte-compile-file src-file)
-		      (load src-file))))))))
-		
+(when (and user-init-file
+	   (string-match ".elc" user-init-file))
+  (let* ((src-file (file-name-sans-extension user-init-file)))
+    (when (and (file-exists-p src-file)
+	       (file-newer-than-file-p src-file user-init-file))
+      (message "working around newer source file")
+      (byte-compile-file src-file)
+      (load src-file))))
 	
 (message (concat user-init-file " start"))
 
@@ -73,7 +70,7 @@
 (defvar I-am-at-home (string-match "danny" (system-name)))
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
  
-;; Lets set some paramters if we are running as a console or under X
+;; Lets set some parameters if we are running as a console or under X
 ;
 ; Note these are not useful for --daemon invocations and should now be
 ; deprecated in favour of "live" tests on window-system
@@ -176,7 +173,7 @@ on the command line"
 (when (and I-am-emacs-24+ (require 'package "package" 'nil))
   (package-initialize)
   (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+            '("marmalade" . "http://marmalade-repo.org/packages/") t)
   (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
@@ -193,16 +190,15 @@ on the command line"
 
 ;; Add local search path
 ;
-; This is recursive so adding test libraries should be a case of
-; throwing the directory into .emacs.d
+; This is recursive so adding test libraries should just
+; be a case of throwing the directory into .emacs.d
 ;
-(when (file-exists-p "~/.emacs.d/")
-  (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+(when (and (file-exists-p "~/.emacs.d/")
+	   (fboundp 'normal-top-level-add-subdirs-to-load-path))
       (let* ((my-lisp-dir "~/.emacs.d/")
 	     (default-directory my-lisp-dir))
 	(setq load-path (cons my-lisp-dir load-path))
-	(normal-top-level-add-subdirs-to-load-path))))
-
+	(normal-top-level-add-subdirs-to-load-path)))
 
 ;; Add site-lisp to search path
 ;
@@ -226,7 +222,7 @@ on the command line"
 ;;  (add-to-list 'load-path "~/.emacs.d/"))
 ;; maybe-load-library
 ;
-; A little less the using (require 'lib)
+; A little less than using (require 'lib)
 
 (defun maybe-load-library (libname)
   "Try and load library 'libname' if it is in the path"
