@@ -469,7 +469,9 @@ on the command line"
 (global-set-key (kbd "C-f") 'imenu)
 
 ; Occur stuff
-(global-set-key (kbd "C-c o") 'occur)
+(if (fboundp 'helm-occur)
+    (global-set-key (kbd "C-c o") 'helm-occur)
+  (global-set-key (kbd "C-c o") 'occur))
 
 ;; Handle special Mac'isms
 ;
