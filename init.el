@@ -960,6 +960,14 @@ on the command line"
 	          font-lock-defaults '(info-font-lock-keywords nil t)
 		  case-fold-search nil)))
 
+;; Multiple cursors
+;
+; This is ace and I should use it more
+(when (maybe-load-library "multiple-cursors")
+  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "M-+") 'mc/edit-lines))
+
 ;; ediff
 ;
 ; Need to setup properly
@@ -1255,13 +1263,6 @@ plus add font-size: 8pt"
 
 (message "Done various programming modes")
 
-
-;; Multiple cursors
-;
-(when (maybe-load-library "multiple-cursors")
-  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
-  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
-  (global-set-key (kbd "M-+") 'mc/edit-lines))
 
 ;; Buffer Selection
 ;
