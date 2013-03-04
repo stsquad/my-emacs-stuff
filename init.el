@@ -789,10 +789,21 @@ on the command line"
   (require 'uniquify)
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
 
+;; Mouse set-up
+;
+; I don't use the mouse for a lot of things and on my netbook it
+; positively gets in the way. Really it's only used for links and
+; the occasional scroll of the buffer.
+
 ;; Stop the mouse cursor getting in the way. This is great.
 (unless I-am-xemacs
-  (if 'window-system
+  (when 'window-system
     (mouse-avoidance-mode 'exile)))
+
+;; enable the mouse wheel
+(autoload 'mwheel-install "mwheel" "Enable wheely mouse")
+(mwheel-install)
+
 
 ;; Change the cursor colour in Ovwrt mode
 (defun ins-cursor-set ()
@@ -1247,11 +1258,6 @@ plus add font-size: 8pt"
 				 (require 'my-python-mode))))
 
 (message "Done various programming modes")
-
-
-;; enable the mouse wheel
-(autoload 'mwheel-install "mwheel" "Enable wheely mouse")
-(mwheel-install)
 
 
 ;; Multiple cursors
