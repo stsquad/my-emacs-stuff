@@ -924,13 +924,6 @@ on the command line"
 	    whitespace-style '(color mark))))
 
 
-;; Speedbar (not that I use it much)
-(add-hook 'speedbar-load-hook
-	  '(lambda ()
-	     (setq speedbar-update-speed 5
-		   speedbar-track-mouse-flag t
-		   speedbar-activity-change-focus t)))
-
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
 	  '(lambda ()
