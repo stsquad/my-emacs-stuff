@@ -1318,12 +1318,18 @@ plus add font-size: 8pt"
   (global-set-key (kbd "C-x m") 'list-marks))
 
 ;;
-;; ERC
+;; IRC Stuff
 ;;
-(when (locate-library "erc")
-  (autoload 'erc-select "erc" "Start ERC" t)
-  (eval-after-load
-      "erc" (maybe-load-library "my-erc")))
+
+(if (locate-library "circe")
+    (progn
+      (autoload 'circe "circe" "Start CIRCE" t)
+      (eval-after-load
+	  "circe" (maybe-load-library "my-circe")))
+  (when (locate-library "erc")
+    (autoload 'erc-select "erc" "Start ERC" t)
+    (eval-after-load
+	"erc" (maybe-load-library "my-erc"))))
 
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
