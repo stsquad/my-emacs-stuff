@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Latext item
+# key: it
+# --
+\item{$1: $0}

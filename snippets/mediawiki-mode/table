@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: MediaWiki Table
+# key: {|
+# --
+{| style="color:black; background-color:#ffffcc;" align="CENTER" width="98%" cellspacing="0" border="1" class="wikitable sortable"
+| style="background-color:orange;"| '''$0'''
