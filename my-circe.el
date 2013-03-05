@@ -26,6 +26,12 @@
 	 :nick "ajb"
 	 :channels ("#eng")
 	 :service "6667"
+	)
+	("bitlbee"
+	 :nick "ajb"
+	 :channels ("&bitlbee")
+	 :host "localhost"
+	 :service "6667"
 	)))
 
 ;;
