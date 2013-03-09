@@ -34,17 +34,14 @@
 ;(add-hook 'after-save-hook 'autocompile)
 
 ; check the compiled version not out of date
-(if user-init-file
-    (if (string-match ".elc" user-init-file)
-	(progn
-	  (let* ((src-file (file-name-sans-extension user-init-file)))
-	    (if (file-exists-p src-file)
-		(if (file-newer-than-file-p src-file user-init-file)
-		    (progn
-		      (message "working around newer source file")
-		      (byte-compile-file src-file)
-		      (load src-file))))))))
-		
+(when (and user-init-file
+	   (string-match ".elc" user-init-file))
+  (let* ((src-file (file-name-sans-extension user-init-file)))
+    (when (and (file-exists-p src-file)
+	       (file-newer-than-file-p src-file user-init-file))
+      (message "working around newer source file")
+      (byte-compile-file src-file)
+      (load src-file))))
 	
 (message (concat user-init-file " start"))
 
@@ -73,7 +70,7 @@
 (defvar I-am-at-home (string-match "danny" (system-name)))
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
  
-;; Lets set some paramters if we are running as a console or under X
+;; Lets set some parameters if we are running as a console or under X
 ;
 ; Note these are not useful for --daemon invocations and should now be
 ; deprecated in favour of "live" tests on window-system
@@ -176,7 +173,7 @@ on the command line"
 (when (and I-am-emacs-24+ (require 'package "package" 'nil))
   (package-initialize)
   (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+            '("marmalade" . "http://marmalade-repo.org/packages/") t)
   (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
@@ -193,16 +190,15 @@ on the command line"
 
 ;; Add local search path
 ;
-; This is recursive so adding test libraries should be a case of
-; throwing the directory into .emacs.d
+; This is recursive so adding test libraries should just
+; be a case of throwing the directory into .emacs.d
 ;
-(when (file-exists-p "~/.emacs.d/")
-  (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+(when (and (file-exists-p "~/.emacs.d/")
+	   (fboundp 'normal-top-level-add-subdirs-to-load-path))
       (let* ((my-lisp-dir "~/.emacs.d/")
 	     (default-directory my-lisp-dir))
 	(setq load-path (cons my-lisp-dir load-path))
-	(normal-top-level-add-subdirs-to-load-path))))
-
+	(normal-top-level-add-subdirs-to-load-path)))
 
 ;; Add site-lisp to search path
 ;
@@ -226,7 +222,7 @@ on the command line"
 ;;  (add-to-list 'load-path "~/.emacs.d/"))
 ;; maybe-load-library
 ;
-; A little less the using (require 'lib)
+; A little less than using (require 'lib)
 
 (defun maybe-load-library (libname)
   "Try and load library 'libname' if it is in the path"
@@ -459,7 +455,9 @@ on the command line"
 (global-set-key (kbd "C-f") 'imenu)
 
 ; Occur stuff
-(global-set-key (kbd "C-c o") 'occur)
+(if (fboundp 'helm-occur)
+    (global-set-key (kbd "C-c o") 'helm-occur)
+  (global-set-key (kbd "C-c o") 'occur))
 
 ;; Handle special Mac'isms
 ;
@@ -778,10 +776,21 @@ on the command line"
   (require 'uniquify)
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
 
+;; Mouse set-up
+;
+; I don't use the mouse for a lot of things and on my netbook it
+; positively gets in the way. Really it's only used for links and
+; the occasional scroll of the buffer.
+
 ;; Stop the mouse cursor getting in the way. This is great.
 (unless I-am-xemacs
-  (if 'window-system
+  (when 'window-system
     (mouse-avoidance-mode 'exile)))
+
+;; enable the mouse wheel
+(autoload 'mwheel-install "mwheel" "Enable wheely mouse")
+(mwheel-install)
+
 
 ;; Change the cursor colour in Ovwrt mode
 (defun ins-cursor-set ()
@@ -906,13 +915,6 @@ on the command line"
 	    whitespace-style '(color mark))))
 
 
-;; Speedbar (not that I use it much)
-(add-hook 'speedbar-load-hook
-	  '(lambda ()
-	     (setq speedbar-update-speed 5
-		   speedbar-track-mouse-flag t
-		   speedbar-activity-change-focus t)))
-
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
 	  '(lambda ()
@@ -941,6 +943,14 @@ on the command line"
 	    (setq
 	          font-lock-defaults '(info-font-lock-keywords nil t)
 		  case-fold-search nil)))
+
+;; Multiple cursors
+;
+; This is ace and I should use it more
+(when (maybe-load-library "multiple-cursors")
+  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "M-+") 'mc/edit-lines))
 
 ;; ediff
 ;
@@ -1238,18 +1248,6 @@ plus add font-size: 8pt"
 (message "Done various programming modes")
 
 
-;; enable the mouse wheel
-(autoload 'mwheel-install "mwheel" "Enable wheely mouse")
-(mwheel-install)
-
-
-;; Multiple cursors
-;
-(when (maybe-load-library "multiple-cursors")
-  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
-  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
-  (global-set-key (kbd "M-+") 'mc/edit-lines))
-
 ;; Buffer Selection
 ;
 ; Use lusty-explorer if I can, otherwise leave it to ido-mode which
@@ -1311,12 +1309,18 @@ plus add font-size: 8pt"
   (global-set-key (kbd "C-x m") 'list-marks))
 
 ;;
-;; ERC
+;; IRC Stuff
 ;;
-(when (locate-library "erc")
-  (autoload 'erc-select "erc" "Start ERC" t)
-  (eval-after-load
-      "erc" (maybe-load-library "my-erc")))
+
+(if (locate-library "circe")
+    (progn
+      (autoload 'circe "circe" "Start CIRCE" t)
+      (eval-after-load
+	  "circe" (maybe-load-library "my-circe")))
+  (when (locate-library "erc")
+    (autoload 'erc-select "erc" "Start ERC" t)
+    (eval-after-load
+	"erc" (maybe-load-library "my-erc"))))
 
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)

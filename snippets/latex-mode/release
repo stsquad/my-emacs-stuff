@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Release
+# key: rel
+# --
+\subsection*{$1 ($2)}
+\begin{itemize}
+$0
+\end{itemize}
