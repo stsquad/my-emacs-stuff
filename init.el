@@ -1203,21 +1203,6 @@ plus add font-size: 8pt"
 	     (turn-on-auto-fill)
 	     (imenu-add-to-menubar "Imenu")))
 
-; I don't want all text-mode stuff to be auto-fill as editing text
-; boxes can screw with the formatting (especially if html is involved)
-
-(require 'longlines)
-
-(defun my-toggle-line-modes()
-  "Toggle longlines/auto-fill mode"
-  (interactive)
-  (if longlines-mode
-      (progn
-	(longlines-mode 0)
-	(turn-on-auto-fill))
-    (longlines-mode)
-    (longlines-show-hard-newlines)))
-
 ; For most web-forms I want longlines-mode by default
 ;
 ; It's All Text: /home/ajb/.mozilla/firefox/hgd0onxt.default/itsalltext/.2e2i2y3b2c.txt
@@ -1226,16 +1211,13 @@ plus add font-size: 8pt"
 (add-hook 'text-mode-hook
 	  '(lambda ()
              ; Allow toggling
-	     (local-set-key (kbd "C-l") 'my-toggle-line-modes)
-	     (if (or (not buffer-file-name)
-		     (and (buffer-file-name)
-			  (or (string-match "itsalltext" (buffer-file-name))
-			      (string-match "/tmp/tmp" (buffer-file-name)))))
-		 (progn
-		   (message "enabling long lines for web")
-		   (longlines-mode 1)
-		   (longlines-show-hard-newlines)
-		   (turn-on-auto-fill)))))
+	     (local-set-key (kbd "C-l") 'visual-line-mode)
+	     (when (or (not buffer-file-name)
+		       (and (buffer-file-name)
+			    (or (string-match "itsalltext" (buffer-file-name))
+				(string-match "/tmp/tmp" (buffer-file-name)))))
+	       (message "enabling visual-line-mode for web stuff")
+	       (visual-line-mode 'nil))))
 
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
