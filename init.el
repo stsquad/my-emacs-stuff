@@ -1054,18 +1054,17 @@ on the command line"
 	    ;; flyspell mode
 	    ; I think this has been in emacs a while, but best practice to check
 	    ; (from http://trey-jackson.blogspot.com/2008/04/emacs-tip-16-flyspell-and-flyspell-prog.html)
-	    (if (locate-library "flyspell")
-		(progn
-		  (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
-		  (add-hook 'message-mode-hook 'turn-on-flyspell)
-		  (add-hook 'text-mode-hook 'turn-on-flyspell)
-		  (add-hook 'mail-mode-hook 'turn-on-flyspell)
-		  (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
-		  (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
-		  (defun turn-on-flyspell ()
-		    "Force flyspell-mode on using a positive arg.  For use in hooks."
-		    (interactive)
-		    (flyspell-mode 1)))))
+	    (when (locate-library "flyspell")
+	      (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
+	      (add-hook 'message-mode-hook 'turn-on-flyspell)
+	      (add-hook 'text-mode-hook 'turn-on-flyspell)
+	      (add-hook 'mail-mode-hook 'turn-on-flyspell)
+	      (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
+	      (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
+	      (defun turn-on-flyspell ()
+		"Force flyspell-mode on using a positive arg.  For use in hooks."
+		(interactive)
+		(flyspell-mode 1))))
 	(message "Skipping ispell - no programs")))
   (message "Skipping ispell - no ispell library"))
 
