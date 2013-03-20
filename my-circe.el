@@ -39,6 +39,10 @@
 (require 'lui-autopaste)
 (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste)
 
+; spell checking
+(when (fboundp 'turn-on-flyspell)
+  (add-hook 'circe-channel-mode-hook 'turn-on-flyspell))
+
 ;; Mode line tweaks
 (add-to-list 'global-mode-string
 	     'tracking-mode-line-buffers
