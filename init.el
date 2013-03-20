@@ -844,13 +844,12 @@ on the command line"
 	mode-line-process
 	minor-mode-alist
 	"%n"
-	")%]-"
-	"---"
+	")%]"
+	"--"
 	global-mode-string
-	"-%-"
+	"--"
 	))
 
-(which-function-mode 'nil)
 
 
 ;; Let's shrink the minor-mode-alist down to size.
@@ -870,13 +869,13 @@ on the command line"
 (unless I-am-xemacs
   (setq display-time-interval 20
 	display-time-format 'nil
-	display-time-string-forms '( 24-hours ":" minutes " "day "/" month))
+	display-time-string-forms '( 24-hours ":" minutes ))
   (display-time-mode))
 
 ;; Displays current function() in programming modes. 
-(setq which-func-modes t
-      which-func-format '("[" which-func-current "]-"))
-(which-func-mode t)
+(setq which-func-modes t)
+;;      which-func-format '("[" which-func-current "]-"))
+(which-function-mode 'nil)
 
 ;; Reduce white space
 (setq-default mode-line-buffer-identification '("%b"))
