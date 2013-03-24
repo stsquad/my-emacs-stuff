@@ -391,11 +391,10 @@ on the command line"
 ; Some of the project handling modes may tweak this behaviour.
 
 (let ((ack-bin (which-lookup '("ack-grep" "ack"))))
-  (if (and ack-bin (maybe-load-library "ack"))
-      (progn
-        (setq ack-guess-type 't
-              ack-command (concat ack-bin " --nocolor --nogroup"))
-        (global-set-key (kbd "<f5>") 'ack))))
+  (when (and ack-bin (maybe-load-library "ack"))
+    (setq ack-guess-type 't
+	  ack-command (concat ack-bin " --nocolor --nogroup"))
+    (global-set-key (kbd "<f5>") 'ack)))
 
 
 (message "Done defuns")
