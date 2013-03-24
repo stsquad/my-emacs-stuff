@@ -1,6 +1,8 @@
 ;; org-mode related configuration bits
 ;;
 
+(require 'org-element)
+
 ;; Clocking behaviour
 (setq org-clock-persist 't
       org-clock-in-resume 't                 ; resume currently open clock
@@ -9,6 +11,10 @@
       org-clock-idle-time 'nil)
 
 (org-clock-persistence-insinuate)
+
+;; Mode line tweaks
+(setq org-clock-mode-line-total 'current
+      org-clock-clocked-in-display 'frame-title)
 
 ;; TODO Hierarchy
 (setq org-provide-todo-statistics 'ALL-HEADLINES
@@ -25,15 +31,12 @@
 
 (setq ajb-work-org-file "/ssh:alex@bennee.com:/home/alex/doc/org/work.org")
 
-(when (and (daemonp) I-am-at-work)
-  (setq
-   org-agenda-files '(ajb-work-org-file)))
-
 (defun my-switch-to-org ()
   "Bring my default org buffer to the current window"
   (interactive)
   (switch-to-buffer
-   (find-file ajb-work-org-file)))
+   (find-file ajb-work-org-file)
+   (org-agenda-file-to-front)))
 
 (defun ajb-get-trac-summary (id)
   "Fetch the bug summary directly from trac"
