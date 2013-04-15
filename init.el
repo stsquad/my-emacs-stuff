@@ -268,9 +268,8 @@ on the command line"
 
 ; On Mac we we want to add /sw/bin for fink (where things like
 ; aspell live)
-(when I-am-on-MacOSX
-  (if (file-exists-p "/sw/bin")
-      (setenv "PATH" (concat (getenv "PATH") ":/sw/bin"))))
+(when (and I-am-on-MacOSX (file-exists-p "/sw/bin"))
+      (setenv "PATH" (concat (getenv "PATH") ":/sw/bin")))
 
 (message "Done Basic Sanity")
 
@@ -1299,10 +1298,9 @@ plus add font-size: 8pt"
 
 (message "Done Buffer Handling Tweaks")
 
-(if I-am-at-work
-    (progn
-      (setenv "DEBEMAIL" "Alex.Bennee@cambridgebroadband.com")
-      (setenv "DEBFULLNAME" "Alex Bennée")))
+(when I-am-at-work
+  (setenv "DEBEMAIL" "Alex.Bennee@cambridgebroadband.com")
+  (setenv "DEBFULLNAME" "Alex Bennée"))
   
 
 ;; Saveplace - Jump to where I last was when I edit a file
