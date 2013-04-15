@@ -231,10 +231,15 @@ on the command line"
 
 ;; Do we want an edit-server?
 (when (and (daemonp) (maybe-load-library "edit-server"))
-    (when (maybe-load-library "mediawiki")
-      (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" . mediawiki-mode)))
-    (add-hook 'emacs-startup-hook '(lambda ()
-				     (edit-server-start))))
+  (when (maybe-load-library "edit-server-htmlize")
+    (add-hook 'edit-server-start-hook
+	      'edit-server-maybe-dehtmlize-buffer)
+    (add-hook 'edit-server-done-hook
+	      'edit-server-maybe-htmlize-buffer))
+  (when (maybe-load-library "mediawiki")
+    (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" . mediawiki-mode)))
+  (add-hook 'emacs-startup-hook '(lambda ()
+				   (edit-server-start))))
 
 ;;
 ;; Load any global modes/extensions that are used throughout emacs.
@@ -390,11 +395,10 @@ on the command line"
 ; Some of the project handling modes may tweak this behaviour.
 
 (let ((ack-bin (which-lookup '("ack-grep" "ack"))))
-  (if (and ack-bin (maybe-load-library "ack"))
-      (progn
-        (setq ack-guess-type 't
-              ack-command (concat ack-bin " --nocolor --nogroup"))
-        (global-set-key (kbd "<f5>") 'ack))))
+  (when (and ack-bin (maybe-load-library "ack"))
+    (setq ack-guess-type 't
+	  ack-command (concat ack-bin " --nocolor --nogroup"))
+    (global-set-key (kbd "<f5>") 'ack)))
 
 
 (message "Done defuns")
@@ -838,13 +842,12 @@ on the command line"
 	mode-line-process
 	minor-mode-alist
 	"%n"
-	")%]-"
-	"---"
+	")%]"
+	"--"
 	global-mode-string
-	"-%-"
+	"--"
 	))
 
-(which-function-mode 'nil)
 
 
 ;; Let's shrink the minor-mode-alist down to size.
@@ -864,13 +867,13 @@ on the command line"
 (unless I-am-xemacs
   (setq display-time-interval 20
 	display-time-format 'nil
-	display-time-string-forms '( 24-hours ":" minutes " "day "/" month))
+	display-time-string-forms '( 24-hours ":" minutes ))
   (display-time-mode))
 
 ;; Displays current function() in programming modes. 
-(setq which-func-modes t
-      which-func-format '("[" which-func-current "]-"))
-(which-func-mode t)
+(setq which-func-modes t)
+;;      which-func-format '("[" which-func-current "]-"))
+(which-function-mode 'nil)
 
 ;; Reduce white space
 (setq-default mode-line-buffer-identification '("%b"))
@@ -1049,18 +1052,17 @@ on the command line"
 	    ;; flyspell mode
 	    ; I think this has been in emacs a while, but best practice to check
 	    ; (from http://trey-jackson.blogspot.com/2008/04/emacs-tip-16-flyspell-and-flyspell-prog.html)
-	    (if (locate-library "flyspell")
-		(progn
-		  (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
-		  (add-hook 'message-mode-hook 'turn-on-flyspell)
-		  (add-hook 'text-mode-hook 'turn-on-flyspell)
-		  (add-hook 'mail-mode-hook 'turn-on-flyspell)
-		  (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
-		  (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
-		  (defun turn-on-flyspell ()
-		    "Force flyspell-mode on using a positive arg.  For use in hooks."
-		    (interactive)
-		    (flyspell-mode 1)))))
+	    (when (locate-library "flyspell")
+	      (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
+	      (add-hook 'message-mode-hook 'turn-on-flyspell)
+	      (add-hook 'text-mode-hook 'turn-on-flyspell)
+	      (add-hook 'mail-mode-hook 'turn-on-flyspell)
+	      (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
+	      (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
+	      (defun turn-on-flyspell ()
+		"Force flyspell-mode on using a positive arg.  For use in hooks."
+		(interactive)
+		(flyspell-mode 1))))
 	(message "Skipping ispell - no programs")))
   (message "Skipping ispell - no ispell library"))
 
@@ -1199,21 +1201,6 @@ plus add font-size: 8pt"
 	     (turn-on-auto-fill)
 	     (imenu-add-to-menubar "Imenu")))
 
-; I don't want all text-mode stuff to be auto-fill as editing text
-; boxes can screw with the formatting (especially if html is involved)
-
-(require 'longlines)
-
-(defun my-toggle-line-modes()
-  "Toggle longlines/auto-fill mode"
-  (interactive)
-  (if longlines-mode
-      (progn
-	(longlines-mode 0)
-	(turn-on-auto-fill))
-    (longlines-mode)
-    (longlines-show-hard-newlines)))
-
 ; For most web-forms I want longlines-mode by default
 ;
 ; It's All Text: /home/ajb/.mozilla/firefox/hgd0onxt.default/itsalltext/.2e2i2y3b2c.txt
@@ -1222,16 +1209,13 @@ plus add font-size: 8pt"
 (add-hook 'text-mode-hook
 	  '(lambda ()
              ; Allow toggling
-	     (local-set-key (kbd "C-l") 'my-toggle-line-modes)
-	     (if (or (not buffer-file-name)
-		     (and (buffer-file-name)
-			  (or (string-match "itsalltext" (buffer-file-name))
-			      (string-match "/tmp/tmp" (buffer-file-name)))))
-		 (progn
-		   (message "enabling long lines for web")
-		   (longlines-mode 1)
-		   (longlines-show-hard-newlines)
-		   (turn-on-auto-fill)))))
+	     (local-set-key (kbd "C-l") 'visual-line-mode)
+	     (when (or (not buffer-file-name)
+		       (and (buffer-file-name)
+			    (or (string-match "itsalltext" (buffer-file-name))
+				(string-match "/tmp/tmp" (buffer-file-name)))))
+	       (message "enabling visual-line-mode for web stuff")
+	       (visual-line-mode 'nil))))
 
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
