@@ -1267,13 +1267,17 @@ plus add font-size: 8pt"
 (require 'midnight)
 (setq midnight-mode 't)
 
-(if (require 'lusty-explorer nil 'noerror)
-    (progn
-      ;; overrride the normal file-opening, buffer switching
-      (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-      (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
-  ;; ido-mode - better buffer selection
-  (ido-mode t))
+;; ido-mode - better buffer selection
+(ido-mode t)
+(setq ido-enable-flex-matching 't)
+(when (require 'ido-better-flex nil 'noerror)
+  (ido-better-flex/enable))
+
+;; but if we have lusty still use that...
+(when (require 'lusty-explorer nil 'noerror)
+  ;; overrride the normal file-opening, buffer switching
+  (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
+  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
 
 ;; ibuffer has been around for some time
 (defun my-ibuffer-bs-show ()
