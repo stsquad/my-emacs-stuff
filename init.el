@@ -1,6 +1,6 @@
 ; -*- emacs-lisp -*-
 ;
-; Alex Bennee's .emacs
+; Alex Bennée's .emacs
 ;
 ; This is my .emacs. It is mainly an amalgem of different hacks
 ; acquired over time which I use on many of the machines I work with.
