@@ -242,34 +242,6 @@
 	     (message "Ran cperl-mode hook")))
 
 
-;; Compile Mode Stuff
-;
-; I want to be able to search straight from the compile mode window
-;
-; I've tried doing stuff with compile-/compile+ but never got it to work.
-
-(unless (functionp 'compile)
-  (if (locate-library "compile")
-    (progn
-      (autoload 'compile "compile")
-      (autoload 'recompile "compile")
-      
-      ; ensure the default compile command is sensible
-      (setq compile-command (format "cd %s && make -k" current-project-root))
-      ; Tweak some variables
-      (setq compilation-scroll-output t
-      ; compilation-buffer-name-function nil
-	    compile-auto-highlight    t
-	    compilation-window-height 10)
-      (message "Setup compile-mode"))
-    (message "Unable to find compile libs...")))
-
-; Always set the global keybindings
-(global-set-key (kbd "C-c c") 'compile)
-(global-set-key (kbd "<f3>")  'compile)
-(global-set-key (kbd "C-c r") 'recompile)
-
-
 (message "Finished my-c-mode.el customisation")
 
 (provide 'my-c-mode)

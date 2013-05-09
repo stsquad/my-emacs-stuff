@@ -18,6 +18,23 @@
 				    (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
 				    (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)))
 
+; Global keybindings for compiling
+(global-set-key (kbd "C-c c") 'compile)
+(global-set-key (kbd "C-c r") 'recompile)
+
+;; If we have the tracking library add compilation buffer when complete
+(when (require 'tracking nil 'noerror)
+  (defun my-hide-compilation-buffer (proc)
+    "Hide the compile buffer"
+    (delete-window (get-buffer-window "*compilation*")))
+
+  (defun my-report-compilation-finished (buf exit-string)
+    "Report the compilation buffer to tracker"
+    (tracking-add-buffer buf))
+
+  (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
+  (add-hook 'compilation-finish-functions 'my-report-compilation-finished))
+
 ;; Makefiles
 ;
 ; The auto-mode-alist isn't quite set-up to handle Makefile.something
