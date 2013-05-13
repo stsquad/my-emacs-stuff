@@ -1,6 +1,6 @@
 ; -*- emacs-lisp -*-
 ;
-; Alex Bennee's .emacs
+; Alex Bennée's .emacs
 ;
 ; This is my .emacs. It is mainly an amalgem of different hacks
 ; acquired over time which I use on many of the machines I work with.
@@ -146,9 +146,25 @@ on the command line"
 (define-key global-map [menu-bar tools print ps-print-buffer]
   '("Postscript Print Buffer" . ps-print-buffer))
 
-;; You can pretty much guarantee tramp implies over ssh
-;(setq tramp-default-method "ssh")
-(setq tramp-default-method "scpc")
+;;
+;; TRAMP customisations.
+;;
+
+; You can pretty much guarantee tramp implies over ssh
+(setq tramp-default-method "scp")
+; Auto-saves tramp files on our local file system
+(add-to-list 'backup-directory-alist
+	     (cons tramp-file-name-regexp "~/.emacs.d/tramp-saves"))
+; If I'm travelling assume no one is messing with files on my work
+; machine
+(when (string-match "symbiot" (system-name))
+  (setq remote-file-name-inhibit-cache 'nil
+	tramp-completion-reread-directory-timeout 'nil))
+; I tend to use magit anyway, but disable VC mode over TRAMP
+(setq vc-ignore-dir-regexp
+      (format "\\(%s\\)\\|\\(%s\\)"
+	      vc-ignore-dir-regexp
+	      tramp-file-name-regexp))
 
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
@@ -457,6 +473,20 @@ on the command line"
 
 ;; Press [pause] key in each window you want to "freeze"
 (global-set-key [pause] 'toggle-window-dedicated)
+
+(defun toggle-frame-split ()
+  "If the frame is split vertically, split it horizontally or vice versa.
+Assumes that the frame is only split into two."
+  (interactive)
+  (unless (= (length (window-list)) 2) (error "Can only toggle a frame split in two"))
+  (let ((split-vertically-p (window-combined-p)))
+    (delete-window) ; closes current window
+    (if split-vertically-p
+        (split-window-horizontally)
+      (split-window-vertically)) ; gives us a split with the other window twice
+    (switch-to-buffer nil))) ; restore the original window in this part of the frame
+;; I don't use the default binding of 'C-x 5', so use toggle-frame-split instead
+(global-set-key (kbd "C-x %") 'toggle-frame-split)
 
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
@@ -1251,13 +1281,17 @@ plus add font-size: 8pt"
 (require 'midnight)
 (setq midnight-mode 't)
 
-(if (require 'lusty-explorer nil 'noerror)
-    (progn
-      ;; overrride the normal file-opening, buffer switching
-      (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-      (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
-  ;; ido-mode - better buffer selection
-  (ido-mode t))
+;; ido-mode - better buffer selection
+(ido-mode t)
+(setq ido-enable-flex-matching 't)
+(when (require 'ido-better-flex nil 'noerror)
+  (ido-better-flex/enable))
+
+;; but if we have lusty still use that...
+(when (require 'lusty-explorer nil 'noerror)
+  ;; overrride the normal file-opening, buffer switching
+  (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
+  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
 
 ;; ibuffer has been around for some time
 (defun my-ibuffer-bs-show ()

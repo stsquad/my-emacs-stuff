@@ -49,4 +49,10 @@
 	     t)
 
 
-
+;; Auto join everything
+(defun my-irc-login ()
+  "Login into my usual IRCs"
+  (interactive)
+  (circe "Freenode")
+  (circe "Pl0rt")
+  (circe "engbot"))
