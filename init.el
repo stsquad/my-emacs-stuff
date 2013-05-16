@@ -734,14 +734,15 @@ Assumes that the frame is only split into two."
   nil
   "Default theme for X frames")
 
-(cond
- ((and I-am-emacs-24+ (load-theme 'zenburn t))
-  (set 'my-default-x-theme 'zenburn))
- ((maybe-load-library "zenburn")
-  (set 'my-default-x-theme 'zenburn-theme))
- ((maybe-load-library "color-theme-zenburn")
-  (set 'my-default-x-theme 'color-theme-zenburn))
- (t (message "failed to find a zenburn theme")))
+(ignore-errors
+  (cond
+   ((and I-am-emacs-24+ (load-theme 'zenburn t))
+    (set 'my-default-x-theme 'zenburn))
+   ((maybe-load-library "zenburn")
+    (set 'my-default-x-theme 'zenburn-theme))
+   ((maybe-load-library "color-theme-zenburn")
+    (set 'my-default-x-theme 'color-theme-zenburn))
+   (t (message "failed to find a zenburn theme"))))
 
 (defun my-set-x-colours()
   "Set the colours for X windows mode"
@@ -763,7 +764,7 @@ Assumes that the frame is only split into two."
     (dark  (my-colour-theme-set 'manoj-dark))))
 
 ; Lets hook into the frame function
-(add-hook 'after-make-frame-functions 'my-new-frame-colours)
+;(add-hook 'after-make-frame-functions 'my-new-frame-colours)
 
 ; And set the tty colours if we started in tty mode
 ;(if I-am-in-console
@@ -901,9 +902,9 @@ Assumes that the frame is only split into two."
   (display-time-mode))
 
 ;; Displays current function() in programming modes. 
-(setq which-func-modes t)
+(setq which-func-modes 'nil)
 ;;      which-func-format '("[" which-func-current "]-"))
-(which-function-mode 'nil)
+;(which-function-mode 'nil)
 
 ;; Reduce white space
 (setq-default mode-line-buffer-identification '("%b"))
