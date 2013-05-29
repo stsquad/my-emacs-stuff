@@ -495,7 +495,9 @@ Assumes that the frame is only split into two."
 (global-set-key [kp-multiply] 'next-error)
 
 ;; iMenu find
-(global-set-key (kbd "C-f") 'imenu)
+(if (fboundp 'helm-imenu)
+    (global-set-key (kbd "C-f") 'helm-imenu)
+  (global-set-key (kbd "C-f") 'imenu))
 
 ; Occur stuff
 (if (fboundp 'helm-occur)
