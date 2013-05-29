@@ -191,8 +191,7 @@
 ;; load the ctags library and bind C-f to something worth using :-)
 (when (maybe-load-library "etags")
   (autoload 'find-tag "etags" "Emacs Tags library" t)
-  (global-unset-key "\C-f")
-  (global-set-key "\C-f" 'find-tag))
+  (define-key c-mode-map (kbd "C-f") 'find-tag))
 
 
 ;; CPerl-mode
