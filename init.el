@@ -267,8 +267,13 @@ on the command line"
 ;    (setq smart-tab-using-hippie-expand 't)
 ;    (smart-tab-mode 't))
 
+; Nice for jumping about windows.
 (when (maybe-load-library "ace-jump-mode")
   (global-set-key (kbd "C-j") 'ace-jump-mode))
+
+; Better M-x
+(when (maybe-load-library "smex")
+  (global-set-key (kbd "M-x") 'smex))
 
 ; On Mac we we want to add /sw/bin for fink (where things like
 ; aspell live)
@@ -1257,6 +1262,8 @@ plus add font-size: 8pt"
 (setq ido-enable-flex-matching 't)
 (when (require 'ido-better-flex nil 'noerror)
   (ido-better-flex/enable))
+(when (require 'ido-ubiquitous nil 'noerror)
+  (ido-ubiquitous-mode))
 
 ;; but if we have lusty still use that...
 (when (require 'lusty-explorer nil 'noerror)
