@@ -96,6 +96,42 @@
 (add-hook 'makefile-mode-hook 'eproject-maybe-turn-on)
 (add-hook 'java-mode-hook 'eproject-maybe-turn-on)
 
+;; Shrink mode line for mode display
+(setcdr (assq 'eproject-mode minor-mode-alist) '(" eprj"))
+
+;;
+;; Find methods
+;
+; I want two find methods, one from the project root (f5) and the
+; other potentially from where I am.
+;
+
+(defun my-grep-find (root search)
+  (grep-find (concat
+	      "find "
+	      root " -print0 |  xargs -0 -e grep -n -e " search)))
+
+(defvar my-project-find-fallback-func
+  'my-grep-find
+  "The function I call when git grep won't work")
+
+
+(when (require 'ack-and-a-half nil 'noerror)
+  (defun my-ack-and-a-half-current-directory ()
+    "Return the current buffers directory if it exists, else 'nil"
+    (cond
+     (dired-directory dired-directory)
+     ((and buffer-file-name
+	   (file-exists-p buffer-file-name))
+      (file-name-directory (file-truename buffer-file-name)))
+      nil))
+  
+  (add-to-list 'ack-and-a-half-root-directory-functions
+	       'my-ack-and-a-half-current-directory)
+  (setq ack-and-a-half-prompt-for-directory 'unless-guessed)
+  (global-set-key (kbd "<f6>") 'ack-and-a-half))
+
+;
 (defun my-eproject-find (&optional search)
   "Do a find across the project"
   (interactive "sSearch string:")
@@ -108,10 +144,7 @@
 	(shell-command command buffer)
 	(pop-to-buffer buffer)
 	(grep-mode))
-    (grep-find (concat
-		"find "
-		eproject-root " -print0 |  xargs -0 -e grep -n -e " search))))
-  
+    (funcall my-project-find-fallback-func eproject-root search)))
 
 (unless (global-key-binding (kbd "<f5>"))
   (global-set-key (kbd "<f5>") 'my-eproject-find))
