@@ -385,21 +385,6 @@ on the command line"
 ; Org configuration
 (maybe-load-library "my-org")
 
-
-;; Find methods
-;
-; If ack.el is available we shall use that, otherwise we will fall
-; back to using grep. ack may be called ack-grep in some cases
-;
-; Some of the project handling modes may tweak this behaviour.
-
-(let ((ack-bin (which-lookup '("ack-grep" "ack"))))
-  (when (and ack-bin (maybe-load-library "ack"))
-    (setq ack-guess-type 't
-	  ack-command (concat ack-bin " --nocolor --nogroup"))
-    (global-set-key (kbd "<f5>") 'ack)))
-
-
 (message "Done defuns")
 
 ;;; keymapping
