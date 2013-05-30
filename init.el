@@ -216,26 +216,6 @@ on the command line"
 	(setq load-path (cons my-lisp-dir load-path))
 	(normal-top-level-add-subdirs-to-load-path)))
 
-;; Add site-lisp to search path
-;
-; This is a work-around function for when I'm running bleeding
-; emacs from the source tree but still want Debian's developer
-; tools. I'd caution about having too many extra packages about that
-; have been merged into the source tree (cedet etc) lest it get
-; confused.
-
-(defun load-debian-site-lisp()
-  "Attempt to load Debian's site-lisp if it's there"
-  (interactive)
-  (when (and (not (member "/usr/share/emacs/site-lisp" load-path))
-	     (fboundp 'normal-top-level-add-subdirs-to-load-path))
-    (let* ((default-directory "/usr/share/emacs/site-lisp"))
-      (normal-top-level-add-subdirs-to-load-path))))
-
-(load-debian-site-lisp)
-
-;;  (message "Adding local .emacs.d to lib path")
-;;  (add-to-list 'load-path "~/.emacs.d/"))
 ;; maybe-load-library
 ;
 ; A little less than using (require 'lib)
