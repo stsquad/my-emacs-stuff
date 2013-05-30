@@ -22,6 +22,10 @@
 ; resolves to first
 
 
+; debugging weird stat-up issues.
+;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
+;(setq debug-on-error 't)
+
 (defun autocompile nil
   "compile itself if ~/.emacs"
   (interactive)
@@ -45,7 +49,6 @@
 	
 (message (concat user-init-file " start"))
 
-(setq debug-on-error t)
 
 ;;;; Start of real code.
 
