@@ -311,15 +311,6 @@ on the command line"
   "Famous unix fortune teller."
   (shell-command-to-string "/usr/bin/fortune"))
 
-;(fortune)
-
-(defun my-kill-line ()
-  "Iain's hack to make kill-line work even when you're in the middle of one."
-  (interactive)
-  (beginning-of-line)
-  (call-interactively 'kill-line))
-
-
 ;; String munging functions
 ;
 ; Extract the first group in a regex
@@ -416,8 +407,7 @@ on the command line"
 (global-set-key [delete] 'delete-char)
 
 ;; C-k deletes whole line
-(global-unset-key "\C-k")
-(global-set-key "\C-k" 'my-kill-line)
+(global-set-key "\C-k" 'kill-whole-line)
 
 ;; Let's also do Alt-X and easier way
 (global-set-key "\C-x\C-m" 'execute-extended-command)
@@ -655,7 +645,8 @@ Assumes that the frame is only split into two."
 			      (top . 0) 
 			      (background-color . "DarkSlateGrey")
 			      (foreground-color . "wheat")
-			      (vertical-scroll-bars . left)))
+			      (vertical-scroll-bars . left)
+			      (font . "DejaVu Sans Mono-14")))
   (setq normal-width 90)
   (setq normal-height 24)
   (setq fullscreen-width 92)
