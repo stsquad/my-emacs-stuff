@@ -236,8 +236,12 @@ on the command line"
     (add-hook 'edit-server-done-hook
 	      'edit-server-maybe-htmlize-buffer))
   (when (maybe-load-library "mediawiki")
-    (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" . mediawiki-mode)))
+    (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" .
+						     mediawiki-mode)))
+  (add-to-list 'edit-server-url-major-mode-alist
+	       '("mail.google" . mail-mode))
   (add-hook 'emacs-startup-hook '(lambda ()
+				   (message "starting up edit-server")
 				   (edit-server-start))))
 
 ;;
