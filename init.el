@@ -1208,8 +1208,7 @@ plus add font-size: 8pt"
 (add-hook 'emacs-lisp-mode-hook
 	  '(lambda ()
 	     (eldoc-mode t)
-	     (turn-on-auto-fill)
-	     (imenu-add-to-menubar "Imenu")))
+	     (turn-on-auto-fill)))
 
 ; For most web-forms I want longlines-mode by default
 ;
@@ -1234,10 +1233,6 @@ plus add font-size: 8pt"
 	  '(lambda ()
 	     (local-set-key (kbd "C-l") 'my-toggle-line-modes)
 	     (turn-on-auto-fill)))
-
-(add-hook 'texinfo-mode-hook
-	  '(lambda ()
-	     (imenu-add-to-menubar "Imenu")))
 
 ;; Python Mode
 ;
