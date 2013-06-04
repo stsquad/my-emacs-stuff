@@ -279,6 +279,10 @@ on the command line"
 (when (maybe-load-library "smex")
   (global-set-key (kbd "M-x") 'smex))
 
+(when (require 'keyfreq nil 'noerror)
+  (keyfreq-mode)
+  (keyfreq-autosave-mode))
+
 ; On Mac we we want to add /sw/bin for fink (where things like
 ; aspell live)
 (when (and I-am-on-MacOSX (file-exists-p "/sw/bin"))
