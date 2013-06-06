@@ -906,6 +906,9 @@ Assumes that the frame is only split into two."
 ;; Allow narrowing.
 (put 'narrow-to-region 'disabled nil)
 
+;; Use xdg-open
+(setq browse-url-browser-function 'browse-url-xdg-open)
+
 (message "Done Display Hacks")
 
 ;; Don't prompt me to revert something
