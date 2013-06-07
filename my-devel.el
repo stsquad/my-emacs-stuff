@@ -9,14 +9,14 @@
  (t (load-library "my-project")))
 
 ;; Compilation mode tweaks
-(if I-am-emacs-23+
+(when I-am-emacs-23+
     (setq compilation-auto-jump-to-first-error t))
+
 (setq compilation-scroll-output t
       compilation-window-height 10)
 
-(add-hook 'compilation-mode-hook '(lambda()
-				    (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
-				    (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)))
+(define-key compilation-mode-map (kbd "n") 'compilation-next-error)
+(define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
 
 ; Global keybindings for compiling
 (global-set-key (kbd "C-c c") 'compile)
