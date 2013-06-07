@@ -279,6 +279,10 @@ on the command line"
 (when (maybe-load-library "smex")
   (global-set-key (kbd "M-x") 'smex))
 
+(when (require 'keyfreq nil 'noerror)
+  (keyfreq-mode)
+  (keyfreq-autosave-mode))
+
 ; On Mac we we want to add /sw/bin for fink (where things like
 ; aspell live)
 (when (and I-am-on-MacOSX (file-exists-p "/sw/bin"))
@@ -611,6 +615,7 @@ Assumes that the frame is only split into two."
 
 (defun my-colour-theme-set (theme)
   "Set colour theme but don't bother if we already have"
+  (message (format "my-colour-theme-set: %s" theme))
   (unless (eq my-last-theme theme)
     (cond
      ((and (fboundp 'load-theme) ; Emacs 24
@@ -643,10 +648,7 @@ Assumes that the frame is only split into two."
 			      (height . 28)
 			      (left . 0)
 			      (top . 0) 
-			      (background-color . "DarkSlateGrey")
-			      (foreground-color . "wheat")
-			      (vertical-scroll-bars . left)
-			      (font . "DejaVu Sans Mono-14")))
+			      (vertical-scroll-bars . left)))
   (setq normal-width 90)
   (setq normal-height 24)
   (setq fullscreen-width 92)
@@ -655,12 +657,10 @@ Assumes that the frame is only split into two."
  ((eval I-am-at-work)
   (setq default-frame-alist '((menu-bar-lines . 0)
 			      (tool-bar-lines . 0)
-			      (width . 201)
+			      (width . 208)
 			      (height . 55)
-			      (top . 24)
-			      (left . 65) ; one monitor (for now)
-			      (background-color . "DarkSlateGrey")
-			      (foreground-color . "wheat")
+			      (top . 0)
+			      (left . 0) ; one monitor (for now)
 			      (vertical-scroll-bars . right)))
   (if (boundp 'edit-server-new-frame-alist)
       (setq edit-server-new-frame-alist '((name . "Emacs TEXTAREA")
@@ -678,8 +678,6 @@ Assumes that the frame is only split into two."
 			      (left . 0)
 			      (width . 120)
 			      (height . 50)
-			      (background-color . "DarkSlateGrey")
-			      (foreground-color . "wheat")
 			      (vertical-scroll-bars . right)))
   (if (boundp 'edit-server-new-frame-alist)
       (setq edit-server-new-frame-alist '((name . "Emacs TEXTAREA")
@@ -901,6 +899,9 @@ Assumes that the frame is only split into two."
 
 ;; Allow narrowing.
 (put 'narrow-to-region 'disabled nil)
+
+;; Use xdg-open
+(setq browse-url-browser-function 'browse-url-xdg-open)
 
 (message "Done Display Hacks")
 
