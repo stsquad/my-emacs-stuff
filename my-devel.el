@@ -3,10 +3,10 @@
 ;; All other development modes should be triggered from here.
 ;;
 
-
-(if (maybe-load-library "eproject")
-    (load-library "my-eproject")
-  (load-library "my-project"))
+(cond
+ ((maybe-load-library "projectile") (message "project via projectile"))
+ ((maybe-load-library "eproject") (load-library "my-eproject"))
+ (t (load-library "my-project")))
 
 ;; Compilation mode tweaks
 (if I-am-emacs-23+
