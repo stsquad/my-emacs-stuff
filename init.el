@@ -1221,10 +1221,15 @@ plus add font-size: 8pt"
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
 
-(add-hook 'mail-mode-hook
-	  '(lambda ()
-	     (local-set-key (kbd "C-l") 'my-toggle-line-modes)
-	     (turn-on-auto-fill)))
+(defun my-mail-mode-tweaks()
+  "Customise mail-mode stuff"
+  (interactive)
+  (turn-on-auto-fill)
+  (when (string-match "/tmp/mutt" buffer-file-name)
+    (local-set-key (kbd "C-c C-c") 'server-edit)
+    (local-set-key (kbd "C-c C-s") 'server-edit)))
+
+(add-hook 'mail-mode-hook 'my-mail-mode-tweaks)
 
 ;; Python Mode
 ;
