@@ -6,6 +6,14 @@
 (require 'eproject-extras)
 (require 'eproject-compile)
 
+;; Shrink mode line for mode display
+(setcdr (assq 'eproject-mode minor-mode-alist) '(" eprj"))
+
+;; Key hooks
+; Hook in eproject-compile to normal key-binding
+(define-key eproject-mode-map (kbd "C-c c") 'eproject-compile)
+;(define-key eproject-mode-map (kbd "C-x C-b") 'eproject-ibuffer)
+
 (define-project-type cbnl-tree
   (generic)
   (and
@@ -82,12 +90,6 @@
 
 (add-hook 'wireshark-visit-hook '(require 'my-c-mode))
 
-
-; Hook in compile
-(global-set-key (kbd "C-c c") 'compile)
-(define-key eproject-mode-map (kbd "C-c c") 'eproject-compile) 
-(global-set-key (kbd "C-c r") 'recompile)
-
 ;; Turn on eproject on various dev modes
 ;
 ; In theory eproject should already be catching this when major modes
@@ -95,9 +97,6 @@
 (add-hook 'c-mode-common-hook 'eproject-maybe-turn-on)
 (add-hook 'makefile-mode-hook 'eproject-maybe-turn-on)
 (add-hook 'java-mode-hook 'eproject-maybe-turn-on)
-
-;; Shrink mode line for mode display
-(setcdr (assq 'eproject-mode minor-mode-alist) '(" eprj"))
 
 ;;
 ;; Find methods
