@@ -1,5 +1,5 @@
 ;;
-;; Customisations for eproject (http://github.com/jrockway/eproject)
+;; Customisation for eproject (http://github.com/jrockway/eproject)
 ;;
 
 (require 'eproject)
