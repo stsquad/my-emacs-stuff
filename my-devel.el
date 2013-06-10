@@ -15,6 +15,10 @@
 (setq compilation-scroll-output t
       compilation-window-height 10)
 
+; lets not overtax the regex matcher on our huge compilation buffers
+(when I-am-at-work
+  (setq compilation-error-regexp-alist '(gcc-include)))
+
 (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
 (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
 
