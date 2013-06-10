@@ -3,10 +3,13 @@
 ;;
 
 ; There are two python modes - this refers to the python supplied one
-(require 'python-mode) ; hmm, broken
+;(require 'python-mode) ; hmm, broken
 
-(if (maybe-load-library "ipython")
-    (setq py-python-command-args '( "-colors" "Linux")))
+;(when (maybe-load-library "ipython")
+;    (setq py-python-command-args '( "-colors" "Linux")))
+
+(when (require 'elpy 'nil 't)
+  (elpy-enable)
+  (elpy-clean-modeline))
 
 (message "Done loading my-python-mode")
-(provide 'my-python-mode)

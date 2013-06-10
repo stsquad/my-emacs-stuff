@@ -221,7 +221,7 @@ on the command line"
 
 ;; maybe-load-library
 ;
-; A little less than using (require 'lib)
+; A little less than using (require 'lib) - but require has optional args
 
 (defun maybe-load-library (libname)
   "Try and load library 'libname' if it is in the path"
@@ -780,6 +780,9 @@ Assumes that the frame is only split into two."
 ; Re-use existing frames if buffer already exists in one
 (setq-default display-buffer-reuse-frames t)
 
+;(when (require 'powerline nil 'noerror)
+;  (powerline-center-theme))
+
 (message "Display Done")
 
 ;; Prettier unique buffer names.
@@ -855,7 +858,7 @@ Assumes that the frame is only split into two."
 
 ;; Not added until the relevant mode is loaded.
 (setq minor-mode-alist (cons '(compilation-in-progress nil)
-				 minor-mode-alist))
+			     minor-mode-alist))
 
 ;; Uses a separate variable. Isn't that nice?
 (setq eldoc-minor-mode-string nil
@@ -1111,7 +1114,10 @@ Assumes that the frame is only split into two."
 				   (interactive)
 				   (if buffer-file-name
 				       (magit-status (file-name-directory (file-chase-links buffer-file-name)))
-				     (magit-status))))
+				     (magit-status
+				      default-directory))))
+  (eval-after-load "magit"
+    (add-hook 'magit-mode-hook (lambda() (yas-minor-mode -1))))
   (setq magit-status-buffer-switch-function 'switch-to-buffer))
 
 ; Also the git-blame and git-status stuff
@@ -1178,10 +1184,10 @@ plus add font-size: 8pt"
 	(insert htmlized-reg))
       (while (re-search-forward "<pre>" nil t)
 	(replace-match pre-tag nil nil))
-      (goto-char (point-min))))
+      (goto-char (point-min)))))
 
-  (global-set-key [(f6)] (lambda (beg end)
-			   (interactive "r") (my-htmlize-region beg end))))
+;  (global-set-key [(f6)] (lambda (beg end)
+;			   (interactive "r") (my-htmlize-region beg end))))
 
 
 ;; Elisp mode
@@ -1234,10 +1240,9 @@ plus add font-size: 8pt"
 ;; Python Mode
 ;
 ; TODO - automode alist
-(when (locate-library "python-mode.el" 't) ; else clash with ac stuff...
-  (autoload 'python-mode "python-mode")
-  (add-hook 'python-mode-hook '(lambda ()
-				 (require 'my-python-mode))))
+(autoload 'python-mode "python-mode")
+(eval-after-load "python-mode"
+  (load-library "my-python-mode"))
 
 (message "Done various programming modes")
 

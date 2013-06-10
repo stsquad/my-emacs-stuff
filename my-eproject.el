@@ -9,21 +9,59 @@
 ;; Shrink mode line for mode display
 (setcdr (assq 'eproject-mode minor-mode-alist) '(" eprj"))
 
+;; Config
+(setq eproject-completing-read-function 'eproject--ido-completing-read)
+
 ;; Key hooks
 ; Hook in eproject-compile to normal key-binding
 (define-key eproject-mode-map (kbd "C-c c") 'eproject-compile)
 ;(define-key eproject-mode-map (kbd "C-x C-b") 'eproject-ibuffer)
+
+(when (require 'helm-eproject 'nil 'noerror)
+  (define-key eproject-mode-map (kbd "C-c h") 'helm-eproject))
+
+;;
+;; Individual project definitions
+;;
+
+; Functions to build command lines (need my patch)
+(defun build-bldv-command-line(root)
+  "Build a bldv command line for a given root"
+  (let ((remote (file-remote-p root)))
+    (when remote
+      (let* ((path (substring root (length remote)))
+	     (components (split-string path "/"))
+	     (bldv "bldv --noems --noapc"))
+	(setq bldv (concat bldv (format " --repo_name %s" (nth 3 components))))
+	bldv))))
+
+(defun build-incrementing-rc-release(root)
+  "Build a release command line with a version for the day"
+  (when (not (file-remote-p root))
+    (when (not (boundp 'vectastar-build-id))
+      (setq vectastar-build-id (format-time-string "%-m%d1")))
+    (format
+     "cd %s && make release PLATFORM=Linux_OE_RC VECTASTARBUILD=%s"
+     root vectastar-build-id)))
+
+(defun next-rc-build()
+  "Increment the build id"
+  (interactive)
+  (if (boundp 'vectastar-build-id)
+      (setq vectastar-build-id (format "%s" (+ 1 (string-to-number vectastar-build-id))))
+    (setq vectastar-build-id (format-time-string "%-m%d1"))))
 
 (define-project-type cbnl-tree
   (generic)
   (and
    (look-for "Makefile.cleanenv")
    (look-for "build-system"))
-  :common-compiles ("make build-nms PLATFORM=Linux_Desktop"
+  :common-compiles (build-bldv-command-line
+		    "make build-nms PLATFORM=Linux_Desktop"
 		    "make build-nms PLATFORM=Linux_Desktop EMSDEBUG=1"
 		    "make build-nms PLATFORM=Linux_Desktop EMSDEBUG=1 VNMS=0"
 		    "make pkg-nms PLATFORM=Linux_Desktop"
-		    "make release PLATFORM=Linux_OE_RC"
+		    build-incrementing-rc-release
 		    "make -C packaging PLATFORM=Linux_OE_RC"))
 
 (add-hook 'cbnl-tree-project-file-visit-hook '(lambda ()
