@@ -59,7 +59,6 @@
 ; Define some variable about what sort of emacs I'm running in
 
 (defvar I-am-emacs-21+ (>= emacs-major-version 21))
-(defvar I-am-emacs-22  (= emacs-major-version 22))
 (defvar I-am-emacs-22+ (>= emacs-major-version 22))
 (defvar I-am-emacs-23+ (>= emacs-major-version 23))
 (defvar I-am-emacs-24+ (>= emacs-major-version 24))
@@ -383,7 +382,7 @@ on the command line"
     (if (file-exists-p f)
 	(return f))))
 
-;; Load sub-mdoules
+;; Load sub-modules
 ;
 ; Development related stuff, including project root
 (load-library "my-devel")
@@ -419,8 +418,8 @@ on the command line"
 (global-set-key "\C-c\C-m" 'execute-extended-command)
 
 ;; Window navigation and size control
-(if (maybe-load-library "windmove")
-    (windmove-default-keybindings))
+(when (maybe-load-library "windmove")
+  (windmove-default-keybindings))
 
 (global-set-key (kbd "<M-down>") 'enlarge-window)
 (global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
@@ -512,8 +511,8 @@ Assumes that the frame is only split into two."
 ;
 ; This overides existing backward-sentence and backward-word default
 ; binding
-(global-set-key [(meta b)] 'list-bookmarks)
-(global-set-key [(meta a)] 'bookmark-set)
+;(global-set-key [(meta b)] 'list-bookmarks)
+;(global-set-key [(meta a)] 'bookmark-set)
 
 ;; Function Keys, I'm currently going over what my Microsoft ergonomic
 ;; keyboard has sentsiled on the function keys
@@ -921,12 +920,11 @@ Assumes that the frame is only split into two."
 (setq indent-tabs-mode nil)
 (setq tab-always-indent 'complete)
 
-(if I-am-emacs-23+
-    (progn
-      (setq whitespace-chars '(trailing tabs space-before-tab
-					indentation empty
-					space-after-tab)
-	    whitespace-style '(color mark))))
+(when I-am-emacs-23+
+  (setq whitespace-chars '(trailing tabs space-before-tab
+				    indentation empty
+				    space-after-tab)
+	whitespace-style '(color mark)))
 
 
 ;; Bow down before font-lock
@@ -1297,15 +1295,6 @@ plus add font-size: 8pt"
   (setenv "DEBEMAIL" "ajb@cbnl.com")
   (setenv "DEBFULLNAME" "Alex Bennée"))
   
-
-;; Saveplace - Jump to where I last was when I edit a file
-;
-; Seems to lock up on emacs-snaphsot/22
-
-(unless I-am-emacs-22
-  (when (maybe-load-library "saveplace")
-    (setq-default save-place t)))
-
 ;; Lets use mark-tools if we can
 (when (maybe-load-library "mark-tools")
   (global-set-key (kbd "C-x m") 'list-marks))
