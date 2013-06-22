@@ -475,6 +475,8 @@ Assumes that the frame is only split into two."
     (global-set-key (kbd "C-c o") 'helm-occur)
   (global-set-key (kbd "C-c o") 'occur))
 
+(global-set-key (kbd "C-c e") 'eshell)
+
 ;; Handle special Mac'isms
 ;
 ; If we are running over ssh lets map some more stuff to move around,
