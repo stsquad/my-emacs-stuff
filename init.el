@@ -1,9 +1,10 @@
 ; -*- emacs-lisp -*-
 ;
-; Alex Bennée's .emacs
+; Alex BennÃ©e's .emacs
 ;
-; This is my .emacs. It is mainly an amalgem of different hacks
-; acquired over time which I use on many of the machines I work with.
+; This is my Emacs, there are many like it but this is my own.
+;.It is mainly an amalgem of different hacks acquired over time
+; which I use on many of the machines I work with.
 ;
 ; It has a cobbled heritage from various sites and wiki's and its
 ; probably safest to assume the code is all either GPL or Public
@@ -296,7 +297,7 @@ on the command line"
 ; I like my name
 (defun insert-myname ()
   (interactive)
-  (insert (format "Alex Bennée")))
+  (insert (format "Alex BennÃ©e")))
 
 (global-set-key (kbd "C-M-e") 'insert-myname)
 
@@ -494,9 +495,6 @@ Assumes that the frame is only split into two."
 					; things behave (I'm not totally sure why, must read up more)
   (set-keyboard-coding-system 'utf-8)
 
-					; Re-map £ to # (which is what I want when I hit Shift-3 on the
-					; Mac
-  (global-set-key (kbd "£") "#")
   
 					; this is what I get when I hit Alt-ArrowKeys on the Mac
   (global-set-key (kbd "ESC <up>") 'scroll-down)
@@ -1296,8 +1294,8 @@ plus add font-size: 8pt"
 (message "Done Buffer Handling Tweaks")
 
 (when I-am-at-work
-  (setenv "DEBEMAIL" "Alex.Bennee@cambridgebroadband.com")
-  (setenv "DEBFULLNAME" "Alex Bennée"))
+  (setenv "DEBEMAIL" "ajb@cbnl.com")
+  (setenv "DEBFULLNAME" "Alex BennÃ©e"))
   
 
 ;; Saveplace - Jump to where I last was when I edit a file
