@@ -465,6 +465,10 @@ Assumes that the frame is only split into two."
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
 
+;; Helm customisations
+(eval-after-load "helm"
+  (setq helm-yank-symbol-first 't))
+
 ;; iMenu find
 (if (fboundp 'helm-imenu)
     (global-set-key (kbd "C-f") 'helm-imenu)
