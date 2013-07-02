@@ -69,6 +69,14 @@
 ; (setq my-php-hooks-alist (cons '(".*/wp-content.*php$" . 'my-wordpress-hook ) my-php-hooks-alist))
 ; (assoc-default "/path/to/wp-content/test.php" my-php-hooks-alist 'string-match) => my-wordpress-hook
 
+;;
+;; Web stuff, use web-mode
+;;
+
+;(when (featurep web-mode)
+
+(add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
+
 (defun my-php-mode-hook()
   "Run hooks for PHP mode"
   (interactive)
