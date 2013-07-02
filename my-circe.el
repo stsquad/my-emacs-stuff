@@ -32,6 +32,7 @@
 	 :channels ("&bitlbee")
 	 :host "localhost"
 	 :service "6667"
+	 :lagmon-disabled t
 	)))
 
 ;;
