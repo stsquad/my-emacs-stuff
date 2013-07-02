@@ -15,7 +15,7 @@
 ;; Key hooks
 ; Hook in eproject-compile to normal key-binding
 (define-key eproject-mode-map (kbd "C-c c") 'eproject-compile)
-;(define-key eproject-mode-map (kbd "C-x C-b") 'eproject-ibuffer)
+(define-key eproject-mode-map (kbd "C-x C-b") 'eproject-ibuffer)
 
 (when (require 'helm-eproject 'nil 'noerror)
   (define-key eproject-mode-map (kbd "C-c h") 'helm-eproject))
