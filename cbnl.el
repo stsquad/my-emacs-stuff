@@ -164,7 +164,7 @@ GFilename: ")
 
 (defadvice find-tag (before c-tag-file activate)
   "Automatically create tags file for an app."
-  (if (boundp 'eproject-root)
+  (when (boundp 'eproject-root)
       (visit-tags-table (concat eproject-root "/TAGS"))))
 
 (message "Done with cbnl customisations")
