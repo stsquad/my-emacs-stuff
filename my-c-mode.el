@@ -188,11 +188,10 @@
 ;; End of c-mode customisations
 ;;
 
-;; load the ctags library and bind C-f to something worth using :-)
-(when (maybe-load-library "etags")
-  (autoload 'find-tag "etags" "Emacs Tags library" t)
-  (define-key c-mode-map (kbd "C-f") 'find-tag))
-
+;; load the etags library and bind C-f to something worth using :-)
+(if (maybe-load-library "etags-select")
+    (define-key c-mode-map (kbd "C-c f") 'etags-select-find-tag)
+  (define-key c-mode-map (kbd "C-c f") 'find-tag))
 
 ;; CPerl-mode
 (setq interpreter-mode-alist (append (list (cons "perl" 'cperl-mode)
