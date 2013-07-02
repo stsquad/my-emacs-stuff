@@ -4,8 +4,8 @@
 ;;
 
 (cond
- ((maybe-load-library "projectile") (message "project via projectile"))
  ((maybe-load-library "eproject") (load-library "my-eproject"))
+ ((maybe-load-library "projectile") (load-library "my-projectile"))
  (t (load-library "my-project")))
 
 ;; Compilation mode tweaks
