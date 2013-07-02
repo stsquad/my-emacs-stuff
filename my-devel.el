@@ -10,14 +10,14 @@
 
 ;; Compilation mode tweaks
 (when I-am-emacs-23+
-    (setq compilation-auto-jump-to-first-error t))
+    (setq compilation-auto-jump-to-first-error 'nil))
 
 (setq compilation-scroll-output t
       compilation-window-height 10)
 
 ; lets not overtax the regex matcher on our huge compilation buffers
 (when I-am-at-work
-  (setq compilation-error-regexp-alist '(gcc-include)))
+  (setq compilation-error-regexp-alist '(gcc-include gnu)))
 
 (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
 (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
