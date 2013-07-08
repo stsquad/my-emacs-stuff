@@ -905,6 +905,7 @@ Assumes that the frame is only split into two."
 
 ;; Allow narrowing.
 (put 'narrow-to-region 'disabled nil)
+(global-set-key (kbd "C-x n r") 'narrow-to-region)
 
 ;; Use xdg-open
 (setq browse-url-browser-function 'browse-url-xdg-open)
