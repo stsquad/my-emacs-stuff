@@ -1120,17 +1120,24 @@ Assumes that the frame is only split into two."
 				     (magit-status
 				      default-directory))))
   (eval-after-load "magit"
-    (add-hook 'magit-mode-hook (lambda() (yas-minor-mode -1))))
-  (setq magit-status-buffer-switch-function 'switch-to-buffer))
+    '(progn
+       (add-hook 'magit-mode-hook (lambda() (yas-minor-mode -1)))
+       (setq magit-status-buffer-switch-function 'switch-to-buffer
+	     magit-rewrite-inclusive 'nil))))
 
 ; Also the git-blame and git-status stuff
-(if (locate-library "git")
-    (autoload 'git-status "git"
-      "Git Status" t))
+(when (locate-library "git")
+  (autoload 'git-status "git"
+    "Git Status" t))
 
-(if (locate-library "git-blame")
-    (autoload 'git-blame-mode "git-blame"
-      "Minor mode for incremental blame for Git." t))
+(when (locate-library "git-blame")
+  (autoload 'git-blame-mode "git-blame"
+    "Minor mode for incremental blame for Git." t))
+
+(eval-after-load "git-messenger"
+  '(progn
+     (setq git-messenger:show-detail 't)
+     (global-set-key (kbd "C-h g") 'git-messenger:popup-message)))
 
 (message "Done GIT hooks")
 
