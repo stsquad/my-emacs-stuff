@@ -32,7 +32,11 @@
       (let* ((path (substring root (length remote)))
 	     (components (split-string path "/"))
 	     (bldv "bldv --noems --noapc"))
-	(setq bldv (concat bldv (format " --repo_name %s" (nth 3 components))))
+	(setq bldv (concat
+		    bldv
+		    (format " --repo_name %s" (nth 3 components))
+		    " --version 5.1.25-"
+		    (next-rc-build)))
 	bldv))))
 
 (defun build-incrementing-rc-release(root)
@@ -62,10 +66,26 @@
 		    "make build-nms PLATFORM=Linux_Desktop EMSDEBUG=1 VNMS=0"
 		    "make pkg-nms PLATFORM=Linux_Desktop"
 		    build-incrementing-rc-release
+		    "make -C new_rcd PLATFORM=Linux_Desktop"
 		    "make -C packaging PLATFORM=Linux_OE_RC"))
 
-(add-hook 'cbnl-tree-project-file-visit-hook '(lambda ()
-					       (require 'cbnl)))
+
+(defun cbnl-compile-buffer-func (mode)
+  "Return a compile buffer for a CBNL project"
+  (let ((root (ignore-errors (eproject-root))))
+    (if root
+	(let ((proj-dir (nth 1 (reverse (split-string root "/")))))
+	  (concat "* compilation of " proj-dir " *"))
+      (concat "*" (downcase mode) "*"))))
+
+(defun cbnl-hook-function ()
+  "My hook function for all CBNL projects"
+  (require 'cbnl)
+  (set
+   (make-local-variable 'compilation-buffer-name-function)
+   'cbnl-compile-buffer-func))
+
+(add-hook 'cbnl-tree-project-file-visit-hook 'cbnl-hook-function)
 
 (define-project-type debian-package
   (generic)
