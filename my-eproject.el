@@ -143,16 +143,6 @@
 ; other potentially from where I am.
 ;
 
-(defun my-grep-find (root search)
-  (grep-find (concat
-	      "find "
-	      root " -print0 |  xargs -0 -e grep -n -e " search)))
-
-(defvar my-project-find-fallback-func
-  'my-grep-find
-  "The function I call when git grep won't work")
-
-
 (when (require 'ack-and-a-half nil 'noerror)
   (defun my-ack-and-a-half-current-directory ()
     "Return the current buffers directory if it exists, else 'nil"
@@ -166,23 +156,23 @@
   (add-to-list 'ack-and-a-half-root-directory-functions
 	       'my-ack-and-a-half-current-directory)
   (setq ack-and-a-half-prompt-for-directory 'unless-guessed)
-  (global-set-key (kbd "<f6>") 'ack-and-a-half))
+  (define-key eproject-mode-map (kbd "<f6>") 'ack-and-a-half))
 
-;
-(defun my-eproject-find (&optional search)
+(defun my-eproject-find ()
   "Do a find across the project"
-  (interactive "sSearch string:")
-
+  (interactive)
   (if (file-exists-p (concat eproject-root ".git"))
-      (let ((buffer (concat "*git grep for " search "*" ))
-	    (command (format "git grep -n %s -- %s" search eproject-root)))
-	(setq grep-command "git grep -n ")
-	(message "Using git grep for searches")
-	(shell-command command buffer)
-	(pop-to-buffer buffer)
-	(grep-mode))
-    (funcall my-project-find-fallback-func eproject-root search)))
+      (if (functionp 'helm-git-grep)
+	  (helm-git-grep)
+	(let ((search (my-find-search-string))
+	      (buffer (concat "*git grep for " search "*" ))
+	      (command (format "git grep -n %s -- %s" search eproject-root)))
+	  (setq grep-command "git grep -n ")
+	  (message "Using git grep for searches")
+	  (shell-command command buffer)
+	  (pop-to-buffer buffer)
+	  (grep-mode)))
+    (funcall my-project-find-fallback-func eproject-root (my-find-search-string))))
 
-(unless (global-key-binding (kbd "<f5>"))
-  (global-set-key (kbd "<f5>") 'my-eproject-find))
+(define-key eproject-mode-map (kbd "<f5>") 'my-eproject-find)
 
