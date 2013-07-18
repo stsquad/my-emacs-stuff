@@ -977,30 +977,17 @@ Assumes that the frame is only split into two."
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
 
-(when (locate-library "ediff")
-      (autoload 'ediff-files "ediff")
-      (autoload 'ediff-buffers "ediff")
+(eval-after-load "ediff"
+  '(progn
+     (message "doing ediff customisation")
+     (setq diff-switches               "-u"
+	   ediff-custom-diff-options   "-U3"
+	   ediff-split-window-function 'split-window-horizontally
+	   ediff-window-setup-function 'ediff-setup-windows-plain)
 
-      (eval-after-load "ediff" '(progn
-				  (message "doing ediff customisation")
-				  (setq diff-switches               "-u"
-					ediff-custom-diff-options   "-U3"
-					ediff-split-window-function 'split-window-horizontally
-					ediff-window-setup-function 'ediff-setup-windows-plain)
-
-				  (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
-				  (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
-				  (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
-      (message "Done ediff customisations"))
-
-;; ediff-trees
-;
-; This is another library that does a tree view approach
-(if (locate-library "ediff-trees")
-    (autoload 'ediff-trees "ediff-trees" "Start an tree ediff" t))
-
-;      (load-library "ediff-trees")))
-
+     (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+     (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+     (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
 
 ;; diff-mode and its derivitives
 ;
