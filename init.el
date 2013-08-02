@@ -932,12 +932,11 @@ Assumes that the frame is only split into two."
 (setq indent-tabs-mode nil)
 (setq tab-always-indent 'complete)
 
+; TODO: clean-up my defaults for this
 (when I-am-emacs-23+
   (setq whitespace-chars '(trailing tabs space-before-tab
 				    indentation empty
-				    space-after-tab)
-	whitespace-style '(color mark)))
-
+				    space-after-tab)))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
