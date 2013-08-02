@@ -273,7 +273,7 @@ on the command line"
 
 ; Nice for jumping about windows.
 (when (maybe-load-library "ace-jump-mode")
-  (global-set-key (kbd "C-j") 'ace-jump-mode))
+  (global-set-key (kbd "C-x j") 'ace-jump-mode))
 
 ; Better M-x
 (when (maybe-load-library "smex")
