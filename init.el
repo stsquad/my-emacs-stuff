@@ -196,6 +196,12 @@ on the command line"
   (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
+  ; filter some packages out
+  (setq package-filter-function
+      (lambda (package version archive)
+        (or (not (string-equal archive "melpa"))
+            (not (memq package '(magit org))))))
+
   ; list of packages I care about
   (defvar ajb-packages
     '(ack-and-a-half expand-region magit magithub python
