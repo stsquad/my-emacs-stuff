@@ -782,6 +782,8 @@ Assumes that the frame is only split into two."
 ;
 ; This is ace and I should use it more
 (when (maybe-load-library "multiple-cursors")
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
   (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
   (global-set-key (kbd "M-+") 'mc/edit-lines))
