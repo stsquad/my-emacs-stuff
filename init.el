@@ -740,26 +740,26 @@ Assumes that the frame is only split into two."
 (setq auto-insert-alist ())		;? html-helper
 
 ;; I hate tabs - they are set in cc-mode but not everything respects that
-(setq indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 (setq tab-always-indent 'complete)
 
 ; TODO: clean-up my defaults for this
 (when I-am-emacs-23+
   (setq whitespace-chars '(trailing tabs space-before-tab
-				    indentation empty
-				    space-after-tab)))
+                           empty space-after-tab))
+  (setq whitespace-style '(faces tabs trailing lines-tail empty space-after-tab tab-mark)))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
-	  '(lambda ()
-	     (setq font-lock-maximum-decoration  t
-		   font-lock-verbose             t
-		   font-lock-support-mode        'jit-lock-mode
-		   lazy-lock-defer-on-scrolling  nil
-		   lazy-lock-defer-contextually  t
-		   lazy-lock-stealth-verbose     t
-		   lazy-lock-stealth-lines       50
-		   lazy-lock-stealth-time        3)))
+          '(lambda ()
+             (setq font-lock-maximum-decoration  t
+                   font-lock-verbose             t
+                   font-lock-support-mode        'jit-lock-mode
+                   lazy-lock-defer-on-scrolling  nil
+                   lazy-lock-defer-contextually  t
+                   lazy-lock-stealth-verbose     t
+                   lazy-lock-stealth-lines       50
+                   lazy-lock-stealth-time        3)))
 (global-font-lock-mode t)
 
 
