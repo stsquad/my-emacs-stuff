@@ -1045,7 +1045,8 @@ plus add font-size: 8pt"
   "Customise mail-mode stuff"
   (interactive)
   (turn-on-auto-fill)
-  (when (string-match "/tmp/mutt" buffer-file-name)
+  (when (and buffer-file-name
+             (string-match "/tmp/mutt" buffer-file-name))
     (local-set-key (kbd "C-c C-c") 'server-edit)
     (local-set-key (kbd "C-c C-s") 'server-edit)))
 
