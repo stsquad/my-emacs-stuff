@@ -365,6 +365,10 @@ on the command line"
 ; (which-lookup '("aspell" "ispell")) => "/usr/bin/aspell"
 ; (which-lookup '("ack-grep" "ack" "grep"))
 
+; Am I on the pixel?
+(defvar I-am-on-pixel (and (string-match "localhost" (system-name))
+			   (which-lookup "host-x11")))
+
 ; uses common lisp
 (defun find-valid-file (list-of-files)
   "Go though a list of files and return the first one that is present"
@@ -427,10 +431,12 @@ on the command line"
 (when (maybe-load-library "windmove")
   (windmove-default-keybindings))
 
-(global-set-key (kbd "<M-down>") 'enlarge-window)
-(global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "<M-up>") 'shrink-window)
-(global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
+(unless (and (fboundp 'crmbk-running-in-host-x11-p)
+             (crmbk-running-in-host-x11-p))
+  (global-set-key (kbd "<M-down>") 'enlarge-window)
+  (global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
+  (global-set-key (kbd "<M-up>") 'shrink-window)
+  (global-set-key (kbd "<M-left>") 'shrink-window-horizontally))
 
 ;(global-set-key (kbd "<C-tab>") 'bury-buffer)
 (global-set-key (kbd "<C-tab>") 'pop-global-mark)
@@ -598,8 +604,20 @@ Assumes that the frame is only split into two."
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
+(when (and (require 'chromebook "chromebook" 't)
+           (crmbk-running-in-host-x11-p))
+  (set-face-attribute 'default nil :height 250)
+  (add-hook 'crmbk-frame-mode-hook 'crmbk-remap-search)
+  (add-hook 'crmbk-frame-mode-hook 'crmbk-disable-touchpad)
+  (define-key crmbk-frame-mode-map (kbd "<M-up>") 'scroll-down)
+  (define-key crmbk-frame-mode-map (kbd "<M-down>") 'scroll-up)
+  (when (boundp 'edit-server-new-frame-alist)
+    (setq edit-server-new-frame-alist '((name . "Edit Server Frame")
+					(fullscreen . 'fullboth)))))
+
 ; Re-use existing frames if buffer already exists in one
-(setq-default display-buffer-reuse-frames t)
+(unless I-am-on-pixel
+  (setq-default display-buffer-reuse-frames t))
 
 
 (message "Display Done")
