@@ -365,6 +365,10 @@ on the command line"
 ; (which-lookup '("aspell" "ispell")) => "/usr/bin/aspell"
 ; (which-lookup '("ack-grep" "ack" "grep"))
 
+; Am I on the pixel?
+(defvar I-am-on-pixel (and (string-match "localhost" (system-name))
+			   (which-lookup "host-x11")))
+
 ; uses common lisp
 (defun find-valid-file (list-of-files)
   "Go though a list of files and return the first one that is present"
@@ -427,10 +431,12 @@ on the command line"
 (when (maybe-load-library "windmove")
   (windmove-default-keybindings))
 
-(global-set-key (kbd "<M-down>") 'enlarge-window)
-(global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "<M-up>") 'shrink-window)
-(global-set-key (kbd "<M-left>") 'shrink-window-horizontally)
+(unless (and (fboundp 'crmbk-running-in-host-x11-p)
+             (crmbk-running-in-host-x11-p))
+  (global-set-key (kbd "<M-down>") 'enlarge-window)
+  (global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
+  (global-set-key (kbd "<M-up>") 'shrink-window)
+  (global-set-key (kbd "<M-left>") 'shrink-window-horizontally))
 
 ;(global-set-key (kbd "<C-tab>") 'bury-buffer)
 (global-set-key (kbd "<C-tab>") 'pop-global-mark)
@@ -598,8 +604,20 @@ Assumes that the frame is only split into two."
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
+(when (and (require 'chromebook "chromebook" 't)
+           (crmbk-running-in-host-x11-p))
+  (set-face-attribute 'default nil :height 250)
+  (add-hook 'crmbk-frame-mode-hook 'crmbk-remap-search)
+  (add-hook 'crmbk-frame-mode-hook 'crmbk-disable-touchpad)
+  (define-key crmbk-frame-mode-map (kbd "<M-up>") 'scroll-down)
+  (define-key crmbk-frame-mode-map (kbd "<M-down>") 'scroll-up)
+  (when (boundp 'edit-server-new-frame-alist)
+    (setq edit-server-new-frame-alist '((name . "Edit Server Frame")
+					(fullscreen . 'fullboth)))))
+
 ; Re-use existing frames if buffer already exists in one
-(setq-default display-buffer-reuse-frames t)
+(unless I-am-on-pixel
+  (setq-default display-buffer-reuse-frames t))
 
 
 (message "Display Done")
@@ -740,26 +758,26 @@ Assumes that the frame is only split into two."
 (setq auto-insert-alist ())		;? html-helper
 
 ;; I hate tabs - they are set in cc-mode but not everything respects that
-(setq indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 (setq tab-always-indent 'complete)
 
 ; TODO: clean-up my defaults for this
 (when I-am-emacs-23+
   (setq whitespace-chars '(trailing tabs space-before-tab
-				    indentation empty
-				    space-after-tab)))
+                           empty space-after-tab))
+  (setq whitespace-style '(faces tabs trailing lines-tail empty space-after-tab tab-mark)))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
-	  '(lambda ()
-	     (setq font-lock-maximum-decoration  t
-		   font-lock-verbose             t
-		   font-lock-support-mode        'jit-lock-mode
-		   lazy-lock-defer-on-scrolling  nil
-		   lazy-lock-defer-contextually  t
-		   lazy-lock-stealth-verbose     t
-		   lazy-lock-stealth-lines       50
-		   lazy-lock-stealth-time        3)))
+          '(lambda ()
+             (setq font-lock-maximum-decoration  t
+                   font-lock-verbose             t
+                   font-lock-support-mode        'jit-lock-mode
+                   lazy-lock-defer-on-scrolling  nil
+                   lazy-lock-defer-contextually  t
+                   lazy-lock-stealth-verbose     t
+                   lazy-lock-stealth-lines       50
+                   lazy-lock-stealth-time        3)))
 (global-font-lock-mode t)
 
 
@@ -1045,7 +1063,8 @@ plus add font-size: 8pt"
   "Customise mail-mode stuff"
   (interactive)
   (turn-on-auto-fill)
-  (when (string-match "/tmp/mutt" buffer-file-name)
+  (when (and buffer-file-name
+             (string-match "/tmp/mutt" buffer-file-name))
     (local-set-key (kbd "C-c C-c") 'server-edit)
     (local-set-key (kbd "C-c C-s") 'server-edit)))
 
