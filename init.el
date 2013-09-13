@@ -24,8 +24,8 @@
 
 
 ; debugging weird stat-up issues.
-;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
-;(setq debug-on-error 't)
+(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
+(setq debug-on-error 't)
 
 (defun autocompile nil
   "compile itself if ~/.emacs"
@@ -195,7 +195,9 @@ on the command line"
             '("marmalade" . "http://marmalade-repo.org/packages/") t)
   (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
+  (add-to-list 'package-archives
+	       '("org" . "http://orgmode.org/elpa/") t)
+  
   ; filter some packages out
   (setq package-filter-function
       (lambda (package version archive)
@@ -943,7 +945,8 @@ Assumes that the frame is only split into two."
 				      default-directory))))
   (eval-after-load "magit"
     '(progn
-       (add-hook 'magit-mode-hook (lambda() (yas-minor-mode -1)))
+       (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
+       (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
        (setq magit-status-buffer-switch-function 'switch-to-buffer
 	     magit-rewrite-inclusive 'nil))))
 
@@ -1018,10 +1021,6 @@ plus add font-size: 8pt"
 	(replace-match pre-tag nil nil))
       (goto-char (point-min)))))
 
-;  (global-set-key [(f6)] (lambda (beg end)
-;			   (interactive "r") (my-htmlize-region beg end))))
-
-
 ;; Elisp mode
 ;
 ; I keep this in the main .emacs as I edit .emacs quite a bit
@@ -1058,13 +1057,16 @@ plus add font-size: 8pt"
 
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
+(add-to-list 'auto-mode-alist '(".*/\.git/\.gitsendemail.msg.*" . mail-mode))
 
 (defun my-mail-mode-tweaks()
   "Customise mail-mode stuff"
   (interactive)
   (turn-on-auto-fill)
   (when (and buffer-file-name
-             (string-match "/tmp/mutt" buffer-file-name))
+	     (or 
+	      (string-match "/tmp/mutt" buffer-file-name)
+	      (string-match "gitsend" buffer-file-name)))
     (local-set-key (kbd "C-c C-c") 'server-edit)
     (local-set-key (kbd "C-c C-s") 'server-edit)))
 
