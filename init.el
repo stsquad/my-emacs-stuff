@@ -1157,18 +1157,18 @@ plus add font-size: 8pt"
 ;; Eshell tweaks
 ;;
 (eval-after-load "eshell"
-
-  (defun my-eshell-kill-output ()
-    "Really kill (not delete) all output from interpreter since last input.
+  '(progn
+     (defun my-eshell-kill-output ()
+       "Really kill (not delete) all output from interpreter since last input.
 Does not delete the prompt."
-    (interactive)
-    (save-excursion
-      (goto-char (eshell-beginning-of-output))
-      (insert "*** output flushed ***\n")
-      (kill-region (point) (eshell-end-of-output))))
+       (interactive)
+       (save-excursion
+         (goto-char (eshell-beginning-of-output))
+         (insert "*** output flushed ***\n")
+         (kill-region (point) (eshell-end-of-output))))
 
-  (add-hook 'eshell-mode-hook #'(lambda ()
-				  (define-key eshell-mode-map (kbd "C-c C-o") 'my-eshell-kill-output))))
+     (add-hook 'eshell-mode-hook #'(lambda ()
+                                     (define-key eshell-mode-map (kbd "C-c C-o") 'my-eshell-kill-output)))))
 
 ;; Finally enable desktop mode
 ; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
