@@ -270,14 +270,9 @@ on the command line"
   (ac-set-trigger-key "M-/") ; override dabrev-expand
   (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers)))
 
-;; Tab Completions
-; Use smart-tab-mode if we have it
-; (disabled, currently over complicates interaction of ac and yasnippet)
-
-;(when (locate-library "smart-tab")
-;    (setq smart-tab-completion-functions-alist '((text-mode . dabbrev-completion)))
-;    (setq smart-tab-using-hippie-expand 't)
-;    (smart-tab-mode 't))
+;; Expansion
+; This gets over-ridden when auto-complete is in effect
+(global-set-key (kbd "M-/") 'hippie-expand)
 
 ; Nice for jumping about windows.
 (when (maybe-load-library "ace-jump-mode")
