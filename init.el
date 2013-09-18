@@ -571,6 +571,20 @@ Assumes that the frame is only split into two."
 
 (global-set-key (kbd "<C-f8>") 'insert-sequence-key)
 
+;; Multiple cursors
+;
+; This is ace and I should use it more
+(when (require 'multiple-cursors nil 't)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
+  (global-set-key (kbd "M-+") 'mc/edit-lines))
+
+;; Expand region
+(when (require 'expand-region nil 't)
+  (global-set-key (kbd "C-=") 'er/expand-region))
+
 (message "Done keymapping")
 
 ;;; Backup settings
@@ -797,16 +811,6 @@ Assumes that the frame is only split into two."
 	    (setq
 	          font-lock-defaults '(info-font-lock-keywords nil t)
 		  case-fold-search nil)))
-
-;; Multiple cursors
-;
-; This is ace and I should use it more
-(when (maybe-load-library "multiple-cursors")
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-x ;") 'mc/mark-all-like-this-dwim)
-  (global-set-key (kbd "C-+") 'mc/mark-all-like-this-dwim)
-  (global-set-key (kbd "M-+") 'mc/edit-lines))
 
 ;; ediff
 ;
