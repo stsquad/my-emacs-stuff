@@ -147,7 +147,7 @@ succeded"
 "Keymap for `my-diff-mode'.")
 
 (define-derived-mode my-diff-mode diff-mode "My Diff Mode"
-  "A derived version of diff-mode with my own simple keybindings"
+  "A derived version of diff-mode with my own simple key-bindings"
   (message "my-diff-mode entered")
   ; its ok to able to modify this buffer
   (setq buffer-read-only nil))
