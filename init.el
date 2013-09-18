@@ -736,7 +736,7 @@ Assumes that the frame is only split into two."
 (delete-selection-mode 1)
 
 ;; Groovy things with matching parentheses
-(show-paren-mode t)
+(show-paren-mode 1)
 
 ;; Tweaks to scrolling behaviour. Still a bit odd.
 (setq scroll-preserve-screen-position t
@@ -1094,7 +1094,7 @@ plus add font-size: 8pt"
 
 ;; ido-mode - better buffer selection
 (ido-mode t)
-(setq ido-enable-flex-matching 't)
+(setq ido-enable-flex-matching t)
 (when (require 'ido-better-flex nil 'noerror)
   (ido-better-flex/enable))
 (when (require 'ido-ubiquitous nil 'noerror)
