@@ -15,6 +15,13 @@
          :nick "ajb-mark-tools"
          :channels ("#emacs" "#emacs-circe")
          )
+	("OFTC"
+	 :host "irc.oftc.net"
+	 :port "6697"
+	 :tls 't
+         :nick "stsquad"
+         :channels ("#qemu")
+         )
 	("Pl0rt"
 	 :host "irc.pl0rt.org"
          :nick "ajb"
