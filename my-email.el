@@ -40,6 +40,8 @@
     (setq mu4e-show-images t
           mu4e-headers-skip-duplicates t
           mu4e-html2text-command "html2text -utf8 -width 72"
+          mu4e-view-fields
+          '(:from :to :cc :subject :flags :date :tags :attachments :signature)
           mu4e-maildir-shortcuts
           '( ("/Inbox"     . ?i)
              ("/qemu"      . ?q)
