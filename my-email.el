@@ -34,9 +34,28 @@
 ;   - fastest indexer
 ;   - doesn't crap out on my work email
 
-(let ((mu4e-path "/home/ajb/src/emacs/mu.git/mu4e"))
+(let ((mu4e-path (concat (getenv "HOME") "/src/emacs/mu.git/mu4e")))
   (when (file-exists-p mu4e-path)
     (add-to-list 'load-path mu4e-path)
     (setq mu4e-show-images t
-          mu4e-html2text-command "html2text -utf8 -width 72")
-    (require 'mu4e)))
+          mu4e-headers-skip-duplicates t
+          mu4e-html2text-command "html2text -utf8 -width 72"
+          mu4e-maildir-shortcuts
+          '( ("/Inbox"     . ?i)
+             ("/qemu"      . ?q)
+             ("/kvm"       . ?k)
+             ("/mythreads" . ?m)
+             ("/sent"      . ?s)))
+    (add-to-list
+     'mu4e-bookmarks
+     '("from:linaro.org and flag:unread"
+       "Latest unread Linaro posts" ?l))
+    (add-to-list
+     'mu4e-bookmarks
+     '("maildir:\"/qemu\" and flag:unread"
+       "Latest QEMU posts" ?q))
+    (add-to-list
+     'mu4e-bookmarks
+     '("flag:flagged" "Flagged and Starred posts" ?f))
+    (require 'mu4e)
+    (global-set-key (kbd "C-c m") 'mu4e)))
