@@ -7,13 +7,15 @@
 ;; Signature
 (defun my-sig-function ()
   "Generate a signature"
+  (interactive)
   (concat "Alex Bennée"))
 
 ;; Global email details
 ;
 (setq
- user-mail-address "ajb@cbnl.com"
+ user-mail-address "alex.bennee@linaro.org"
  user-full-name  "Alex Bennée"
+ mail-signature '(insert (concat "\n--\n" (my-sig-function)))
  message-signature 'my-sig-function)
 
 ;; SMTP setup
@@ -39,6 +41,7 @@
     (add-to-list 'load-path mu4e-path)
     (setq mu4e-show-images t
           mu4e-headers-skip-duplicates t
+          mu4e-header-include-related t
           mu4e-html2text-command "html2text -utf8 -width 72"
           mu4e-view-fields
           '(:from :to :cc :subject :flags :date :tags :attachments :signature)
@@ -59,5 +62,6 @@
     (add-to-list
      'mu4e-bookmarks
      '("flag:flagged" "Flagged and Starred posts" ?f))
-    (require 'mu4e)
-    (global-set-key (kbd "C-c m") 'mu4e)))
+    (when (require 'mu4e)
+      (setq mail-user-agent 'mu4e-user-agent)
+      (global-set-key (kbd "C-c m") 'mu4e))))
