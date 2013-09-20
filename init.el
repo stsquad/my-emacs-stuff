@@ -372,6 +372,8 @@
 
 ;; Load sub-modules
 ;
+; email
+(load-library "my-email")
 ; Development related stuff, including project root
 (load-library "my-devel")
 ; Org configuration
