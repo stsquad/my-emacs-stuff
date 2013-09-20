@@ -596,6 +596,10 @@ Assumes that the frame is only split into two."
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
+;; Use imagemagick if we have it to view images
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+
 (when (and (require 'chromebook "chromebook" 't)
            (crmbk-running-in-host-x11-p))
   (set-face-attribute 'default nil :height 250)
