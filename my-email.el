@@ -39,6 +39,7 @@
 (let ((mu4e-path (concat (getenv "HOME") "/src/emacs/mu.git/mu4e")))
   (when (file-exists-p mu4e-path)
     (add-to-list 'load-path mu4e-path)
+    (setq mail-user-agent 'mu4e-user-agent)
     (setq mu4e-show-images t
           mu4e-headers-skip-duplicates t
           mu4e-header-include-related t
