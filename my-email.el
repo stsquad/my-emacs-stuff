@@ -58,7 +58,7 @@
       '(progn
          (add-to-list
 	  'mu4e-bookmarks
-	  '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed AND by\) OR \(signed AND off AND by\) \)"
+	  '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
 	    "Mail addressed to me with git tags" ?g))
          (add-to-list
 	  'mu4e-bookmarks
