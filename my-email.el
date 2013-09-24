@@ -51,17 +51,26 @@
              ("/kvm"       . ?k)
              ("/mythreads" . ?m)
              ("/sent"      . ?s)))
-    (add-to-list
-     'mu4e-bookmarks
-     '("from:linaro.org and flag:unread"
-       "Latest unread Linaro posts" ?l))
-    (add-to-list
-     'mu4e-bookmarks
-     '("maildir:\"/qemu\" and flag:unread"
-       "Latest QEMU posts" ?q))
-    (add-to-list
-     'mu4e-bookmarks
-     '("flag:flagged" "Flagged and Starred posts" ?f))
-    (when (require 'mu4e)
-      (setq mail-user-agent 'mu4e-user-agent)
-      (global-set-key (kbd "C-c m") 'mu4e))))
+    (autoload 'mu4e "mu4e")
+    (global-set-key (kbd "C-c m") 'mu4e)
+    (eval-after-load "mu4e"
+      '(progn
+         (add-to-list
+	  'mu4e-bookmarks
+	  '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed AND by\) OR \(signed AND off AND by\) \)"
+	    "Mail addressed to me with git tags" ?g))
+         (add-to-list
+	  'mu4e-bookmarks
+	  '("\(to:alex.bennee or cc:alex.bennee\) and \(flag:unread or flag:flagged\)"
+	    "Flagged or unread posts addressed to me" ?m))
+	 (add-to-list
+	  'mu4e-bookmarks
+	  '("from:linaro.org and flag:unread"
+	    "Latest unread Linaro posts" ?l))
+	 (add-to-list
+	  'mu4e-bookmarks
+	  '("maildir:\"/qemu\" and flag:unread"
+	    "Latest QEMU posts" ?q))
+	 (add-to-list
+	  'mu4e-bookmarks
+	  '("flag:flagged" "Flagged and Starred posts" ?f))))))
