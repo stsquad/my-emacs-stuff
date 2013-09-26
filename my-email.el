@@ -57,6 +57,9 @@
     (eval-after-load "mu4e"
       '(progn
          (add-to-list
+          'mu4e-view-actions
+          '("gapply git patch" . mu4e-action-git-apply-patch) t)
+         (add-to-list
 	  'mu4e-bookmarks
 	  '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
 	    "Mail addressed to me with git tags" ?g))
