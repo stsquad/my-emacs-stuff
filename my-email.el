@@ -25,10 +25,12 @@
 ; too many questions for localhost punts only
 
 ; emacs24 only
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-default-smtp-server "localhost"
-      smtpmail-smtp-server "localhost"
-      smtpmail-smtp-service 2500)
+(setq message-send-mail-function 'smtpmail-send-it)
+
+(eval-after-load "smtpmail"
+  (setq smtpmail-default-smtp-server "localhost"
+        smtpmail-smtp-server "localhost"
+        smtpmail-smtp-service 2500))
 
 ;; mu4e setup
 ;
