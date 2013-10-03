@@ -935,6 +935,7 @@ Assumes that the frame is only split into two."
     '(progn
        (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
        (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
+       (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
        (setq magit-status-buffer-switch-function 'switch-to-buffer
 	     magit-rewrite-inclusive 'nil))))
 
