@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: reviewed-by
+# key: $rb
+# --
+Reviewed-by: Alex Bennée <alex@bennee.com>
