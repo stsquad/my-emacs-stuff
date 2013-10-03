@@ -32,6 +32,16 @@
         smtpmail-smtp-server "localhost"
         smtpmail-smtp-service 2500))
 
+;; Utility functions for email
+
+(defun my-snip-region (beg end)
+  "A wrapper around kill region that inserts a <snip> tag to
+yanked text if it started as a quoted email"
+  (interactive (list (point) (mark)))
+  (kill-region beg end)
+  (when (string-prefix-p ">" (car kill-ring))
+    (insert "<snip>\n")))
+
 ;; mu4e setup
 ;
 ; Currently in the running as:
@@ -58,6 +68,12 @@
     (global-set-key (kbd "C-c m") 'mu4e)
     (eval-after-load "mu4e"
       '(progn
+         ; key-bindings
+         (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region)
+         ; pre-canned searches
+         (add-to-list
+          'mu4e-headers-actions
+          '("gapply git patches" . mu4e-action-git-apply-patch) t)
          (add-to-list
           'mu4e-view-actions
           '("gapply git patch" . mu4e-action-git-apply-patch) t)
