@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: org-notes
+# key: $n
+# --
+#+BEGIN_NOTES
+${N:presentation notes here}
+#+END_NOTES
