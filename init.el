@@ -522,12 +522,11 @@ Assumes that the frame is only split into two."
 
 ;; In Emacs 21+, home and end go to beginning and end of line. This is
 ;; clearly the Wrong Thing.
-(if I-am-emacs-21+
-    (progn
-      (global-unset-key [home])
-      (global-set-key [home] 'beginning-of-buffer)
-      (global-unset-key [end])
-      (global-set-key [end] 'end-of-buffer)))
+(when I-am-emacs-21+
+  (global-unset-key [home])
+  (global-set-key [home] 'beginning-of-buffer)
+  (global-unset-key [end])
+  (global-set-key [end] 'end-of-buffer))
 
 ;; Macro keys
 ; If I define a single press macro keys I may use them more often
