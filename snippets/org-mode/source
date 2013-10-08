@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: org-source
+# key: $s
+# --
+#+begin_src ${1:$$(yas/choose-value (mapcar #'(lambda (s) (symbol-name (car s))) org-babel-load-languages))} ${2}
+${N:some source code here}
+#+end_src
