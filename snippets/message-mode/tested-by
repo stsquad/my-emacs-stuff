@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: tested-by
+# key: $tb
+# --
+Tested-by: Alex Bennée <alex@bennee.com>
