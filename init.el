@@ -282,7 +282,8 @@
   (interactive)
   (insert (format "Alex Bennée")))
 
-(global-set-key (kbd "C-M-e") 'insert-myname)
+;perhaps this is better solved with a snippet?
+;(global-set-key (kbd "C-M-e") 'insert-myname)
 
 
 (defun praise-emacs ()
