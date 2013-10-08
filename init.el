@@ -1015,17 +1015,18 @@ plus add font-size: 8pt"
 
 ; auto-mode lists
 (setq auto-mode-alist
-      (append (list (cons "\\.emacs\\'" 'emacs-lisp-mode))
-	      auto-mode-alist))
-; I may also edit as dotemacs
-(setq auto-mode-alist
-      (append (list (cons "dotemacs" 'emacs-lisp-mode))
-	      auto-mode-alist))
+      (append (list
+               '("\\.emacs\\'" . emacs-lisp-mode)
+               '("dotemacs" . emacs-lisp-mode))
+              auto-mode-alist))
 
-(add-hook 'emacs-lisp-mode-hook
-	  '(lambda ()
-	     (eldoc-mode t)
-	     (turn-on-auto-fill)))
+(defun my-elisp-hook-functions ()
+  "A few quick elisp hook customisations"
+  (setq mode-name "elisp")
+  (eldoc-mode t)
+  (turn-on-auto-fill))
+  
+(add-hook 'emacs-lisp-mode-hook 'my-elisp-hook-functions)
 
 ; For most web-forms I want longlines-mode by default
 ;
