@@ -238,22 +238,27 @@
 ;; This includes snippets and auto-completion libraries.
 ;;
 
+;; Expansion
+; This gets over-ridden when auto-complete is in effect
+(global-set-key (kbd "M-/") 'hippie-expand)
+
 ;; Do we have snippets?
 (when (and (maybe-load-library "yasnippet")
-	   (file-exists-p "~/.emacs.d/my-snippets"))
+           (file-exists-p "~/.emacs.d/my-snippets"))
   (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets")
   (yas-global-mode))
 
 (when (maybe-load-library "auto-complete")
   (require 'auto-complete-config)
-  (ac-config-default)
-  (setq ac-menu-map 't)
+  (setq ac-use-menu-map 't)
   (ac-set-trigger-key "M-/") ; override dabrev-expand
-  (setq-default ac-sources '(ac-source-yasnippet ac-source-abbrev ac-source-dictionary ac-source-words-in-same-mode-buffers)))
-
-;; Expansion
-; This gets over-ridden when auto-complete is in effect
-(global-set-key (kbd "M-/") 'hippie-expand)
+  (add-to-list 'ac-modes 'org-mode)
+  (ac-config-default)
+  (setq-default ac-sources
+                '(ac-source-yasnippet
+                  ac-source-abbrev
+                  ac-source-dictionary
+                  ac-source-words-in-same-mode-buffers)))
 
 ; Nice for jumping about windows.
 (when (maybe-load-library "ace-jump-mode")
