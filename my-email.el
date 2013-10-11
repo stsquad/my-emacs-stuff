@@ -59,11 +59,12 @@ yanked text if it started as a quoted email"
           mu4e-view-fields
           '(:from :to :cc :subject :flags :date :tags :attachments :signature)
           mu4e-maildir-shortcuts
-          '( ("/Inbox"     . ?i)
-             ("/qemu"      . ?q)
-             ("/kvm"       . ?k)
-             ("/mythreads" . ?m)
-             ("/sent"      . ?s)))
+          '( ("/linaro/Inbox"     . ?i)
+             ("/linaro/qemu"      . ?q)
+             ("/linaro/kvm"       . ?k)
+             ("/linaro/mythreads" . ?m)
+             ("/developer/emacs"  . ?e)
+             ("/sent"             . ?s)))
     (autoload 'mu4e "mu4e")
     (global-set-key (kbd "C-c m") 'mu4e)
     (eval-after-load "mu4e"
@@ -91,7 +92,7 @@ yanked text if it started as a quoted email"
 	    "Latest unread Linaro posts" ?l))
 	 (add-to-list
 	  'mu4e-bookmarks
-	  '("maildir:\"/qemu\" and flag:unread"
+	  '("maildir:\"/linaro/qemu\" and flag:unread"
 	    "Latest QEMU posts" ?q))
 	 (add-to-list
 	  'mu4e-bookmarks
