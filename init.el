@@ -222,7 +222,6 @@
                       'litable
                       'lusty-explorer
                       'magit
-                      'magithub
                       'multiple-cursors
                       'org
                       'org-trello
@@ -237,6 +236,7 @@
                       'solarized-theme
                       'tracking
                       'web-mode
+                      'yasnippet
                       'zenburn-theme)))
 
 ;; Add local search path
