@@ -1104,6 +1104,7 @@ plus add font-size: 8pt"
 
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
+(add-to-list 'auto-mode-alist '("0000-cover-letter.patch" . mail-mode))
 (add-to-list 'auto-mode-alist '(".*/\.git/\.gitsendemail.MSG.*" . mail-mode))
 
 (defun my-common-mail-tweaks ()
@@ -1116,7 +1117,6 @@ plus add font-size: 8pt"
   "Customise mail-mode stuff"
   (interactive)
   (my-common-mail-tweaks)
-
   (when (and
          buffer-file-name;
          (or
