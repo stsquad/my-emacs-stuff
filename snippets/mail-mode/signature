@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: signature
+# key: $sig
+# --
+
+${1:$$(yas/choose-value '("Cheers" "Yours sincerely"))},
+
+--
+Alex Bennée
+${2:$$(yas/choose-value '("http://www.bennee.com/~alex" "QEMU/KVM Hacker for Linaro"))}
