@@ -1,7 +1,6 @@
 ;; Email set-up
 ;
-; Current experimenting with notmuch, mu4e and Gnus so expect
-; this to be a bit of a mish-mash  of stuff for now.
+; After with notmuch, mu4e and Gnus I went with mu4e
 ;
 
 ;; Signature
@@ -55,6 +54,7 @@ yanked text if it started as a quoted email"
     (setq mu4e-show-images t
           mu4e-headers-skip-duplicates t
           mu4e-header-include-related t
+          mu4e-view-fill-headers nil
           mu4e-html2text-command "html2text -utf8 -width 72"
           mu4e-view-fields
           '(:from :to :cc :subject :flags :date :tags :attachments :signature)
