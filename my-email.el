@@ -86,6 +86,10 @@ yanked text if it started as a quoted email"
 	  'mu4e-bookmarks
 	  '("\(to:alex.bennee or cc:alex.bennee\) and \(flag:unread or flag:flagged\)"
 	    "Flagged or unread posts addressed to me" ?m))
+         (add-to-list
+	  'mu4e-bookmarks
+	  '("from:alex.bennee"
+	    "Mail sent by me" ?s))
 	 (add-to-list
 	  'mu4e-bookmarks
 	  '("from:linaro.org and flag:unread"
