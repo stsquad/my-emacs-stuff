@@ -222,6 +222,8 @@
                       'litable
                       'lusty-explorer
                       'magit
+                      'markdown-mode
+                      'mediawiki
                       'multiple-cursors
                       'org
                       'org-trello
