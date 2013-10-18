@@ -924,9 +924,7 @@ Assumes that the frame is only split into two."
 	    ; (from http://trey-jackson.blogspot.com/2008/04/emacs-tip-16-flyspell-and-flyspell-prog.html)
 	    (when (locate-library "flyspell")
 	      (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
-	      (add-hook 'message-mode-hook 'turn-on-flyspell)
 	      (add-hook 'text-mode-hook 'turn-on-flyspell)
-	      (add-hook 'mail-mode-hook 'turn-on-flyspell)
 	      (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
 	      (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
 	      (defun turn-on-flyspell ()
@@ -1095,22 +1093,40 @@ plus add font-size: 8pt"
 	       (message "enabling visual-line-mode for web stuff")
 	       (visual-line-mode 'nil))))
 
+;;
+;; Simple mail-mode and message-mode hooks.
+;;
+;; Ostensibly they both do the same thing however message-mode (and
+;; the derived mu4e-compose-mode) assume they are sending from within
+;; emacs. So I'll use the convention that I'll use mail-mode for
+;; edit-server spawned mails and message-mode for the rest
+;; 
+
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
-(add-to-list 'auto-mode-alist '(".*/\.git/\.gitsendemail.msg.*" . mail-mode))
+(add-to-list 'auto-mode-alist '(".*/\.git/\.gitsendemail.MSG.*" . mail-mode))
+
+(defun my-common-mail-tweaks ()
+  "Enable common mail tweaks for sending messages"
+  (interactive)
+  (turn-on-flyspell)
+  (turn-on-auto-fill))
 
 (defun my-mail-mode-tweaks()
   "Customise mail-mode stuff"
   (interactive)
-  (turn-on-auto-fill)
-  (when (and buffer-file-name
-	     (or 
-	      (string-match "/tmp/mutt" buffer-file-name)
-	      (string-match "gitsend" buffer-file-name)))
-    (local-set-key (kbd "C-c C-c") 'server-edit)
-    (local-set-key (kbd "C-c C-s") 'server-edit)))
+  (my-common-mail-tweaks)
+
+  (when (and
+         buffer-file-name;
+         (or
+          (string-match "/tmp/mutt" buffer-file-name)
+          (string-match "gitsend" buffer-file-name)))
+    (define-key (current-local-map) (kbd "C-c C-c") 'server-edit)
+    (define-key (current-local-map) (kbd "C-c C-s") 'server-edit)))
 
 (add-hook 'mail-mode-hook 'my-mail-mode-tweaks)
+(add-hook 'message-mode-hook 'my-common-mail-tweaks)
 
 ;; Python Mode
 ;
