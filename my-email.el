@@ -101,3 +101,15 @@ yanked text if it started as a quoted email"
 	 (add-to-list
 	  'mu4e-bookmarks
 	  '("flag:flagged" "Flagged and Starred posts" ?f))))))
+
+(defun my-insert-pull-request ()
+  "Insert basic pull request into buffer"
+  (interactive)
+  (with-current-buffer (current-buffer)
+    (insert
+     (shell-command-to-string
+      (format
+       "git request-pull %s http://github.com/stsquad/qemu.git HEAD"
+       (ido-completing-read
+        "Commit start:" '("HEAD~" "origin/master") 'nil))))))
+
