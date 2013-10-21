@@ -27,7 +27,9 @@
 (setq message-send-mail-function 'smtpmail-send-it)
 
 (eval-after-load "smtpmail"
-  (setq smtpmail-default-smtp-server "localhost"
+  (setq smtpmail-queue-mail  nil  ;; start in non-queuing mode
+        smtpmail-queue-dir   "~/Maildir/queue/cur"
+        smtpmail-default-smtp-server "localhost"
         smtpmail-smtp-server "localhost"
         smtpmail-smtp-service 2500))
 
