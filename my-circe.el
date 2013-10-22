@@ -8,6 +8,10 @@
 (setq circe-reduce-lurker-spam t)
 (circe-set-display-handler "JOIN" (lambda (&rest ignored) nil))
 
+(defun my-bitlbee-password (server)
+  "Return the password for the server"
+  (shell-command-to-string (format "pass bitlbee")))
+
 ;; Some defaults
 (setq circe-network-options
       `(("Freenode"
@@ -36,6 +40,11 @@
 	)
 	("bitlbee"
 	 :nick "ajb"
+         :pass my-bitlbee-password
+         :nickserv-mask "\\(bitlbee\\|root\\)!\\(bitlbee\\|root\\)@"
+         :nickserv-identify-challenge "use the \x02identify\x02 command to identify yourself"
+         :nickserv-identify-command "PRIVMSG &bitlbee :identify {password}"
+         :nickserv-identify-confirmation "Password accepted, settings and accounts loaded"
 	 :channels ("&bitlbee")
 	 :host "localhost"
 	 :service "6667"
