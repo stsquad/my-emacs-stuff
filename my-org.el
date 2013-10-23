@@ -2,6 +2,7 @@
 ;;
 
 (require 'org-element)
+(require 'ox-reveal nil 't)
 
 ;; Clocking behaviour
 (setq org-clock-persist 't
