@@ -1026,14 +1026,10 @@ Assumes that the frame is only split into two."
 
 ;; Web Development Modes
 ;
-; I have an enormous hack (my-web-mode) which didn't work very well.
-; Use nxhtml-mode instead. However it only works with emacs23
-; (the emacs22 autoload fails due to missing files)
+; I used to use nxhtml, now I use web-mode
 
-(when (and I-am-emacs-23+ (maybe-load-library "~/.emacs.d/nxhtml/autostart.el"))
-  (setq nxhtml-skip-welcome t)
-  (when (maybe-load-library "js2-mode")
-    (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode")))
+(when (maybe-load-library "js2-mode")
+  (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode"))
 
 (when (maybe-load-library "htmlize")
   (setq htmlize-output-type 'inline-css)
@@ -1234,15 +1230,6 @@ Does not delete the prompt."
 
      (add-hook 'eshell-mode-hook #'(lambda ()
                                      (define-key eshell-mode-map (kbd "C-c C-o") 'my-eshell-kill-output)))))
-
-;; Finally enable desktop mode
-; Stuff will be saved in current-project-root (i.e. cwd when emacs was invoked)
-
-(unless (or will-start-server (daemonp))
-  (when I-am-emacs-22+
-    (setq desktop-dirname (concat (chomp (shell-command-to-string "pwd")))
-	  desktop-save 'ask-if-new)
-    (desktop-save-mode 1)))
 
 ;; Load any hand-made customisations
 (when (file-exists-p custom-file)
