@@ -95,7 +95,7 @@
 (setq inhibit-splash-screen t)
 
 ;; Default mode is text-mode,
-(setq default-major-mode 'text-mode)
+(setq major-mode 'text-mode)
 
 ;; Don't truncate message buffer. For debugging reasons.
 (setq message-log-max t)
@@ -409,8 +409,8 @@
 (defun find-valid-file-elisp-way (list-of-files)
   "Go though a list of files and return the first one that is present"
   (let (r '())
-    (mapc '(lambda (f)
-	     (if (file-exists-p f) (add-to-list 'r f)))
+    (mapc #'(lambda (f)
+              (if (file-exists-p f) (add-to-list 'r f)))
 	  list-of-files)
     (car r)))
 
