@@ -17,6 +17,27 @@
  mail-signature '(insert (concat "\n--\n" (my-sig-function)))
  message-signature 'my-sig-function)
 
+; Magic handling for multiple email addrsses
+(setq my-email-address-alist '( ("Maildir/developer" .
+                                "kernel-hacker@bennee.com")
+                               ("Maildir/linaro" .
+                                "alex.bennee@linaro.org")
+                               ("Maildir/personal" .
+                                "alex@bennee.com") ))
+
+(defun my-choose-mail-address ()
+  "Pick a new value of `user-mail-address' based on the parent
+email. Sadly this is not a local variable as at the time of the
+hook we are not yet in the compose buffer."
+  (when mu4e-compose-parent-message
+    (setq
+     user-mail-address
+     (assoc-default
+      (plist-get mu4e-compose-parent-message :path)
+      my-email-address-alist 'string-match))))
+
+(add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)
+
 ;; SMTP setup
 ;
 ; To save messing with passwords and other complications I just
