@@ -53,7 +53,8 @@ yanked text if it started as a quoted email"
   (when (file-exists-p mu4e-path)
     (add-to-list 'load-path mu4e-path)
     (setq mail-user-agent 'mu4e-user-agent)
-    (setq mu4e-show-images t
+    (setq mu4e-view-show-images t
+          mu4e-use-fancy-chars t
           mu4e-headers-skip-duplicates t
           mu4e-header-include-related t
           mu4e-view-fill-headers nil
@@ -67,12 +68,22 @@ yanked text if it started as a quoted email"
              ("/linaro/mythreads" . ?m)
              ("/developer/emacs"  . ?e)
              ("/sent"             . ?s)))
+    (when (or I-am-at-work I-am-at-home)
+      (setq mu4e-get-mail-command
+            "mbsync linaro-sync developer-sync personal-sync"
+            mu4e-update-interval 600))
+    (when (I-am-on-pixel)
+      (setq mu4e-get-mail-command
+            "mbsync linaro-sync developer-sync"))
     (autoload 'mu4e "mu4e")
     (global-set-key (kbd "C-c m") 'mu4e)
     (eval-after-load "mu4e"
       '(progn
          ; key-bindings
          (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region)
+         ; mode hooks
+         (add-hook 'mu4e-headers-mode-hook
+                   '(lambda () (yas-minor-mode -1)))
          ; pre-canned searches
          (add-to-list
           'mu4e-headers-actions
