@@ -289,6 +289,9 @@
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 ;; Do we have snippets?
+; FIXME: when other snippets add to the list it upsets the position
+; of my-snippets causing yansippet to constantly think I'm modifying
+; a "library" file...
 (when (and (maybe-load-library "yasnippet")
            (file-exists-p "~/.emacs.d/my-snippets"))
   (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets")
