@@ -239,6 +239,7 @@
                       'tracking
                       'web-mode
                       'yasnippet
+                      'yaml-mode
                       'zenburn-theme)))
 
 ;; Add local search path
