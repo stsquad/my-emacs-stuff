@@ -665,8 +665,23 @@ Assumes that the frame is only split into two."
 
 ; Re-use existing frames if buffer already exists in one
 (unless I-am-on-pixel
-  (setq-default display-buffer-reuse-frames t))
+  (setq-default display-buffer-reuse-frames t)
 
+  ; messing about - what about dynamic-font stuff?
+  (set-face-attribute 'default nil
+                      :family "DejaVu Sans Mono"
+                      :height 140
+                      :weight 'normal
+                      :width 'normal)
+  (when (functionp 'set-fontset-font)
+    (set-fontset-font "fontset-default"
+                      'unicode
+                      (font-spec :family "DejaVu Sans Mono"
+                                 :width 'normal
+                                 :size 12.4
+                                 :weight 'normal))))
+
+(load-theme 'zenburn t)
 
 (message "Display Done")
 
