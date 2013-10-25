@@ -2,6 +2,7 @@
 # name: org-source
 # key: $s
 # --
-#+begin_src ${1:$$(yas/choose-value (mapcar #'(lambda (s) (symbol-name (car s))) org-babel-load-languages))} ${2}
+#+name: ${1:name of block}
+#+begin_src ${2:$$(yas/choose-value (mapcar #'(lambda (s) (symbol-name (car s))) org-babel-load-languages))} $3
 ${N:some source code here}
 #+end_src
