@@ -93,7 +93,7 @@ yanked text if it started as a quoted email"
       (setq mu4e-get-mail-command
             "mbsync linaro-sync developer-sync personal-sync"
             mu4e-update-interval 600))
-    (when (I-am-on-pixel)
+    (when I-am-on-pixel
       (setq mu4e-get-mail-command
             "mbsync linaro-sync developer-sync"))
     (autoload 'mu4e "mu4e")
