@@ -786,6 +786,12 @@ Assumes that the frame is only split into two."
 ;; Reduce white space
 (setq-default mode-line-buffer-identification '("%b"))
 
+(when (require 'smart-mode-line nil t)
+  (sml/setup))
+
+(when (require 'tracking nil t)
+  (tracking-mode))
+
 ;; Make fill do the Right Thing with full-stops.
 (setq sentence-end-double-space nil)
 
