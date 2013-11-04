@@ -685,7 +685,8 @@ Assumes that the frame is only split into two."
                                  :size 12.4
                                  :weight 'normal))))
 
-(load-theme 'zenburn t)
+(ignore-errors
+  (load-theme 'zenburn t))
 
 (message "Display Done")
 
