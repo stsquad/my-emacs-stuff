@@ -332,13 +332,14 @@
 ;;; Miscellaneous functions
 
 ; I like my name
+; although C-x 8 ' e inserts é
 (defun insert-myname ()
   (interactive)
   (insert (format "Alex Bennée")))
 
+(global-set-key (kbd "C-x 8 e") 'insert-myname)
 ;perhaps this is better solved with a snippet?
 ;(global-set-key (kbd "C-M-e") 'insert-myname)
-
 
 (defun praise-emacs ()
   (interactive)
