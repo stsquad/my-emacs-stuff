@@ -1181,9 +1181,10 @@ plus add font-size: 8pt"
 
 ;; ido-mode - better buffer selection
 (ido-mode t)
-(setq ido-enable-flex-matching t)
-(when (require 'ido-better-flex nil 'noerror)
-  (ido-better-flex/enable))
+;; better flex seems a little to slow
+;; (setq ido-enable-flex-matching t)
+;; (when (require 'ido-better-flex nil 'noerror)
+;;   (ido-better-flex/enable))
 (when (require 'ido-ubiquitous nil 'noerror)
   (ido-ubiquitous-mode))
 
