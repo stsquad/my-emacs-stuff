@@ -617,6 +617,11 @@ Assumes that the frame is only split into two."
 (when (require 'expand-region nil 't)
   (global-set-key (kbd "C-=") 'er/expand-region))
 
+;; Learn key strokes
+(when (require 'guide-key nil 't)
+  (setq guide-key/guide-key-sequence '("C-x c" "ESC" "C-x r" "C-x 4" "C-x 8"))
+  (guide-key-mode 1))
+
 (message "Done keymapping")
 
 ;;; Backup settings
