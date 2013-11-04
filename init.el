@@ -1119,16 +1119,12 @@ plus add font-size: 8pt"
 ; It's All Text: /home/ajb/.mozilla/firefox/hgd0onxt.default/itsalltext/.2e2i2y3b2c.txt
 ; Emacs Chrome: /tmp/tmpcUbYA_.txt
 
-(add-hook 'text-mode-hook
-	  '(lambda ()
-             ; Allow toggling
-	     (local-set-key (kbd "C-l") 'visual-line-mode)
-	     (when (or (not buffer-file-name)
-		       (and (buffer-file-name)
-			    (or (string-match "itsalltext" (buffer-file-name))
-				(string-match "/tmp/tmp" (buffer-file-name)))))
-	       (message "enabling visual-line-mode for web stuff")
-	       (visual-line-mode 'nil))))
+(defun my-text-mode-hook ()
+  "My local setting"
+  (local-set-key (kbd "C-l") 'visual-line-mode)
+  (local-set-key (kbd "C-f") 'auto-fill-mode))
+
+(add-hook 'text-mode-hook 'my-text-mode-hook)
 
 ;;
 ;; Simple mail-mode and message-mode hooks.
