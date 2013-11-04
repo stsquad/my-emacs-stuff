@@ -23,7 +23,7 @@
 ; resolves to first
 
 
-; debugging weird stat-up issues.
+; debugging weird start-up issues.
 (setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
 (setq debug-on-error 't)
 
