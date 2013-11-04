@@ -87,6 +87,15 @@
 
 (add-hook 'cbnl-tree-project-file-visit-hook 'cbnl-hook-function)
 
+;; QEMU
+(define-project-type qemu
+  (generic-git)
+  (look-for "qapi-types.c"))
+
+(add-hook 'qemu-visit-hook '(lambda ()
+                              (require 'my-c-mode)
+                              (c-set-style "qemu")))
+
 (define-project-type debian-package
   (generic)
   (look-for "debian")
