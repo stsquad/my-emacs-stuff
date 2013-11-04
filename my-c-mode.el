@@ -105,6 +105,15 @@
 
 (c-add-style "easytag-c-style" easytag-c-style)
 
+; Qemu C Style
+(defconst qemu-c-style
+  '((indent-tabs-mode . nil)
+    (c-tab-always-indent . nil)
+    (c-comment-only-line-offset 0)
+    (c-basic-offset . 4)))
+
+(c-add-style "qemu-c-style" qemu-c-style)
+
 ;; my-c-style-guesser
 ;
 ; Go through the list of patterns and see if we know what style
