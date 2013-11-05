@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: org-notes
+# key: $i
+# --
+#+ATTR_HTML: :alt $2 :style border: none;
+[[${1:./`(file-relative-name
+                (ido-read-file-name "image file:")
+                default-directory)`}]]
+$0
