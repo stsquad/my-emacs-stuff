@@ -83,8 +83,10 @@
                            (string-match "apple-darwin" (emacs-version))))
 (defvar I-am-remote (getenv "SSH_TTY"))
 
-;; Server stuff
-(defvar will-start-server nil)
+;; For auto-testing
+(defvar I-completed-loading-dotinit 'nil
+  "This value is set once we finish start-up and is used to check
+nothing failed")
 
 ;;
 ;; Basic config variables
@@ -1262,3 +1264,4 @@ Does not delete the prompt."
   (load custom-file))
 
 (message "Done .emacs")
+(setq I-completed-loading-dotinit 't)
