@@ -435,7 +435,8 @@ nothing failed")
 ; Development related stuff, including project root
 (load-library "my-devel")
 ; Org configuration
-(maybe-load-library "my-org")
+(when (fboundp 'org-mode)
+  (maybe-load-library "my-org"))
 
 (message "Done defuns")
 
