@@ -187,7 +187,8 @@ nothing failed")
             (not (memq package '(magit org))))))
 
   (unless (package-installed-p 'package+)
-     (package-install 'package+))
+    (package-refresh-contents)
+    (package-install 'package+))
 
   ;; This is dangerous to call in init.el as it will remove
   ;; all packages not explicitly in the manifest. This may be helpful
