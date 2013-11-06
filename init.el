@@ -40,16 +40,15 @@
 
 ; check the compiled version not out of date
 (when (and user-init-file
-	   (string-match ".elc" user-init-file))
+           (string-match ".elc" user-init-file))
   (let* ((src-file (file-name-sans-extension user-init-file)))
     (when (and (file-exists-p src-file)
-	       (file-newer-than-file-p src-file user-init-file))
+               (file-newer-than-file-p src-file user-init-file))
       (message "working around newer source file")
       (byte-compile-file src-file)
       (load src-file))))
-	
-(message (concat user-init-file " start"))
 
+(message (concat user-init-file " start"))
 
 ;;;; Start of real code.
 
@@ -72,7 +71,7 @@
 (defvar I-am-at-work (string-match "sloy" (system-name)))
 (defvar I-am-at-home (string-match "danny" (system-name)))
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
- 
+
 ;; Lets set some parameters if we are running as a console or under X
 ;
 ; Note these are not useful for --daemon invocations and should now be
@@ -81,7 +80,7 @@
 (defvar I-am-in-X (eval 'window-system));
 (defvar I-am-in-console (not (eval 'window-system)))
 (defvar I-am-on-MacOSX (or (string-match "Carbon" (emacs-version))
-			   (string-match "apple-darwin" (emacs-version))))
+                           (string-match "apple-darwin" (emacs-version))))
 (defvar I-am-remote (getenv "SSH_TTY"))
 
 ;; Server stuff
@@ -119,7 +118,7 @@
 (unless I-am-xemacs
   (auto-compression-mode t))
 
-;; Seriously the kernel TAGS is >10Mb 
+;; Seriously the kernel TAGS is >10Mb
 (setq large-file-warning-threshold 40000000)
 
 ;; Stop popping up the file dialog, very annoying when compile-mode
@@ -138,17 +137,17 @@
 (setq tramp-default-method "scp")
 ; Auto-saves tramp files on our local file system
 (add-to-list 'backup-directory-alist
-	     (cons tramp-file-name-regexp "~/.emacs.d/tramp-saves"))
+             (cons tramp-file-name-regexp "~/.emacs.d/tramp-saves"))
 ; If I'm travelling assume no one is messing with files on my work
 ; machine
 (when (string-match "symbiot" (system-name))
   (setq remote-file-name-inhibit-cache 'nil
-	tramp-completion-reread-directory-timeout 'nil))
+        tramp-completion-reread-directory-timeout 'nil))
 ; I tend to use magit anyway, but disable VC mode over TRAMP
 (setq vc-ignore-dir-regexp
       (format "\\(%s\\)\\|\\(%s\\)"
-	      vc-ignore-dir-regexp
-	      tramp-file-name-regexp))
+              vc-ignore-dir-regexp
+              tramp-file-name-regexp))
 
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
@@ -156,7 +155,7 @@
 ;; Let's try CEDET one more time
 ; early in config to avoid clashing with built-in...
 (let* ((cedet-devel (concat (getenv "HOME")
-			    "/.emacs.d/cedet.git/cedet-devel-load.el")))
+                            "/.emacs.d/cedet.git/cedet-devel-load.el")))
   (when (file-exists-p cedet-devel)
     (load-file cedet-devel)
 
@@ -178,7 +177,7 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
   (add-to-list 'package-archives
                '("org" . "http://orgmode.org/elpa/") t)
-  
+
   ; filter some packages out
   (setq package-filter-function
       (lambda (package version archive)
@@ -248,11 +247,11 @@
 ; be a case of throwing the directory into .emacs.d
 ;
 (when (and (file-exists-p "~/.emacs.d/")
-	   (fboundp 'normal-top-level-add-subdirs-to-load-path))
-      (let* ((my-lisp-dir "~/.emacs.d/")
-	     (default-directory my-lisp-dir))
-	(setq load-path (cons my-lisp-dir load-path))
-	(normal-top-level-add-subdirs-to-load-path)))
+           (fboundp 'normal-top-level-add-subdirs-to-load-path))
+  (let* ((my-lisp-dir "~/.emacs.d/")
+         (default-directory my-lisp-dir))
+    (setq load-path (cons my-lisp-dir load-path))
+    (normal-top-level-add-subdirs-to-load-path)))
 
 ;; maybe-load-library
 ;
@@ -267,17 +266,17 @@
 (when (and (daemonp) (maybe-load-library "edit-server"))
   (when (maybe-load-library "edit-server-htmlize")
     (add-hook 'edit-server-start-hook
-	      'edit-server-maybe-dehtmlize-buffer)
+              'edit-server-maybe-dehtmlize-buffer)
     (add-hook 'edit-server-done-hook
-	      'edit-server-maybe-htmlize-buffer))
+              'edit-server-maybe-htmlize-buffer))
   (when (maybe-load-library "mediawiki")
     (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" .
-						     mediawiki-mode)))
+                                                     mediawiki-mode)))
   (add-to-list 'edit-server-url-major-mode-alist
-	       '("mail.google" . mail-mode))
+               '("mail.google" . mail-mode))
   (add-hook 'emacs-startup-hook '(lambda ()
-				   (message "starting up edit-server")
-				   (edit-server-start))))
+                                   (message "starting up edit-server")
+                                   (edit-server-start))))
 
 ;;
 ;; Load any global modes/extensions that are used throughout emacs.
@@ -327,7 +326,6 @@
       (setenv "PATH" (concat (getenv "PATH") ":/sw/bin")))
 
 (message "Done Basic Sanity")
-
 
 ;;; Miscellaneous functions
 
@@ -389,10 +387,10 @@
 (defun which-lookup(name-or-list)
   "Perform a `which` like file look-up, returning the first hit or
 'nil if no match found"
-    (loop for x in (if (listp name-or-list) name-or-list (list name-or-list))
-      do (let ((path (chomp (shell-command-to-string (concat "which " x)))))
-           (if (and (file-exists-p path) (> (length path) 0))
-		 (return path)))))
+  (loop for x in (if (listp name-or-list) name-or-list (list name-or-list))
+        do (let ((path (chomp (shell-command-to-string (concat "which " x)))))
+             (if (and (file-exists-p path) (> (length path) 0))
+                 (return path)))))
 
 ; (which-lookup "foo") => nil
 ; (which-lookup "emacs") = "/usr/bin/emacs"
@@ -401,14 +399,14 @@
 
 ; Am I on the pixel?
 (defvar I-am-on-pixel (and (string-match "localhost" (system-name))
-			   (which-lookup "host-x11")))
+                           (which-lookup "host-x11")))
 
 ; uses common lisp
 (defun find-valid-file (list-of-files)
   "Go though a list of files and return the first one that is present"
   (loop for path in list-of-files
-	until (file-exists-p path)
-	finally return path))
+        until (file-exists-p path)
+        finally return path))
 
 ; the 'elisp' way
 (defun find-valid-file-elisp-way (list-of-files)
@@ -416,15 +414,15 @@
   (let (r '())
     (mapc #'(lambda (f)
               (if (file-exists-p f) (add-to-list 'r f)))
-	  list-of-files)
+          list-of-files)
     (car r)))
 
-; using 'cl-macs 
+; using 'cl-macs
 (defun find-valid-file-dolist-way (list-of-files)
   "Go though a list of files and return the first one that is present"
   (dolist (f list-of-files)
     (if (file-exists-p f)
-	(return f))))
+        (return f))))
 
 ;; Load sub-modules
 ;
@@ -484,7 +482,7 @@
   (interactive)
   (message
    (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window 
+         (set-window-dedicated-p window
                                  (not (window-dedicated-p window))))
        "Window '%s' is dedicated"
      "Window '%s' is normal")
@@ -497,7 +495,8 @@
   "If the frame is split vertically, split it horizontally or vice versa.
 Assumes that the frame is only split into two."
   (interactive)
-  (unless (= (length (window-list)) 2) (error "Can only toggle a frame split in two"))
+  (unless (= (length (window-list)) 2)
+    (error "Can only toggle a frame split in two"))
   (let ((split-vertically-p (window-combined-p)))
     (delete-window) ; closes current window
     (if split-vertically-p
@@ -539,22 +538,21 @@ Assumes that the frame is only split into two."
 ; C-v and M-v scroll up and down, but I rarely remember that
 ;
 ; FIXME: This breaks if I ssh and resume an existing screen session,
-;tweaked by adding an interactive function to do the keys
+; tweaked by adding an interactive function to do the keys
 
 (defun my-tweak-macos-keys ()
   (interactive)
-					; We set the keyboard coding system to utf-8 which makes some
-					; things behave (I'm not totally sure why, must read up more)
+  ; We set the keyboard coding system to utf-8 which makes some
+  ; things behave (I'm not totally sure why, must read up more)
   (set-keyboard-coding-system 'utf-8)
 
-  
-					; this is what I get when I hit Alt-ArrowKeys on the Mac
+  ; this is what I get when I hit Alt-ArrowKeys on the Mac
   (global-set-key (kbd "ESC <up>") 'scroll-down)
   (global-set-key (kbd "ESC <down>") 'scroll-up)
   (global-set-key (kbd "ESC <left>") 'beginning-of-buffer)
   (global-set-key (kbd "ESC <right>") 'end-of-buffer)
 
-					; done
+  ; done
   (message "tweaked keys for remote/macos console mode"))
 
 (if (or I-am-remote (and I-am-on-MacOSX I-am-in-console))
@@ -620,7 +618,8 @@ Assumes that the frame is only split into two."
 
 ;; Learn key strokes
 (when (require 'guide-key nil 't)
-  (setq guide-key/guide-key-sequence '("C-x c" "ESC" "C-x r" "C-x 4" "C-x 8"))
+  (setq guide-key/guide-key-sequence
+        '("C-x c" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
   (guide-key-mode 1))
 
 (message "Done keymapping")
@@ -639,7 +638,6 @@ Assumes that the frame is only split into two."
    kept-new-versions 6
    kept-old-versions 3
    version-control t)       ; use versioned backups
-
 
 (message "Setting up display")
 
@@ -671,7 +669,7 @@ Assumes that the frame is only split into two."
   (define-key crmbk-frame-mode-map (kbd "<M-down>") 'scroll-up)
   (when (boundp 'edit-server-new-frame-alist)
     (setq edit-server-new-frame-alist '((name . "Edit Server Frame")
-					(fullscreen . 'fullboth)))))
+                                        (fullscreen . 'fullboth)))))
 
 ; Re-use existing frames if buffer already exists in one
 (unless I-am-on-pixel
@@ -735,33 +733,28 @@ Assumes that the frame is only split into two."
 (setq frame-title-format "%b")
 (setq  icon-title-format "%b")
 
-;(if I-am-emacs-21
-;    (progn 
-;      (autoload 'zone-when-idle "zone")
-;      (zone-when-idle 60)))
-
 ;; want to reduce the amount of white space in the mode-line
 (setq global-mode-string
       '("" org-mode-line-string))
 
 (setq-default mode-line-format
-      '("-"
-	mode-line-mule-info
-	mode-line-modified
-	" "
-	mode-line-buffer-identification
-	" "
-	"%l/%c "
-	"%[("
-	mode-name
-	mode-line-process
-	minor-mode-alist
-	"%n"
-	")%]"
-	"--"
-	global-mode-string
-	"--"
-	))
+              '("-"
+                mode-line-mule-info
+                mode-line-modified
+                " "
+                mode-line-buffer-identification
+                " "
+                "%l/%c "
+                "%[("
+                mode-name
+                mode-line-process
+                minor-mode-alist
+                "%n"
+                ")%]"
+                "--"
+                global-mode-string
+                "--"
+                ))
 
 
 
@@ -771,7 +764,7 @@ Assumes that the frame is only split into two."
 
 ;; Not added until the relevant mode is loaded.
 (setq minor-mode-alist (cons '(compilation-in-progress nil)
-			     minor-mode-alist))
+                             minor-mode-alist))
 
 ;; Uses a separate variable. Isn't that nice?
 (setq eldoc-minor-mode-string nil
@@ -781,11 +774,11 @@ Assumes that the frame is only split into two."
 ;; we don't want the time taking up precious space.
 (unless I-am-xemacs
   (setq display-time-interval 20
-	display-time-format 'nil
-	display-time-string-forms '( 24-hours ":" minutes ))
+        display-time-format 'nil
+        display-time-string-forms '( 24-hours ":" minutes ))
   (display-time-mode))
 
-;; Displays current function() in programming modes. 
+;; Displays current function() in programming modes.
 (setq which-func-modes 'nil)
 ;;      which-func-format '("[" which-func-current "]-"))
 ;(which-function-mode 'nil)
@@ -835,9 +828,9 @@ Assumes that the frame is only split into two."
 (setq time-stamp-format "%02H:%02M on %:a, %:d %:b %:y by %u")
 (add-hook 'write-file-hooks 'time-stamp)
 
-;; Auto-Insert
+;; Auto-Insert (disable)
 (auto-insert-mode 1)
-(setq auto-insert-alist ())		;? html-helper
+(setq auto-insert-alist ())
 
 ;; I hate tabs - they are set in cc-mode but not everything respects that
 (setq-default indent-tabs-mode nil)
@@ -845,9 +838,10 @@ Assumes that the frame is only split into two."
 
 ; TODO: clean-up my defaults for this
 (when I-am-emacs-23+
-  (setq whitespace-chars '(trailing tabs space-before-tab
-                           empty space-after-tab))
-  (setq whitespace-style '(faces tabs trailing lines-tail empty space-after-tab tab-mark)))
+  (setq whitespace-style '(face
+                           tabs trailing lines-tail empty
+                           space-after-tab tab-mark))
+  (global-set-key (kbd "C-c w") 'whitespace-mode))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
@@ -872,11 +866,11 @@ Assumes that the frame is only split into two."
   "Additional expressions to highlight in Info mode")
 
 (add-hook 'Info-mode-hook
-	  (lambda ()
-	    (make-local-variable 'font-lock-defaults)
-	    (setq
-	          font-lock-defaults '(info-font-lock-keywords nil t)
-		  case-fold-search nil)))
+          (lambda ()
+            (make-local-variable 'font-lock-defaults)
+            (setq
+             font-lock-defaults '(info-font-lock-keywords nil t)
+             case-fold-search nil)))
 
 ;; ediff
 ;
@@ -889,9 +883,9 @@ Assumes that the frame is only split into two."
   '(progn
      (message "doing ediff customisation")
      (setq diff-switches               "-u"
-	   ediff-custom-diff-options   "-U3"
-	   ediff-split-window-function 'split-window-horizontally
-	   ediff-window-setup-function 'ediff-setup-windows-plain)
+           ediff-custom-diff-options   "-U3"
+           ediff-split-window-function 'split-window-horizontally
+           ediff-window-setup-function 'ediff-setup-windows-plain)
 
      (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
      (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
@@ -906,21 +900,21 @@ Assumes that the frame is only split into two."
 (when (locate-library "diff-mode")
   (if (locate-library "my-diff-mode")
       (progn
-	(message "Hooking in my-diff-mode")
-	(autoload 'my-diff-mode "my-diff-mode")
-	(defalias 'dmode-alias 'my-diff-mode))
+        (message "Hooking in my-diff-mode")
+        (autoload 'my-diff-mode "my-diff-mode")
+        (defalias 'dmode-alias 'my-diff-mode))
     (autoload 'diff-mode "diff-mode")
     (defalias 'dmode-alias 'diff-mode))
 
-					; Which ever version we have we need to set the
-      ; automode up so it loads when we need it
-      (setq auto-mode-alist (append (list
-				     (cons "\.diff$"  'dmode-alias)
-				     (cons "\.patch$" 'dmode-alias)
-				     (cons "\.rej$" 'dmode-alias)
-				     (cons "\.dotest/0.*"
-					   'dmode-alias))
-				    auto-mode-alist)))
+  ; Which ever version we have we need to set the
+  ; automode up so it loads when we need it
+  (setq auto-mode-alist (append (list
+                                 (cons "\.diff$"  'dmode-alias)
+                                 (cons "\.patch$" 'dmode-alias)
+                                 (cons "\.rej$" 'dmode-alias)
+                                 (cons "\.dotest/0.*"
+                                       'dmode-alias))
+                                auto-mode-alist)))
 ;; ispell
 ;
 ; There should be an easier way to set the default
@@ -947,23 +941,23 @@ Assumes that the frame is only split into two."
 (if (locate-library "ispell")
     (let ((spell-path (which-lookup '("aspell" "ispell")))) ; aspell is preferred
       (if spell-path
-	  (progn
-	    (setq ispell-program-name spell-path
-		  ispell-dictionary "british")
+          (progn
+            (setq ispell-program-name spell-path
+                  ispell-dictionary "british")
 
-	    ;; flyspell mode
-	    ; I think this has been in emacs a while, but best practice to check
-	    ; (from http://trey-jackson.blogspot.com/2008/04/emacs-tip-16-flyspell-and-flyspell-prog.html)
-	    (when (locate-library "flyspell")
-	      (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
-	      (add-hook 'text-mode-hook 'turn-on-flyspell)
-	      (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
-	      (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
-	      (defun turn-on-flyspell ()
-		"Force flyspell-mode on using a positive arg.  For use in hooks."
-		(interactive)
-		(flyspell-mode 1))))
-	(message "Skipping ispell - no programs")))
+            ;; flyspell mode
+            ; I think this has been in emacs a while, but best practice to check
+            ; (from http://trey-jackson.blogspot.com/2008/04/emacs-tip-16-flyspell-and-flyspell-prog.html)
+            (when (locate-library "flyspell")
+              (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
+              (add-hook 'text-mode-hook 'turn-on-flyspell)
+              (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
+              (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
+              (defun turn-on-flyspell ()
+                "Force flyspell-mode on using a positive arg.  For use in hooks."
+                (interactive)
+                (flyspell-mode 1))))
+        (message "Skipping ispell - no programs")))
   (message "Skipping ispell - no ispell library"))
 
 ;; calculator
@@ -1000,27 +994,30 @@ Assumes that the frame is only split into two."
 
 ; I like to use .git/.bzr etc in my directory names
 (setq completion-ignored-extensions
-      (remove ".git/" (remove ".bzr/" (remove ".svn/" completion-ignored-extensions))))
+      (remove ".git/"
+              (remove ".bzr/"
+                      (remove ".svn/" completion-ignored-extensions))))
 
 ; Git Hooks, prefer magit over vc enabled git
 (if (and (locate-library "vc-git.el")
-	 (not (locate-library "magit")))
+         (not (locate-library "magit")))
     (add-to-list 'vc-handled-backends 'Git)
   (setq vc-handled-backends (remq 'Git vc-handled-backends))
   (autoload 'magit-status "magit" "magit front end" t)
   (global-set-key (kbd "C-x g") '(lambda ()
-				   (interactive)
-				   (if buffer-file-name
-				       (magit-status (file-name-directory (file-chase-links buffer-file-name)))
-				     (magit-status
-				      default-directory))))
+                                   (interactive)
+                                   (if buffer-file-name
+                                       (magit-status (file-name-directory (file-chase-links buffer-file-name)))
+                                     (magit-status
+                                      default-directory))))
   (eval-after-load "magit"
     '(progn
        (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
        (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
        (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
-       (setq magit-status-buffer-switch-function 'switch-to-buffer
-	     magit-rewrite-inclusive 'nil))))
+       (setq
+        magit-status-buffer-switch-function 'switch-to-buffer
+        magit-rewrite-inclusive 'nil))))
 
 ; Also the git-blame and git-status stuff
 (when (locate-library "git")
@@ -1045,7 +1042,7 @@ Assumes that the frame is only split into two."
 ;
 
 (when (and (not (which-lookup "man"))
-	   (locate-library "woman"))
+           (locate-library "woman"))
   (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
   (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
   (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)
@@ -1053,8 +1050,8 @@ Assumes that the frame is only split into two."
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
-		(lambda ()
-		  (setq truncate-lines t)))
+          (lambda ()
+            (setq truncate-lines t)))
 
 ;; Web Development Modes
 ;
@@ -1072,21 +1069,21 @@ Assumes that the frame is only split into two."
 plus add font-size: 8pt"
     (interactive "r")
     (let* ((buffer-faces (htmlize-faces-in-buffer))
-	   (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
-	   (pre-tag (format
-		     "<pre style=\"%s font-size: 8pt\">"
-		     (mapconcat #'identity (htmlize-css-specs
-					    (gethash 'default face-map)) " ")))
-	   (htmlized-reg (htmlize-region-for-paste beg end)))
+           (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
+           (pre-tag (format
+                     "<pre style=\"%s font-size: 8pt\">"
+                     (mapconcat #'identity (htmlize-css-specs
+                                            (gethash 'default face-map)) " ")))
+           (htmlized-reg (htmlize-region-for-paste beg end)))
       (switch-to-buffer-other-window "*htmlized output*")
-					; clear buffer
+      ; clear buffer
       (kill-region (point-min) (point-max))
-					; set mode to have syntax highlighting
-      (nxml-mode)
+      ; set mode to have syntax highlighting
+      (web-mode)
       (save-excursion
-	(insert htmlized-reg))
+        (insert htmlized-reg))
       (while (re-search-forward "<pre>" nil t)
-	(replace-match pre-tag nil nil))
+        (replace-match pre-tag nil nil))
       (goto-char (point-min)))))
 
 ;; Elisp mode
@@ -1111,7 +1108,7 @@ plus add font-size: 8pt"
   (eldoc-mode t)
   (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer)
   (turn-on-auto-fill))
-  
+
 (add-hook 'emacs-lisp-mode-hook 'my-elisp-hook-functions)
 
 ; For most web-forms I want longlines-mode by default
@@ -1133,7 +1130,7 @@ plus add font-size: 8pt"
 ;; the derived mu4e-compose-mode) assume they are sending from within
 ;; emacs. So I'll use the convention that I'll use mail-mode for
 ;; edit-server spawned mails and message-mode for the rest
-;; 
+;;
 
 ;; Enable mail-mode for mutt spawned files
 (add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
@@ -1208,22 +1205,22 @@ plus add font-size: 8pt"
 
 (setq ibuffer-saved-filters
       (quote (("csrc" ((filename . "/export/csrc/*")))
-	      ("tramp" ((filename . "\\/ssh:")))
-	      ("irc" ((mode . erc-mode)))
-	      ("magit" ((mode . magit-status-mode))) 
-	      ("programming" ((or (mode . emacs-lisp-mode)
-				  (mode . cperl-mode)
-				  (mode . c-mode)
-				  (mode . java-mode)
-				  (mode . idl-mode)
-				  (mode . lisp-mode)))))))
+              ("tramp" ((filename . "\\/ssh:")))
+              ("irc" ((mode . erc-mode)))
+              ("magit" ((mode . magit-status-mode)))
+              ("programming" ((or (mode . emacs-lisp-mode)
+                                  (mode . cperl-mode)
+                                  (mode . c-mode)
+                                  (mode . java-mode)
+                                  (mode . idl-mode)
+                                  (mode . lisp-mode)))))))
 
 (message "Done Buffer Handling Tweaks")
 
 (when I-am-at-work
   (setenv "DEBEMAIL" "ajb@cbnl.com")
   (setenv "DEBFULLNAME" "Alex Bennée"))
-  
+
 ;; Lets use mark-tools if we can
 (when (maybe-load-library "mark-tools")
   (global-set-key (kbd "C-x m") 'list-marks))
@@ -1236,11 +1233,11 @@ plus add font-size: 8pt"
     (progn
       (autoload 'circe "circe" "Start CIRCE" t)
       (eval-after-load
-	  "circe" (maybe-load-library "my-circe")))
+          "circe" (maybe-load-library "my-circe")))
   (when (locate-library "erc")
     (autoload 'erc-select "erc" "Start ERC" t)
     (eval-after-load
-	"erc" (maybe-load-library "my-erc"))))
+        "erc" (maybe-load-library "my-erc"))))
 
 
 ;;
