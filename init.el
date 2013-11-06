@@ -248,13 +248,14 @@ nothing failed")
 ;
 ; This is recursive so adding test libraries should just
 ; be a case of throwing the directory into .emacs.d
+; TODO: fix loading of elpa
 ;
 (when (and (file-exists-p "~/.emacs.d/")
            (fboundp 'normal-top-level-add-subdirs-to-load-path))
   (let* ((my-lisp-dir "~/.emacs.d/")
          (default-directory my-lisp-dir))
-    (setq load-path (cons my-lisp-dir load-path))
-    (normal-top-level-add-subdirs-to-load-path)))
+    (setq load-path (cons my-lisp-dir load-path))))
+
 
 ;; maybe-load-library
 ;
