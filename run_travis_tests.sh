@@ -23,7 +23,8 @@ fi
 INSTALL=`emacsclient -e "(my-packages-reset)"`
 echo "Install: $INSTALL"
 
-emacsclient -e "(save-buffers-kill-emacs 't)"
+# seems a little drastic but it works
+killall -9 emacs
 sleep 10
 
 ${EMACS} --daemon
