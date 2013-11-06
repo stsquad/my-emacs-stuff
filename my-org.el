@@ -1,7 +1,7 @@
 ;; org-mode related configuration bits
 ;;
 
-(require 'org-element)
+(require 'org-element nil 't)
 (require 'ox-reveal nil 't)
 
 ;; Clocking behaviour
