@@ -19,8 +19,9 @@
 (when I-am-at-work
   (setq compilation-error-regexp-alist '(gcc-include gnu)))
 
-(define-key compilation-mode-map (kbd "n") 'compilation-next-error)
-(define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
+;; currently errors in CI, must figure out why
+;; (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
+;; (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
 
 ; Global keybindings for compiling
 (global-set-key (kbd "C-c c") 'compile)
