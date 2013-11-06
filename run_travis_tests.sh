@@ -24,7 +24,7 @@ INSTALL=`emacsclient -e "(my-packages-reset)"`
 echo "Install: $INSTALL"
 
 # seems a little drastic but it works
-killall -9 ${EMACS}
+emacsclient -e "(kill-emacs)"
 sleep 10
 
 ${EMACS} --daemon
