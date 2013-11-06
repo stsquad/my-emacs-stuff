@@ -122,9 +122,10 @@
 			(/ sum-hours active-days 8)))))
 
 ;; Org Babel configurations
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (makefile . t)
-   (python . t)
-   (sh . t)))
+(ignore-errors
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (makefile . t)
+     (python . t)
+     (sh . t))))
