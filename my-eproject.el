@@ -39,11 +39,13 @@
 		    (next-rc-build)))
 	bldv))))
 
+(defvar vectastar-build-id
+  (format-time-string "%-m%d1")
+  "VectaStar Build ID")
+
 (defun build-incrementing-rc-release(root)
   "Build a release command line with a version for the day"
   (when (not (file-remote-p root))
-    (when (not (boundp 'vectastar-build-id))
-      (setq vectastar-build-id (format-time-string "%-m%d1")))
     (format
      "cd %s && make release PLATFORM=Linux_OE_RC VECTASTARBUILD=%s"
      root vectastar-build-id)))
@@ -174,13 +176,13 @@
 
 (when (require 'ack-and-a-half nil 'noerror)
   (defun my-ack-and-a-half-current-directory ()
-    "Return the current buffers directory if it exists, else 'nil"
+    "Return the current buffers directory if it exists, else nil"
     (cond
      (dired-directory dired-directory)
      ((and buffer-file-name
 	   (file-exists-p buffer-file-name))
       (file-name-directory (file-truename buffer-file-name)))
-      nil))
+     (t nil)))
   
   (add-to-list 'ack-and-a-half-root-directory-functions
 	       'my-ack-and-a-half-current-directory)
@@ -193,9 +195,9 @@
   (if (file-exists-p (concat eproject-root ".git"))
       (if (functionp 'helm-git-grep)
 	  (helm-git-grep)
-	(let ((search (my-find-search-string))
-	      (buffer (concat "*git grep for " search "*" ))
-	      (command (format "git grep -n %s -- %s" search eproject-root)))
+	(let* ((search (my-find-search-string))
+               (buffer (concat "*git grep for " search "*" ))
+               (command (format "git grep -n %s -- %s" search eproject-root)))
 	  (setq grep-command "git grep -n ")
 	  (message "Using git grep for searches")
 	  (shell-command command buffer)

@@ -168,10 +168,6 @@
   (message "In my-c-mode-hook")
   (turn-on-auto-fill)
 
-  ; If I'm working with git-grep this won't be set
-  (if (bound-and-true-p find-c-files)
-      (set-my-find-files find-c-files))
-
   ; Set the c-style if we can. I think mmm-mode gets in the way of
   ; buffer-file-name for setting sub-modes, so check we have one first
   (if (eval buffer-file-name)

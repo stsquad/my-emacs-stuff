@@ -1,6 +1,7 @@
 ;;
 ;; Customisations for ERC
 ;;
+(require 'erc)
 (require 'tls)
 
 
@@ -27,13 +28,11 @@
   "My text matching hook for ERC, mainly for alert sounds"
   (cond
    ((eq match-type 'current-nick)
-    (if my-erc-msg-sound
-	(my-erc-sound-play my-erc-msg-sound)
-      (erc-beep-on-match match-type nickuserhost message)))
+    (when my-erc-msg-sound
+	(my-erc-sound-play my-erc-msg-sound)))
    ((eq match-type 'keyword)
-    (if my-erc-alert-sound
-	(my-erc-sound-play my-erc-alert-sound)
-      (erc-beep-on-match match-type nickuserhost message)))))
+    (when my-erc-alert-sound
+      (my-erc-sound-play my-erc-alert-sound)))))
 
 (add-hook 'erc-text-matched-hook 'my-erc-text-match)
 
@@ -43,13 +42,10 @@
 				"irc.gnome.org"))
 
 (erc-track-mode t)
-(erc-autojoin-mode 'nil)
+(erc-autojoin-mode nil)
 
-(setq erc-beep-match-types '(current-nick keyword)
-      erc-autojoin-channels-alist '(("irc.pl0rt.org" "#blue")
+(setq erc-autojoin-channels-alist '(("irc.pl0rt.org" "#blue")
 				    ("engbot" "#eng"))
-      erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
-				"324" "329" "332" "333" "353" "477")
       erc-hide-list '("JOIN" "PART"
 		      "QUIT" "NICK"))
 

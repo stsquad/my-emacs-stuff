@@ -2,6 +2,8 @@
 ;; Customisation for projectile (https://github.com/bbatsov/projectile)
 ;;
 
+(require 'projectile)
+
 ;; Enable projectile for everything
 (projectile-global-mode)
 

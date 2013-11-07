@@ -65,8 +65,9 @@ applied hunks"
     (error nil)))
 
 (defun find-start-of-patch()
+  "Find the start of a patch"
   (interactive)
-  (goto-line 0)
+  (goto-char (point-min))
   (if (not (my-test-hunk))
       (diff-hunk-next)))
 
@@ -96,9 +97,8 @@ problem"
           (message (concat "apply-whole-patch: apply-result is "
                            apply-result)))
       (error
-       (if (y-or-n-p (format "%s: Skip hunk?" err))
-           (diff-hunk-next)
-         (nil))))))
+       (when (y-or-n-p (format "%s: Skip hunk?" err))
+         (diff-hunk-next))))))
 
 ;; diff-apply-and-kill
 ;
@@ -178,9 +178,9 @@ succeded"
 ;(setq auto-mode-alist (cons '("0.*\.txt" . my-diff-mode)
 ;			    auto-mode-alist))
 
-(setq auto-mode-alist (cons '("\\.dotest/[0123456789][0123456789][0123456789][0123456789]" . my-diff-mode)
-			    auto-mode-alist))
+(setq auto-mode-alist
+      (cons
+       '("\\.dotest/[0123456789][0123456789][0123456789][0123456789]" . my-diff-mode)
+       auto-mode-alist))
 
 (message "my-diff-mode created")
-
-
