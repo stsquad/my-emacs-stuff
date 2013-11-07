@@ -665,6 +665,10 @@ Assumes that the frame is only split into two."
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
 
+
+(declare-function crmbk-running-in-host-x11-p "chromebook")
+(defvar crmbk-frame-mode-map)
+
 (when (and (require 'chromebook "chromebook" 't)
            (crmbk-running-in-host-x11-p))
   (set-face-attribute 'default nil :height 250)
