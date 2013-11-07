@@ -6,6 +6,10 @@
 (require 'eproject-extras)
 (require 'eproject-compile)
 
+;; Work around the compiler, (look-for) is actually
+;; flet inside eproject's run-selector code.
+(declare-function look-for "eproject" t t)
+
 ;; Shrink mode line for mode display
 (setcdr (assq 'eproject-mode minor-mode-alist) '(" eprj"))
 
