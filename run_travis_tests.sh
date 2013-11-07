@@ -35,4 +35,5 @@ then
     exit -1
 fi
 
-# TODO: add some ERT tests?
+# Now we are set-up we can the ERT tests
+${EMACS} -q --batch -l ert -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
