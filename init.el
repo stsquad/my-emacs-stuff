@@ -802,7 +802,7 @@ Assumes that the frame is only split into two."
   (display-time-mode))
 
 ;; Displays current function() in programming modes.
-(setq which-func-modes 'nil)
+(setq which-func-modes nil)
 ;;      which-func-format '("[" which-func-current "]-"))
 ;(which-function-mode 'nil)
 
