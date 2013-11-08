@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: org-notes
+# name: org-image
 # key: $i
 # --
 #+ATTR_HTML: :alt $2 :style border: none;
