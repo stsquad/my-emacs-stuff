@@ -198,13 +198,17 @@ nothing failed")
     "Reset package manifest to the defined set"
     (interactive)
     (package-manifest 'ac-dabbrev 'ac-helm 'ac-js2 'ace-jump-mode
-                      'ack-and-a-half 'apache-mode
+                      'ack-and-a-half
+                      'android-mode
+                      'apache-mode
                       'auto-complete
                       'backtrace-mode
                       'circe
                       'dynamic-fonts
                       'elpy
                       'edebug-x
+                      'eproject
+                      'emms
                       'expand-region
                       'git-blame
                       'git-commit-mode
@@ -233,6 +237,7 @@ nothing failed")
                       'package+
                       'paredit
                       'pastebin
+                      'projectile
                       'protobuf-mode
                       'rainbow-delimiters
                       'smex
