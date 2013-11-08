@@ -1176,9 +1176,7 @@ plus add font-size: 8pt"
 ;; Python Mode
 ;
 ; TODO - automode alist
-(autoload 'python-mode "python-mode")
-(eval-after-load "python-mode"
-  (load-library "my-python-mode"))
+(add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
 
 (message "Done various programming modes")
 

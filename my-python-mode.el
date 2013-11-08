@@ -16,3 +16,5 @@
 ;  (define-key elpy-mode-map (kbd "C-c C-f") 'elpy-eldoc-documentation))
 
 (message "Done loading my-python-mode")
+
+(provide 'my-python-mode)
