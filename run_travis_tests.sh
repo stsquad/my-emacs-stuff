@@ -8,7 +8,7 @@ set -ex
 ${EMACS} --version
 
 # Dump our env
-env
+#env
 
 # Setup the Emacs environment
 ./setup_emacs.sh
