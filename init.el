@@ -197,6 +197,7 @@ nothing failed")
   (defun my-packages-reset()
     "Reset package manifest to the defined set"
     (interactive)
+    (package-refresh-contents)
     (package-manifest 'ac-dabbrev 'ac-helm 'ac-js2 'ace-jump-mode
                       'ack-and-a-half
                       'android-mode
