@@ -25,6 +25,10 @@ fi
 # Now we have started we can install our normal package set
 INSTALL=`emacsclient -e "(my-packages-reset)"`
 echo "Install: $INSTALL"
+sleep 30
+# dump the current list
+INSTALLED=`emacsclient -e "package-activated-list"`
+sleep 30
 
 # seems a little drastic but it works
 emacsclient -e "(kill-emacs)"
