@@ -198,7 +198,8 @@ nothing failed")
     "Reset package manifest to the defined set"
     (interactive)
     (package-refresh-contents)
-    (package-manifest 'ac-dabbrev 'ac-helm 'ac-js2 'ace-jump-mode
+    (package-manifest 'ac-c-headers 'ac-dabbrev 'ac-helm 'ac-js2
+                      'ace-jump-mode
                       'ack-and-a-half
                       'android-mode
                       'apache-mode
@@ -216,21 +217,26 @@ nothing failed")
                       'gitconfig-mode
                       'gitignore-mode
                       'gplusify
+                      'guide-key
                       'helm
                       'helm-ack
                       'helm-git-grep
                       'helm-c-yasnippet
                       'helm-themes
                       'htmlize
-                      'ido-better-flex
+                      'ido-ubiquitous
+                      'ido-vertical-mode
                       'js2-mode
                       'json-mode
                       'keychain-environment
+                      'keyfreq
                       'litable
                       'lusty-explorer
                       'magit
                       'markdown-mode
+                      'markdown-mode+
                       'mediawiki
+                      'mc-extras
                       'multiple-cursors
                       'org
                       'org-trello
@@ -241,9 +247,11 @@ nothing failed")
                       'projectile
                       'protobuf-mode
                       'rainbow-delimiters
+                      'smart-mode-line
                       'smex
                       'ssh-config-mode
                       'solarized-theme
+                      'syslog-mode
                       'tracking
                       'web-mode
                       'yasnippet
