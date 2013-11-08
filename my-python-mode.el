@@ -6,11 +6,12 @@
 ; Emacs version. Annoyingly both these modes clash so hi-jinks can
 ; ensue when your not sure what you are running.
 
-(when (require 'elpy 'nil 't)
-  (setq elpy-rpc-backend "jedi"
-	elpy-rpc-project-specific 't)
-  (elpy-enable)
-  (elpy-clean-modeline))
+(require 'elpy)
+
+(setq elpy-rpc-backend "jedi"
+      elpy-rpc-project-specific 't)
+(elpy-enable)
+(elpy-clean-modeline)
 
 ;  (define-key elpy-mode-map (kbd "C-c C-f") 'elpy-eldoc-documentation))
 
