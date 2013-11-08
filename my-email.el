@@ -118,8 +118,8 @@ yanked text if it started as a quoted email"
 	    "Mail addressed to me with git tags" ?g))
          (add-to-list
 	  'mu4e-bookmarks
-	  '("\(to:alex.bennee or cc:alex.bennee\) and \(flag:unread or flag:flagged\)"
-	    "Flagged or unread posts addressed to me" ?m))
+	  '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread"
+	    "Unread posts addressed to me" ?m))
          (add-to-list
 	  'mu4e-bookmarks
 	  '("from:alex.bennee"
@@ -132,6 +132,10 @@ yanked text if it started as a quoted email"
 	  'mu4e-bookmarks
 	  '("maildir:\"/linaro/qemu\" and flag:unread"
 	    "Latest QEMU posts" ?q))
+         (add-to-list
+          'mu4e-bookmarks
+          '("maildir:\"/linaro/qemu\" AND (aarch64 OR arm64)"
+            "QEMU ARM64 posts" ?a))
 	 (add-to-list
 	  'mu4e-bookmarks
 	  '("flag:flagged" "Flagged and Starred posts" ?f))))))
