@@ -96,7 +96,7 @@ nothing failed")
 (setq inhibit-splash-screen t)
 
 ;; Default mode is text-mode,
-(setq major-mode 'text-mode)
+(setq-default major-mode 'text-mode)
 
 ;; Don't truncate message buffer. For debugging reasons.
 (setq message-log-max t)
