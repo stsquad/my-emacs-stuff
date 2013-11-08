@@ -38,5 +38,9 @@ then
     exit -1
 fi
 
-# Now we are set-up we can the ERT tests
-${EMACS} -q --batch -l ert -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
+# Now we are set-up we can the ERT tests (if we are running Emacs24 or above)
+if [ "$EMACS" = 'emacs23' ] ; then
+    echo "Skipping ERT for Emacs23"
+else
+    ${EMACS} -q --batch -l "~/.emacs.d/init.el" -l ert -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
+fi

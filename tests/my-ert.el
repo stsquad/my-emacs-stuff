@@ -18,7 +18,7 @@
 ;; Define a test for each elisp file in the directory
 (let*
    ((root-dir (file-name-directory
-               (file-chase-links (locate-library "init.el"))))
+               (file-chase-links (locate-library "~/.emacs.d/init.el"))))
     (lisp-files (directory-files root-dir t "\.el$")))
   (mapc 'my-define-compile-test lisp-files))
   
