@@ -44,7 +44,7 @@ fi
 
 # Now we are set-up we can the ERT tests (if we are running Emacs24 or above)
 if [ "$EMACS" = 'emacs23' ] ; then
-    echo "Skipping ERT for Emacs23"
+    ${EMACS} -q --batch -l "~/.emacs.d/init.el" -f batch-byte-compile ~/.emacs.d/*.el
 else
     ${EMACS} -q --batch -l "~/.emacs.d/init.el" -l ert -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
 fi
