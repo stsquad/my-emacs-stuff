@@ -22,3 +22,10 @@
     (lisp-files (directory-files root-dir t "\.el$")))
   (mapc 'my-define-compile-test lisp-files))
   
+;; Test my which-lookup function
+
+(ert-deftest whick-lookup-tests ()
+  (should (eql (which-lookup "foo") nil))
+  (should (string-match "emacs" (which-lookup "emacs")))
+  (should (string-equal (which-lookup '("aspell" "ispell")) "/usr/bin/aspell"))
+  (should (string-equal (which-lookup '("ack-grep" "ack" "grep")) "/usr/bin/grep")))

@@ -411,11 +411,6 @@ nothing failed")
              (if (and (file-exists-p path) (> (length path) 0))
                  (return path)))))
 
-; (which-lookup "foo") => nil
-; (which-lookup "emacs") = "/usr/bin/emacs"
-; (which-lookup '("aspell" "ispell")) => "/usr/bin/aspell"
-; (which-lookup '("ack-grep" "ack" "grep"))
-
 ; Am I on the pixel?
 (defvar I-am-on-pixel (and (string-match "localhost" (system-name))
                            (which-lookup "host-x11")))
