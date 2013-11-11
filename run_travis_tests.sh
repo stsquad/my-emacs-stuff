@@ -23,6 +23,14 @@ then
 fi
 
 # Now we have started we can install our normal package set
+if [ "$EMACS" = 'emacs23' ] ; then
+    # For Emacs23 we need to manually install ELPA
+    emacsclient -e "(kill-emacs)"
+    ${EMACS} -q --batch -l "tests/install-elpa.el" -e "(my-install-elpa)"
+    ${EMACS} --daemon
+fi
+
+# Install the new package set
 INSTALL=`emacsclient -e "(my-packages-reset)"`
 echo "Install: $INSTALL"
 sleep 30
