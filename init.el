@@ -171,7 +171,8 @@ nothing failed")
 
 ;; Packaging, if we have it
 
-(when (and I-am-emacs-24+ (require 'package "package" 'nil))
+(when (or I-am-emacs-24+
+          (require 'package "package" t))
   (package-initialize)
   (add-to-list 'package-archives
             '("marmalade" . "http://marmalade-repo.org/packages/") t)
