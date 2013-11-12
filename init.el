@@ -41,15 +41,19 @@ nothing failed")
 
 ;; Add local search path
 ;
-; This is recursive so adding test libraries should just
-; be a case of throwing the directory into .emacs.d
-; TODO: fix loading of elpa
+; This adds everything ~/.emacs.d/*.git that's not elpa related
+; to the start of the load-path
 ;
-(when (and (file-exists-p "~/.emacs.d/")
-           (fboundp 'normal-top-level-add-subdirs-to-load-path))
-  (let* ((my-lisp-dir "~/.emacs.d/")
-         (default-directory my-lisp-dir))
-    (setq load-path (cons my-lisp-dir load-path))))
+(mapc #'(lambda (f)
+          (let ((default-directory f))
+            (setq load-path
+                  (append
+                   (let ((load-path (copy-sequence load-path))) ;; Shadow
+                     (append
+                      (copy-sequence (normal-top-level-add-to-load-path '(".")))
+                      (normal-top-level-add-subdirs-to-load-path)))
+                   load-path))))
+      (directory-files my-config-root 't "\.git$"))
 
 ;;
 ;; Basic config variables
