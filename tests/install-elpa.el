@@ -2,6 +2,9 @@
 ;; ELPA Package installer
 ;;
 
+; keep installer happy
+(setq user-init-file "~/.emacs.d/init.el")
+
 ; from: http://tromey.com/elpa/install.html
 (defun my-install-elpa ()
   "Load and run the ELPA package installer"
