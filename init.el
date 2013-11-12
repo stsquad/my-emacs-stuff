@@ -131,7 +131,7 @@ nothing failed")
 
 ;; Do we have snippets?
 (when (require 'yasnippet nil t)
-  (load-library "my-yansippet.el"))
+  (load-library "my-yasnippet.el"))
 
 (when (require 'auto-complete nil t)
   (load-library "my-autocomplete"))
