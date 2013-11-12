@@ -5,6 +5,8 @@
 (require 'eproject)
 (require 'eproject-extras)
 (require 'eproject-compile)
+(require 'my-find)
+(require 'ack-and-a-half nil t)
 
 ;; Work around the compiler, (look-for) is actually
 ;; flet inside eproject's run-selector code.
@@ -123,10 +125,7 @@
   (look-for "manifest.json"))
 
 (add-hook 'chrome-extension-visit-hook '(lambda ()
-					  (maybe-load-library "js2-mode")
-					  (setq tab-width 2
-						c-basic-offset 2
-						indent-tabs-mode 't)))
+					  (require "js2-mode" nil t)))
 
 (define-project-type kernel
   (generic-git)
