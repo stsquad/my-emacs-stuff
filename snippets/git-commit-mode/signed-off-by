@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: signed-off-by
+# key: $sob
+# --
+Signed-of-by: Alex Bennée <alex@bennee.com>
