@@ -18,6 +18,10 @@
   (package-refresh-contents)
   (package-install 'package+))
 
+; for testing we want an edit-server
+(unless (require 'edit-server nil t)
+  (package-installed-p 'edit-server))
+
 ;; This is dangerous to call in init.el as it will remove
 ;; all packages not explicitly in the manifest. This may be helpful
 ;; to keep packages clean but it breaks stuff you might be playing
