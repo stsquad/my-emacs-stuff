@@ -1,7 +1,8 @@
 ;;
 ;; Helm and it's related packages
 ;;
-(require helm)
+(require 'helm)
+(require 'helm-utils)
 
 ;; Helm customisations
 (setq helm-yank-symbol-first 't)
