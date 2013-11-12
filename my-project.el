@@ -63,10 +63,6 @@
     (setq compile-command (format
 			   "cd %s/../ipodsim.build && make -k"
 			   current-project-root)))
-   ; OpenNMS
-   ((and (file-exists-p (concat current-project-root "/build.sh"))
-	 (file-exists-p (concat current-project-root "/pom.xml")))
-    (load-library "my-onms"))
    ; Generic Makefile driven C
    ((file-exists-p (concat current-project-root "/Makefile"))
     (load-library "my-c-mode"))

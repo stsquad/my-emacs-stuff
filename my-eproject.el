@@ -118,16 +118,6 @@
   (look-for "../rockbox.git/rbutil")
   :common-compiles ("make" "make install" "make fullzip"))
 
-(define-project-type opennms
-  (generic-git)
-  (and 
-   (look-for "opennms-daemon")
-   (look-for "build.sh"))
-  :common-compiles ("./compile.pl && ./assemble.pl -Dbuild.profile=dir"))
-
-(add-hook 'opennms-project-file-visit-hook '(lambda ()
-					     (load-library "my-onms")))
-
 (define-project-type chrome-extension
   (generic)
   (look-for "manifest.json"))
