@@ -134,21 +134,8 @@ nothing failed")
 ;; TRAMP customisations.
 ;;
 
-; You can pretty much guarantee tramp implies over ssh
-(setq tramp-default-method "scp")
-; Auto-saves tramp files on our local file system
-(add-to-list 'backup-directory-alist
-             (cons tramp-file-name-regexp "~/.emacs.d/tramp-saves"))
-; If I'm travelling assume no one is messing with files on my work
-; machine
-(when (string-match "symbiot" (system-name))
-  (setq remote-file-name-inhibit-cache 'nil
-        tramp-completion-reread-directory-timeout 'nil))
-; I tend to use magit anyway, but disable VC mode over TRAMP
-(setq vc-ignore-dir-regexp
-      (format "\\(%s\\)\\|\\(%s\\)"
-              vc-ignore-dir-regexp
-              tramp-file-name-regexp))
+(eval-after-load 'tramp
+  (load-library "my-tramp.el"))
 
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
@@ -157,91 +144,7 @@ nothing failed")
 
 (when (or I-am-emacs-24+
           (require 'package "package" t))
-  (package-initialize)
-  (add-to-list 'package-archives
-            '("marmalade" . "http://marmalade-repo.org/packages/") t)
-  (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (add-to-list 'package-archives
-               '("org" . "http://orgmode.org/elpa/") t)
-
-  ; filter some packages out
-  (setq package-filter-function
-      (lambda (package version archive)
-        (or (not (string-equal archive "melpa"))
-            (not (memq package '(magit org))))))
-
-  (unless (package-installed-p 'package+)
-    (package-refresh-contents)
-    (package-install 'package+))
-
-  ;; This is dangerous to call in init.el as it will remove
-  ;; all packages not explicitly in the manifest. This may be helpful
-  ;; to keep packages clean but it breaks stuff you might be playing
-  ;; with between boots.
-  (defun my-packages-reset()
-    "Reset package manifest to the defined set"
-    (interactive)
-    (package-refresh-contents)
-    (package-manifest 'ac-c-headers 'ac-dabbrev 'ac-helm 'ac-js2
-                      'ace-jump-mode
-                      'ack-and-a-half
-                      'android-mode
-                      'apache-mode
-                      'auto-complete
-                      'backtrace-mode
-                      'circe
-                      'dynamic-fonts
-                      'elpy
-                      'edebug-x
-                      'eproject
-                      'emms
-                      'expand-region
-                      'git-blame
-                      'git-commit-mode
-                      'gitconfig-mode
-                      'gitignore-mode
-                      'gplusify
-                      'guide-key
-                      'helm
-                      'helm-ack
-                      'helm-git-grep
-                      'helm-c-yasnippet
-                      'helm-themes
-                      'htmlize
-                      'ido-ubiquitous
-                      'ido-vertical-mode
-                      'js2-mode
-                      'json-mode
-                      'keychain-environment
-                      'keyfreq
-                      'litable
-                      'lusty-explorer
-                      'magit
-                      'markdown-mode
-                      'markdown-mode+
-                      'mediawiki
-                      'mc-extras
-                      'multiple-cursors
-                      'org
-                      'org-trello
-                      'ox-reveal
-                      'package+
-                      'paredit
-                      'pastebin
-                      'projectile
-                      'protobuf-mode
-                      'rainbow-delimiters
-                      'smart-mode-line
-                      'smex
-                      'ssh-config-mode
-                      'solarized-theme
-                      'syslog-mode
-                      'tracking
-                      'web-mode
-                      'yasnippet
-                      'yaml-mode
-                      'zenburn-theme)))
+  (load-library "my-package.el"))
 
 ;; Add local search path
 ;
@@ -266,20 +169,9 @@ nothing failed")
     (load-library libname)))
 
 ;; Do we want an edit-server?
-(when (and (daemonp) (maybe-load-library "edit-server"))
-  (when (maybe-load-library "edit-server-htmlize")
-    (add-hook 'edit-server-start-hook
-              'edit-server-maybe-dehtmlize-buffer)
-    (add-hook 'edit-server-done-hook
-              'edit-server-maybe-htmlize-buffer))
-  (when (maybe-load-library "mediawiki")
-    (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" .
-                                                     mediawiki-mode)))
-  (add-to-list 'edit-server-url-major-mode-alist
-               '("mail.google" . mail-mode))
-  (add-hook 'emacs-startup-hook '(lambda ()
-                                   (message "starting up edit-server")
-                                   (edit-server-start))))
+(when (and (daemonp)
+           (require 'edit-server nil t))
+  (load-library "my-edit-server.el"))
 
 ;;
 ;; Load any global modes/extensions that are used throughout emacs.
@@ -291,25 +183,11 @@ nothing failed")
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 ;; Do we have snippets?
-; FIXME: when other snippets add to the list it upsets the position
-; of my-snippets causing yansippet to constantly think I'm modifying
-; a "library" file...
-(when (and (maybe-load-library "yasnippet")
-           (file-exists-p "~/.emacs.d/my-snippets"))
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets")
-  (yas-global-mode))
+(when (require 'yasnippet nil t)
+  (load-library "my-yansippet.el"))
 
-(when (maybe-load-library "auto-complete")
-  (require 'auto-complete-config)
-  (setq ac-use-menu-map 't)
-  (ac-set-trigger-key "M-/") ; override dabrev-expand
-  (add-to-list 'ac-modes 'org-mode)
-  (ac-config-default)
-  (setq-default ac-sources
-                '(ac-source-yasnippet
-                  ac-source-abbrev
-                  ac-source-dictionary
-                  ac-source-words-in-same-mode-buffers)))
+(when (require 'auto-complete nil t)
+  (load-library "my-autocomplete"))
 
 ; Nice for jumping about windows.
 (when (maybe-load-library "ace-jump-mode")
@@ -356,71 +234,7 @@ nothing failed")
   "Famous unix fortune teller."
   (shell-command-to-string "/usr/bin/fortune"))
 
-;; String munging functions
-;
-; Extract the first group in a regex
-
-(defun extract-string(regex string)
-  "Extract a string in a regex (the bit in ()'s)"
-  (interactive)
-  (let ((s string)) (if (string-match regex s) (match-string 1 s) s)))
-
-; And building on that
-(defun extract-value-from-pair(key string)
-  "Extract the value from AAAA=value pairs"
-  (let ((regex (concat key "=\\(.*\\)$")))
-    (extract-string regex string)))
-
-; examples:
-;  (extract-string "name is \\(\.*\\) " "my name is Alex ok") = Alex
-;  (extract-value-from-pair "AAA" "AAA=xxx") = xxx
-
-; chomp
-(defun chomp(string)
-  "Perform a perl-like chomp"
-  (let ((s string)) (if (string-match "\\(.*\\)\n" s) (match-string 1 s) s)))
-
-;; which-lookup
-;
-; Like the shell command of the same name except it trims to 'nil if
-; it can't find anything
-
-(eval-when-compile (require 'cl))
-
-(defun which-lookup(name-or-list)
-  "Perform a `which` like file look-up, returning the first hit or
-'nil if no match found"
-  (loop for x in (if (listp name-or-list) name-or-list (list name-or-list))
-        do (let ((path (chomp (shell-command-to-string (concat "which " x)))))
-             (if (and (file-exists-p path) (> (length path) 0))
-                 (return path)))))
-
-; Am I on the pixel?
-(defvar I-am-on-pixel (and (string-match "localhost" (system-name))
-                           (which-lookup "host-x11")))
-
-; uses common lisp
-(defun find-valid-file (list-of-files)
-  "Go though a list of files and return the first one that is present"
-  (loop for path in list-of-files
-        until (file-exists-p path)
-        finally return path))
-
-; the 'elisp' way
-(defun find-valid-file-elisp-way (list-of-files)
-  "Go though a list of files and return the first one that is present"
-  (let (r '())
-    (mapc #'(lambda (f)
-              (if (file-exists-p f) (add-to-list 'r f)))
-          list-of-files)
-    (car r)))
-
-; using 'cl-macs
-(defun find-valid-file-dolist-way (list-of-files)
-  "Go though a list of files and return the first one that is present"
-  (dolist (f list-of-files)
-    (if (file-exists-p f)
-        (return f))))
+(require 'my-utils)
 
 ;; Load sub-modules
 ;
@@ -511,18 +325,8 @@ Assumes that the frame is only split into two."
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
 
-;; Helm customisations
-(setq helm-yank-symbol-first 't)
-
-;; iMenu find
-(if (fboundp 'helm-imenu)
-    (global-set-key (kbd "C-f") 'helm-imenu)
-  (global-set-key (kbd "C-f") 'imenu))
-
-; Occur stuff
-(if (fboundp 'helm-occur)
-    (global-set-key (kbd "C-c o") 'helm-occur)
-  (global-set-key (kbd "C-c o") 'occur))
+(when (require 'helm nil t)
+  (load-library "my-helm.el"))
 
 (global-set-key (kbd "C-c e") 'eshell)
 
@@ -616,6 +420,7 @@ Assumes that the frame is only split into two."
   (global-set-key (kbd "C-=") 'er/expand-region))
 
 ;; Learn key strokes
+(defvar guide-key/guide-key-sequence)
 (when (require 'guide-key nil 't)
   (setq guide-key/guide-key-sequence
         '("C-x c" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
@@ -698,9 +503,8 @@ Assumes that the frame is only split into two."
 (message "Display Done")
 
 ;; Prettier unique buffer names.
-(unless I-am-xemacs
-  (require 'uniquify)
-  (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
 ;; Mouse set-up
 ;
@@ -770,21 +574,19 @@ Assumes that the frame is only split into two."
                              minor-mode-alist))
 
 ;; Uses a separate variable. Isn't that nice?
-(setq eldoc-minor-mode-string nil
-      highlight-changes-passive-string nil)
+(setq eldoc-minor-mode-string nil)
 
 ;; (display-time) is needed for appt to display in the mode-line, but
 ;; we don't want the time taking up precious space.
-(unless I-am-xemacs
-  (setq display-time-interval 20
-        display-time-format 'nil
-        display-time-string-forms '( 24-hours ":" minutes ))
-  (display-time-mode))
+(require 'time)
+(setq display-time-interval 20
+      display-time-format 'nil
+      display-time-string-forms '( 24-hours ":" minutes ))
+(display-time-mode)
 
 ;; Displays current function() in programming modes.
-(setq which-func-modes nil)
-;;      which-func-format '("[" which-func-current "]-"))
-;(which-function-mode 'nil)
+(when (require 'which-func nil t)
+  (which-function-mode))
 
 ;; Reduce white space
 (setq-default mode-line-buffer-identification '("%b"))
@@ -827,20 +629,13 @@ Assumes that the frame is only split into two."
 ;; Don't prompt me to revert something
 (global-auto-revert-mode 1)
 
-;; Expands a time-stamp line
-(setq time-stamp-format "%02H:%02M on %:a, %:d %:b %:y by %u")
-(add-hook 'write-file-hooks 'time-stamp)
-
-;; Auto-Insert (disable)
-(auto-insert-mode 1)
-(setq auto-insert-alist ())
-
 ;; I hate tabs - they are set in cc-mode but not everything respects that
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent 'complete)
 
 ; TODO: clean-up my defaults for this
-(when I-am-emacs-23+
+(defvar whitespace-style)
+(when (require 'whitespace nil t)
   (setq whitespace-style '(face
                            tabs trailing lines-tail empty
                            space-after-tab tab-mark))
@@ -918,50 +713,9 @@ Assumes that the frame is only split into two."
                                  (cons "\.dotest/0.*"
                                        'dmode-alias))
                                 auto-mode-alist)))
-;; ispell
-;
-; There should be an easier way to set the default
-; however I'm currently setting each time a file
-; is opened using the find-file-hooks
-;
-; Also if I'm on a odd machine I'll skip it as they have the ispell.el
-; library but not the actual ispell program
-;
-; And I want to use aspell by default as more people have that (and it
-; should be better right?)
-;
 
-; I'm British, not Amercian damit!
-;(defun set-british-dict ()
-;  "Set British Dictionary"
-;  (ispell-change-dictionary "british")
-;  (message "Set ispell to British Dictionary"))
-
-;(defun my-text-mode-hook ()
-;  (set-british-dict)
-;  (define-key text-mode-map (kbd "<f1>") ispell-word))
-
-(if (locate-library "ispell")
-    (let ((spell-path (which-lookup '("aspell" "ispell")))) ; aspell is preferred
-      (if spell-path
-          (progn
-            (setq ispell-program-name spell-path
-                  ispell-dictionary "british")
-
-            ;; flyspell mode
-            ; I think this has been in emacs a while, but best practice to check
-            ; (from http://trey-jackson.blogspot.com/2008/04/emacs-tip-16-flyspell-and-flyspell-prog.html)
-            (when (locate-library "flyspell")
-              (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
-              (add-hook 'text-mode-hook 'turn-on-flyspell)
-              (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
-              (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
-              (defun turn-on-flyspell ()
-                "Force flyspell-mode on using a positive arg.  For use in hooks."
-                (interactive)
-                (flyspell-mode 1))))
-        (message "Skipping ispell - no programs")))
-  (message "Skipping ispell - no ispell library"))
+(when (require 'ispell 'nil t)
+  (load-library "my-spell.el"))
 
 ;; calculator
 ;
@@ -988,55 +742,14 @@ Assumes that the frame is only split into two."
 (when (locate-library "my-find-binary")
     (autoload 'find-binary-file "my-find-binary"))
 
-;; Version control library
-;
-;
-
-(setq vc-command-messages t
-      vc-initial-comment t)
-
 ; I like to use .git/.bzr etc in my directory names
 (setq completion-ignored-extensions
       (remove ".git/"
               (remove ".bzr/"
                       (remove ".svn/" completion-ignored-extensions))))
 
-; Git Hooks, prefer magit over vc enabled git
-(if (and (locate-library "vc-git.el")
-         (not (locate-library "magit")))
-    (add-to-list 'vc-handled-backends 'Git)
-  (setq vc-handled-backends (remq 'Git vc-handled-backends))
-  (autoload 'magit-status "magit" "magit front end" t)
-  (global-set-key (kbd "C-x g") '(lambda ()
-                                   (interactive)
-                                   (if buffer-file-name
-                                       (magit-status (file-name-directory (file-chase-links buffer-file-name)))
-                                     (magit-status
-                                      default-directory))))
-  (eval-after-load "magit"
-    '(progn
-       (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-       (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
-       (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
-       (setq
-        magit-status-buffer-switch-function 'switch-to-buffer
-        magit-rewrite-inclusive 'nil))))
-
-; Also the git-blame and git-status stuff
-(when (locate-library "git")
-  (autoload 'git-status "git"
-    "Git Status" t))
-
-(when (locate-library "git-blame")
-  (autoload 'git-blame-mode "git-blame"
-    "Minor mode for incremental blame for Git." t))
-
-(eval-after-load "git-messenger"
-  '(progn
-     (setq git-messenger:show-detail 't)
-     (global-set-key (kbd "C-h g") 'git-messenger:popup-message)))
-
-(message "Done GIT hooks")
+(when (require 'magit nil t)
+  (load-library "my-git.el"))
 
 ;; WoMan - WithOut Man
 ;
@@ -1063,31 +776,8 @@ Assumes that the frame is only split into two."
 (when (maybe-load-library "js2-mode")
   (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode"))
 
-(when (maybe-load-library "htmlize")
-  (setq htmlize-output-type 'inline-css)
-
-; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
-  (defun my-htmlize-region (beg end)
-    "Htmlize region and put into <pre> tag style that is left in <body> tag
-plus add font-size: 8pt"
-    (interactive "r")
-    (let* ((buffer-faces (htmlize-faces-in-buffer))
-           (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
-           (pre-tag (format
-                     "<pre style=\"%s font-size: 8pt\">"
-                     (mapconcat #'identity (htmlize-css-specs
-                                            (gethash 'default face-map)) " ")))
-           (htmlized-reg (htmlize-region-for-paste beg end)))
-      (switch-to-buffer-other-window "*htmlized output*")
-      ; clear buffer
-      (kill-region (point-min) (point-max))
-      ; set mode to have syntax highlighting
-      (web-mode)
-      (save-excursion
-        (insert htmlized-reg))
-      (while (re-search-forward "<pre>" nil t)
-        (replace-match pre-tag nil nil))
-      (goto-char (point-min)))))
+(when (require 'htmlize nil t)
+  (load-library "my-htmlize.el"))
 
 ;; Elisp mode
 ;
@@ -1168,58 +858,10 @@ plus add font-size: 8pt"
 
 (message "Done various programming modes")
 
-
-;; Buffer Selection
-;
-; Use lusty-explorer if I can, otherwise leave it to ido-mode which
-; has been in emacs since version 22.
-;
-; Still have a bs-show "all" bound to C-x C-b for when I want to see
-; everything
-
-(require 'midnight)
-(setq midnight-mode 't)
-
-;; ido-mode - better buffer selection
-(ido-mode t)
-;; better flex seems a little to slow
-;; (setq ido-enable-flex-matching t)
-;; (when (require 'ido-better-flex nil 'noerror)
-;;   (ido-better-flex/enable))
-(when (require 'ido-ubiquitous nil 'noerror)
-  (ido-ubiquitous-mode))
-
-;; but if we have lusty still use that...
-(when (require 'lusty-explorer nil 'noerror)
-  ;; overrride the normal file-opening, buffer switching
-  (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
-
-;; ibuffer has been around for some time
-(defun my-ibuffer-bs-show ()
-  "Emulate `bs-show' from the bs.el package."
-  (interactive)
-  (ibuffer nil "*Ibuffer-my-bs*" '((filename . ".*")) nil t)
-  (define-key (current-local-map) "a" 'ibuffer-bs-toggle-all))
-
-(global-set-key (kbd "C-x C-b") 'my-ibuffer-bs-show)
-
-(setq ibuffer-saved-filters
-      (quote (("csrc" ((filename . "/export/csrc/*")))
-              ("tramp" ((filename . "\\/ssh:")))
-              ("irc" ((mode . erc-mode)))
-              ("magit" ((mode . magit-status-mode)))
-              ("programming" ((or (mode . emacs-lisp-mode)
-                                  (mode . cperl-mode)
-                                  (mode . c-mode)
-                                  (mode . java-mode)
-                                  (mode . idl-mode)
-                                  (mode . lisp-mode)))))))
-
-(message "Done Buffer Handling Tweaks")
+(require 'my-buffer)
 
 (when I-am-at-work
-  (setenv "DEBEMAIL" "ajb@cbnl.com")
+  (setenv "DEBEMAIL" "alex.bennee@linaro.org")
   (setenv "DEBFULLNAME" "Alex Bennée"))
 
 ;; Lets use mark-tools if we can
