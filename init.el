@@ -872,16 +872,10 @@ Assumes that the frame is only split into two."
 ;; IRC Stuff
 ;;
 
-(if (locate-library "circe")
-    (progn
-      (autoload 'circe "circe" "Start CIRCE" t)
-      (eval-after-load
-          "circe" (maybe-load-library "my-circe")))
-  (when (locate-library "erc")
-    (autoload 'erc-select "erc" "Start ERC" t)
-    (eval-after-load
-        "erc" (maybe-load-library "my-erc"))))
-
+(when (locate-library "circe")
+  (autoload 'circe "circe" "Start CIRCE" t)
+  (eval-after-load
+      "circe" (maybe-load-library "my-circe")))
 
 ;;
 ;; Eshell tweaks
