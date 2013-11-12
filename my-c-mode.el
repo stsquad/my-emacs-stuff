@@ -14,6 +14,7 @@
 ; Need cc-style
 (require 'cc-mode)
 (require 'cc-styles)
+(require 'cperl-mode nil t)
 
 (defconst my-c-style
   '((indent-tabs-mode . nil)
@@ -194,7 +195,7 @@
 ;;
 
 ;; load the etags library and bind C-f to something worth using :-)
-(if (maybe-load-library "etags-select")
+(if (require 'etags-select nil t)
     (define-key c-mode-map (kbd "C-c f") 'etags-select-find-tag)
   (define-key c-mode-map (kbd "C-c f") 'find-tag))
 

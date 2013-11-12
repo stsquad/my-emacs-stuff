@@ -41,10 +41,6 @@
              (if (and (file-exists-p path) (> (length path) 0))
                  (return path)))))
 
-; Am I on the pixel?
-(defvar I-am-on-pixel (and (string-match "localhost" (system-name))
-                           (which-lookup "host-x11")))
-
 ; uses common lisp
 (defun find-valid-file (list-of-files)
   "Go though a list of files and return the first one that is present"

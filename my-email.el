@@ -2,6 +2,8 @@
 ;
 ; After with notmuch, mu4e and Gnus I went with mu4e
 
+(require 'my-vars)
+(require 'message)
 
 ; Currently I compile my own...
 (let ((mu4e-path (concat (getenv "HOME") "/src/emacs/mu.git/mu4e")))
@@ -9,7 +11,6 @@
     (add-to-list 'load-path mu4e-path)))
 
 (require 'mu4e nil t)
-(require 'message)
 
 
 ;; Signature

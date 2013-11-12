@@ -12,6 +12,7 @@
 
 (require 'midnight)
 (require 'ibuf-ext)
+(require 'ido)
 
 (message "Setting up buffer handling")
 
@@ -20,12 +21,12 @@
 ;; ido-mode - better buffer selection
 (ido-mode t)
 
-(when (require 'ido-ubiquitous nil 'noerror)
+(when (require 'ido-ubiquitous nil t)
   (ido-ubiquitous-mode))
 
 ;; but if we have lusty still use that...
-(when (require 'lusty-explorer nil 'noerror)
-  ;; overrride the normal file-opening, buffer switching
+(when (require 'lusty-explorer nil t)
+  ;; over-ride the normal file-opening, buffer switching
   (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
   (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
 
