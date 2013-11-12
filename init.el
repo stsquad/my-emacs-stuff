@@ -3,84 +3,23 @@
 ; Alex Bennée's .emacs
 ;
 ; This is my Emacs, there are many like it but this is my own.
-;.It is mainly an amalgem of different hacks acquired over time
+; It is mainly an amalgem of different hacks acquired over time
 ; which I use on many of the machines I work with.
 ;
-; It has a cobbled heritage from various sites and wiki's and its
+; It has a cobbled heritage from various sites and wikis and it is
 ; probably safest to assume the code is all either GPL or Public
-; Domain. Feel free to use whatever bits may be of use to you in this
-; file that it is my right to license ;-)
+; Domain. Feel free to use whatever bits may be of use to you in these
+; files that it is my right to license ;-)
 ;
-
-;; Compiled .emacs work around
-;
-; If I've updated via an SCM there is a chance the compiled
-; code is out of date. In which case we really should unlink
-; the .elc file and recompile the .emacs
-;
-; I also want to auto compile any .el. As we work with a vc-repo (to
-; which .emacs links) we  straight away want to resolve where ~/.emacs
-; resolves to first
 
 ; debugging weird start-up issues.
 ;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
 ;(setq debug-on-error 't)
 
-(defun autocompile nil
-  "compile itself if ~/.emacs"
-  (interactive)
-  (require 'bytecomp)
-  (let ((dotemacs (expand-file-name "~/.emacs")))
-    (if (string= (buffer-file-name) (file-chase-links dotemacs))
-      (byte-compile-file dotemacs))))
-
-;not the speed saving you might think...
-;(add-hook 'after-save-hook 'autocompile)
-
-; check the compiled version not out of date
-(when (and user-init-file
-           (string-match ".elc" user-init-file))
-  (let* ((src-file (file-name-sans-extension user-init-file)))
-    (when (and (file-exists-p src-file)
-               (file-newer-than-file-p src-file user-init-file))
-      (message "working around newer source file")
-      (byte-compile-file src-file)
-      (load src-file))))
-
-(message (concat user-init-file " start"))
-
 ;;;; Start of real code.
 
-;;; Basic sanity
 ;; Find out about my environment
-
-; Define some variable about what sort of emacs I'm running in
-
-(defvar I-am-emacs-21+ (>= emacs-major-version 21))
-(defvar I-am-emacs-22+ (>= emacs-major-version 22))
-(defvar I-am-emacs-23+ (>= emacs-major-version 23))
-(defvar I-am-emacs-24+ (>= emacs-major-version 24))
-
-(defvar I-am-gnuemacs (string-match "GNU Emacs" (emacs-version)))
-(defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
-
-;; Lets define which machine I'm on, therefor if I am at work
-;; (this of course falls down when logging on remotely via tramp)
-
-(defvar I-am-at-work (string-match "sloy" (system-name)))
-(defvar I-am-at-home (string-match "danny" (system-name)))
-(defvar I-am-on-netbook (string-match "trent" (system-name)))
-
-;; Lets set some parameters if we are running as a console or under X
-;
-; Note these are not useful for --daemon invocations and should now be
-; deprecated in favour of "live" tests on window-system
-;
-(defvar I-am-in-X (eval 'window-system));
-(defvar I-am-in-console (not (eval 'window-system)))
-(defvar I-am-on-MacOSX (or (string-match "Carbon" (emacs-version))
-                           (string-match "apple-darwin" (emacs-version))))
-(defvar I-am-remote (getenv "SSH_TTY"))
+(require 'my-vars)
 
 ;; For auto-testing
 (defvar I-completed-loading-dotinit 'nil
@@ -750,19 +689,6 @@ Assumes that the frame is only split into two."
 
 (when (require 'magit nil t)
   (load-library "my-git.el"))
-
-;; WoMan - WithOut Man
-;
-; This is mostly handy if you are running on window and you don't have
-; man installed.
-;
-
-(when (and (not (which-lookup "man"))
-           (locate-library "woman"))
-  (autoload 'woman "woman" "Decode and browse a UN*X man page." t)
-  (autoload 'woman-find-file "woman" "Decode UN*X man-page file." t)
-  (autoload 'woman-dired-find-file "woman" "Browse man page from dired" t)
-  (message "Enabling woman for man pages"))
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
