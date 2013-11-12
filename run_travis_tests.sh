@@ -26,7 +26,7 @@ fi
 if [ "$EMACS" = 'emacs23' ] ; then
     # For Emacs23 we need to manually install ELPA
     emacsclient -e "(kill-emacs)"
-    ${EMACS} -q --batch -l "tests/install-elpa.el" -e "(my-install-elpa)"
+    ${EMACS} -q --batch -l ./tests/install-elpa.el -e "(my-install-elpa)"
     ${EMACS} --daemon
 fi
 
