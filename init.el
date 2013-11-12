@@ -16,6 +16,14 @@
 ;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
 ;(setq debug-on-error 't)
 
+(defvar my-config-root
+  "~/.emacs.d"
+  "Where all my config files are kept")
+
+(when (and (file-exists-p my-config-root)
+           (file-directory-p my-config-root))
+  (add-to-list 'load-path my-config-root))
+
 ;;;; Start of real code.
 
 ;; Find out about my environment
