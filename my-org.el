@@ -1,8 +1,15 @@
 ;; org-mode related configuration bits
 ;;
 
+(require 'org-clock)
+(require 'org-capture)
 (require 'org-element nil 't)
 (require 'ox-reveal nil 't)
+
+(defvar ajb-work-org-file
+  "/ssh:alex@bennee.com:/home/alex/doc/org/work.org"
+  "The location of my main work scratchpad")
+
 
 ;; Clocking behaviour
 (setq org-clock-persist 't
@@ -29,8 +36,6 @@
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-
-(setq ajb-work-org-file "/ssh:alex@bennee.com:/home/alex/doc/org/work.org")
 
 (defun my-switch-to-org ()
   "Bring my default org buffer to the current window"
