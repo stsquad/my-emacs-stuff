@@ -3,6 +3,7 @@
 ;;
 
 (require 'package)
+(require 'package+ nil t)
 
 (package-initialize)
 
@@ -12,12 +13,6 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (add-to-list 'package-archives
                '("org" . "http://orgmode.org/elpa/") t)
-
-                                        ; filter some packages out
-(setq package-filter-function
-      (lambda (package version archive)
-        (or (not (string-equal archive "melpa"))
-            (not (memq package '(magit org))))))
 
 (unless (package-installed-p 'package+)
   (package-refresh-contents)
@@ -89,4 +84,4 @@
                     'web-mode
                     'yasnippet
                     'yaml-mode
-                    'zenburn-theme)))
+                    'zenburn-theme))
