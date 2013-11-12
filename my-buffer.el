@@ -16,13 +16,13 @@
 
 (message "Setting up buffer handling")
 
-(setq midnight-mode 't)
+(setq midnight-mode t)
 
 ;; ido-mode - better buffer selection
 (ido-mode t)
 
-(when (require 'ido-ubiquitous nil t)
-  (ido-ubiquitous-mode))
+;(when (require 'ido-ubiquitous nil t)
+;  (ido-ubiquitous-mode))
 
 ;; but if we have lusty still use that...
 (when (require 'lusty-explorer nil t)
