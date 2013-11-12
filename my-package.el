@@ -20,7 +20,8 @@
 
 ; for testing we want an edit-server
 (unless (require 'edit-server nil t)
-  (package-installed-p 'edit-server))
+  (package-refresh-contents)
+  (package-install 'edit-server))
 
 ;; This is dangerous to call in init.el as it will remove
 ;; all packages not explicitly in the manifest. This may be helpful
