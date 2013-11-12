@@ -22,10 +22,9 @@
 ; which .emacs links) we  straight away want to resolve where ~/.emacs
 ; resolves to first
 
-
 ; debugging weird start-up issues.
-(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
-(setq debug-on-error 't)
+;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
+;(setq debug-on-error 't)
 
 (defun autocompile nil
   "compile itself if ~/.emacs"
