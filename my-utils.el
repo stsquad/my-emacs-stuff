@@ -64,5 +64,14 @@
     (if (file-exists-p f)
         (return f))))
 
+; via: http://stackoverflow.com/questions/3815467/stripping-duplicate-elements-in-a-list-of-strings-in-elisp
+(defun strip-duplicate-strings (list)
+  "Remove any duplicate strings"
+  (let ((new-list nil))
+    (while list
+      (when (and (car list) (not (member (car list) new-list)))
+        (setq new-list (cons (car list) new-list)))
+      (setq list (cdr list)))
+    (nreverse new-list)))
 
 (provide 'my-utils)
