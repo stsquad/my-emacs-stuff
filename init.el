@@ -34,6 +34,23 @@
   "This value is set once we finish start-up and is used to check
 nothing failed")
 
+;; Packaging, if we have it
+(when (or I-am-emacs-24+
+          (require 'package "package" t))
+  (load-library "my-package.el"))
+
+;; Add local search path
+;
+; This is recursive so adding test libraries should just
+; be a case of throwing the directory into .emacs.d
+; TODO: fix loading of elpa
+;
+(when (and (file-exists-p "~/.emacs.d/")
+           (fboundp 'normal-top-level-add-subdirs-to-load-path))
+  (let* ((my-lisp-dir "~/.emacs.d/")
+         (default-directory my-lisp-dir))
+    (setq load-path (cons my-lisp-dir load-path))))
+
 ;;
 ;; Basic config variables
 ;;
@@ -87,23 +104,6 @@ nothing failed")
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 
-;; Packaging, if we have it
-
-(when (or I-am-emacs-24+
-          (require 'package "package" t))
-  (load-library "my-package.el"))
-
-;; Add local search path
-;
-; This is recursive so adding test libraries should just
-; be a case of throwing the directory into .emacs.d
-; TODO: fix loading of elpa
-;
-(when (and (file-exists-p "~/.emacs.d/")
-           (fboundp 'normal-top-level-add-subdirs-to-load-path))
-  (let* ((my-lisp-dir "~/.emacs.d/")
-         (default-directory my-lisp-dir))
-    (setq load-path (cons my-lisp-dir load-path))))
 
 
 ;; maybe-load-library
