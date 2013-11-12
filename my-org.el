@@ -1,10 +1,11 @@
 ;; org-mode related configuration bits
 ;;
 
+(require 'org)
 (require 'org-clock)
-(require 'org-capture)
-(require 'org-element nil 't)
-(require 'ox-reveal nil 't)
+(require 'org-capture nil t)
+(require 'org-element nil t)
+(require 'ox-reveal nil t)
 
 (defvar ajb-work-org-file
   "/ssh:alex@bennee.com:/home/alex/doc/org/work.org"
