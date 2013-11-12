@@ -1,7 +1,16 @@
 ;; Email set-up
 ;
 ; After with notmuch, mu4e and Gnus I went with mu4e
-;
+
+
+; Currently I compile my own...
+(let ((mu4e-path (concat (getenv "HOME") "/src/emacs/mu.git/mu4e")))
+  (when (file-exists-p mu4e-path)
+    (add-to-list 'load-path mu4e-path)))
+
+(require 'mu4e nil t)
+(require 'message)
+
 
 ;; Signature
 (defun my-sig-function ()
@@ -18,12 +27,11 @@
  message-signature 'my-sig-function)
 
 ; Magic handling for multiple email addrsses
-(setq my-email-address-alist '( ("Maildir/developer" .
-                                "kernel-hacker@bennee.com")
-                               ("Maildir/linaro" .
-                                "alex.bennee@linaro.org")
-                               ("Maildir/personal" .
-                                "alex@bennee.com") ))
+(defvar my-email-address-alist
+  '( ("Maildir/developer" . "kernel-hacker@bennee.com")
+     ("Maildir/linaro" . "alex.bennee@linaro.org")
+     ("Maildir/personal" . "alex@bennee.com") )
+  "List of mappings from Maildir->email address")
 
 (defun my-choose-mail-address ()
   "Pick a new value of `user-mail-address' based on the parent
@@ -70,75 +78,72 @@ yanked text if it started as a quoted email"
 ;   - fastest indexer
 ;   - doesn't crap out on my work email
 
-(let ((mu4e-path (concat (getenv "HOME") "/src/emacs/mu.git/mu4e")))
-  (when (file-exists-p mu4e-path)
-    (add-to-list 'load-path mu4e-path)
-    (setq mail-user-agent 'mu4e-user-agent)
-    (setq mu4e-view-show-images t
-          mu4e-use-fancy-chars t
-          mu4e-headers-skip-duplicates t
-          mu4e-header-include-related t
-          mu4e-view-fill-headers nil
-          mu4e-html2text-command "html2text -utf8 -width 72"
-          mu4e-view-fields
-          '(:from :to :cc :subject :flags :date :tags :attachments :signature)
-          mu4e-maildir-shortcuts
-          '( ("/linaro/Inbox"     . ?i)
-             ("/linaro/qemu"      . ?q)
-             ("/linaro/kvm"       . ?k)
-             ("/linaro/mythreads" . ?m)
-             ("/developer/emacs"  . ?e)
-             ("/sent"             . ?s)))
-    (when (or I-am-at-work I-am-at-home)
-      (setq mu4e-get-mail-command
-            "mbsync linaro-sync developer-sync personal-sync"
-            mu4e-update-interval 600))
-    (when I-am-on-pixel
-      (setq mu4e-get-mail-command
-            "mbsync linaro-sync developer-sync"))
-    (autoload 'mu4e "mu4e")
-    (global-set-key (kbd "C-c m") 'mu4e)
-    (eval-after-load "mu4e"
-      '(progn
-         ; key-bindings
-         (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region)
-         ; mode hooks
-         (add-hook 'mu4e-headers-mode-hook
-                   '(lambda () (yas-minor-mode -1)))
-         ; pre-canned searches
-         (add-to-list
-          'mu4e-headers-actions
-          '("gapply git patches" . mu4e-action-git-apply-patch) t)
-         (add-to-list
-          'mu4e-view-actions
-          '("gapply git patch" . mu4e-action-git-apply-patch) t)
-         (add-to-list
-	  'mu4e-bookmarks
-	  '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
-	    "Mail addressed to me with git tags" ?g))
-         (add-to-list
-	  'mu4e-bookmarks
-	  '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread"
-	    "Unread posts addressed to me" ?m))
-         (add-to-list
-	  'mu4e-bookmarks
-	  '("from:alex.bennee"
-	    "Mail sent by me" ?s))
-	 (add-to-list
-	  'mu4e-bookmarks
-	  '("from:linaro.org and flag:unread"
-	    "Latest unread Linaro posts" ?l))
-	 (add-to-list
-	  'mu4e-bookmarks
-	  '("maildir:\"/linaro/qemu\" and flag:unread"
-	    "Latest QEMU posts" ?q))
-         (add-to-list
-          'mu4e-bookmarks
-          '("maildir:\"/linaro/qemu\" AND (aarch64 OR arm64)"
-            "QEMU ARM64 posts" ?a))
-	 (add-to-list
-	  'mu4e-bookmarks
-	  '("flag:flagged" "Flagged and Starred posts" ?f))))))
+(setq mail-user-agent 'mu4e-user-agent)
+(setq mu4e-view-show-images t
+      mu4e-use-fancy-chars t
+      mu4e-headers-skip-duplicates t
+      mu4e-headers-include-related t
+      mu4e-view-fill-headers nil
+      mu4e-html2text-command "html2text -utf8 -width 72"
+      mu4e-view-fields
+      '(:from :to :cc :subject :flags :date :tags :attachments :signature)
+      mu4e-maildir-shortcuts
+      '( ("/linaro/Inbox"     . ?i)
+         ("/linaro/qemu"      . ?q)
+         ("/linaro/kvm"       . ?k)
+         ("/linaro/mythreads" . ?m)
+         ("/developer/emacs"  . ?e)
+         ("/sent"             . ?s)))
+(when (or I-am-at-work I-am-at-home)
+  (setq mu4e-get-mail-command
+        "mbsync linaro-sync developer-sync personal-sync"
+        mu4e-update-interval 600))
+(when I-am-on-pixel
+  (setq mu4e-get-mail-command
+        "mbsync linaro-sync developer-sync"))
+(autoload 'mu4e "mu4e")
+(global-set-key (kbd "C-c m") 'mu4e)
+(eval-after-load "mu4e"
+  '(progn
+                                        ; key-bindings
+     (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region)
+                                        ; mode hooks
+     (add-hook 'mu4e-headers-mode-hook
+               '(lambda () (yas-minor-mode -1)))
+                                        ; pre-canned searches
+     (add-to-list
+      'mu4e-headers-actions
+      '("gapply git patches" . mu4e-action-git-apply-patch) t)
+     (add-to-list
+      'mu4e-view-actions
+      '("gapply git patch" . mu4e-action-git-apply-patch) t)
+     (add-to-list
+      'mu4e-bookmarks
+      '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
+        "Mail addressed to me with git tags" ?g))
+     (add-to-list
+      'mu4e-bookmarks
+      '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread"
+        "Unread posts addressed to me" ?m))
+     (add-to-list
+      'mu4e-bookmarks
+      '("from:alex.bennee"
+        "Mail sent by me" ?s))
+     (add-to-list
+      'mu4e-bookmarks
+      '("from:linaro.org and flag:unread"
+        "Latest unread Linaro posts" ?l))
+     (add-to-list
+      'mu4e-bookmarks
+      '("maildir:\"/linaro/qemu\" and flag:unread"
+        "Latest QEMU posts" ?q))
+     (add-to-list
+      'mu4e-bookmarks
+      '("maildir:\"/linaro/qemu\" AND (aarch64 OR arm64)"
+        "QEMU ARM64 posts" ?a))
+     (add-to-list
+      'mu4e-bookmarks
+      '("flag:flagged" "Flagged and Starred posts" ?f))))
 
 (defun my-insert-pull-request ()
   "Insert basic pull request into buffer"
