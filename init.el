@@ -344,6 +344,10 @@ Assumes that the frame is only split into two."
 (global-set-key (kbd "<C-f11>") 'start-kbd-macro)
 (global-set-key (kbd "<C-f12>") 'end-kbd-macro)
 
+; This stops warnings with re-mapped
+; return (when using xcape)
+(global-set-key (kbd "<key-4660>") 'ignore)
+
 ;; insert-sequence-key
 ;
 ; Handy little key sequence utility so I don't have to guess at the
