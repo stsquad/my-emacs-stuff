@@ -88,12 +88,7 @@
 
 (defun cbnl-hook-function ()
   "My hook function for all CBNL projects"
-  (require 'cbnl)
-  (set
-   (make-local-variable 'compilation-buffer-name-function)
-   'cbnl-compile-buffer-func))
-
-(add-hook 'cbnl-tree-project-file-visit-hook 'cbnl-hook-function)
+  (message "disabled CBNL specific hacks"))
 
 ;; QEMU
 (define-project-type qemu
