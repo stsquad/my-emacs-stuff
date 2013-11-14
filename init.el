@@ -326,7 +326,7 @@ Assumes that the frame is only split into two."
 (global-set-key (kbd "<C-f1>") 'apropos)
 
 ; Make Undo a little less octopedal
-(global-set-key (kbd "<C-f2>") 'undo)
+(global-set-key (kbd "<f2>") 'undo)
 
 ;; In Emacs 21+, home and end go to beginning and end of line. This is
 ;; clearly the Wrong Thing.
