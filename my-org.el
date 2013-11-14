@@ -81,6 +81,8 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
+     (dot . t)
+     (ditaa . t)
      (makefile . t)
      (python . t)
      (sh . t))))
