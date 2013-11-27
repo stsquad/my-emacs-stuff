@@ -40,6 +40,8 @@
                     'backtrace-mode
                     'circe
                     'dynamic-fonts
+                    'edit-server
+                    'edit-server-htlmize
                     'elpy
                     'edebug-x
                     'eproject
