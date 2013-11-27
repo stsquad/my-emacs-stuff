@@ -1,6 +1,11 @@
+;;; my-circe --- Configuartion for Circe IRC client
 ;;
-;; Circe Config Options
+;;; Commentary:
 ;;
+;; This contains basic account configuration for Circe.  I do use
+;; the tracking utility for things like compile buffers as well.
+;;
+;;; Code:
 
 (require 'circe)
 
@@ -11,6 +16,11 @@
 (defun my-bitlbee-password (server)
   "Return the password for the server"
   (shell-command-to-string (format "pass bitlbee")))
+
+(defun my-znc-password (server)
+  "Return the password for the server"
+  (format "ajb-linaro:%s"
+          (chomp (shell-command-to-string (format "pass znc")))))
 
 ;; Some defaults
 (setq circe-network-options
@@ -26,6 +36,13 @@
          :nick "stsquad"
          :channels ("#qemu")
          )
+	("znc"
+	 :host "ircproxy.linaro.org"
+	 :port "6697"
+         :pass my-znc-password
+         :channels ("#linaro" "#linaro-virtualization")
+	 :tls 't
+         )
 	("Pl0rt"
 	 :host "irc.pl0rt.org"
          :nick "ajb"
@@ -33,11 +50,6 @@
 	 :tls 't
          :channels ("#blue")
          )
-	("engbot"
-	 :nick "ajb"
-	 :channels ("#eng")
-	 :service "6667"
-	)
 	("bitlbee"
 	 :nick "ajb"
          :pass my-bitlbee-password
@@ -72,4 +84,9 @@
   (interactive)
   (circe "Freenode")
   (circe "Pl0rt")
-  (circe "engbot"))
+  (circe "OFTC")
+  (circe "znc"))
+
+
+(provide 'my-circe)
+;;; my-circe.el ends here
