@@ -1,16 +1,17 @@
-; -*- emacs-lisp -*-
-;
-; Alex Bennée's .emacs
-;
-; This is my Emacs, there are many like it but this is my own.
-; It is mainly an amalgem of different hacks acquired over time
-; which I use on many of the machines I work with.
-;
-; It has a cobbled heritage from various sites and wikis and it is
-; probably safest to assume the code is all either GPL or Public
-; Domain. Feel free to use whatever bits may be of use to you in these
-; files that it is my right to license ;-)
-;
+;;; init.el --- Alex Bennée's .emacs
+;;
+;;; Commentary:
+;;
+;; This is my Emacs, there are many like it but this is my own.
+;; It is mainly an amalgem of different hacks acquired over time
+;; which I use on many of the machines I work with.
+;;
+;; It has a cobbled heritage from various sites and wikis and it is
+;; probably safest to assume the code is all either GPL or Public
+;; Domain.  Feel free to use whatever bits may be of use to you in these
+;; files that it is my right to license ;-)
+;;
+;;; Code:
 
 ; debugging weird start-up issues.
 ;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
@@ -18,7 +19,7 @@
 
 (defvar my-config-root
   "~/.emacs.d"
-  "Where all my config files are kept")
+  "Where all my config files are kept.")
 
 (when (and (file-exists-p my-config-root)
            (file-directory-p my-config-root))
@@ -31,8 +32,7 @@
 
 ;; For auto-testing
 (defvar I-completed-loading-dotinit 'nil
-  "This value is set once we finish start-up and is used to check
-nothing failed")
+  "Flag indicating succesful start-up.")
 
 ;; Packaging, if we have it
 (when (or I-am-emacs-24+
@@ -115,7 +115,7 @@ nothing failed")
 ; A little less than using (require 'lib) - but require has optional args
 
 (defun maybe-load-library (libname)
-  "Try and load library 'libname' if it is in the path"
+  "Try and load library LIBNAME if it is in the path."
   (when (locate-library libname)
     (load-library libname)))
 
@@ -164,18 +164,13 @@ nothing failed")
 ; I like my name
 ; although C-x 8 ' e inserts é
 (defun insert-myname ()
+  "Insert my name, accents and all."
   (interactive)
   (insert (format "Alex Bennée")))
 
 (global-set-key (kbd "C-x 8 e") 'insert-myname)
 ;perhaps this is better solved with a snippet?
 ;(global-set-key (kbd "C-M-e") 'insert-myname)
-
-(defun praise-emacs ()
-  (interactive)
-  (message "Basking in the glory of your praise...")
-  (sleep-for 1)
-  (message "Basking in the glory of your praise...Done."))
 
 ;;
 ;; Need a better way to do this as fortune is on different places
@@ -242,7 +237,7 @@ nothing failed")
 ;; Allow windows to be dedicated to one thing interactively
 ;; Toggle window dedication
 (defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not"
+  "Toggle whether the current active window is dedicated or not."
   (interactive)
   (message
    (if (let (window (get-buffer-window (current-buffer)))
@@ -295,6 +290,7 @@ Assumes that the frame is only split into two."
 ; tweaked by adding an interactive function to do the keys
 
 (defun my-tweak-macos-keys ()
+  "Tweak keys when on MacOS machines."
   (interactive)
   ; We set the keyboard coding system to utf-8 which makes some
   ; things behave (I'm not totally sure why, must read up more)
@@ -354,7 +350,7 @@ Assumes that the frame is only split into two."
 ; correct kbd incantation
 
 (defun insert-sequence-key (key)
-  "Inserts a keystroke suitable for use in fcns like global-set-key"
+  "Insert a string formating KEY suitable for use in fcns like `global-set-key'."
   (interactive "kInsert key chord: ")
   (insert (format "(kbd \"%s\")" (key-description key))))
 
@@ -408,7 +404,7 @@ Assumes that the frame is only split into two."
 ; created.
 
 ; winner mode to remember window layouts
-(winner-mode 't)
+(winner-mode t)
 
 ;; Disable the menu and tool bars, they just take up space.
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -842,3 +838,6 @@ Does not delete the prompt."
 
 (message "Done .emacs")
 (setq I-completed-loading-dotinit 't)
+
+(provide 'init)
+;;; init.el ends here

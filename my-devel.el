@@ -1,8 +1,12 @@
-;; Development Hooks
+;;; my-devel.el --- Central configurtation for development hooks
+;;
+;;; Commentary:
 ;;
 ;; All other development modes should be triggered from here.
 ;;
+;;; Code:
 
+(require 'my-vars)
 (require 'my-find)
 
 (cond
@@ -57,7 +61,7 @@
 ;
 
 (defun my-wordpress-hook ()
-  "Hook function for editing Wordpress code"
+  "Hook function for editing Wordpress code."
   (interactive)
   (setq tab-width 4
 	c-basic-offset 4
@@ -70,7 +74,7 @@
    '(
      (".*/wp-content.*php$" . my-wordpress-hook )
      (".*/wordpress.*php$" . my-wordpress-hook )))
-  "A list of reg-ex to php-mode hooks")
+  "A list of reg-ex to php-mode hooks.")
 
 ;;
 ;; Web stuff, use web-mode
@@ -81,3 +85,4 @@
 (add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
 
 (provide 'my-devel)
+;;; my-devel.el ends here

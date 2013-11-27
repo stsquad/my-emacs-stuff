@@ -1,15 +1,22 @@
-;; org-mode related configuration bits
+;;; my-org --- org-mode related configuration bits
 ;;
+;;; Commentary:
+;;
+;; Not much in here as I'm not yet a heavy user of org-mode
+;;
+;;; Code:
 
 (require 'org)
 (require 'org-clock)
 (require 'org-capture nil t)
 (require 'org-element nil t)
+(require 'org-list nil t)
+(require 'ox nil t)
 (require 'ox-reveal nil t)
 
 (defvar ajb-work-org-file
   "/ssh:alex@bennee.com:/home/alex/doc/org/work.org"
-  "The location of my main work scratchpad")
+  "The location of my main work scratchpad.")
 
 
 ;; Clocking behaviour
@@ -39,14 +46,14 @@
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
 (defun my-switch-to-org ()
-  "Bring my default org buffer to the current window"
+  "Bring my default org buffer to the current window."
   (interactive)
   (switch-to-buffer
    (find-file ajb-work-org-file)
    (org-agenda-file-to-front)))
 
 (defun ajb-get-trac-summary (id)
-  "Fetch the bug summary directly from trac"
+  "Fetch the bug summary directly from trac."
   (let ((url (format "http://engbot/bugs/ticket/%d?format=csv" id)))
     (with-current-buffer (url-retrieve-synchronously url)
       (goto-char (point-min))
@@ -55,7 +62,7 @@
       (buffer-substring (point) (- (re-search-forward ",") 1)))))
 
 (defun ajb-format-trac-item (type &optional id)
-  "Format a ORG TODO item for a given trac item"
+  "Format a ORG TODO item for a given trac item."
   (interactive "nTrac ID:")
   (when (not id)
     (setq id (read-number "Trac ID:")))
@@ -86,3 +93,7 @@
      (makefile . t)
      (python . t)
      (sh . t))))
+
+
+(provide 'my-org)
+;;; my-org.el ends here
