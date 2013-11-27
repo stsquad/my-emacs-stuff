@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: org-example
+# key: $e
+# --
+#+name: ${1:name of block}
+#+begin_example
+${N:some source code here}
+#+end_example
