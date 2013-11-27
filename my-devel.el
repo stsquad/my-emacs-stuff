@@ -10,6 +10,10 @@
  ((require 'projectile nil t) (load-library "my-projectile"))
  (t (load-library "my-project")))
 
+;; Flycheck
+(when (locate-library "flycheck")
+  (require 'my-flycheck nil t))
+
 ;; Compilation mode tweaks
 (when I-am-emacs-23+
     (setq compilation-auto-jump-to-first-error 'nil))
