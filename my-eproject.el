@@ -30,74 +30,18 @@
 ;; Individual project definitions
 ;;
 
-; Functions to build command lines (need my patch)
-(defun build-bldv-command-line(root)
-  "Build a bldv command line for a given root"
-  (let ((remote (file-remote-p root)))
-    (when remote
-      (let* ((path (substring root (length remote)))
-	     (components (split-string path "/"))
-	     (bldv "bldv --noems --noapc"))
-	(setq bldv (concat
-		    bldv
-		    (format " --repo_name %s" (nth 3 components))
-		    " --version 5.1.25-"
-		    (next-rc-build)))
-	bldv))))
-
-(defvar vectastar-build-id
-  (format-time-string "%-m%d1")
-  "VectaStar Build ID")
-
-(defun build-incrementing-rc-release(root)
-  "Build a release command line with a version for the day"
-  (when (not (file-remote-p root))
-    (format
-     "cd %s && make release PLATFORM=Linux_OE_RC VECTASTARBUILD=%s"
-     root vectastar-build-id)))
-
-(defun next-rc-build()
-  "Increment the build id"
-  (interactive)
-  (if (boundp 'vectastar-build-id)
-      (setq vectastar-build-id (format "%s" (+ 1 (string-to-number vectastar-build-id))))
-    (setq vectastar-build-id (format-time-string "%-m%d1"))))
-
-(define-project-type cbnl-tree
-  (generic)
-  (and
-   (look-for "Makefile.cleanenv")
-   (look-for "build-system"))
-  :common-compiles (build-bldv-command-line
-		    "make build-nms PLATFORM=Linux_Desktop"
-		    "make build-nms PLATFORM=Linux_Desktop EMSDEBUG=1"
-		    "make build-nms PLATFORM=Linux_Desktop EMSDEBUG=1 VNMS=0"
-		    "make pkg-nms PLATFORM=Linux_Desktop"
-		    build-incrementing-rc-release
-		    "make -C new_rcd PLATFORM=Linux_Desktop"
-		    "make -C packaging PLATFORM=Linux_OE_RC"))
-
-
-(defun cbnl-compile-buffer-func (mode)
-  "Return a compile buffer for a CBNL project"
-  (let ((root (ignore-errors (eproject-root))))
-    (if root
-	(let ((proj-dir (nth 1 (reverse (split-string root "/")))))
-	  (concat "* compilation of " proj-dir " *"))
-      (concat "*" (downcase mode) "*"))))
-
-(defun cbnl-hook-function ()
-  "My hook function for all CBNL projects"
-  (message "disabled CBNL specific hacks"))
-
 ;; QEMU
 (define-project-type qemu
   (generic-git)
   (look-for "qapi-types.c"))
 
-(add-hook 'qemu-visit-hook '(lambda ()
-                              (require 'my-c-mode)
-                              (c-set-style "qemu")))
+(defun qemu-setup ()
+  "Setup for QEMU"
+  (interactive)
+  (require 'my-c-mode)
+  (c-set-style "qemu-c-style"))
+
+(add-hook 'qemu-visit-hook 'qemu-setup)
 
 (define-project-type debian-package
   (generic)
