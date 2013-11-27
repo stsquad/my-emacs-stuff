@@ -1,6 +1,10 @@
+;;; my-utils.el --- a bunch of simple utility functions
 ;;
-;; My utility functions
+;;; Commentary:
 ;;
+;; Some of this stuff is no doubt replaced by better libraries in ELPA/MELPA.
+;;
+;;; Code:
 
 (eval-when-compile (require 'cl))
 
@@ -9,7 +13,7 @@
 ; Extract the first group in a regex
 
 (defun extract-string(regex string)
-  "Extract a string in a regex (the bit in ()'s)"
+  "Extract a string in a regex (the bit in ()'s)."
   (interactive)
   (let ((s string)) (if (string-match regex s) (match-string 1 s) s)))
 
@@ -43,14 +47,14 @@
 
 ; uses common lisp
 (defun find-valid-file (list-of-files)
-  "Go though a list of files and return the first one that is present"
+  "Go though LIST-OF-FILES and return the first one that is present."
   (loop for path in list-of-files
         until (file-exists-p path)
         finally return path))
 
 ; the 'elisp' way
 (defun find-valid-file-elisp-way (list-of-files)
-  "Go though a list of files and return the first one that is present"
+  "Go though LIST-OF-FILES and return the first one that is present."
   (let (r '())
     (mapc #'(lambda (f)
               (if (file-exists-p f) (add-to-list 'r f)))
@@ -59,14 +63,14 @@
 
 ; using 'cl-macs
 (defun find-valid-file-dolist-way (list-of-files)
-  "Go though a list of files and return the first one that is present"
+  "Go though LIST-OF-FILES and return the first one that is present."
   (dolist (f list-of-files)
     (if (file-exists-p f)
         (return f))))
 
 ; via: http://stackoverflow.com/questions/3815467/stripping-duplicate-elements-in-a-list-of-strings-in-elisp
 (defun strip-duplicate-strings (list)
-  "Remove any duplicate strings"
+  "Remove any duplicate strings in LIST."
   (let ((new-list nil))
     (while list
       (when (and (car list) (not (member (car list) new-list)))
@@ -75,3 +79,4 @@
     (nreverse new-list)))
 
 (provide 'my-utils)
+;;; my-utils.el ends here

@@ -1,6 +1,11 @@
+;;; my-vars.el --- Common variables used used by all config files
 ;;
-;; Common variables used by all config files
+;;; Commentary:
 ;;
+;; These are just a bunch of simple variables I use throughout the
+;; rest of the code for controlling optional features.
+;;
+;;; Code:
 
 (require 'my-utils)
 
@@ -33,3 +38,4 @@
 (defvar I-am-remote (getenv "SSH_TTY"))
 
 (provide 'my-vars)
+;;; my-vars.el ends here

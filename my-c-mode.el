@@ -1,20 +1,24 @@
-;; My C Mode Customisations
-;
-; Having all the C Mode stuff loaded up every time is very time
-; consuming so I keep it all in here. This also means the compile mode
-; and other such tweaks can live in this file.
+;;; my-c-mode.el ---  My C Mode Customisations
+;;
+;;; Commentary:
+;;
+;; Having all the C Mode stuff loaded up every time is very time
+;; consuming so I keep it all in here.  This also means the compile mode
+;; and other such tweaks can live in this file.
+;;
+;; I'll define all my basic prefs in my-c-style from which the others
+;; can inherit depending on what I'm working on.
+;;
+;;; Code:
 
-
-; I'll define all my basic prefs in my-c-style from which the others
-; can inherit depending on what I'm working on.
-;
-
-(message "Starting my-c-mode.el customisation")
+(require 'my-vars)
 
 ; Need cc-style
 (require 'cc-mode)
 (require 'cc-styles)
 (require 'cperl-mode nil t)
+
+(message "Starting my-c-mode.el customisation")
 
 (defconst my-c-style
   '((indent-tabs-mode . nil)
