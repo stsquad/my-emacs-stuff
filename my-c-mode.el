@@ -108,10 +108,13 @@
 
 ; Qemu C Style
 (defconst qemu-c-style
-  '((indent-tabs-mode . nil)
+  '(
+    "my-c-style"
+    (indent-tabs-mode . nil)
     (c-tab-always-indent . nil)
     (c-comment-only-line-offset 0)
-    (c-basic-offset . 4)))
+    (c-basic-offset . 4)
+    (c-offsets-alist . ((case-label . 0)))))
 
 (c-add-style "qemu-c-style" qemu-c-style)
 
