@@ -31,6 +31,19 @@
 (when (require 'helm-eproject 'nil 'noerror)
   (define-key eproject-mode-map (kbd "C-c h") 'helm-eproject))
 
+(defun my-eproj-is-c ()
+  "Require my-c-mode for project."
+  (require 'my-c-mode))
+
+(defun my-eproject-c-hook ()
+  "Hook for cc-mode to run on eproject based projects."
+  (message "in my-eproject-c-hook")
+  (when (eproject-attribute :c-style)
+    (message "setting C style based on eproject")
+    (c-set-style (eproject-attribute :c-style))))
+  
+(add-hook 'c-mode-hook 'my-eproject-c-hook)
+
 ;;
 ;; Individual project definitions
 ;;
@@ -38,16 +51,10 @@
 ;; QEMU
 (define-project-type qemu
   (generic-git)
-  (look-for "qapi-types.c"))
+  (look-for "qemu-log.c")
+  :c-style "qemu-c-style")
 
-(defun qemu-setup ()
-  "Setup for QEMU."
-  (interactive)
-  (message "running qemu-setup hook")
-  (require 'my-c-mode)
-  (c-set-style "qemu-c-style"))
-
-(add-hook 'qemu-visit-hook 'qemu-setup)
+(add-hook 'qemu-project-file-visit-hook 'my-eproj-is-c)
 
 (define-project-type debian-package
   (generic)
@@ -75,19 +82,17 @@
 (define-project-type kernel
   (generic-git)
   (look-for "Documentation/CodingStyle")
+  :c-style "linux"
   :common-compiles ("ARCH=x86 make" "make" "ARCH=x86 make TAGS"))
 
-(add-hook 'kernel-visit-hook '(lambda ()
-				(require 'my-c-mode)
-				(c-set-style "linux")))
+(add-hook 'kernel-project-file-visit-hook 'my-eproj-is-c)
 
 (define-project-type easytag
   (generic-git)
-  (look-for "src/et_core.c"))
+  (look-for "src/et_core.c")
+  :c-style "easytag")
 
-(add-hook 'easytag-visit-hook '(lambda ()
-				(require 'my-c-mode)
-				(c-set-style "easytag")))
+(add-hook 'easytag-project-file-visit-hook 'my-eproj-is-c)
 				 
   
 (define-project-type wireshark
@@ -95,7 +100,7 @@
   (look-for "rawshark.c")
   :common-compiles ("make" "make install"))
 
-(add-hook 'wireshark-visit-hook '(require 'my-c-mode))
+(add-hook 'wireshark-project-file-visit-hook 'my-eproj-is-c)
 
 ;; Turn on eproject on various dev modes
 ;
@@ -128,7 +133,7 @@
   (define-key eproject-mode-map (kbd "<f6>") 'ack-and-a-half))
 
 (defun my-eproject-find ()
-  "Do a find across the project"
+  "Do a find across the project."
   (interactive)
   (if (file-exists-p (concat eproject-root ".git"))
       (if (functionp 'helm-git-grep)

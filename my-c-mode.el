@@ -178,17 +178,12 @@
 
   ; Set the c-style if we can. I think mmm-mode gets in the way of
   ; buffer-file-name for setting sub-modes, so check we have one first
-  (if (eval buffer-file-name)
-      (progn
-	(message (format "looking for style for buffer %s" (buffer-file-name)))
-  
-	(let ((style (my-c-style-guesser (buffer-file-name))))
-	  (message (format "Found style:%s" style))
-	  (if style
-	      (c-set-style style)
-					; fallback
-	    (message "Falling back to defaults")
-	    (c-set-style "my-c-style")))))
+  (when buffer-file-name
+    (message (format "looking for style for buffer %s" (buffer-file-name)))
+    (let ((style (my-c-style-guesser (buffer-file-name))))
+      (when style
+        (message (format "my-c-mode-hook: found style %s" style))
+        (c-set-style style))))
 
   (if I-am-emacs-21+
       (cwarn-mode)))
