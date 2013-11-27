@@ -15,7 +15,7 @@
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
 
-(defvar I-am-at-work (string-match "sloy" (system-name)))
+(defvar I-am-at-work (string-match "zen" (system-name)))
 (defvar I-am-at-home (string-match "danny" (system-name)))
 (defvar I-am-on-netbook (string-match "trent" (system-name)))
 (defvar I-am-on-pixel (and (string-match "localhost" (system-name))
