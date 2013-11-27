@@ -1,6 +1,11 @@
+;;; my-eproject.el --- Customisation for eproject
 ;;
-;; Customisation for eproject (http://github.com/jrockway/eproject)
+;;; Commentary:
 ;;
+;; eproject (http://github.com/jrockway/eproject) is a project
+;; management framework for Emacs.
+;;
+;;; Code:
 
 (require 'eproject)
 (require 'eproject-extras)
@@ -36,8 +41,9 @@
   (look-for "qapi-types.c"))
 
 (defun qemu-setup ()
-  "Setup for QEMU"
+  "Setup for QEMU."
   (interactive)
+  (message "running qemu-setup hook")
   (require 'my-c-mode)
   (c-set-style "qemu-c-style"))
 
@@ -139,3 +145,5 @@
 
 (define-key eproject-mode-map (kbd "<f5>") 'my-eproject-find)
 
+(provide 'my-eproject)
+;;; my-eproject.el ends here
