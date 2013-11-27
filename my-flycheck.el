@@ -12,8 +12,9 @@
 ; settings
 (setq flycheck-emacs-lisp-initialize-packages t
       flycheck-highlighting-mode 'lines
-      flycheck-emacs-lisp-load-path
-      (list (file-name-directory (file-chase-links buffer-file-name))))
+      flycheck-emacs-lisp-load-path (list "~/.emacs.d/"))
+
+(global-flycheck-mode)
 
 (provide 'my-flycheck)
 ;;; my-flycheck.el ends here
