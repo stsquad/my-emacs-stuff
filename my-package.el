@@ -1,27 +1,26 @@
+;;; my-package.el --- my package customisations
 ;;
-;; Package configurations
+;;; Commentary:
 ;;
+;; Basic package configuration stuff including a list of used packages
+;;
+;;; Code:
 
 (require 'package)
 (require 'package+ nil t)
-
-(package-initialize)
 
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (add-to-list 'package-archives
-               '("org" . "http://orgmode.org/elpa/") t)
+             '("org" . "http://orgmode.org/elpa/") t)
+
+(package-initialize)
 
 (unless (package-installed-p 'package+)
   (package-refresh-contents)
   (package-install 'package+))
-
-; for testing we want an edit-server
-(unless (require 'edit-server nil t)
-  (package-refresh-contents)
-  (package-install 'edit-server))
 
 ;; This is dangerous to call in init.el as it will remove
 ;; all packages not explicitly in the manifest. This may be helpful
@@ -47,6 +46,7 @@
                     'eproject
                     'emms
                     'expand-region
+                    'flycheck
                     'git-blame
                     'git-commit-mode
                     'gitconfig-mode
@@ -92,3 +92,12 @@
                     'yasnippet
                     'yaml-mode
                     'zenburn-theme))
+
+(defun my-install-additional-pkgs ()
+  "Install non-core packages that are needed for testing."
+  (unless (require 'edit-server nil t)
+    (package-refresh-contents)
+    (package-install 'edit-server)))
+
+(provide 'my-package)
+;;; my-package.el ends here

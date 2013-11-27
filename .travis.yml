@@ -21,6 +21,6 @@ before_install:
       sudo apt-get install -qq
           emacs24 emacs24-el emacs24-common-non-dfsg ;
     fi
-  - sudo apt-get install -qq maildir-utils
+  - sudo apt-get install -qq maildir-utils ack-grep
 script:
   - ./run_travis_tests.sh
