@@ -37,9 +37,9 @@
   (autoload 'git-blame-mode "git-blame"
     "Minor mode for incremental blame for Git." t))
 
-(eval-after-load "git-messenger"
-  '(progn
-     (setq git-messenger:show-detail 't)
-     (global-set-key (kbd "C-h g") 'git-messenger:popup-message)))
+(when (locate-library "git-messenger")
+  (global-set-key (kbd "C-h g") 'git-messenger:popup-message)
+  (eval-after-load "git-messenger"
+    (setq git-messenger:show-detail 't)))
 
 (message "Done GIT hooks")
