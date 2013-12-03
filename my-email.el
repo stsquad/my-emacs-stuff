@@ -1,6 +1,10 @@
-;; Email set-up
-;
-; After with notmuch, mu4e and Gnus I went with mu4e
+;;; my-email.el --- Email set-up
+;;
+;;; Commentary:
+;; After with notmuch, mu4e and Gnus I went with mu4e mainly due to
+;; speed and apparent simplicity of customisation.
+;;
+;;; Code:
 
 (require 'my-vars)
 (require 'message)
@@ -147,7 +151,7 @@ yanked text if it started as a quoted email"
       '("flag:flagged" "Flagged and Starred posts" ?f))))
 
 (defun my-insert-pull-request ()
-  "Insert basic pull request into buffer"
+  "Insert basic pull request into buffer."
   (interactive)
   (with-current-buffer (current-buffer)
     (insert
@@ -157,3 +161,5 @@ yanked text if it started as a quoted email"
        (ido-completing-read
         "Commit start:" '("HEAD~" "origin/master") 'nil))))))
 
+(provide 'my-email)
+;;; my-email.el ends here
