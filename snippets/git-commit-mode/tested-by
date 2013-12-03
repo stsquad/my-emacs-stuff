@@ -2,4 +2,4 @@
 # name: tested-by
 # key: $tb
 # --
-Tested-by: Alex Bennée <alex@bennee.com>
+Tested-by: Alex Bennée <${1:`(my-yas-expand-email)`}>

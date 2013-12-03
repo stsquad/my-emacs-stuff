@@ -2,4 +2,4 @@
 # name: reviewed-by
 # key: $rb
 # --
-Reviewed-by: Alex Bennée <alex@bennee.com>
+Reviewed-by: Alex Bennée <${1:`(my-yas-expand-email)`}>

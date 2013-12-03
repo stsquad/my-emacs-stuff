@@ -1,6 +1,10 @@
+;;; my-yasnippet.el --- customisation and helper functions
 ;;
-;; YASnippet setup
+;;; Commentary:
 ;;
+;; There isn't much here but I do want to add more Lisp type stuff.
+;;
+;;; Code:
 
 (require 'yasnippet)
 
@@ -10,6 +14,28 @@
 (setq yas-prompt-functions
       '(yas-ido-prompt yas-completing-prompt yas-no-prompt))
 
-;; TODO add helper functions
+;; Helper functions
+(defvar my-yas-emails
+  (mapc
+   (lambda (elt)
+     (cons (purecopy (car elt)) (cdr elt)))
+   '(
+     (".*/lsrc/.*" . "alex.bennee@linaro.org")
+     (".*/mysrc/.*" . "alex@bennee.com")))
+  "A mapping from source location to email address.")
+
+(defun my-yas-expand-email ()
+  "Return the right email for the current source file."
+  (cond
+   ((derived-mode-p 'mail-mode 'mu4e-compose-mode)
+    (if I-am-at-work
+        "alex.bennee@linaro.org"
+      "alex@bennee.com"))
+   ((buffer-file-name)
+    (assoc-default (buffer-file-name) my-yas-emails 'string-match))
+   (t "alex@....")))
 
 (yas-global-mode)
+
+(provide 'my-yasnippet.el)
+;;; my-yasnippet.el ends here
