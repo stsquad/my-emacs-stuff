@@ -415,7 +415,11 @@ Assumes that the frame is only split into two."
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
 
+; default-frame-alist
+(setq default-frame-alist '((fullscreen . 'fullboth)
+                            (vertical-scroll-bars)))
 
+; fixes for compile
 (declare-function crmbk-running-in-host-x11-p "chromebook")
 (defvar crmbk-frame-mode-map)
 
