@@ -106,13 +106,20 @@ yanked text if it started as a quoted email"
          ("/linaro/mythreads" . ?m)
          ("/developer/emacs"  . ?e)
          ("/sent"             . ?s)))
+
 (when (or I-am-at-work I-am-at-home)
   (setq mu4e-get-mail-command
-        "mbsync linaro-sync developer-sync personal-sync"
+        "mbsync linaro-sync developer-sync"
         mu4e-update-interval 600))
+
 (when I-am-on-pixel
   (setq mu4e-get-mail-command
         "mbsync linaro-sync developer-sync"))
+
+(when I-am-at-work
+  (setq mu4e-user-mail-address-list '("alex.bennee@linaro.org")
+        mu4e-compose-complete-only-after "2013-11-01"))
+
 (autoload 'mu4e "mu4e")
 (global-set-key (kbd "C-c m") 'mu4e)
 (eval-after-load "mu4e"
@@ -128,7 +135,7 @@ yanked text if it started as a quoted email"
       '("gapply git patches" . mu4e-action-git-apply-patch) t)
      (add-to-list
       'mu4e-view-actions
-      '("gapply git patch" . mu4e-action-git-apply-patch) t)
+      '("mgit am patch" . mu4e-action-git-apply-mbox) t)
      (add-to-list
       'mu4e-bookmarks
       '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
