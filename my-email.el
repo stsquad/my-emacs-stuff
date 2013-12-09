@@ -83,6 +83,13 @@ yanked text if it started as a quoted email"
 ;   - fastest indexer
 ;   - doesn't crap out on my work email
 
+
+(defun my-reset-mu4e-caches ()
+  "Reset some of mu4e's caches to avoid restarting."
+  (interactive)
+  (setq mu4e~maildir-list nil))
+
+(setq mu4e-compose-complete-only-personal nil)
 (setq mail-user-agent 'mu4e-user-agent)
 (setq mu4e-view-show-images t
       mu4e-use-fancy-chars t
