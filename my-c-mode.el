@@ -114,9 +114,11 @@
 (defconst qemu-c-style
   '(
     "my-c-style"
-    (indent-tabs-mode . nil)
-    (c-basic-offset . 4)
     (tab-width . 8)
+    (indent-tabs-mode . nil)
+    (comment-style 'extra-line)
+    (c-comment-continuation-stars . " *")
+    (c-basic-offset . 4)
     (c-comment-only-line-offset . 0)
     (c-hanging-braces-alist . ((substatement-open before after)))
     (c-offsets-alist . ((case-label . 0)
