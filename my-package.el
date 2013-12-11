@@ -47,6 +47,7 @@
                     'emms
                     'expand-region
                     'flycheck
+                    'flycheck-tip
                     'git-blame
                     'git-commit-mode
                     'gitconfig-mode
