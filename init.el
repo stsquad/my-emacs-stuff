@@ -423,7 +423,7 @@ Assumes that the frame is only split into two."
 (declare-function crmbk-running-in-host-x11-p "chromebook")
 (defvar crmbk-frame-mode-map)
 
-(when (and (require 'chromebook "chromebook" 't)
+(when (and (require 'chromebook "chromebook" t)
            (crmbk-running-in-host-x11-p))
   (set-face-attribute 'default nil :height 250)
   (add-hook 'crmbk-frame-mode-hook 'crmbk-remap-search)
