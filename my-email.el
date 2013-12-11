@@ -19,7 +19,7 @@
 
 ;; Signature
 (defun my-sig-function ()
-  "Generate a signature"
+  "Generate a signature."
   (interactive)
   (concat "Alex Bennée"))
 
