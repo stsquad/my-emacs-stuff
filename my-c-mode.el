@@ -29,7 +29,6 @@
 ;    (c-echo-syntactic-information-p . t) - this is only useful for debugging
     (c-electric-pound-behavior . (alignleft))
     (c-hanging-comment-ender-p . nil)
-    (c-comment-continuation-stars . "* ")
     (c-recognize-knr-p . nil)
     (c-cleanup-list . (empty-defun-braces
 		       defun-close-semi
@@ -117,7 +116,6 @@
     (tab-width . 8)
     (indent-tabs-mode . nil)
     (comment-style 'extra-line)
-    (c-comment-continuation-stars . " *")
     (c-basic-offset . 4)
     (c-comment-only-line-offset . 0)
     (c-hanging-braces-alist . ((substatement-open before after)))
