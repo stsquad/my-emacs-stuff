@@ -90,6 +90,10 @@
 ;; Seriously the kernel TAGS is >10Mb
 (setq large-file-warning-threshold 40000000)
 
+;; also large files tend to upset the warnings
+(add-to-list 'warning-suppress-types 'undo)
+(add-to-list 'warning-suppress-types 'discard-info)
+
 ;; Stop popping up the file dialog, very annoying when compile-mode
 ;; want to find an error in a non-existent file
 (setq use-file-dialog 'nil)
