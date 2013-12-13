@@ -113,8 +113,7 @@ yanked text if it started as a quoted email"
         mu4e-update-interval 600))
 
 (when I-am-on-pixel
-  (setq mu4e-get-mail-command
-        "mbsync linaro-sync developer-sync"))
+  (setq mu4e-get-mail-command "true"))
 
 (when I-am-at-work
   (setq mu4e-user-mail-address-list '("alex.bennee@linaro.org")

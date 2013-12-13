@@ -24,6 +24,9 @@
 
 (add-hook 'flycheck-mode-hook 'my-flycheck-elisp-dirs)
 
+(when (require 'flycheck-tip nil t)
+  (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
+
 (global-flycheck-mode)
 
 (provide 'my-flycheck)
