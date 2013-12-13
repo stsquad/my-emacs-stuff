@@ -52,7 +52,7 @@
 ; certain packages available to us.
 ;
 
-(when (require 'ack-and-a-half nil 'noerror)
+(when (require 'ack-and-a-half nil t)
   (defun my-ack-and-a-half-wrapper (root search)
     (ack-and-a-half search 'nil root))
   (setq my-project-find-fallback-func 'my-ack-and-a-half-wrapper))
