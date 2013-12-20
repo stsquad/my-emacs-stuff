@@ -8,6 +8,7 @@
 
 (require 'package)
 (require 'package+ nil t)
+(require 'melpa nil t)
 
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/") t)
@@ -72,6 +73,7 @@
                     'markdown-mode
                     'markdown-mode+
                     'mediawiki
+                    'melpa
                     'mc-extras
                     'multiple-cursors
                     'org

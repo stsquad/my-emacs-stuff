@@ -1,6 +1,10 @@
+;;; my-git.el --- My git custiomisations
 ;;
-;; Magit customisations
+;;; Commentary:
 ;;
+;; This is mostly magit configuration stuff
+;;
+;;; Code:
 
 (require 'magit)
 
@@ -11,7 +15,7 @@
 (autoload 'magit-status "magit" "magit front end" t)
 
 (defun my-magit-start ()
-  "My personal start magit from anywhere function"
+  "My personal start magit from anywhere function."
   (interactive)
   (if buffer-file-name
       (magit-status (file-name-directory (file-chase-links buffer-file-name)))
@@ -66,3 +70,6 @@
     (setq git-messenger:show-detail 't)))
 
 (message "Done GIT hooks")
+
+(provide 'my-git)
+;;; my-git.el ends here

@@ -36,7 +36,7 @@
   '( ("Maildir/developer" . "kernel-hacker@bennee.com")
      ("Maildir/linaro" . "alex.bennee@linaro.org")
      ("Maildir/personal" . "alex@bennee.com") )
-  "List of mappings from Maildir->email address")
+  "List of mappings from Maildir->email address.")
 
 (defun my-choose-mail-address ()
   "Pick a new value of `user-mail-address' based on the parent
