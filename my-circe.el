@@ -14,11 +14,11 @@
 (circe-set-display-handler "JOIN" (lambda (&rest ignored) nil))
 
 (defun my-bitlbee-password (server)
-  "Return the password for the server"
+  "Return the password for the server."
   (shell-command-to-string (format "pass bitlbee")))
 
 (defun my-znc-password (server)
-  "Return the password for the server"
+  "Return the password for the server."
   (format "ajb-linaro:%s"
           (chomp (shell-command-to-string (format "pass znc")))))
 
@@ -96,10 +96,9 @@
 	     'tracking-mode-line-buffers
 	     t)
 
-
 ;; Auto join everything
 (defun my-irc-login ()
-  "Login into my usual IRCs"
+  "Login into my usual IRCs."
   (interactive)
   (circe "Freenode")
   (circe "Pl0rt")
