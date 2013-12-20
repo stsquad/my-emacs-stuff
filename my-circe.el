@@ -68,6 +68,25 @@
 (require 'lui-autopaste)
 (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste)
 
+(defun lui-autopaste-service-linaro (text)
+  "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
+  (let ((url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")
+           ("Referer" . "https://pastebin.linaro.org")))
+        (url-request-data (format "text=%s&language=text&webpage=&private=on"
+                                  (url-hexify-string text)))
+        (url-http-attempt-keepalives nil))
+    (let ((buf (url-retrieve-synchronously
+                "https://pastebin.linaro.org/api/create")))
+      (unwind-protect
+          (with-current-buffer buf
+            (goto-char (point-min))
+            (if (re-search-forward "\\(https://pastebin.linaro.org/view/.*\\)" nil t)
+                (match-string 1)
+              (error "Error during pasting to pastebin.linaro.org")))
+        (kill-buffer buf)))))
+
 ; spell checking
 (when (fboundp 'turn-on-flyspell)
   (add-hook 'circe-channel-mode-hook 'turn-on-flyspell))
