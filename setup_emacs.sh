@@ -19,19 +19,22 @@ if [ ! -d "${EMACS_CONFIG_HOME}" ] ; then
   mkdir ${EMACS_CONFIG_HOME}
 fi
 
-#
-# Copy in the *.el files
-#
-for file in *.el
-do
-  if [ ! -f ${EMACS_CONFIG_HOME}/$file ] ; then
+if [ ! -f ${EMACS_CONFIG_HOME}/init.el ] ; then
     echo "Linking $file to .emacs.d"
     linkfile=`pwd`/$file
-    target=${EMACS_CONFIG_HOME}/$file
+    target=${EMACS_CONFIG_HOME}/init.el
     echo "Linking $linkfile to $target"
     ln -s $linkfile $target
-  fi
-done
+fi
+
+#
+# Link in this directory
+#
+if [ ! -L ${EMACS_CONFIG_HOME}/my-elisp ]; then
+    echo "Linking in directory"
+    linkdir=`pwd`
+    ln -s $linkdir "${EMACS_CONFIG_HOME}/my-elisp"
+fi
 
 #
 # Link to the snippets hierarchy

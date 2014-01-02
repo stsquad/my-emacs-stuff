@@ -21,9 +21,15 @@
   "~/.emacs.d"
   "Where all my config files are kept.")
 
-(when (and (file-exists-p my-config-root)
-           (file-directory-p my-config-root))
-  (add-to-list 'load-path my-config-root))
+(defvar my-config-paths
+  '("~/.emacs.d/my-elisp" "~/.emacs.d/my-local-pkgs")
+  "Additional search paths I use.")
+
+(mapc #'(lambda (p)
+          (when (and (file-exists-p p)
+                     (file-directory-p p))
+            (add-to-list 'load-path p)))
+      my-config-paths)
 
 ;;;; Start of real code.
 
