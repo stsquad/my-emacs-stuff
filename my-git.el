@@ -35,18 +35,47 @@
 (make-variable-buffer-local 'magit-checkpatch-script)
 (put 'magit-checkpatch-script 'permanent-local t)
 
+;; Match checkpatch.pl output
+(add-to-list
+ 'compilation-error-regexp-alist-alist
+ '(checkpatch
+   "\\(WARNING\\|ERROR\\).*\n#.*FILE: \\([^:]+\\):\\([^:digit:]+\\).*\n.*"
+   2 ; file
+   3 ; line
+   ))
+
+(add-to-list 'compilation-error-regexp-alist 'checkpatch)
+
+(defun my-magit--do-run-checkpatch (commit)
+  "Run the checkpatch script against `COMMIT'."
+  (let ((proc-name "checkpatch")
+        (buff-name (format "checkpatch-%s" commit)))
+    (start-process-shell-command
+     proc-name
+     buff-name
+     (format "git show %s | %s -" commit magit-checkpatch-script))
+    (switch-to-buffer buff-name)
+    (goto-char (point-min))
+    (compilation-minor-mode)))
+
 (defun my-magit-run-checkpatch ()
   "Run a checkpatch script against current commit."
   (interactive)
   (when (derived-mode-p 'magit-log-mode)
-    (message "do something here")))
+    (magit-section-action (item info "run checkpatch" t)
+      ((commit)
+       (message "doing commit check for %s" info)
+       (my-magit--do-run-checkpatch info)))))
 
 (defun my-magit-add-checkpatch-hook ()
   "Add the ability to run a checkpatch script if we can."
   (let ((script (concat default-directory "scripts/checkpatch.pl")))
     (when (file-exists-p script)
       (setq magit-checkpatch-script script)
-      (local-set-key (kbd "c") 'my-magit-run-checkpatch))))
+      (local-set-key (kbd "C") 'my-magit-run-checkpatch))))
+
+; hook into magit-log-mode to check for checkpatch scripts
+; (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
 
 (eval-after-load "magit"
   '(progn
