@@ -1,6 +1,7 @@
 # -*- mode: snippet -*-
 # name: QEMU ARM Dissassembly Function
 # key: disfn
+# condition: (my-eproject-is-type-p 'qemu)
 # --
 static void disas_$1(DisasContext *s, uint32_t insn)
 {
