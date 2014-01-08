@@ -14,6 +14,10 @@
 (setq vc-handled-backends (remq 'Git vc-handled-backends))
 (autoload 'magit-status "magit" "magit front end" t)
 
+; work-around stale shells
+(when I-am-at-work
+  (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
+
 (defun my-magit-start ()
   "My personal start magit from anywhere function."
   (interactive)
