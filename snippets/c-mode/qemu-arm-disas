@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: QEMU ARM Dissassembly Function
+# key: disfn
+# --
+static void disas_$1(DisasContext *s, uint32_t insn)
+{
+    unsupported_encoding(s, insn);
+}
+
+$0
