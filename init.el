@@ -390,7 +390,8 @@ Assumes that the frame is only split into two."
 ;; God-Mode, like sticky C- but more
 (defvar god-local-mode)
 (when (require 'god-mode nil t)
-  (global-set-key (kbd "<escape>") 'god-mode-all)
+  ; hmm, this clashes with Esc-$ which I use to spell words...
+  ;(global-set-key (kbd "<escgape>") 'god-mode-all)
   (defun my-update-god-cursor ()
     "Update the cursor style depending on status of god-mode."
     (setq cursor-type (if (or god-local-mode buffer-read-only)
