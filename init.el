@@ -102,7 +102,8 @@
 
 ;; Stop popping up the file dialog, very annoying when compile-mode
 ;; want to find an error in a non-existent file
-(setq use-file-dialog 'nil)
+(setq use-file-dialog nil
+      use-dialog-box nil)
 
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
