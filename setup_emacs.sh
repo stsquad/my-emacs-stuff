@@ -21,7 +21,7 @@ fi
 
 if [ ! -f ${EMACS_CONFIG_HOME}/init.el ] ; then
     echo "Linking $file to .emacs.d"
-    linkfile=`pwd`/$file
+    linkfile=`pwd`/init.el
     target=${EMACS_CONFIG_HOME}/init.el
     echo "Linking $linkfile to $target"
     ln -s $linkfile $target
