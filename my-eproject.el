@@ -55,6 +55,7 @@
   :c-style "qemu-c-style")
 
 (add-hook 'qemu-project-file-visit-hook 'my-eproj-is-c)
+(add-hook 'qemu-project-file-visit-hook 'whitespace-mode)
 
 (define-project-type debian-package
   (generic)
