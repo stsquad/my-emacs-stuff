@@ -10,9 +10,8 @@
 (require 'flycheck)
 
 ; settings
-(setq flycheck-emacs-lisp-initialize-packages t
-      flycheck-highlighting-mode 'lines)
-
+(setq-default flycheck-emacs-lisp-initialize-packages t
+              flycheck-highlighting-mode 'lines)
 
 (defun my-flycheck-elisp-dirs ()
   "Ensure flycheck has set search directories."
