@@ -41,7 +41,11 @@
   (when (eproject-attribute :c-style)
     (message "setting C style based on eproject")
     (c-set-style (eproject-attribute :c-style))))
-  
+
+(defun my-eproject-is-type-p (type)
+  "Return t when current project of `TYPE'."
+  (eq (eproject-attribute :type) type))
+
 (add-hook 'c-mode-hook 'my-eproject-c-hook)
 
 ;;
