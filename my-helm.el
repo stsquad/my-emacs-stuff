@@ -1,18 +1,37 @@
+;;; my-helm --- Customisation of helm
 ;;
-;; Helm and it's related packages
+;;; Commentary:
 ;;
-(require 'helm)
+;; Helm provides a fairly comprehensive narrowing framework for
+;; selecting from a list of options. The actions are quite
+;; comprehensive and reasonably well documented. But it's a lot to get
+;; your head around.
+;;
+;;; Code:
+
+(require 'helm-config)
 (require 'helm-utils)
 
 ;; Helm customisations
 (setq helm-yank-symbol-first 't)
+
+;; Better M-x?
+; one thing it does do is show key-bindings as it narrows
+(when (fboundp 'helm-M-x)
+  (global-set-key (kbd "M-x") 'helm-M-x))
 
 ;; iMenu find
 (if (fboundp 'helm-imenu)
     (global-set-key (kbd "C-f") 'helm-imenu)
   (global-set-key (kbd "C-f") 'imenu))
 
-; Occur stuff
-(if (fboundp 'helm-occur)
-    (global-set-key (kbd "C-c o") 'helm-occur)
-  (global-set-key (kbd "C-c o") 'occur))
+;; Occur stuff
+(cond
+ ((fboundp 'helm-swoop)
+  (global-set-key (kbd "C-c o") 'helm-swoop))
+ ((fboundp 'helm-occur)
+  (global-set-key (kbd "C-c o") 'helm-occur))
+ (t (global-set-key (kbd "C-c o") 'occur)))
+
+(provide 'my-helm)
+;;; my-helm.el ends here
