@@ -93,6 +93,11 @@
 (unless I-am-xemacs
   (auto-compression-mode t))
 
+;; Moar history
+(savehist-mode)
+(setq history-length 1000)
+;      recentf-max-saved-items 100)
+
 ;; Seriously the kernel TAGS is >10Mb
 (setq large-file-warning-threshold 40000000)
 
