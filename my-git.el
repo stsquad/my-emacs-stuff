@@ -6,6 +6,7 @@
 ;;
 ;;; Code:
 
+(require 'my-vars)
 (require 'magit)
 
 (message "Setting up GIT bits")
@@ -77,13 +78,22 @@
 ; hook into magit-log-mode to check for checkpatch scripts
 ; (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
 
+;; C-c C-a to amend without any prompt
+;; From: http://whattheemacsd.com/setup-magit.el-05.html
+(defun magit-just-amend ()
+  "Amend the last commit."
+  (interactive)
+  (save-window-excursion
+    (magit-with-refresh
+      (shell-command "git --no-pager commit --amend --reuse-message=HEAD"))))
+
 (eval-after-load "magit"
   '(progn
      (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
      (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
-     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode
-  1)))
+     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
      (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
+     (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
      (setq
       magit-status-buffer-switch-function 'switch-to-buffer
       magit-rewrite-inclusive 'nil)))
@@ -100,7 +110,7 @@
 (when (locate-library "git-messenger")
   (global-set-key (kbd "C-h g") 'git-messenger:popup-message)
   (eval-after-load "git-messenger"
-    (setq git-messenger:show-detail 't)))
+    (setq git-messenger:show-detail t)))
 
 (message "Done GIT hooks")
 

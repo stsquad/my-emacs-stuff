@@ -37,6 +37,9 @@
       org-checkbox-hierarchical-statistics nil
       org-hierarchical-todo-statistics nil)
 
+;; Export settings
+(setq org-export-allow-bind-keywords t)
+
 ; summarise TODOs
 (defun org-summary-todo (n-done n-not-done)
   "Switch entry to DONE when all subentries are done, to TODO otherwise."
