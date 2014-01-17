@@ -160,7 +160,10 @@
 (when (maybe-load-library "ace-jump-mode")
   (global-set-key (kbd "C-x j") 'ace-jump-mode))
 
-; Better M-x
+
+;; Better M-x
+; experimenting with different approaches
+; may get over-ridden by helm stuff
 (when (maybe-load-library "smex")
   (global-set-key (kbd "M-x") 'smex))
 
@@ -406,7 +409,7 @@ Assumes that the frame is only split into two."
   (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)
   (add-hook 'god-mode-disabled-hook 'my-update-god-cursor))
 
-(message "Done keymapping")
+(message "Done key mapping")
 
 ;;; Backup settings
 ;;
@@ -781,7 +784,7 @@ Assumes that the frame is only split into two."
 ; Emacs Chrome: /tmp/tmpcUbYA_.txt
 
 (defun my-text-mode-hook ()
-  "My local setting"
+  "My local setting."
   (local-set-key (kbd "C-l") 'visual-line-mode)
   (local-set-key (kbd "C-f") 'auto-fill-mode))
 
@@ -802,7 +805,7 @@ Assumes that the frame is only split into two."
 (add-to-list 'auto-mode-alist '(".*/\.git/\.gitsendemail.MSG.*" . mail-mode))
 
 (defun my-common-mail-tweaks ()
-  "Enable common mail tweaks for sending messages"
+  "Enable common mail tweaks for sending messages."
   (interactive)
   (turn-on-flyspell)
   (turn-on-auto-fill))
