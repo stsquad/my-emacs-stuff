@@ -582,6 +582,7 @@ Assumes that the frame is only split into two."
   (sml/setup))
 
 (when (require 'tracking nil t)
+  (setq tracking-most-recent-first t)
   (tracking-mode))
 
 ;; Make fill do the Right Thing with full-stops.
