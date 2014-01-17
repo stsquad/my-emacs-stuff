@@ -14,11 +14,11 @@
 (circe-set-display-handler "JOIN" (lambda (&rest ignored) nil))
 
 (defun my-bitlbee-password (server)
-  "Return the password for the server."
+  "Return the password for the `SERVER'."
   (shell-command-to-string (format "pass bitlbee")))
 
 (defun my-znc-password (server)
-  "Return the password for the server."
+  "Return the password for the `SERVER'."
   (format "ajb-linaro:%s"
           (chomp (shell-command-to-string (format "pass znc")))))
 

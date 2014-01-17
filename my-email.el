@@ -39,8 +39,8 @@
   "List of mappings from Maildir->email address.")
 
 (defun my-choose-mail-address ()
-  "Pick a new value of `user-mail-address' based on the parent
-email. Sadly this is not a local variable as at the time of the
+  "Pick new `user-mail-address' based on the parent email.
+Sadly this is not a local variable as at the time of the
 hook we are not yet in the compose buffer."
   (when mu4e-compose-parent-message
     (setq
@@ -70,8 +70,7 @@ hook we are not yet in the compose buffer."
 ;; Utility functions for email
 
 (defun my-snip-region (beg end)
-  "A wrapper around kill region that inserts a <snip> tag to
-yanked text if it started as a quoted email"
+  "Insert a <snip> tag to killed regions."
   (interactive (list (point) (mark)))
   (kill-region beg end)
   (when (string-prefix-p ">" (car kill-ring))

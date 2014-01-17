@@ -1,11 +1,19 @@
+;;; my-spell.el --- Spelling customisation
 ;;
-;; Configuration for the spelling
+;;; Commentary:
 ;;
+;; I prefer using aspell as it is utf-8 safe
+;;
+;;; Code:
 
 (require 'my-utils)
 (require 'ispell)
 (require 'flyspell)
 
+(defun turn-on-flyspell ()
+  "Force 'flyspell-mode' on using a positive arg.  For use in hooks."
+  (interactive)
+  (flyspell-mode 1))
 
 ;; ispell
 ;
@@ -26,10 +34,7 @@
     
     (add-hook 'text-mode-hook 'turn-on-flyspell)
     (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
-    (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
-    (message "Skipping ispell - no programs")))
+    (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)))
 
-(defun turn-on-flyspell ()
-  "Force flyspell-mode on using a positive arg.  For use in hooks."
-  (interactive)
-  (flyspell-mode 1))
+(provide 'my-spell)
+;;; my-spell.el ends here
