@@ -45,7 +45,9 @@
 
   (defun my-report-compilation-finished (buf exit-string)
     "Report the compilation buffer to tracker"
-    (tracking-add-buffer buf))
+    (tracking-add-buffer buf)
+    (when (fboundp 'global-flycheck-mode)
+      (global-flycheck-mode 0)))
 
   (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
   (add-hook 'compilation-finish-functions 'my-report-compilation-finished))
