@@ -15,7 +15,8 @@
     (add-to-list 'load-path mu4e-path)))
 
 (require 'mu4e nil t)
-
+(require 'mu4e-vars nil t)
+(require 'mu4e-draft nil t)
 
 ;; Signature
 (defun my-sig-function ()
@@ -29,7 +30,8 @@
  user-mail-address "alex.bennee@linaro.org"
  user-full-name  "Alex Bennée"
  mail-signature '(insert (concat "\n--\n" (my-sig-function)))
- message-signature 'my-sig-function)
+ message-signature 'my-sig-function
+ mu4e-compose-signature 'my-sig-function)
 
 ; Magic handling for multiple email addrsses
 (defvar my-email-address-alist
@@ -140,7 +142,7 @@ hook we are not yet in the compose buffer."
         "Mail addressed to me with git tags" ?g))
      (add-to-list
       'mu4e-bookmarks
-      '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread"
+      '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread NOT m:/linaro/bugmail NOT m:/linaro/notify"
         "Unread posts addressed to me" ?m))
      (add-to-list
       'mu4e-bookmarks
