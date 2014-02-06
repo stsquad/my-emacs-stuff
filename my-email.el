@@ -158,7 +158,7 @@ hook we are not yet in the compose buffer."
         "Latest QEMU posts" ?q))
      (add-to-list
       'mu4e-bookmarks
-      '("maildir:\"/linaro/qemu\" AND (aarch64 OR arm64)"
+      '("maildir:\"/linaro/qemu\" AND (aarch64 OR arm64 OR A64)"
         "QEMU ARM64 posts" ?a))
      (add-to-list
       'mu4e-bookmarks
