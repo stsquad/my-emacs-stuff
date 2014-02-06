@@ -28,9 +28,7 @@
   "Return the right email for the current source file."
   (cond
    ((derived-mode-p 'mail-mode 'mu4e-compose-mode)
-    (if I-am-at-work
-        "alex.bennee@linaro.org"
-      "alex@bennee.com"))
+    user-mail-address)
    ((buffer-file-name)
     (assoc-default (buffer-file-name) my-yas-emails 'string-match))
    (t "alex@....")))
