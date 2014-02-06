@@ -855,19 +855,9 @@ Assumes that the frame is only split into two."
 ;;
 ;; Eshell tweaks
 ;;
-(eval-after-load "eshell"
-  '(progn
-     (defun my-eshell-kill-output ()
-       "Really kill (not delete) all output from interpreter since last input.
-Does not delete the prompt."
-       (interactive)
-       (save-excursion
-         (goto-char (eshell-beginning-of-output))
-         (insert "*** output flushed ***\n")
-         (kill-region (point) (eshell-end-of-output))))
-
-     (add-hook 'eshell-mode-hook #'(lambda ()
-                                     (define-key eshell-mode-map (kbd "C-c C-o") 'my-eshell-kill-output)))))
+(when (locate-library "my-eshell")
+  (eval-after-load "eshell"
+    (require 'my-eshell)))
 
 ;; Load any hand-made customisations
 (when (file-exists-p custom-file)
