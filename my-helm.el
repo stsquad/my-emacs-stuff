@@ -25,6 +25,10 @@
     (global-set-key (kbd "C-f") 'helm-imenu)
   (global-set-key (kbd "C-f") 'imenu))
 
+;; Search key bindings for current mode
+(when (fboundp 'helm-descbinds)
+  (global-set-key (kbd "C-h h") 'helm-descbinds))
+
 ;; Occur stuff
 (cond
  ((fboundp 'helm-swoop)
