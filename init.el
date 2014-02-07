@@ -860,7 +860,7 @@ Assumes that the frame is only split into two."
 ;;
 (when (locate-library "my-eshell")
   (eval-after-load "eshell"
-    (require 'my-eshell)))
+    (load-library "my-eshell")))
 
 ;; Load any hand-made customisations
 (when (file-exists-p custom-file)
