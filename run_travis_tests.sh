@@ -23,18 +23,11 @@ then
 fi
 emacsclient -e "(kill-emacs)"
 
-# Now we have started we can install our normal package set
-if [ "$EMACS" = 'emacs23' ] ; then
-    # For Emacs23 we need to manually install ELPA
-    ${EMACS} --batch -l ./tests/install-elpa.el -f my-install-elpa
-    EXTRA_LOAD="-l ~/.emacs.d/elpa/package.el"
-fi
-
 # Install all the packages we use
 ${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
 echo "second times a charm"
 ${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
-${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-install-additional-pkgs
+#${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-install-additional-pkgs
 
 ${EMACS} --daemon
 OK=`emacsclient -e "(if I-completed-loading-dotinit 0 -1)"`
