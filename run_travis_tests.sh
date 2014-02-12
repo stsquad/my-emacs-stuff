@@ -25,10 +25,8 @@ emacsclient -e "(kill-emacs)"
 
 # Install all the packages we use
 ${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
-echo "second times a charm"
-${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
-#${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-install-additional-pkgs
 
+# Restart the daemon
 ${EMACS} --daemon
 OK=`emacsclient -e "(if I-completed-loading-dotinit 0 -1)"`
 if [ "$OK" != "0" ]
