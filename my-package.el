@@ -27,11 +27,9 @@
     git-commit-mode
     gitconfig-mode
     gitignore-mode
-    gplusify
     guide-key
-    helm helm-ack helm-git-grep helm-c-yasnippet helm-themes
+    helm helm-ack helm-git-grep helm-descbinds helm-c-yasnippet helm-themes
     htmlize
-    ido-ubiquitous ido-vertical-mode
     js2-mode
     json-mode
     keychain-environment
@@ -49,7 +47,6 @@
     protobuf-mode
     rainbow-delimiters
     smart-mode-line
-    smex
     ssh-config-mode
     solarized-theme
     syslog-mode
