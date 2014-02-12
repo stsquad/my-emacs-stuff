@@ -27,7 +27,9 @@ emacsclient -e "(kill-emacs)"
 ${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
 
 # Check the state of .emacs.d
+echo "Checking installed packages"
 find ~/.emacs.d -iname "*.el"
+ls -l ~/.emacs.d
 
 # Restart the daemon
 ${EMACS} --daemon
@@ -45,6 +47,7 @@ emacsclient -e "(kill-emacs)"
 #
 # Now check we can compile everything
 ${EMACS} -q --batch -l "tests/compile-setup.el" -f batch-byte-compile ~/.emacs.d/*.el
+${EMACS} -q --batch -l "tests/compile-setup.el" -f batch-byte-compile ~/.emacs.d/my-elisp/*.el
 
 # Now we are set-up we can the ERT tests (if we are running Emacs24 or above)
 if [ "$EMACS" = 'emacs24' ] ; then
