@@ -31,6 +31,8 @@
             (add-to-list 'load-path p)))
       my-config-paths)
 
+(message "load-path is: %s" load-path)
+
 ;;;; Start of real code.
 
 ;; Find out about my environment
