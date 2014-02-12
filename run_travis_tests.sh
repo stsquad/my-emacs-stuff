@@ -26,6 +26,9 @@ emacsclient -e "(kill-emacs)"
 # Install all the packages we use
 ${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
 
+# Check the state of .emacs.d
+find ~/.emacs.d -iname "*.el"
+
 # Restart the daemon
 ${EMACS} --daemon
 OK=`emacsclient -e "(if I-completed-loading-dotinit 0 -1)"`
