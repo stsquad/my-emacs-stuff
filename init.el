@@ -392,14 +392,14 @@ Assumes that the frame is only split into two."
   (global-set-key (kbd "C-=") 'er/expand-region))
 
 ;; Learn key strokes
-(defvar guide-key/guide-key-sequence)
+(eval-when-compile (defvar guide-key/guide-key-sequence))
 (when (require 'guide-key nil t)
   (setq guide-key/guide-key-sequence
         '("C-x c" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
   (guide-key-mode 1))
 
 ;; God-Mode, like sticky C- but more
-(defvar god-local-mode)
+(eval-when-compile (defvar god-local-mode))
 (when (require 'god-mode nil t)
   ; hmm, this clashes with Esc-$ which I use to spell words...
   ;(global-set-key (kbd "<escgape>") 'god-mode-all)
@@ -454,8 +454,9 @@ Assumes that the frame is only split into two."
                             (vertical-scroll-bars)))
 
 ; fixes for compile
-(declare-function crmbk-running-in-host-x11-p "chromebook")
-(defvar crmbk-frame-mode-map)
+(eval-when-compile
+  (declare-function crmbk-running-in-host-x11-p "chromebook")
+  (defvar crmbk-frame-mode-map))
 
 (when (and (require 'chromebook "chromebook" t)
            (crmbk-running-in-host-x11-p))
@@ -515,7 +516,7 @@ Assumes that the frame is only split into two."
 
 ;; Change the cursor colour in Ovwrt mode
 (defun ins-cursor-set ()
-  "Set cursor colour according to insert mode"
+  "Set cursor colour according to insert mode."
   (set-cursor-color
    (if overwrite-mode
        "red"
@@ -583,6 +584,7 @@ Assumes that the frame is only split into two."
 (when (require 'smart-mode-line nil t)
   (sml/setup))
 
+(eval-when-compile (defvar tracking-most-recent-first))
 (when (require 'tracking nil t)
   (setq tracking-most-recent-first t)
   (tracking-mode))
@@ -654,7 +656,7 @@ Assumes that the frame is only split into two."
    '("^\\* [^:]+:+" . font-lock-function-name-face)
    '("\\*[Nn]ote\\b[^:]+:+" . font-lock-reference-face)
    '("  \\(Next\\|Prev\\|Up\\):" . font-lock-reference-face))
-  "Additional expressions to highlight in Info mode")
+  "Additional expressions to highlight in Info mode.")
 
 (add-hook 'Info-mode-hook
           (lambda ()
@@ -669,6 +671,11 @@ Assumes that the frame is only split into two."
 ;
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
+
+(eval-when-compile
+  (defvar ediff-custom-diff-options)
+  (defvar ediff-split-window-function)
+  (defvar ediff-window-setup-function))q
 
 (eval-after-load "ediff"
   '(progn
@@ -771,12 +778,12 @@ Assumes that the frame is only split into two."
               auto-mode-alist))
 
 (defun my-elisp-compile-buffer ()
-  "Compile the current buffer"
+  "Compile the current buffer."
   (interactive)
   (byte-compile-file (buffer-file-name)))
 
 (defun my-elisp-hook-functions ()
-  "A few quick elisp hook customisations"
+  "A few quick elisp hook customisation."
   (setq mode-name "elisp")
   (eldoc-mode t)
   (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer)
