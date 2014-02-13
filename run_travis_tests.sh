@@ -4,9 +4,7 @@
 #
 set -ex
 
-# For the logs
-${EMACS} --version
-
+emacs --version
 # Dump our env
 #env
 
@@ -14,7 +12,7 @@ ${EMACS} --version
 ./setup_emacs.sh
 
 # Basic start-up in daemon test
-${EMACS} --daemon
+emacs --daemon
 OK=`emacsclient -e "(if I-completed-loading-dotinit 0 -1)"`
 if [ "$OK" != "0" ]
 then
@@ -24,7 +22,7 @@ fi
 emacsclient -e "(kill-emacs)"
 
 # Install all the packages we use
-${EMACS} -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
+emacs -q --batch ${EXTRA_LOAD} -l ./my-package.el -f my-packages-reset
 
 # Check the state of .emacs.d
 echo "Checking installed packages"
@@ -32,7 +30,7 @@ find ~/.emacs.d -iname "*.el"
 ls -l ~/.emacs.d
 
 # Restart the daemon
-${EMACS} --daemon
+emacs --daemon
 OK=`emacsclient -e "(if I-completed-loading-dotinit 0 -1)"`
 if [ "$OK" != "0" ]
 then
@@ -46,10 +44,11 @@ emacsclient -e "(kill-emacs)"
 
 #
 # Now check we can compile everything
-${EMACS} -q --batch -l "tests/compile-setup.el" -f batch-byte-compile ~/.emacs.d/*.el
-${EMACS} -q --batch -l "tests/compile-setup.el" -f batch-byte-compile ~/.emacs.d/my-elisp/*.el
+EMACS_COMPILE="emacs -q --batch -l tests/compile-setup.el -f batch-byte-compile"
+${EMACS_COMPILE} ~/.emacs.d/init.el
+find ~/.emacs.d/my-elisp/ -maxdepth 1 -iname "my-*.el" | grep -v my-email | xargs -n 1 ${EMACS_COMPILE}
 
 # Now we are set-up we can the ERT tests (if we are running Emacs24 or above)
 if [ "$EMACS" = 'emacs24' ] ; then
-    ${EMACS} -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
+    emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
 fi

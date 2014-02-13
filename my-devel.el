@@ -66,7 +66,6 @@
   "Hook function for editing Wordpress code."
   (interactive)
   (setq tab-width 4
-	c-basic-offset 4
 	indent-tabs-mode 't))
 
 (defvar my-php-hooks-alist

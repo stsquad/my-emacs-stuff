@@ -4,6 +4,8 @@
 ;; Simple project handling code: DEPRECATED
 
 
+(require 'my-utils)
+
 ;; Define a current-project-root
 ;
 ; In most cases I open emacs at the top of a src tree. Searches and compiles

@@ -14,9 +14,9 @@
   (when (file-exists-p mu4e-path)
     (add-to-list 'load-path mu4e-path)))
 
-(require 'mu4e nil t)
-(require 'mu4e-vars nil t)
-(require 'mu4e-draft nil t)
+(require 'mu4e)
+(require 'mu4e-vars)
+(require 'mu4e-draft)
 
 ;; Signature
 (defun my-sig-function ()

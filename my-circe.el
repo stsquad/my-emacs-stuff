@@ -8,6 +8,7 @@
 ;;; Code:
 
 (require 'circe)
+(require 'my-utils)
 
 ;; Don't spam me with JOIN/QUIT etc messages
 (setq circe-reduce-lurker-spam t)
