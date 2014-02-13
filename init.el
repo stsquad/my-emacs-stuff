@@ -675,7 +675,7 @@ Assumes that the frame is only split into two."
 (eval-when-compile
   (defvar ediff-custom-diff-options)
   (defvar ediff-split-window-function)
-  (defvar ediff-window-setup-function))q
+  (defvar ediff-window-setup-function))
 
 (eval-after-load "ediff"
   '(progn
