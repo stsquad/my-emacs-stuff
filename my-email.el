@@ -9,14 +9,20 @@
 (require 'my-vars)
 (require 'message)
 
-; Currently I compile my own...
-(let ((mu4e-path (concat (getenv "HOME") "/src/emacs/mu.git/mu4e")))
-  (when (file-exists-p mu4e-path)
-    (add-to-list 'load-path mu4e-path)))
+; Currently I compile my own mu4e, but if it's not there we need to
+; find another.
+(eval-when (compile eval load)
+  (require 'my-utils)
+
+  (let ((mu4e-path (find-valid-file (list
+                                       (concat (getenv "HOME") "/src/emacs/mu.git/mu4e")
+                                       "/usr/share/emacs/site-lisp/mu4e"))))
+    (when (file-directory-p mu4e-path)
+      (add-to-list 'load-path mu4e-path))))
 
 (require 'mu4e)
-(require 'mu4e-vars)
-(require 'mu4e-draft)
+(require 'mu4e-vars nil t)
+(require 'mu4e-draft nil t)
 
 ;; Signature
 (defun my-sig-function ()
@@ -72,7 +78,7 @@ hook we are not yet in the compose buffer."
 ;; Utility functions for email
 
 (defun my-snip-region (beg end)
-  "Insert a <snip> tag to killed regions."
+  "Kill the region BEG to END and replace with <snip> tag."
   (interactive (list (point) (mark)))
   (kill-region beg end)
   (when (string-prefix-p ">" (car kill-ring))
@@ -122,11 +128,13 @@ hook we are not yet in the compose buffer."
 
 (autoload 'mu4e "mu4e")
 (global-set-key (kbd "C-c m") 'mu4e)
+
 (eval-after-load "mu4e"
   '(progn
-                                        ; key-bindings
-     (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region)
-                                        ; mode hooks
+     ; key-bindings
+     (when (keymapp mu4e-compose-mode-map)
+       (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region))
+     ; mode hooks
      (add-hook 'mu4e-headers-mode-hook
                '(lambda () (yas-minor-mode -1)))
                                         ; pre-canned searches
@@ -146,7 +154,7 @@ hook we are not yet in the compose buffer."
         "Unread posts addressed to me" ?m))
      (add-to-list
       'mu4e-bookmarks
-      '("from:alex.bennee"
+      '("\(from:alex.bennee OR from:bennee.com\)"
         "Mail sent by me" ?s))
      (add-to-list
       'mu4e-bookmarks
