@@ -19,12 +19,14 @@
     circe
     edit-server edit-server-htmlize
     elpy
+    emms
     eproject
     expand-region
     flycheck
     flycheck-tip
     git-blame
     git-commit-mode
+    git-messenger
     gitconfig-mode
     gitignore-mode
     guide-key
