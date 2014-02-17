@@ -5,7 +5,8 @@
 (require 'ert)
 
 ;; Setup path
-(defun my-ert-setup-path
+(defun my-ert-setup-path ()
+  "Setup path to packages for testing."
     (mapc #'(lambda (p)
               (when (and (file-exists-p p)
                          (file-directory-p p))
