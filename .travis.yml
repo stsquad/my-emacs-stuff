@@ -13,4 +13,4 @@ install:
   - export PATH="$HOME/.evm/bin:$PATH"
   - evm install $EVM_EMACS --use
 script:
-  - ./run_travis_tests.sh
+  - ./tests/run_travis_tests.sh
