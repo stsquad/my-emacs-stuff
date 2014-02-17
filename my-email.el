@@ -20,7 +20,9 @@
     (when (file-directory-p mu4e-path)
       (add-to-list 'load-path mu4e-path))))
 
-(require 'mu4e)
+(when (require 'mu4e nil 't)
+  (autoload 'mu4e "mu4e")
+  (global-set-key (kbd "C-c m") 'mu4e))
 (require 'mu4e-vars nil t)
 (require 'mu4e-draft nil t)
 
@@ -125,9 +127,6 @@ hook we are not yet in the compose buffer."
 (when I-am-at-work
   (setq mu4e-user-mail-address-list '("alex.bennee@linaro.org")
         mu4e-compose-complete-only-after "2013-11-01"))
-
-(autoload 'mu4e "mu4e")
-(global-set-key (kbd "C-c m") 'mu4e)
 
 (eval-after-load "mu4e"
   '(progn
