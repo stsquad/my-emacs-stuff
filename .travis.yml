@@ -12,5 +12,11 @@ install:
   - curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
   - export PATH="$HOME/.evm/bin:$PATH"
   - evm install $EVM_EMACS --use
+  - ./setup_emacs.sh
 script:
-  - ./tests/run_travis_tests.sh
+  - ./tests/check_daemon_starts.sh
+  - ./tests/install_pkgs.sh
+  - ./tests/check_daemon_starts.sh
+  - ./tests/check_init_compiles.sh
+  - emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
+
