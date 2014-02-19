@@ -514,7 +514,8 @@ Assumes that the frame is only split into two."
 (mwheel-install)
 
 ; X11 paste to point
-(setq mouse-yank-at-point t)
+(when (boundp 'mouse-yank-at-point)
+  (setq mouse-yank-at-point t))
 
 ;; Change the cursor colour in Ovwrt mode
 (defun ins-cursor-set ()
