@@ -15,6 +15,6 @@ else
     INSTALLED=`emacsclient -e "package-activated-list"`
     echo "Succesful --daemon start-up with pkg=${INSTALLED}"
 fi
-echo -en 'travis_fold:end:daemon_starts\r'
 emacsclient -e "(kill-emacs)"
+echo -en 'travis_fold:end:daemon_starts\r'
 exit 0

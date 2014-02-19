@@ -3,7 +3,7 @@
 # Check the init files compile
 #
 set -ex
-echo "Checking init files compile"
+echo -en 'travis_fold:start:init_compiles\r'
 emacs --version
 for file in ~/.emacs.d/my-elisp/*.el
 do
@@ -12,4 +12,5 @@ do
         emacs -q --batch -l tests/compile-setup.el -f batch-byte-compile $file
     fi
 done
+echo -en 'travis_fold:end:init_compiles\r'
 exit 0
