@@ -480,14 +480,14 @@ Assumes that the frame is only split into two."
                       :family "DejaVu Sans Mono"
                       :height 140
                       :weight 'normal
-                      :width 'normal)
-  (when (functionp 'set-fontset-font)
-    (set-fontset-font "fontset-default"
-                      'unicode
-                      (font-spec :family "DejaVu Sans Mono"
-                                 :width 'normal
-                                 :size 12.4
-                                 :weight 'normal))))
+                      :width 'normal))
+;;   (when (functionp 'set-fontset-font)
+;;     (set-fontset-font "fontset-default"
+;;                       'unicode
+;;                       (font-spec :family "DejaVu Sans Mono"
+;;                                  :width 'normal
+;;                                  :size 12.4
+;;                                  :weight 'normal))))
 
 (ignore-errors
   (load-theme 'zenburn t))
