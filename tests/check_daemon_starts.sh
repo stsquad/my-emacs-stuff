@@ -3,7 +3,7 @@
 # Check the Daemon starts up
 #
 set -ex
-echo -en 'travis_fold:start:#{Checking daemon starts}\\r'
+echo -en 'travis_fold:start:daemon_starts\r'
 emacs --version
 emacs --daemon
 OK=`emacsclient -e "(if I-completed-loading-dotinit 0 -1)"`
@@ -15,6 +15,6 @@ else
     INSTALLED=`emacsclient -e "package-activated-list"`
     echo "Succesful --daemon start-up with pkg=${INSTALLED}"
 fi
-echo -en 'travis_fold:end:#{Checking daemon starts}\\r'
+echo -en 'travis_fold:end:daemon_starts\r'
 emacsclient -e "(kill-emacs)"
 exit 0
