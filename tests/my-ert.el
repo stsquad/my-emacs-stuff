@@ -1,6 +1,10 @@
+;;; my-ert.el -- ert tests for my stuff
 ;;
-;; My ERT tests
+;;; Commentary:
 ;;
+;; Hopefully the start of better testing
+;;
+;;; Code:
 
 (require 'ert)
 
@@ -21,5 +25,8 @@
   (require 'my-utils)
   (should (eql (which-lookup "foo") nil))
   (should (string-match "emacs" (which-lookup "emacs")))
-  (should (string-equal (which-lookup '("aspell" "ispell")) "/usr/bin/aspell"))
-  (should (string-equal (which-lookup '("ack-grep" "ack" "grep")) "/usr/bin/grep")))
+  (should (string-equal (which-lookup '("true" "false")) "/bin/true"))
+  (should (string-equal (which-lookup '("not-there" "true")) "/bin/true")))
+
+(provide 'my-ert)
+;;; my-ert.el ends here
