@@ -151,6 +151,8 @@
 ; This gets over-ridden when auto-complete is in effect
 (global-set-key (kbd "M-/") 'hippie-expand)
 
+(require 'my-local-pkgs nil t)
+
 ;; Do we have snippets?
 (when (require 'yasnippet nil t)
   (load-library "my-yasnippet.el"))
