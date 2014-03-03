@@ -20,9 +20,18 @@
     (when (file-directory-p mu4e-path)
       (add-to-list 'load-path mu4e-path))))
 
+(defun my-switch-to-mue4 ()
+  "Smart dwim switch to mu4e."
+  (interactive)
+  (if (get-buffer "*mu4e-headers*")
+      (progn
+        (switch-to-buffer "*mu4e-headers*")
+        (delete-other-windows))
+    (mu4e)))
+
 (when (require 'mu4e nil 't)
   (autoload 'mu4e "mu4e")
-  (global-set-key (kbd "C-c m") 'mu4e))
+  (global-set-key (kbd "C-c m") 'my-switch-to-mue4))
 (require 'mu4e-vars nil t)
 (require 'mu4e-draft nil t)
 
