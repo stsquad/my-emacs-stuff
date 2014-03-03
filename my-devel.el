@@ -1,4 +1,4 @@
-;;; my-devel.el --- Central configurtation for development hooks
+;;; my-devel.el --- Central configuration for development hooks
 ;;
 ;;; Commentary:
 ;;

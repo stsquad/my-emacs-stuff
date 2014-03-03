@@ -126,8 +126,6 @@
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 
-
-
 ;; maybe-load-library
 ;
 ; A little less than using (require 'lib) - but require has optional args

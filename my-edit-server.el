@@ -1,6 +1,11 @@
+;;; my-edit-server.el -- load up the Edit with Emacs edit server
 ;;
-;; Edit Server Tweaks
+;;; Commentary:
 ;;
+;; There is not much to do here but ensure the edit server is spawned
+;; at the end of start-up and we have hooks in place for the various modes.
+;;
+;;; Code:
 
 (require 'edit-server)
 
@@ -25,4 +30,8 @@
 (add-hook 'emacs-startup-hook '(lambda ()
                                  (message "starting up edit-server")
                                  (edit-server-start)))
+
+(provide 'my-edit-server)
+;;; my-edit-server.el ends here
+
 
