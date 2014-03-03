@@ -489,7 +489,14 @@ Assumes that the frame is only split into two."
 ;;                                  :weight 'normal))))
 
 (ignore-errors
-  (load-theme 'zenburn t))
+  (when (require 'zenburn-theme)
+    (load-theme 'zenburn t)
+    (when (custom-theme-enabled-p 'zenburn)
+      (zenburn-with-color-variables
+        (custom-theme-set-faces
+         'zenburn
+         `(num3-face-odd ((t (:foreground ,zenburn-fg-1))))
+         `(num3-face-even ((t (:foreground ,zenburn-fg+1)))))))))
 
 (message "Display Done")
 
