@@ -161,9 +161,8 @@
   (load-library "my-autocomplete"))
 
 ; Nice for jumping about windows.
-(when (maybe-load-library "ace-jump-mode")
+(when (require 'ace-jump-mode nil t)
   (global-set-key (kbd "C-x j") 'ace-jump-mode))
-
 
 ;; Better M-x
 ; experimenting with different approaches
