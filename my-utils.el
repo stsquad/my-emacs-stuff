@@ -119,5 +119,15 @@
     (chomp (shell-command-to-string (format "pass %s" pass-name)))))
 
 
+;;
+;; Bit extraction utils
+;;
+(defun extract-bits (value pos length)
+  "Extract from `VALUE' at `POS' `LENGTH' bits."
+  (let ((rsh-amount (- 0 pos))
+        (mask (- (lsh 1 length) 1)))
+    (logand mask (lsh value rsh-amount))))
+
+
 (provide 'my-utils)
 ;;; my-utils.el ends here
