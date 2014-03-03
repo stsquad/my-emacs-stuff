@@ -14,10 +14,13 @@
 (require 'ox nil t)
 (require 'ox-reveal nil t)
 
+
 (defvar ajb-work-org-file
-  "/ssh:alex@bennee.com:/home/alex/doc/org/work.org"
+  (when I-am-at-work "/home/alex/org/index.org")
   "The location of my main work scratchpad.")
 
+;; General navigation
+(setq org-return-follows-link t)
 
 ;; Clocking behaviour
 (setq org-clock-persist 't
@@ -39,6 +42,27 @@
 
 ;; Export settings
 (setq org-export-allow-bind-keywords t)
+
+(when I-am-at-work
+  (setq org-publish-project-alist
+        '(
+          ("org-notes"
+           :base-directory "~/org/"
+           :base-extension "org"
+           :publishing-directory "~/public_html/org/"
+           :recursive t
+           :publishing-function org-html-publish-to-html
+           :headline-levels 4             ; Just the default for this project.
+           :auto-preamble t
+           )
+          ("org-static"
+           :base-directory "~/org/"
+           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+           :publishing-directory "~/public_html/org/"
+           :recursive t
+           :publishing-function org-publish-attachment
+           )
+          ("org" :components ("org-notes" "org-static")))))
 
 ; summarise TODOs
 (defun org-summary-todo (n-done n-not-done)
