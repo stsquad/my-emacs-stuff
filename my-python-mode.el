@@ -15,6 +15,10 @@
 
 ;  (define-key elpy-mode-map (kbd "C-c C-f") 'elpy-eldoc-documentation))
 
+(when (require 'flycheck nil t)
+  (setq elpy-default-minor-modes (delete 'flymake-mode elpy-default-minor-modes))
+  (add-to-list 'elpy-default-minor-modes 'flycheck-mode))
+
 (message "Done loading my-python-mode")
 
 (provide 'my-python-mode)
