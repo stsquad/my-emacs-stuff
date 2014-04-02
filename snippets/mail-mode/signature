@@ -1,10 +1,11 @@
 # -*- mode: snippet -*-
 # name: signature
 # key: $sig
+# TODO: add smart deletion to end of mail, add link summary
 # --
-
 ${1:$$(yas/choose-value '("Cheers" "Yours sincerely"))},
 
 --
 Alex Bennée
 ${2:$$(yas/choose-value '("http://www.bennee.com/~alex" "QEMU/KVM Hacker for Linaro"))}
+$0
