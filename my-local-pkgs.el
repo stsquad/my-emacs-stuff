@@ -18,7 +18,16 @@
 ;; LAVA mode
 (when (require 'lava-mode nil t)
   (setq lava-user-name "ajbennee"
-        lava-api-token (my-pass-password "lava")))
+        lava-api-token (my-pass-password "lava"))
+  (add-to-list 'auto-mode-alist '("lava-mode.*\\.json$" . lava-mode))
+  (when (require 'tracking nil 'noerror)
+    (add-to-list
+     'lava-job-list-mode-hook
+     #'(lambda ()
+         (add-to-list
+          'tabulated-list-revert-hook
+          #'(lambda ()
+              (tracking-add-buffer (current-buffer))))))))
 
 (provide 'my-local-pkgs)
 ;;; my-local-pkgs ends here
