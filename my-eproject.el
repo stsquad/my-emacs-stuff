@@ -52,6 +52,11 @@
 ;; Individual project definitions
 ;;
 
+;; ELPA Packages
+(define-project-type elpa-pkg
+  (generic)
+  (look-for "../../elpa"))
+
 ;; QEMU
 (define-project-type qemu
   (generic-git)
