@@ -850,6 +850,9 @@ Assumes that the frame is only split into two."
 ; TODO - automode alist
 (add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
 
+(when (require 'flycheck nil t)
+  (load-library "my-flycheck"))
+
 (message "Done various programming modes")
 
 (require 'my-buffer)
