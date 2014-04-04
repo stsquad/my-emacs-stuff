@@ -13,7 +13,19 @@
 (require 'risu nil t)
 
 ;; QEMU system mode comint mode (https://github.com/stsquad/qemu-mode)
-(require 'qemu-mode nil t)
+(when (require 'qemu-mode nil t)
+  (setq qemu-executable-path
+        "/home/alex/lsrc/qemu/qemu.git/aarch64-softmmu/qemu-system-aarch64"
+        qemu-kernel-image
+        "/home/alex/lsrc/qemu/linux.git/arch/arm64/boot/Image"
+        qemu-kernel-params
+        "console=ttyAMA0 debug init=/bin/init"
+        qemu-machine-params
+        "-cpu cortex-a57 -machine type=virt -nographic -smp 1 -m 512"
+        qemu-net-device-params
+        nil
+        qemu-drive-device-params
+        nil))
 
 ;; LAVA mode
 (when (require 'lava-mode nil t)
