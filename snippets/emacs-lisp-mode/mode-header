@@ -2,7 +2,7 @@
 # name: Emacs Lisp Mode Header
 # key: $modehead
 # --
-;;; ${1:`(buffer-name)`} --- $2
+;;; ${1:`(s-chop-suffix ".el" (buffer-name))`} --- $2
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 
