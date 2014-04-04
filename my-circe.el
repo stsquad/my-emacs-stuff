@@ -35,7 +35,7 @@
 	 :port "6697"
 	 :tls 't
          :nick "stsquad"
-         :channels ("#qemu")
+         :channels ("#qemu" "#qemu-gsoc")
          )
 	("znc"
 	 :host "ircproxy.linaro.org"
