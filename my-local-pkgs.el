@@ -30,7 +30,27 @@
 ;; LAVA mode
 (when (require 'lava-mode nil t)
   (setq lava-user-name "ajbennee"
-        lava-api-token (my-pass-password "lava"))
+        lava-api-token (my-pass-password "lava")
+        lava-mode-default-device-image-alist
+        '(("arndale" . (("command" . "deploy_linaro_image")
+                        ("metadata" . (("rootfs.type" . "server")
+                                       ("ubuntu.build" . "618")
+                                       ("ubuntu.distribution" . "ubuntu")
+                                       ("ubuntu.name" . "arndale")))
+                        ("parameters" . (("image" .
+                                          "http://snapshots.linaro.org/ubuntu/pre-built/arndale/618/arndale-saucy_server_20140325-618.img.gz")))))
+          ("kvm" . (("command" ."deploy_linaro_image")
+                    ("parameters" . (("image" .
+                                      "http://community.validation.linaro.org/images/kvm/ubuntu-12-04-server-base-lava.img.gz")))))
+          ("mustang" . (("command" . "deploy_linaro_kernel")
+                        ("parameters" . (("dtb" .
+                                          "http://images-internal/mustang/mustang.dtb")
+                                         ("kernel" .
+                                          "http://images-internal/mustang/uImage")
+                                         ("nfsrootfs" .
+                                           "http://people.linaro.org/~alex.bennee/images/trusty-core-lava.tar.gz")))))))
+  (setq-default lava-mode-test-repository
+                "http://git.linaro.org/people/alex.bennee/test-definitions.git")
   (add-to-list 'auto-mode-alist '("lava-mode.*\\.json$" . lava-mode))
   (when (require 'tracking nil 'noerror)
     (add-to-list
