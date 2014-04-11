@@ -112,6 +112,9 @@
 (setq use-file-dialog nil
       use-dialog-box nil)
 
+;; X selection magic
+(setq x-select-enable-primary t) ; ensure killed text goes to primary
+
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
   '("Postscript Print Buffer" . ps-print-buffer))
