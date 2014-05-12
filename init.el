@@ -623,12 +623,6 @@ Assumes that the frame is only split into two."
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
 
-;; Use xdg-open
-(setq browse-url-browser-function
-      (cond
-       (I-am-on-pixel 'eww-browse-url)
-       (t 'browse-url-xdg-open)))
-
 (message "Done Display Hacks")
 
 ;; Don't prompt me to revert something
