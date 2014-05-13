@@ -139,7 +139,7 @@
     (load-library libname)))
 
 ;; Do we want an edit-server?
-(when (and (daemonp)
+(when (and (daemonp) (not (= 0 (user-uid)))
            (require 'edit-server nil t))
   (load-library "my-edit-server.el"))
 
