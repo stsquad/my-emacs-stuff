@@ -21,7 +21,7 @@
 (defun my-znc-password (server)
   "Return the password for the `SERVER'."
   (format "ajb-linaro:%s"
-          (chomp (shell-command-to-string (format "pass znc")))))
+          (my-pass-password "znc")))
 
 ;; Some defaults
 (setq circe-network-options
@@ -33,7 +33,7 @@
 	("OFTC"
 	 :host "irc.oftc.net"
 	 :port "6697"
-	 :tls 't
+	 :tls t
          :nick "stsquad"
          :channels ("#qemu" "#qemu-gsoc")
          )
@@ -61,7 +61,6 @@
 	 :channels ("&bitlbee")
 	 :host "localhost"
 	 :service "6667"
-	 :lagmon-disabled t
 	)))
 
 ;;
@@ -101,10 +100,11 @@
 (defun my-irc-login ()
   "Login into my usual IRCs."
   (interactive)
+  (when I-am-at-work
+    (circe "OFTC")
+    (circe "znc"))
   (circe "Freenode")
-  (circe "Pl0rt")
-  (circe "OFTC")
-  (circe "znc"))
+  (circe "Pl0rt"))
 
 
 (provide 'my-circe)
