@@ -6,6 +6,8 @@
 ;;
 ;;; Code:
 
+(require 'my-vars)
+
 (require 'org)
 (require 'org-clock)
 (require 'org-capture nil t)
@@ -36,7 +38,7 @@
       org-clock-clocked-in-display 'frame-title)
 
 ;; TODO Hierarchy
-(setq org-provide-todo-statistics 'ALL-HEADLINES
+(setq org-provide-todo-statistics t
       org-checkbox-hierarchical-statistics nil
       org-hierarchical-todo-statistics nil)
 
