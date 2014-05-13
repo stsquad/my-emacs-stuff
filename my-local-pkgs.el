@@ -29,6 +29,7 @@
 
 ;; LAVA mode
 (when (require 'lava-mode nil t)
+  (global-set-key (kbd "C-c l") 'lava-list-jobs)
   (setq lava-user-name "ajbennee"
         lava-api-token (my-pass-password "lava")
         lava-mode-default-device-image-alist
@@ -48,7 +49,16 @@
                                          ("kernel" .
                                           "http://images-internal/mustang/uImage")
                                          ("nfsrootfs" .
-                                           "http://people.linaro.org/~alex.bennee/images/trusty-core-lava.tar.gz")))))))
+                                          "http://people.linaro.org/~alex.bennee/images/trusty-core-lava.tar.gz")))))
+          ("arndale-octa" . (("command" . "deploy_linaro_image")
+                             ("metadata" . (( "distribution" . "ubuntu" )
+                                            ( "hwpack.build" . "20" )
+                                            (  "hwpack.type" . "arndale-octa" )
+                                            (  "rootfs.build". "650" )
+                                            (  "rootfs.type" . "developer" )))
+                              ("parameters" . (( "hwpack" .
+                                                 "http://snapshots.linaro.org/kernel-hwpack/linux-lisa-arndale-octa/20/hwpack_linaro-arndale-octa_20140404-2235_b20_armhf_supported.tar.gz")
+                                               ("rootfs" . "http://snapshots.linaro.org/ubuntu/images/developer/650/linaro-saucy-developer-20140325-650.tar.gz")))))))
   (setq-default lava-mode-test-repository
                 "http://git.linaro.org/people/alex.bennee/test-definitions.git")
   (add-to-list 'auto-mode-alist '("lava-mode.*\\.json$" . lava-mode))
