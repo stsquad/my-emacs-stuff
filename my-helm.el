@@ -37,5 +37,8 @@
   (global-set-key (kbd "C-c o") 'helm-occur))
  (t (global-set-key (kbd "C-c o") 'occur)))
 
+;; Helm git grep
+(setq helm-git-grep-candidate-number-limit nil)
+
 (provide 'my-helm)
 ;;; my-helm.el ends here

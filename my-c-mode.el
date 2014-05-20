@@ -146,6 +146,30 @@
 
 (c-add-style "qemu-c-style" qemu-c-style)
 
+(defconst risu-style
+  '("ellemtel"
+    ;; fix indent in case statements
+    (statement-case-intro . +)
+    ;; and structure definitions
+    (inclass . +)
+    ;; Java methods
+    (access-label . 0)
+    ;; Java try..catch
+    (statement-cont . 0)
+    ;; and in arrays, enums and do-while loops
+    (c-hanging-braces-alist .
+                            ((brace-list-open)
+                             (brace-list-intro)
+                             (brace-list-entry)
+                             (brace-list-close)
+                                                          (block-close
+                                                           . c-snug-do-while)))
+    (comment-column . 70)
+    )
+    "RISU Style (PMM's C Programming Style)")
+
+(c-add-style "risu-c-style" risu-style)
+
 ;; my-c-style-guesser
 ;
 ; Go through the list of patterns and see if we know what style

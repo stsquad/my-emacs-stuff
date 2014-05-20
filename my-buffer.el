@@ -1,18 +1,19 @@
+;;; my-buffer.el --- buffer naviagtion tweaks
 ;;
-;; Buffer handling tweaks
+;;; Commentary:
 ;;
-
-;; Buffer Selection
-;
-; Use lusty-explorer if I can, otherwise leave it to ido-mode which
-; has been in emacs since version 22.
-;
-; Still have a bs-show "all" bound to C-x C-b for when I want to see
-; everything
+;; Use lusty-explorer if I can, otherwise leave it to ido-mode which
+;; has been in emacs since version 22.
+;;
+;; Still have a bs-show "all" bound to C-x C-b for when I want to see
+;; everything
+;;
+;;; Code:
 
 (require 'midnight)
 (require 'ibuf-ext)
 (require 'ido)
+(eval-when-compile (require 'cl))
 
 (message "Setting up buffer handling")
 
@@ -54,3 +55,4 @@
 (message "Done Buffer Handling Tweaks")
 
 (provide 'my-buffer)
+;;; my-buffer.el ends here

@@ -112,6 +112,9 @@
 (setq use-file-dialog nil
       use-dialog-box nil)
 
+;; X selection magic
+(setq x-select-enable-primary t) ; ensure killed text goes to primary
+
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
   '("Postscript Print Buffer" . ps-print-buffer))
@@ -136,7 +139,7 @@
     (load-library libname)))
 
 ;; Do we want an edit-server?
-(when (and (daemonp)
+(when (and (daemonp) (not (= 0 (user-uid)))
            (require 'edit-server nil t))
   (load-library "my-edit-server.el"))
 
@@ -240,56 +243,18 @@
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-c\C-m" 'execute-extended-command)
 
-;; Window navigation and size control
-(when (maybe-load-library "windmove")
-  (windmove-default-keybindings))
-
-(unless (and (fboundp 'crmbk-running-in-host-x11-p)
-             (crmbk-running-in-host-x11-p))
-  (global-set-key (kbd "<M-down>") 'enlarge-window)
-  (global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
-  (global-set-key (kbd "<M-up>") 'shrink-window)
-  (global-set-key (kbd "<M-left>") 'shrink-window-horizontally))
 
 ;(global-set-key (kbd "<C-tab>") 'bury-buffer)
 (global-set-key (kbd "<C-tab>") 'pop-global-mark)
 
-;; Allow windows to be dedicated to one thing interactively
-;; Toggle window dedication
-(defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not."
-  (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window
-                                 (not (window-dedicated-p window))))
-       "Window '%s' is dedicated"
-     "Window '%s' is normal")
-   (current-buffer)))
-
-;; Press [pause] key in each window you want to "freeze"
-(global-set-key [pause] 'toggle-window-dedicated)
-
-(defun toggle-frame-split ()
-  "If the frame is split vertically, split it horizontally or vice versa.
-Assumes that the frame is only split into two."
-  (interactive)
-  (unless (= (length (window-list)) 2)
-    (error "Can only toggle a frame split in two"))
-  (let ((split-vertically-p (window-combined-p)))
-    (delete-window) ; closes current window
-    (if split-vertically-p
-        (split-window-horizontally)
-      (split-window-vertically)) ; gives us a split with the other window twice
-    (switch-to-buffer nil))) ; restore the original window in this part of the frame
-;; I don't use the default binding of 'C-x 5', so use toggle-frame-split instead
-(global-set-key (kbd "C-x %") 'toggle-frame-split)
 
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
 (global-set-key [kp-divide] 'previous-error)
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
+
+(require 'my-windows)
 
 (when (require 'helm nil t)
   (load-library "my-helm.el"))
@@ -620,12 +585,6 @@ Assumes that the frame is only split into two."
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
 
-;; Use xdg-open
-(setq browse-url-browser-function
-      (cond
-       (I-am-on-pixel 'eww-browse-url)
-       (t 'browse-url-xdg-open)))
-
 (message "Done Display Hacks")
 
 ;; Don't prompt me to revert something
@@ -850,6 +809,9 @@ Assumes that the frame is only split into two."
 ; TODO - automode alist
 (add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
 
+(when (require 'flycheck nil t)
+  (load-library "my-flycheck"))
+
 (message "Done various programming modes")
 
 (require 'my-buffer)
@@ -877,6 +839,10 @@ Assumes that the frame is only split into two."
 (when (locate-library "my-eshell")
   (eval-after-load "eshell"
     (load-library "my-eshell")))
+
+;; Save state when I exit
+(when I-am-at-work
+  (desktop-save-mode))
 
 ;; Load any hand-made customisations
 (when (file-exists-p custom-file)

@@ -11,6 +11,7 @@
 (require 'eproject-extras)
 (require 'eproject-compile)
 (require 'my-find)
+(require 'my-c-mode)
 (require 'ack-and-a-half nil t)
 
 ;; Work around the compiler, (look-for) is actually
@@ -51,6 +52,11 @@
 ;;
 ;; Individual project definitions
 ;;
+
+;; ELPA Packages
+(define-project-type elpa-pkg
+  (generic)
+  (look-for "../../elpa"))
 
 ;; QEMU
 (define-project-type qemu
@@ -106,6 +112,11 @@
   :common-compiles ("make" "make install"))
 
 (add-hook 'wireshark-project-file-visit-hook 'my-eproj-is-c)
+
+(define-project-type risu
+  (generic-git)
+  (look-for "risu.c")
+  :c-style "risu-c-style")
 
 ;; Turn on eproject on various dev modes
 ;

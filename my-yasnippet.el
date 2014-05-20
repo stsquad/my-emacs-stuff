@@ -7,6 +7,7 @@
 ;;; Code:
 
 (require 'yasnippet)
+(require 's) ; I use in some snippets
 
 (when (file-exists-p "~/.emacs.d/my-snippets")
   (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))

@@ -100,17 +100,25 @@
 ;; Fix up the frame so we don't send pinentry to the wrong place
 (defun my-fixup-gpg-agent (frame)
   "Tweak DISPLAY and GPG_TTY environment variables as appropriate to `FRAME'."
-  (if
-      (display-graphic-p frame)
-      (setenv "DISPLAY"
-              (terminal-name frame))
-    (setenv "GPG_TTY"
-            (terminal-name frame))
+  (when (fboundp 'keychain-refresh-environment)
+    (keychain-refresh-environment))
+  (if (display-graphic-p frame)
+      (setenv "DISPLAY" (terminal-name frame))
+    (setenv "GPG_TTY" (terminal-name frame))
     (setenv "DISPLAY" nil)))
 
 (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
 ;(my-fixup-gpg-agent (selected-frame))
 
+(defun my-switch-browser (frame)
+  "Tweak default browser depending on frame visibility"
+  (setq browse-url-browser-function
+        (cond
+         (I-am-on-pixel 'eww-browse-url)
+         ((not (display-graphic-p frame)) 'eww-browse-url)
+          (t 'browse-url-xdg-open))))
+
+(add-hook 'after-make-frame-functions 'my-switch-browser)
 
 (defun my-pass-password (pass-name)
   "Return the password for the `PASS-NAME'."
