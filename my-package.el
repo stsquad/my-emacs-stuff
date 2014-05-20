@@ -30,7 +30,9 @@
     gitconfig-mode
     gitignore-mode
     guide-key
-    helm helm-ack helm-git-grep helm-descbinds helm-c-yasnippet helm-themes
+    helm
+    helm-ack helm-git-grep helm-descbinds helm-c-yasnippet
+    helm-swoop helm-themes
     htmlize
     js2-mode
     json-mode
@@ -42,7 +44,7 @@
     markdown-mode markdown-mode+
     mediawiki
     mc-extras multiple-cursors
-    org org-trello ox-reveal
+    org ox-reveal
     paredit
     pastebin
     projectile
@@ -52,6 +54,7 @@
     ssh-config-mode
     solarized-theme
     syslog-mode
+    tangotango-theme
     tracking
     web-mode
     yasnippet
