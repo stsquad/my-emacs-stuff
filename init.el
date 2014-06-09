@@ -31,6 +31,8 @@
             (add-to-list 'load-path p)))
       my-config-paths)
 
+(message "load-path is: %s" load-path)
+
 ;;;; Start of real code.
 
 ;; Find out about my environment
@@ -110,6 +112,9 @@
 (setq use-file-dialog nil
       use-dialog-box nil)
 
+;; X selection magic
+(setq x-select-enable-primary t) ; ensure killed text goes to primary
+
 ;; Change menu entry so it doesn't use faces.
 (define-key global-map [menu-bar tools print ps-print-buffer]
   '("Postscript Print Buffer" . ps-print-buffer))
@@ -124,8 +129,6 @@
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 
-
-
 ;; maybe-load-library
 ;
 ; A little less than using (require 'lib) - but require has optional args
@@ -136,7 +139,7 @@
     (load-library libname)))
 
 ;; Do we want an edit-server?
-(when (and (daemonp)
+(when (and (daemonp) (not (= 0 (user-uid)))
            (require 'edit-server nil t))
   (load-library "my-edit-server.el"))
 
@@ -149,6 +152,8 @@
 ; This gets over-ridden when auto-complete is in effect
 (global-set-key (kbd "M-/") 'hippie-expand)
 
+(require 'my-local-pkgs nil t)
+
 ;; Do we have snippets?
 (when (require 'yasnippet nil t)
   (load-library "my-yasnippet.el"))
@@ -157,9 +162,8 @@
   (load-library "my-autocomplete"))
 
 ; Nice for jumping about windows.
-(when (maybe-load-library "ace-jump-mode")
+(when (require 'ace-jump-mode nil t)
   (global-set-key (kbd "C-x j") 'ace-jump-mode))
-
 
 ;; Better M-x
 ; experimenting with different approaches
@@ -239,56 +243,18 @@
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-c\C-m" 'execute-extended-command)
 
-;; Window navigation and size control
-(when (maybe-load-library "windmove")
-  (windmove-default-keybindings))
-
-(unless (and (fboundp 'crmbk-running-in-host-x11-p)
-             (crmbk-running-in-host-x11-p))
-  (global-set-key (kbd "<M-down>") 'enlarge-window)
-  (global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
-  (global-set-key (kbd "<M-up>") 'shrink-window)
-  (global-set-key (kbd "<M-left>") 'shrink-window-horizontally))
 
 ;(global-set-key (kbd "<C-tab>") 'bury-buffer)
 (global-set-key (kbd "<C-tab>") 'pop-global-mark)
 
-;; Allow windows to be dedicated to one thing interactively
-;; Toggle window dedication
-(defun toggle-window-dedicated ()
-  "Toggle whether the current active window is dedicated or not."
-  (interactive)
-  (message
-   (if (let (window (get-buffer-window (current-buffer)))
-         (set-window-dedicated-p window
-                                 (not (window-dedicated-p window))))
-       "Window '%s' is dedicated"
-     "Window '%s' is normal")
-   (current-buffer)))
-
-;; Press [pause] key in each window you want to "freeze"
-(global-set-key [pause] 'toggle-window-dedicated)
-
-(defun toggle-frame-split ()
-  "If the frame is split vertically, split it horizontally or vice versa.
-Assumes that the frame is only split into two."
-  (interactive)
-  (unless (= (length (window-list)) 2)
-    (error "Can only toggle a frame split in two"))
-  (let ((split-vertically-p (window-combined-p)))
-    (delete-window) ; closes current window
-    (if split-vertically-p
-        (split-window-horizontally)
-      (split-window-vertically)) ; gives us a split with the other window twice
-    (switch-to-buffer nil))) ; restore the original window in this part of the frame
-;; I don't use the default binding of 'C-x 5', so use toggle-frame-split instead
-(global-set-key (kbd "C-x %") 'toggle-frame-split)
 
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
 (global-set-key [kp-divide] 'previous-error)
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
+
+(require 'my-windows)
 
 (when (require 'helm nil t)
   (load-library "my-helm.el"))
@@ -390,14 +356,14 @@ Assumes that the frame is only split into two."
   (global-set-key (kbd "C-=") 'er/expand-region))
 
 ;; Learn key strokes
-(defvar guide-key/guide-key-sequence)
+(eval-when-compile (defvar guide-key/guide-key-sequence))
 (when (require 'guide-key nil t)
   (setq guide-key/guide-key-sequence
         '("C-x c" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
   (guide-key-mode 1))
 
 ;; God-Mode, like sticky C- but more
-(defvar god-local-mode)
+(eval-when-compile (defvar god-local-mode))
 (when (require 'god-mode nil t)
   ; hmm, this clashes with Esc-$ which I use to spell words...
   ;(global-set-key (kbd "<escgape>") 'god-mode-all)
@@ -452,8 +418,9 @@ Assumes that the frame is only split into two."
                             (vertical-scroll-bars)))
 
 ; fixes for compile
-(declare-function crmbk-running-in-host-x11-p "chromebook")
-(defvar crmbk-frame-mode-map)
+(eval-when-compile
+  (declare-function crmbk-running-in-host-x11-p "chromebook")
+  (defvar crmbk-frame-mode-map))
 
 (when (and (require 'chromebook "chromebook" t)
            (crmbk-running-in-host-x11-p))
@@ -475,17 +442,24 @@ Assumes that the frame is only split into two."
                       :family "DejaVu Sans Mono"
                       :height 140
                       :weight 'normal
-                      :width 'normal)
-  (when (functionp 'set-fontset-font)
-    (set-fontset-font "fontset-default"
-                      'unicode
-                      (font-spec :family "DejaVu Sans Mono"
-                                 :width 'normal
-                                 :size 12.4
-                                 :weight 'normal))))
+                      :width 'normal))
+;;   (when (functionp 'set-fontset-font)
+;;     (set-fontset-font "fontset-default"
+;;                       'unicode
+;;                       (font-spec :family "DejaVu Sans Mono"
+;;                                  :width 'normal
+;;                                  :size 12.4
+;;                                  :weight 'normal))))
 
 (ignore-errors
-  (load-theme 'zenburn t))
+  (when (require 'zenburn-theme)
+    (load-theme 'zenburn t)
+    (when (custom-theme-enabled-p 'zenburn)
+      (zenburn-with-color-variables
+        (custom-theme-set-faces
+         'zenburn
+         `(num3-face-odd ((t (:foreground ,zenburn-fg-1))))
+         `(num3-face-even ((t (:foreground ,zenburn-fg+1)))))))))
 
 (message "Display Done")
 
@@ -509,11 +483,12 @@ Assumes that the frame is only split into two."
 (mwheel-install)
 
 ; X11 paste to point
-(setq mouse-yank-at-point t)
+(when (boundp 'mouse-yank-at-point)
+  (setq mouse-yank-at-point t))
 
 ;; Change the cursor colour in Ovwrt mode
 (defun ins-cursor-set ()
-  "Set cursor colour according to insert mode"
+  "Set cursor colour according to insert mode."
   (set-cursor-color
    (if overwrite-mode
        "red"
@@ -581,6 +556,7 @@ Assumes that the frame is only split into two."
 (when (require 'smart-mode-line nil t)
   (sml/setup))
 
+(eval-when-compile (defvar tracking-most-recent-first))
 (when (require 'tracking nil t)
   (setq tracking-most-recent-first t)
   (tracking-mode))
@@ -608,12 +584,6 @@ Assumes that the frame is only split into two."
 ;; Allow narrowing.
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
-
-;; Use xdg-open
-(setq browse-url-browser-function
-      (cond
-       (I-am-on-pixel 'eww-browse-url)
-       (t 'browse-url-xdg-open)))
 
 (message "Done Display Hacks")
 
@@ -652,7 +622,7 @@ Assumes that the frame is only split into two."
    '("^\\* [^:]+:+" . font-lock-function-name-face)
    '("\\*[Nn]ote\\b[^:]+:+" . font-lock-reference-face)
    '("  \\(Next\\|Prev\\|Up\\):" . font-lock-reference-face))
-  "Additional expressions to highlight in Info mode")
+  "Additional expressions to highlight in Info mode.")
 
 (add-hook 'Info-mode-hook
           (lambda ()
@@ -667,6 +637,11 @@ Assumes that the frame is only split into two."
 ;
 ;? Also need to find a way to restore it all on
 ;  resume. This stuff is all far from bullet-proof.
+
+(eval-when-compile
+  (defvar ediff-custom-diff-options)
+  (defvar ediff-split-window-function)
+  (defvar ediff-window-setup-function))
 
 (eval-after-load "ediff"
   '(progn
@@ -771,12 +746,12 @@ Assumes that the frame is only split into two."
               auto-mode-alist))
 
 (defun my-elisp-compile-buffer ()
-  "Compile the current buffer"
+  "Compile the current buffer."
   (interactive)
   (byte-compile-file (buffer-file-name)))
 
 (defun my-elisp-hook-functions ()
-  "A few quick elisp hook customisations"
+  "A few quick elisp hook customisation."
   (setq mode-name "elisp")
   (eldoc-mode t)
   (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer)
@@ -836,6 +811,9 @@ Assumes that the frame is only split into two."
 ; TODO - automode alist
 (add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
 
+(when (require 'flycheck nil t)
+  (load-library "my-flycheck"))
+
 (message "Done various programming modes")
 
 (require 'my-buffer)
@@ -863,6 +841,10 @@ Assumes that the frame is only split into two."
 (when (locate-library "my-eshell")
   (eval-after-load "eshell"
     (load-library "my-eshell")))
+
+;; Save state when I exit
+(when I-am-at-work
+  (desktop-save-mode))
 
 ;; Load any hand-made customisations
 (when (file-exists-p custom-file)

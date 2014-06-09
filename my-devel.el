@@ -1,4 +1,4 @@
-;;; my-devel.el --- Central configurtation for development hooks
+;;; my-devel.el --- Central configuration for development hooks
 ;;
 ;;; Commentary:
 ;;
@@ -66,7 +66,6 @@
   "Hook function for editing Wordpress code."
   (interactive)
   (setq tab-width 4
-	c-basic-offset 4
 	indent-tabs-mode 't))
 
 (defvar my-php-hooks-alist

@@ -78,5 +78,64 @@
       (setq list (cdr list)))
     (nreverse new-list)))
 
+;; Useful for making numbers readable for debugging
+;; or you could just use num3-mode
+(require 'thingatpt)
+(defun my-split-hexnum ()
+  "If `thing-at-point' is a hex string split it into easily readable chunks."
+  (interactive)
+  (when (thing-at-point-looking-at "[[:xdigit:]]\\{4,\\}")
+    (save-excursion
+      (kill-region (match-beginning 0) (match-end 0))
+      (let ((hex-string (current-kill 0))
+            (word))
+        (while (> (length hex-string) 4)
+          (setq word (substring hex-string -4)
+                hex-string (substring hex-string 0 -4))
+          (save-excursion
+            (insert ":" word)))
+        (insert hex-string)))))
+
+
+;; Fix up the frame so we don't send pinentry to the wrong place
+(defun my-fixup-gpg-agent (frame)
+  "Tweak DISPLAY and GPG_TTY environment variables as appropriate to `FRAME'."
+  (when (fboundp 'keychain-refresh-environment)
+    (keychain-refresh-environment))
+  (if (display-graphic-p frame)
+      (setenv "DISPLAY" (terminal-name frame))
+    (setenv "GPG_TTY" (terminal-name frame))
+    (setenv "DISPLAY" nil)))
+
+(add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
+;(my-fixup-gpg-agent (selected-frame))
+
+(defun my-switch-browser (frame)
+  "Tweak default browser depending on frame visibility"
+  (setq browse-url-browser-function
+        (cond
+         (I-am-on-pixel 'eww-browse-url)
+         ((not (display-graphic-p frame)) 'eww-browse-url)
+          (t 'browse-url-xdg-open))))
+
+(add-hook 'after-make-frame-functions 'my-switch-browser)
+
+(defun my-pass-password (pass-name)
+  "Return the password for the `PASS-NAME'."
+  (when (selected-frame)
+    (my-fixup-gpg-agent (selected-frame))
+    (chomp (shell-command-to-string (format "pass %s" pass-name)))))
+
+
+;;
+;; Bit extraction utils
+;;
+(defun extract-bits (value pos length)
+  "Extract from `VALUE' at `POS' `LENGTH' bits."
+  (let ((rsh-amount (- 0 pos))
+        (mask (- (lsh 1 length) 1)))
+    (logand mask (lsh value rsh-amount))))
+
+
 (provide 'my-utils)
 ;;; my-utils.el ends here

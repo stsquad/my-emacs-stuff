@@ -19,19 +19,21 @@
     circe
     edit-server edit-server-htmlize
     elpy
+    emms
     eproject
     expand-region
     flycheck
     flycheck-tip
     git-blame
     git-commit-mode
+    git-messenger
     gitconfig-mode
     gitignore-mode
-    gplusify
     guide-key
-    helm helm-ack helm-git-grep helm-c-yasnippet helm-themes
+    helm
+    helm-ack helm-git-grep helm-descbinds helm-c-yasnippet
+    helm-swoop helm-themes
     htmlize
-    ido-ubiquitous ido-vertical-mode
     js2-mode
     json-mode
     keychain-environment
@@ -42,17 +44,17 @@
     markdown-mode markdown-mode+
     mediawiki
     mc-extras multiple-cursors
-    org org-trello ox-reveal
+    org ox-reveal
     paredit
     pastebin
     projectile
     protobuf-mode
     rainbow-delimiters
     smart-mode-line
-    smex
     ssh-config-mode
     solarized-theme
     syslog-mode
+    tangotango-theme
     tracking
     web-mode
     yasnippet

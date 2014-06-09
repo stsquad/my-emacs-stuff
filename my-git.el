@@ -63,9 +63,8 @@
   "Run a checkpatch script against current commit."
   (interactive)
   (when (derived-mode-p 'magit-log-mode)
-    (magit-section-action (item info "run checkpatch" t)
-      ((commit)
-       (message "doing commit check for %s" info)
+    (magit-section-action checkpatch (info)
+      (commit
        (my-magit--do-run-checkpatch info)))))
 
 (defun my-magit-add-checkpatch-hook ()
@@ -80,12 +79,12 @@
 
 ;; C-c C-a to amend without any prompt
 ;; From: http://whattheemacsd.com/setup-magit.el-05.html
-(defun magit-just-amend ()
-  "Amend the last commit."
-  (interactive)
-  (save-window-excursion
-    (magit-with-refresh
-      (shell-command "git --no-pager commit --amend --reuse-message=HEAD"))))
+;; (defun magit-just-amend ()
+;;   "Amend the last commit."
+;;   (interactive)
+;;   (save-window-excursion
+;;     (magit-with-refresh
+;;       (shell-command "git --no-pager commit --amend --reuse-message=HEAD"))))
 
 (eval-after-load "magit"
   '(progn

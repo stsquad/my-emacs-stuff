@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: C File Preamble
+# key: $head
+# --
+/*
+ * $1
+ *
+ * Copyright (c) 2014 
+ * Written by Alex Bennée <${2:`(my-yas-expand-email)`}>
+ *
+ * This code is licensed under the GNU ${3:$$(yas/choose-value '("GPL v2" "GPL v2, or later" "GPL v3"))}.
+ */
+ $0
+

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: fprintf
+# key: fpf
+# --
+fprintf(${1:stderr},"%s: ${2:dbg}\n", __func__, $3);$0

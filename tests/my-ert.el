@@ -1,31 +1,32 @@
+;;; my-ert.el -- ert tests for my stuff
 ;;
-;; My ERT tests
+;;; Commentary:
 ;;
+;; Hopefully the start of better testing
+;;
+;;; Code:
 
 (require 'ert)
 
-;; thanks to spacebat on #emacs for helping with this one
-(defun my-define-compile-test (file)
-  "Define a single compile test for one of my .emacs modules"
-  (let* ((short-name
-          (car
-           (split-string (file-name-nondirectory file) "\\.")))
-         (test-name (intern (format "compile-%s" short-name))))
-    (eval `(ert-deftest ,test-name ()
-             (let ((byte-compile-error-on-warn t))
-               (should (byte-compile-file ,file)))))))
+;; Setup path
+(defun my-ert-setup-path ()
+  "Setup path to packages for testing."
+    (mapc #'(lambda (p)
+              (when (and (file-exists-p p)
+                         (file-directory-p p))
+                (add-to-list 'load-path p)))
+          '("~/.emacs.d/my-elisp" "~/.emacs.d/my-local-pkgs"))
+  (message "load-path is: %s" load-path))
 
-;; Define a test for each elisp file in the directory
-(let*
-   ((root-dir (file-name-directory
-               (file-chase-links (locate-library "~/.emacs.d/init.el"))))
-    (lisp-files (directory-files root-dir t "\.el$")))
-  (mapc 'my-define-compile-test lisp-files))
-  
 ;; Test my which-lookup function
 
 (ert-deftest whick-lookup-tests ()
+  (my-ert-setup-path)
+  (require 'my-utils)
   (should (eql (which-lookup "foo") nil))
   (should (string-match "emacs" (which-lookup "emacs")))
-  (should (string-equal (which-lookup '("aspell" "ispell")) "/usr/bin/aspell"))
-  (should (string-equal (which-lookup '("ack-grep" "ack" "grep")) "/usr/bin/grep")))
+  (should (string-equal (which-lookup '("true" "false")) "/bin/true"))
+  (should (string-equal (which-lookup '("not-there" "true")) "/bin/true")))
+
+(provide 'my-ert)
+;;; my-ert.el ends here
