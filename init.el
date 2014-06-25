@@ -702,7 +702,7 @@
 (when (require 'epa-file nil t)
   (when (string-match "socrates" (system-name))
     (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
-    (epa-file-enable))
+    (epa-file-enable)))
 
 ;; my-find-binary
 ;
