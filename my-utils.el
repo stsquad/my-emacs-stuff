@@ -119,6 +119,7 @@
           (t 'browse-url-xdg-open))))
 
 (add-hook 'after-make-frame-functions 'my-switch-browser)
+;(my-switch-browser (selected-frame))
 
 (defun my-pass-password (pass-name)
   "Return the password for the `PASS-NAME'."
