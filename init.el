@@ -129,6 +129,11 @@
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 
+;; Load any hand-made customisation
+;; we do this early to prevent problems with theme safety and the like
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; maybe-load-library
 ;
 ; A little less than using (require 'lib) - but require has optional args
