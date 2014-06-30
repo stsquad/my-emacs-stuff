@@ -703,9 +703,11 @@
 (when (require 'keychain-environment nil t)
   (keychain-refresh-environment))
 
-;; (when (maybe-load-library "epa-file")
-;;   (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
-;;   (epa-file-enable))
+; enable EasyPG handling
+(when (require 'epa-file nil t)
+  (when (string-match "socrates" (system-name))
+    (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
+    (epa-file-enable)))
 
 ;; my-find-binary
 ;
