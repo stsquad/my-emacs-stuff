@@ -81,7 +81,13 @@
 ;; Web stuff, use web-mode
 ;;
 
-;(when (featurep web-mode)
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (visual-line-mode)
+  (flyspell-mode))
+
+(when (featurep 'web-mode)
+  (add-hook 'web-mode-hook  'my-web-mode-hook))
 
 (add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
 
