@@ -698,10 +698,15 @@
 (when (require 'keychain-environment nil t)
   (keychain-refresh-environment))
 
-; enable EasyPG handling
+;; enable EasyPG handling
+; gpg-agent confuses epa when getting passphrase
+(defun my-squash-gpg (ignored-frame)
+  "Kill any GPG_AGENT_INFO in our environment"
+  (setenv "GPG_AGENT_INFO" nil))
+
 (when (require 'epa-file nil t)
   (when (string-match "socrates" (system-name))
-    (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
+    (add-hook 'after-make-frame-functions 'my-squash-gpg)
     (epa-file-enable)))
 
 ;; my-find-binary
