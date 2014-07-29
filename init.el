@@ -259,6 +259,8 @@
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
 
+(require 'my-toggles)
+
 (require 'my-windows)
 
 (when (require 'helm nil t)
@@ -364,7 +366,7 @@
 (eval-when-compile (defvar guide-key/guide-key-sequence))
 (when (require 'guide-key nil t)
   (setq guide-key/guide-key-sequence
-        '("C-x c" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
+        '("C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
   (guide-key-mode 1))
 
 ;; God-Mode, like sticky C- but more
