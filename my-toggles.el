@@ -33,5 +33,18 @@ narrowed."
 
 (define-key my-toggle-map "n" 'my-narrow-or-widen-dwim)
 
+;; Undo control
+; turn undo on or off for the buffer
+
+(defun my-toggle-buffer-undo ()
+  "Toggle undo tracking in current buffer."
+  (interactive)
+  (with-current-buffer (current-buffer)
+    (if (eq buffer-undo-list t)
+        (setq buffer-undo-list nil)
+      (buffer-disable-undo (current-buffer)))))
+
+(define-key my-toggle-map "u" 'my-toggle-buffer-undo)
+
 (provide 'my-toggles)
 ;;; my-toggles.el ends here
