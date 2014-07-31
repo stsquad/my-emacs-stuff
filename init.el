@@ -606,8 +606,7 @@
 (when (require 'whitespace nil t)
   (setq whitespace-style '(face
                            tabs trailing lines-tail empty
-                           space-after-tab tab-mark))
-  (global-set-key (kbd "C-c w") 'whitespace-mode))
+                           space-after-tab tab-mark)))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
