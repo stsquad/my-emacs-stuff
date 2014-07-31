@@ -93,8 +93,8 @@
 (define-project-type kernel
   (generic-git)
   (look-for "Documentation/CodingStyle")
-  :c-style "linux"
-  :common-compiles ("ARCH=x86 make" "make" "ARCH=x86 make TAGS"))
+  :c-style "linux-tabs-style"
+  :common-compiles ("ARCH=arm64 make -j9" "ARCH=x86 make" "make" "ARCH=x86 make TAGS"))
 
 (add-hook 'kernel-project-file-visit-hook 'my-eproj-is-c)
 
