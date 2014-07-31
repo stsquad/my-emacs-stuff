@@ -11,7 +11,6 @@
 (defvar my-useful-packages
   '(ac-etags ac-c-headers ac-dabbrev ac-helm ac-js2
     ace-jump-mode ace-jump-buffer
-    ack-and-a-half
     android-mode
     apache-mode
     auto-complete
