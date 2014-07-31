@@ -13,6 +13,7 @@
 
 (define-key my-toggle-map "d" 'toggle-debug-on-error)
 (define-key my-toggle-map "f" 'auto-fill-mode)
+(define-key my-toggle-map "w" 'whitespace-mode)
 
 ;; Narrowing
 ; from: http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
