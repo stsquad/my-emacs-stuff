@@ -163,8 +163,10 @@
 (when (require 'yasnippet nil t)
   (load-library "my-yasnippet.el"))
 
-(when (require 'auto-complete nil t)
-  (load-library "my-autocomplete"))
+(if (require 'company nil t)
+    (load-library "my-company")
+  (when (require 'auto-complete nil t)
+    (load-library "my-autocomplete")))
 
 ; Nice for jumping about windows.
 (when (require 'ace-jump-mode nil t)
