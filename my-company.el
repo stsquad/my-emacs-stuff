@@ -60,8 +60,8 @@
 (eval-after-load 'company
   '(progn
      ;; keys active while completing
-     (define-key company-active-map (kbd "TAB") 'company-complete-common)
-     (define-key company-active-map [tab] 'company-complete-common)
+     (define-key company-active-map (kbd "TAB") 'company-complete)
+     (define-key company-active-map [tab] 'company-complete)
      (define-key company-active-map (kbd "<right>") 'company-complete-common)
      ;; keys active in the global minor mode
      (define-key company-mode-map (kbd "M-/") 'company-complete-common)
