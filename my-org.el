@@ -45,6 +45,16 @@
 ;; Export settings
 (setq org-export-allow-bind-keywords t)
 
+;; ORG JIRA
+(when (and I-am-at-work (require 'org-jira nil t))
+  (setq jiralib-url "https://cards.linaro.org/")
+  (setq org-jira-working-dir (expand-file-name "~/org/jira"))
+  (add-to-list 'org-jira-serv-alist
+               '(linaro .
+                        (:url "https://cards.linaro.org/"
+                              :username "alex.bennee@linaro.org"
+                              :password #'(lambda () (my-pass-password "linaro"))))))
+
 (when I-am-at-work
   (setq
    org-agenda-files '("~/org/")
