@@ -12,7 +12,6 @@
 (require 'eproject-compile)
 (require 'my-find)
 (require 'my-c-mode)
-(require 'ack-and-a-half nil t)
 
 ;; Work around the compiler, (look-for) is actually
 ;; flet inside eproject's run-selector code.
@@ -126,27 +125,10 @@
 (add-hook 'makefile-mode-hook 'eproject-maybe-turn-on)
 (add-hook 'java-mode-hook 'eproject-maybe-turn-on)
 
-;;
 ;; Find methods
 ;
-; I want two find methods, one from the project root (f5) and the
-; other potentially from where I am.
-;
-
-(when (require 'ack-and-a-half nil 'noerror)
-  (defun my-ack-and-a-half-current-directory ()
-    "Return the current buffers directory if it exists, else nil"
-    (cond
-     (dired-directory dired-directory)
-     ((and buffer-file-name
-	   (file-exists-p buffer-file-name))
-      (file-name-directory (file-truename buffer-file-name)))
-     (t nil)))
-  
-  (add-to-list 'ack-and-a-half-root-directory-functions
-	       'my-ack-and-a-half-current-directory)
-  (setq ack-and-a-half-prompt-for-directory 'unless-guessed)
-  (define-key eproject-mode-map (kbd "<f6>") 'ack-and-a-half))
+; This has gotten overly complex to the point I need to cleanse with
+; fire and fixup my-find.el
 
 (defun my-eproject-find ()
   "Do a find across the project."
