@@ -850,13 +850,10 @@
   (eval-after-load "eshell"
     (load-library "my-eshell")))
 
-;; Save state when I exit
-(when I-am-at-work
-  (desktop-save-mode))
 
-;; Load any hand-made customisations
-(when (file-exists-p custom-file)
-  (load custom-file))
+;; Save state when I exit
+;; (when I-am-at-work
+;;   (desktop-save-mode))
 
 (message "Done .emacs")
 (setq I-completed-loading-dotinit 't)
