@@ -850,6 +850,10 @@
   (eval-after-load "eshell"
     (load-library "my-eshell")))
 
+;;
+;; Tcl (and expect)
+;;
+(add-to-list 'auto-mode-alist '("\\.expect\\'" . tcl-mode))
 
 ;; Save state when I exit
 ;; (when I-am-at-work
