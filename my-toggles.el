@@ -20,6 +20,7 @@
 (define-key my-toggle-map "q" 'toggle-debug-on-quit)
 (define-key my-toggle-map "f" 'auto-fill-mode)
 (define-key my-toggle-map "w" 'whitespace-mode)
+(define-key my-toggle-map "l" 'visual-line-mode)
 
 ;; Narrowing
 ; from: http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
