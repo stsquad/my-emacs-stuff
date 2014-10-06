@@ -58,16 +58,25 @@
 (when I-am-at-work
   (setq
    org-agenda-files '("~/org/")
+   org-refile-targets '((nil :maxlevel . 2)
+                        (org-agenda-files :maxlevel . 2))
    org-publish-project-alist
    '(
      ("org-notes"
       :base-directory "~/org/"
       :base-extension "org"
       :publishing-directory "~/public_html/org/"
-      :recursive t
+      :recursive nil
       :publishing-function org-html-publish-to-html
       :headline-levels 4             ; Just the default for this project.
       :auto-preamble t
+      )
+     ("org-presentations"
+      :base-directory "~/org/presentations"
+      :base-extension "html\\|css\\|js\\|png\\|jpg\\|gif\\|svg\\|pdf\\|mp3\\|ogg\\|swf"
+      :publishing-directory "~/public_html/org/presentations/"
+      :recursive t
+      :publishing-function org-publish-attachment
       )
      ("org-static"
       :base-directory "~/org/"
@@ -76,7 +85,7 @@
       :recursive t
       :publishing-function org-publish-attachment
       )
-     ("org" :components ("org-notes" "org-static")))))
+     ("org" :components ("org-notes" "org-presentations" "org-static")))))
 
 ; summarise TODOs
 (defun org-summary-todo (n-done n-not-done)
