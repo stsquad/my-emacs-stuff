@@ -16,10 +16,12 @@
 (require 'ox nil t)
 (require 'ox-reveal nil t)
 
-
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
   "The location of my main work scratchpad.")
+
+(defvar my-org-babel-hashes nil
+  "List of known babel hashes to prevent re-asking every bloodly time...")
 
 ;; General navigation
 (setq org-return-follows-link t)
@@ -144,6 +146,23 @@
      (python . t)
      (sh . t))))
 
+;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
+(defun my-babel-hashed-confirm (lang body)
+  "Check against known hashes before prompting for confirmation.
+See `org-confirm-babel-evaluate'."
+  (let ((check (list lang (md5 body))))
+    ;; If not hashed, prompt
+    (if (not (member (list lang (md5 body)) my-org-babel-hashes))
+        ;; Ask if you want to hash
+        (if (yes-or-no-p "Store hash for block? ")
+            ;; Hash is added, proceed with evaluation
+            (progn
+              (add-to-list 'my-org-babel-hashes check)
+              'nil)
+          ;; Return 't to prompt for evaluation
+          't))))
+
+(setq org-confirm-babel-evaluate 'my-babel-hashed-confirm)
 
 (provide 'my-org)
 ;;; my-org.el ends here
