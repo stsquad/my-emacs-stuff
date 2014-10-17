@@ -5,7 +5,7 @@ env:
   - EVM_EMACS=emacs-24.3-bin
 #  - EVM_EMACS=emacs-git-snapshot
 before_install:
-  - sudo apt-get install -qq ack-grep
+  - sudo apt-get install -qq ack-grep silversearcher-ag
 install:
   - sudo mkdir /usr/local/evm
   - sudo chown $(id -u):$(id -g) /usr/local/evm
