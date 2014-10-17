@@ -97,13 +97,6 @@
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
-(defun my-switch-to-org ()
-  "Bring my default org buffer to the current window."
-  (interactive)
-  (switch-to-buffer
-   (find-file ajb-work-org-file)
-   (org-agenda-file-to-front)))
-
 (defun ajb-get-trac-summary (id)
   "Fetch the bug summary directly from trac."
   (let ((url (format "http://engbot/bugs/ticket/%d?format=csv" id)))
@@ -131,11 +124,13 @@
 
 (global-set-key (kbd "C-c C-o") 'org-capture)
 
-;(global-set-key (kbd "C-x o") 'my-switch-to-org)
 ; add binding to bury-buffer... C-x k?
-
+(define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
+(define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
+(define-key org-mode-map (kbd "C-f") nil) ; I use C-x t f for auto-fill-mode
 
 ;; Org Babel configurations
+(setq org-src-fontify-natively t)
 (ignore-errors
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -144,7 +139,8 @@
      (ditaa . t)
      (makefile . t)
      (python . t)
-     (sh . t))))
+     (sh . t)
+     (risu . t))))
 
 ;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
 (defun my-babel-hashed-confirm (lang body)
@@ -163,6 +159,14 @@ See `org-confirm-babel-evaluate'."
           't))))
 
 (setq org-confirm-babel-evaluate 'my-babel-hashed-confirm)
+
+(defun my-invoke-babel-named (name)
+  "Evaluate named babel block"
+  (interactive)
+  (save-excursion
+    (org-babel-goto-named-src-block name)
+    (org-babel-execute-src-block-maybe)))
+
 
 (provide 'my-org)
 ;;; my-org.el ends here
