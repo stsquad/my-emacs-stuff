@@ -46,7 +46,13 @@
   "Return t when current project of `TYPE'."
   (eq (eproject-attribute :type) type))
 
+(defun my-eproject-asm-hook ()
+  "Hook for assembly mode"
+  (when (my-eproject-is-type-p 'kernel)
+    (setq indent-tabs-mode t)))
+
 (add-hook 'c-mode-hook 'my-eproject-c-hook)
+(add-hook 'asm-mode-hook 'my-eproject-asm-hook)
 
 ;;
 ;; Individual project definitions
