@@ -91,6 +91,10 @@
 ;; Searches are case sensitive
 (setq-default case-fold-search nil)
 
+;; Use .el if it's newer
+(when (boundp 'load-prefer-newer)
+  (setq load-prefer-newer t))
+
 ;; Automagically decompress files
 (unless I-am-xemacs
   (auto-compression-mode t))
