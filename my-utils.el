@@ -121,12 +121,25 @@
 (add-hook 'after-make-frame-functions 'my-switch-browser)
 ;(my-switch-browser (selected-frame))
 
-(defun my-pass-password (pass-name)
-  "Return the password for the `PASS-NAME'."
-  (when (selected-frame)
-    (my-fixup-gpg-agent (selected-frame))
-    (chomp (shell-command-to-string (format "pass %s" pass-name)))))
+;; Simple caching
+(defvar my-cached-passwords
+  nil
+  "Cache of passwords. Stored in plain text so you only want to cache
+  them if of low value.")
 
+(defun my-pass-password (pass-name &optional cache)
+  "Return the password for the `PASS-NAME'."
+  (let ((cached-pass (assoc-default pass-name my-cached-passwords)))
+    (if cached-pass
+        cached-pass
+      (when (selected-frame)
+        (my-fixup-gpg-agent (selected-frame))
+        (let ((new-pass (chomp
+                         (shell-command-to-string
+                          (format "pass %s" pass-name)))))
+          (when (and new-pass cache)
+            (add-to-list 'my-cached-passwords (cons pass-name new-pass)))
+          new-pass)))))
 
 ;;
 ;; Bit extraction utils

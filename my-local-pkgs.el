@@ -31,7 +31,7 @@
 (when (require 'lava-mode nil t)
   (global-set-key (kbd "C-c l") 'lava-list-jobs)
   (setq lava-user-name "ajbennee"
-        lava-api-token #'(lambda () (my-pass-password "lava"))
+        lava-api-token #'(lambda () (my-pass-password "lava" t))
         lava-mode-default-device-image-alist
         '(("arndale" . (("command" . "deploy_linaro_image")
                         ("metadata" . (("rootfs.type" . "server")
