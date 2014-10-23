@@ -10,8 +10,7 @@
 
 (defvar my-useful-packages
   '(ac-etags ac-c-headers ac-dabbrev ac-helm ac-js2
-    ace-jump-mode
-    ack-and-a-half
+    ace-jump-mode ace-jump-buffer
     android-mode
     apache-mode
     auto-complete
@@ -19,7 +18,6 @@
     circe
     edit-server edit-server-htmlize
     elpy
-    emms
     eproject
     expand-region
     flycheck

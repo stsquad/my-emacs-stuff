@@ -91,6 +91,10 @@
 ;; Searches are case sensitive
 (setq-default case-fold-search nil)
 
+;; Use .el if it's newer
+(when (boundp 'load-prefer-newer)
+  (setq load-prefer-newer t))
+
 ;; Automagically decompress files
 (unless I-am-xemacs
   (auto-compression-mode t))
@@ -129,6 +133,11 @@
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 
+;; Load any hand-made customisation
+;; we do this early to prevent problems with theme safety and the like
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; maybe-load-library
 ;
 ; A little less than using (require 'lib) - but require has optional args
@@ -158,8 +167,10 @@
 (when (require 'yasnippet nil t)
   (load-library "my-yasnippet.el"))
 
-(when (require 'auto-complete nil t)
-  (load-library "my-autocomplete"))
+(if (require 'company nil t)
+    (load-library "my-company")
+  (when (require 'auto-complete nil t)
+    (load-library "my-autocomplete")))
 
 ; Nice for jumping about windows.
 (when (require 'ace-jump-mode nil t)
@@ -253,6 +264,8 @@
 (global-set-key [kp-divide] 'previous-error)
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
+
+(require 'my-toggles)
 
 (require 'my-windows)
 
@@ -359,7 +372,7 @@
 (eval-when-compile (defvar guide-key/guide-key-sequence))
 (when (require 'guide-key nil t)
   (setq guide-key/guide-key-sequence
-        '("C-x c" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
+        '("C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8"))
   (guide-key-mode 1))
 
 ;; God-Mode, like sticky C- but more
@@ -599,8 +612,7 @@
 (when (require 'whitespace nil t)
   (setq whitespace-style '(face
                            tabs trailing lines-tail empty
-                           space-after-tab tab-mark))
-  (global-set-key (kbd "C-c w") 'whitespace-mode))
+                           space-after-tab tab-mark)))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
@@ -847,13 +859,14 @@
   (eval-after-load "eshell"
     (load-library "my-eshell")))
 
-;; Save state when I exit
-(when I-am-at-work
-  (desktop-save-mode))
+;;
+;; Tcl (and expect)
+;;
+(add-to-list 'auto-mode-alist '("\\.expect\\'" . tcl-mode))
 
-;; Load any hand-made customisations
-(when (file-exists-p custom-file)
-  (load custom-file))
+;; Save state when I exit
+;; (when I-am-at-work
+;;   (desktop-save-mode))
 
 (message "Done .emacs")
 (setq I-completed-loading-dotinit 't)

@@ -119,6 +119,7 @@
           (t 'browse-url-xdg-open))))
 
 (add-hook 'after-make-frame-functions 'my-switch-browser)
+;(my-switch-browser (selected-frame))
 
 (defun my-pass-password (pass-name)
   "Return the password for the `PASS-NAME'."
@@ -136,6 +137,18 @@
         (mask (- (lsh 1 length) 1)))
     (logand mask (lsh value rsh-amount))))
 
+
+;;
+;; Set up a pair-programming copy of the current buffer in Evil mode
+;;
+(defun my-make-evil-twin ()
+  "Create an indirect buffer in evil mode."
+  (interactive)
+  (when (require 'evil nil t)
+    (clone-indirect-buffer (concat (buffer-name) "<vi>") t)
+    (evil-local-mode)
+    (delete-other-windows)
+    (message "Evil twin created")))
 
 (provide 'my-utils)
 ;;; my-utils.el ends here

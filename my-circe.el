@@ -16,7 +16,7 @@
 
 (defun my-bitlbee-password (server)
   "Return the password for the `SERVER'."
-  (shell-command-to-string (format "pass bitlbee")))
+  (my-pass-password "bitlbee"))
 
 (defun my-znc-password (server)
   "Return the password for the `SERVER'."
