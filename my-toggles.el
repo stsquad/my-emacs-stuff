@@ -5,6 +5,11 @@
 ;; Inspired by the http://endlessparentheses.com/the-toggle-map-and-wizardry.html
 ;;
 ;;; Code:
+(require 'org)
+
+(defvar my-toggle-map
+  nil
+  "A set of toggle maps.")
 
 (define-prefix-command 'my-toggle-map)
 ;; The manual recommends C-c for user keys, but C-x t is
@@ -12,13 +17,15 @@
 (define-key ctl-x-map "t" 'my-toggle-map)
 
 (define-key my-toggle-map "d" 'toggle-debug-on-error)
+(define-key my-toggle-map "q" 'toggle-debug-on-quit)
 (define-key my-toggle-map "f" 'auto-fill-mode)
 (define-key my-toggle-map "w" 'whitespace-mode)
+(define-key my-toggle-map "l" 'visual-line-mode)
 
 ;; Narrowing
 ; from: http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
 (defun my-narrow-or-widen-dwim (p)
-  "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+  "If the buffer is narrowed, it widens.  Otherwise, it narrows intelligently.
 Intelligently means: region, subtree, or defun, whichever applies
 first.
 

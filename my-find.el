@@ -42,19 +42,14 @@
   (funcall my-project-find-fallback-func default-directory search))
 
 (global-set-key (kbd "<f5>") 'my-project-find)
-(global-set-key (kbd "<f6>") '(lambda (root search)
-				(interactive (my-find-paramters))
-				(funcall my-project-find-fallback-func
-					 root search)))
 
-;
-; Now we have some basic defaults we might want to enhance if we have
-; certain packages available to us.
-;
-
-(when (require 'ack-and-a-half nil t)
-  (defun my-ack-and-a-half-wrapper (root search)
-    (ack-and-a-half search 'nil root))
-  (setq my-project-find-fallback-func 'my-ack-and-a-half-wrapper))
+(global-set-key (kbd "<f6>")
+                (cond
+                 ((require 'helm-ag nil t) 'helm-ag)
+                 ((require 'ack-and-a-half nil t) 'ack-and-a-half)
+                 (t '(lambda (root search)
+                       (interactive (my-find-paramters))
+                       (funcall my-project-find-fallback-func
+                                root search)))))
 
 (provide 'my-find)

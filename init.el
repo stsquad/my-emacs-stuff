@@ -91,6 +91,10 @@
 ;; Searches are case sensitive
 (setq-default case-fold-search nil)
 
+;; Use .el if it's newer
+(when (boundp 'load-prefer-newer)
+  (setq load-prefer-newer t))
+
 ;; Automagically decompress files
 (unless I-am-xemacs
   (auto-compression-mode t))
@@ -163,8 +167,10 @@
 (when (require 'yasnippet nil t)
   (load-library "my-yasnippet.el"))
 
-(when (require 'auto-complete nil t)
-  (load-library "my-autocomplete"))
+(if (require 'company nil t)
+    (load-library "my-company")
+  (when (require 'auto-complete nil t)
+    (load-library "my-autocomplete")))
 
 ; Nice for jumping about windows.
 (when (require 'ace-jump-mode nil t)
@@ -704,10 +710,15 @@
 (when (require 'keychain-environment nil t)
   (keychain-refresh-environment))
 
-; enable EasyPG handling
+;; enable EasyPG handling
+; gpg-agent confuses epa when getting passphrase
+(defun my-squash-gpg (ignored-frame)
+  "Kill any GPG_AGENT_INFO in our environment"
+  (setenv "GPG_AGENT_INFO" nil))
+
 (when (require 'epa-file nil t)
   (when (string-match "socrates" (system-name))
-    (setenv "GPG_AGENT_INFO" nil) ; gpg-agent confuses epa when getting passphrase
+    (add-hook 'after-make-frame-functions 'my-squash-gpg)
     (epa-file-enable)))
 
 ;; my-find-binary
@@ -848,13 +859,14 @@
   (eval-after-load "eshell"
     (load-library "my-eshell")))
 
-;; Save state when I exit
-(when I-am-at-work
-  (desktop-save-mode))
+;;
+;; Tcl (and expect)
+;;
+(add-to-list 'auto-mode-alist '("\\.expect\\'" . tcl-mode))
 
-;; Load any hand-made customisations
-(when (file-exists-p custom-file)
-  (load custom-file))
+;; Save state when I exit
+;; (when I-am-at-work
+;;   (desktop-save-mode))
 
 (message "Done .emacs")
 (setq I-completed-loading-dotinit 't)

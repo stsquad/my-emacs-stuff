@@ -16,10 +16,12 @@
 (require 'ox nil t)
 (require 'ox-reveal nil t)
 
-
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
   "The location of my main work scratchpad.")
+
+(defvar my-org-babel-hashes nil
+  "List of known babel hashes to prevent re-asking every bloodly time...")
 
 ;; General navigation
 (setq org-return-follows-link t)
@@ -45,19 +47,38 @@
 ;; Export settings
 (setq org-export-allow-bind-keywords t)
 
+;; ORG JIRA
+(when (and I-am-at-work (require 'org-jira nil t))
+  (setq jiralib-url "https://cards.linaro.org/")
+  (setq org-jira-working-dir (expand-file-name "~/org/jira"))
+  (add-to-list 'org-jira-serv-alist
+               '(linaro .
+                        (:url "https://cards.linaro.org/"
+                              :username "alex.bennee@linaro.org"
+                              :password #'(lambda () (my-pass-password "linaro"))))))
+
 (when I-am-at-work
   (setq
    org-agenda-files '("~/org/")
+   org-refile-targets '((nil :maxlevel . 2)
+                        (org-agenda-files :maxlevel . 2))
    org-publish-project-alist
    '(
      ("org-notes"
       :base-directory "~/org/"
       :base-extension "org"
       :publishing-directory "~/public_html/org/"
-      :recursive t
+      :recursive nil
       :publishing-function org-html-publish-to-html
       :headline-levels 4             ; Just the default for this project.
       :auto-preamble t
+      )
+     ("org-presentations"
+      :base-directory "~/org/presentations"
+      :base-extension "html\\|css\\|js\\|png\\|jpg\\|gif\\|svg\\|pdf\\|mp3\\|ogg\\|swf"
+      :publishing-directory "~/public_html/org/presentations/"
+      :recursive t
+      :publishing-function org-publish-attachment
       )
      ("org-static"
       :base-directory "~/org/"
@@ -66,7 +87,7 @@
       :recursive t
       :publishing-function org-publish-attachment
       )
-     ("org" :components ("org-notes" "org-static")))))
+     ("org" :components ("org-notes" "org-presentations" "org-static")))))
 
 ; summarise TODOs
 (defun org-summary-todo (n-done n-not-done)
@@ -75,13 +96,6 @@
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-
-(defun my-switch-to-org ()
-  "Bring my default org buffer to the current window."
-  (interactive)
-  (switch-to-buffer
-   (find-file ajb-work-org-file)
-   (org-agenda-file-to-front)))
 
 (defun ajb-get-trac-summary (id)
   "Fetch the bug summary directly from trac."
@@ -110,11 +124,13 @@
 
 (global-set-key (kbd "C-c C-o") 'org-capture)
 
-;(global-set-key (kbd "C-x o") 'my-switch-to-org)
 ; add binding to bury-buffer... C-x k?
-
+(define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
+(define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
+(define-key org-mode-map (kbd "C-f") nil) ; I use C-x t f for auto-fill-mode
 
 ;; Org Babel configurations
+(setq org-src-fontify-natively t)
 (ignore-errors
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -123,7 +139,33 @@
      (ditaa . t)
      (makefile . t)
      (python . t)
-     (sh . t))))
+     (sh . t)
+     (risu . t))))
+
+;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
+(defun my-babel-hashed-confirm (lang body)
+  "Check against known hashes before prompting for confirmation.
+See `org-confirm-babel-evaluate'."
+  (let ((check (list lang (md5 body))))
+    ;; If not hashed, prompt
+    (if (not (member (list lang (md5 body)) my-org-babel-hashes))
+        ;; Ask if you want to hash
+        (if (yes-or-no-p "Store hash for block? ")
+            ;; Hash is added, proceed with evaluation
+            (progn
+              (add-to-list 'my-org-babel-hashes check)
+              'nil)
+          ;; Return 't to prompt for evaluation
+          't))))
+
+(setq org-confirm-babel-evaluate 'my-babel-hashed-confirm)
+
+(defun my-invoke-babel-named (name)
+  "Evaluate named babel block"
+  (interactive)
+  (save-excursion
+    (org-babel-goto-named-src-block name)
+    (org-babel-execute-src-block-maybe)))
 
 
 (provide 'my-org)
