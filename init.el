@@ -17,21 +17,9 @@
 ;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
 ;(setq debug-on-error 't)
 
-(defvar my-config-root
-  "~/.emacs.d"
-  "Where all my config files are kept.")
-
-(defvar my-config-paths
-  '("~/.emacs.d/my-elisp" "~/.emacs.d/my-local-pkgs")
-  "Additional search paths I use.")
-
-(mapc #'(lambda (p)
-          (when (and (file-exists-p p)
-                     (file-directory-p p))
-            (add-to-list 'load-path p)))
-      my-config-paths)
-
-(message "load-path is: %s" load-path)
+;; Manually load this (as paths not yet set)
+(when (load-library "~/.emacs.d/my-elisp/my-paths")
+  (my-add-config-paths))
 
 ;;;; Start of real code.
 
@@ -47,21 +35,9 @@
           (require 'package "package" t))
   (load-library "my-package.el"))
 
-;; Add local search path
-;
-; This adds everything ~/.emacs.d/*.git that's not elpa related
-; to the start of the load-path
-;
-(mapc #'(lambda (f)
-          (let ((default-directory f))
-            (setq load-path
-                  (append
-                   (let ((load-path (copy-sequence load-path))) ;; Shadow
-                     (append
-                      (copy-sequence (normal-top-level-add-to-load-path '(".")))
-                      (normal-top-level-add-subdirs-to-load-path)))
-                   load-path))))
-      (directory-files my-config-root 't "\.git$"))
+;; Add ~/.emacs.d/*.git project into search path
+(when (fboundp 'my-add-git-project-paths)
+  (my-add-git-project-paths))
 
 ;;
 ;; Basic config variables
