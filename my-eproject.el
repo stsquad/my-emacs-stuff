@@ -123,6 +123,11 @@
   (look-for "risu.c")
   :c-style "risu-c-style")
 
+(define-project-type gtkg
+  (generic-git)
+  (look-for "gtk-gnutella.spec")
+  :c-style "gtkg-style")
+
 ;; Turn on eproject on various dev modes
 ;
 ; In theory eproject should already be catching this when major modes

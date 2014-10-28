@@ -17,7 +17,9 @@
 
 ;; When asked for emms-play-directory,
 ;; always start from this one 
-(setq emms-source-file-default-directory "/export/music"
+(setq emms-source-file-default-directory (if I-am-at-work
+                                             "/export/music"
+                                           "/home/alex/Music")
       emms-playlist-buffer-name "*Music*"
       emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
 
