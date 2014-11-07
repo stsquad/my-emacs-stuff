@@ -140,6 +140,32 @@ hook we are not yet in the compose buffer."
   (setq mu4e-user-mail-address-list '("alex.bennee@linaro.org")
         mu4e-compose-complete-only-after "2013-11-01"))
 
+                                        ;
+;;
+;; Checkpatch in emails
+;;
+(defvar my-checkpatch-script-history nil
+  "History of checkpatch invocations.")
+
+
+(defun my-mu4e-action-run-check-patch (msg)
+  "Run checkpatch against the [patch] `MSG'."
+  (let ((script (ido-read-file-name
+                 "Checkpatch Script: "
+                 (file-name-directory (car my-checkpatch-script-history))
+                 my-checkpatch-script-history)))
+    (setf my-checkpatch-script-history
+          (cons script (delete script my-checkpatch-script-history)))
+    (let ((proc-name "checkpatch")
+          (buff-name (format "*checkpatch*")))
+      (start-process-shell-command
+       proc-name
+       buff-name
+       (format "cat %s | %s -" (mu4e-message-field msg :path) script))
+    (switch-to-buffer buff-name)
+    (goto-char (point-min))
+    (compilation-minor-mode))))
+
 (eval-after-load "mu4e"
   '(progn
      ; key-bindings
@@ -155,6 +181,9 @@ hook we are not yet in the compose buffer."
      (add-to-list
       'mu4e-view-actions
       '("mgit am patch" . mu4e-action-git-apply-mbox) t)
+     (add-to-list
+      'mu4e-view-actions
+      '("Crun checkpatch script" . my-mu4e-action-run-check-patch) t)
      (add-to-list
       'mu4e-bookmarks
       '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
