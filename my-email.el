@@ -119,15 +119,18 @@ hook we are not yet in the compose buffer."
       '(:from :to :cc :subject :flags :date :tags :attachments :signature)
       mu4e-maildir-shortcuts
       '( ("/linaro/Inbox"     . ?i)
-         ("/linaro/qemu"      . ?q)
-         ("/linaro/kvm"       . ?k)
+         ("/linaro/virtualization/.qemu"      . ?q)
+         ("/linaro/virtualization/.kvm"       . ?k)
+         ("/linaro/virtualization/.kvm-arm"       . ?a)
+         ("/linaro/emacs/.org-mode"       . ?o)
+         ("/linaro/linaro-list" . ?l)
          ("/linaro/mythreads" . ?m)
-         ("/developer/emacs"  . ?e)
+         ("/linaro/team" . ?t)
          ("/sent"             . ?s)))
 
 (when (or I-am-at-work I-am-at-home)
-  (setq mu4e-get-mail-command
-        "mbsync linaro-sync developer-sync"
+  (setq mu4e-get-mail-command 
+        "mbsync linaro-sync"
         mu4e-update-interval 600))
 
 (when I-am-on-pixel
@@ -158,7 +161,7 @@ hook we are not yet in the compose buffer."
         "Mail addressed to me with git tags" ?g))
      (add-to-list
       'mu4e-bookmarks
-      '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread NOT m:/linaro/bugmail NOT m:/linaro/notify"
+      '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread NOT m:/linaro/misc/"
         "Unread posts addressed to me" ?m))
      (add-to-list
       'mu4e-bookmarks
@@ -170,15 +173,28 @@ hook we are not yet in the compose buffer."
         "Latest unread Linaro posts" ?l))
      (add-to-list
       'mu4e-bookmarks
-      '("maildir:\"/linaro/qemu\" and flag:unread"
+      '("maildir:\"/linaro/virtualization/.qemu\" and flag:unread"
         "Latest QEMU posts" ?q))
      (add-to-list
       'mu4e-bookmarks
-      '("maildir:\"/linaro/qemu\" AND (aarch64 OR arm64 OR A64)"
+      '("maildir:\"/linaro/virtualization/.kvm-arm\" and flag:unread"
+        "Latest ARM KVM posts" ?k))
+     (add-to-list
+      'mu4e-bookmarks
+      '("maildir:\"/linaro/virtualization/.qemu\" AND (aarch64 OR arm64 OR A64)"
         "QEMU ARM64 posts" ?a))
      (add-to-list
       'mu4e-bookmarks
-      '("flag:flagged" "Flagged and Starred posts" ?f))))
+      '("flag:flagged" "Flagged and Starred posts" ?f))
+     (add-to-list
+      'mu4e-bookmarks
+      '("list:help-gnu-emacs.gnu.org and flag:unread"
+        "Latest unread Emacs user posts" ?e))
+     (add-to-list
+      'mu4e-bookmarks
+      '("list:emacs-orgmode.gnu.org and flag:unread"
+        "Latest unread org-mode posts" ?o))
+))
 
 (defun my-insert-pull-request ()
   "Insert basic pull request into buffer."
