@@ -21,6 +21,7 @@
    (lambda (elt)
      (cons (purecopy (car elt)) (cdr elt)))
    '(
+     (".*/src/.*" . "alex.bennee@linaro.org")
      (".*/lsrc/.*" . "alex.bennee@linaro.org")
      (".*/mysrc/.*" . "alex@bennee.com")))
   "A mapping from source location to email address.")
