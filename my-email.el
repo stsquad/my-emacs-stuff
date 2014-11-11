@@ -110,6 +110,7 @@ hook we are not yet in the compose buffer."
 (setq mu4e-compose-complete-only-personal nil)
 (setq mail-user-agent 'mu4e-user-agent)
 (setq mu4e-view-show-images t
+      mu4e-view-show-addresses t
       mu4e-use-fancy-chars t
       mu4e-headers-skip-duplicates t
       mu4e-headers-include-related t
@@ -174,55 +175,55 @@ hook we are not yet in the compose buffer."
      ; mode hooks
      (add-hook 'mu4e-headers-mode-hook
                '(lambda () (yas-minor-mode -1)))
-                                        ; pre-canned searches
-     (add-to-list
-      'mu4e-headers-actions
-      '("gapply git patches" . mu4e-action-git-apply-patch) t)
-     (add-to-list
-      'mu4e-view-actions
-      '("mgit am patch" . mu4e-action-git-apply-mbox) t)
-     (add-to-list
-      'mu4e-view-actions
-      '("Crun checkpatch script" . my-mu4e-action-run-check-patch) t)
-     (add-to-list
-      'mu4e-bookmarks
-      '("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
-        "Mail addressed to me with git tags" ?g))
-     (add-to-list
-      'mu4e-bookmarks
-      '("\(to:alex.bennee or cc:alex.bennee\) AND flag:unread NOT m:/linaro/misc/"
-        "Unread posts addressed to me" ?m))
-     (add-to-list
-      'mu4e-bookmarks
-      '("\(from:alex.bennee OR from:bennee.com\)"
-        "Mail sent by me" ?s))
-     (add-to-list
-      'mu4e-bookmarks
-      '("from:linaro.org and flag:unread"
-        "Latest unread Linaro posts" ?l))
-     (add-to-list
-      'mu4e-bookmarks
-      '("maildir:\"/linaro/virtualization/.qemu\" and flag:unread"
-        "Latest QEMU posts" ?q))
-     (add-to-list
-      'mu4e-bookmarks
-      '("maildir:\"/linaro/virtualization/.kvm-arm\" and flag:unread"
-        "Latest ARM KVM posts" ?k))
-     (add-to-list
-      'mu4e-bookmarks
-      '("maildir:\"/linaro/virtualization/.qemu\" AND (aarch64 OR arm64 OR A64)"
-        "QEMU ARM64 posts" ?a))
-     (add-to-list
-      'mu4e-bookmarks
-      '("flag:flagged" "Flagged and Starred posts" ?f))
-     (add-to-list
-      'mu4e-bookmarks
-      '("list:help-gnu-emacs.gnu.org and flag:unread"
-        "Latest unread Emacs user posts" ?e))
-     (add-to-list
-      'mu4e-bookmarks
-      '("list:emacs-orgmode.gnu.org and flag:unread"
-        "Latest unread org-mode posts" ?o))
+     ;; Header actions
+     (setq mu4e-headers-actions
+           (delete-dups
+            (append
+             mu4e-headers-actions
+             '(("gapply git patches" . mu4e-action-git-apply-patch)
+               ("mgit am patch" . mu4e-action-git-apply-mbox)
+               ("Crun checkpatch script" .
+                my-mu4e-action-run-check-patch)))))
+     ;; Bookmarks
+     (setq mu4e-bookmarks
+           '(
+             ;; Personal bookmarks
+             ("\(to:alex.bennee or cc:alex.bennee\) NOT m:/linaro/misc/ AND flag:unread "
+              "Unread posts addressed to me" ?M)
+             ("\(to:alex.bennee or cc:alex.bennee\) AND flag:list AND flag:unread "
+              "Unread list email addressed to me" ?m)
+             ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
+              "Mail addressed to me with git tags" ?g)
+             ("\(from:alex.bennee OR from:bennee.com\)"
+              "Mail sent by me" ?s)
+             ("flag:flagged" "Flagged and Starred posts" ?f)
+             ("to:alex.bennee@linaro.org AND (from:agustin OR from:christoffer.dall@linaro.org)"
+              "From my various bosses" ?B)
+             ;; Virt related
+             ("list:qemu-devel.nongnu.org and flag:unread"
+              "Latest QEMU posts" ?q)
+             ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
+              "QEMU ARM64 posts" ?a)
+             ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
+              "Latest ARM KVM posts" ?k)
+             ("maildir:\"/linaro/virtualization/*\" AND flag:list AND flag:unread"
+              "All unread Virtualization email" ?V) 
+             ;; Linaro Specific
+             ("list:linaro-dev.lists.linaro.org AND flag:unread"
+              "Latest Linaro-Dev emails" ?d)
+             ("list:tech.lists.linaro.org AND flag:unread"
+              "Latest Linaro-Tech emails" ?t)
+             ("\(to:lists.linaro.org OR cc:lists.linaro.org\) AND flag:list AND flag:unread"
+              "Unread work mailing lists (lists.linaro.org)" ?l)
+             ("from:linaro.org and flag:unread"
+              "Latest unread Linaro posts from Linaro emails" ?L)
+             ;; Emacs
+             ("list:emacs-devel.gnu.org and flag:unread"
+              "Latest unread Emacs developer posts" ?E)
+             ("list:help-gnu-emacs.gnu.org and flag:unread"
+              "Latest unread Emacs user posts" ?e)
+             ("list:emacs-orgmode.gnu.org and flag:unread"
+              "Latest unread org-mode posts" ?o)))
 ))
 
 (defun my-insert-pull-request ()
