@@ -43,24 +43,7 @@
 (setq default-frame-alist '((fullscreen . 'fullboth)
                             (vertical-scroll-bars)))
 
-; fixes for compile
-(eval-when-compile
-  (declare-function crmbk-running-in-host-x11-p "chromebook")
-  (defvar crmbk-frame-mode-map))
-
-(when (and (require 'chromebook "chromebook" t)
-           (crmbk-running-in-host-x11-p))
-  (set-face-attribute 'default nil :height 250)
-  (add-hook 'crmbk-frame-mode-hook 'crmbk-remap-search)
-  (add-hook 'crmbk-frame-mode-hook 'crmbk-disable-touchpad)
-  (define-key crmbk-frame-mode-map (kbd "<M-up>") 'scroll-down)
-  (define-key crmbk-frame-mode-map (kbd "<M-down>") 'scroll-up)
-  (when (boundp 'edit-server-new-frame-alist)
-    (setq edit-server-new-frame-alist '((name . "Edit Server Frame")
-                                        (fullscreen . 'fullboth)))))
-
 ; Re-use existing frames if buffer already exists in one
-(unless I-am-on-pixel
   (setq-default display-buffer-reuse-frames t)
 
   ; messing about - what about dynamic-font stuff?
@@ -70,27 +53,7 @@
                       ;; :family "Symbola"
                       ;; :height 180
                       :weight 'normal
-                      :width 'normal))
-;;   (when (functionp 'set-fontset-font)
-;;     (set-fontset-font "fontset-default" nil
-;;                       (font-spec :size 20
-;;                                  :name "Symbola"))))
-;;     (set-fontset-font "fontset-default"
-;;                       'unicode
-;;                       (font-spec :family "DejaVu Sans Mono"
-;;                                  :width 'normal
-;;                                  :size 12.4
-;;                                  :weight 'normal))))
-
-(ignore-errors
-  (when (require 'zenburn-theme)
-    (load-theme 'zenburn t)
-    (when (custom-theme-enabled-p 'zenburn)
-      (zenburn-with-color-variables
-        (custom-theme-set-faces
-         'zenburn
-         `(num3-face-odd ((t (:foreground ,zenburn-fg-1))))
-         `(num3-face-even ((t (:foreground ,zenburn-fg+1)))))))))
+                      :width 'normal)
 
 (message "Display Done")
 
@@ -186,6 +149,7 @@
 
 (when (require 'smart-mode-line nil t)
   (sml/setup))
+
 
 (eval-when-compile (defvar tracking-most-recent-first))
 (when (require 'tracking nil t)
