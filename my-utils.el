@@ -150,7 +150,6 @@
         (mask (- (lsh 1 length) 1)))
     (logand mask (lsh value rsh-amount))))
 
-
 ;;
 ;; Set up a pair-programming copy of the current buffer in Evil mode
 ;;
@@ -162,6 +161,29 @@
     (evil-local-mode)
     (delete-other-windows)
     (message "Evil twin created")))
+
+;; maybe-load-library (DEFUNCT)
+;
+; A little less than using (require 'lib) - but require has optional args
+
+(defun maybe-load-library (libname)
+  "Try and load library LIBNAME if it is in the path."
+  (when (locate-library libname)
+    (load-library libname)))
+
+;; insert-sequence-key
+;
+; Handy little key sequence utility so I don't have to guess at the
+; correct kbd incantation
+
+(defun insert-sequence-key (key)
+  "Insert a string formating KEY suitable for use in fcns like `global-set-key'."
+  (interactive "kInsert key chord: ")
+  (insert (format "(kbd \"%s\")" (key-description key))))
+
+(global-set-key (kbd "<C-f8>") 'insert-sequence-key)
+
+
 
 (provide 'my-utils)
 ;;; my-utils.el ends here

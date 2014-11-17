@@ -19,17 +19,35 @@
 ;;; Code:
 
 ;; Require prerequisites
-(require 'company)
+(require 'use-package)
 
-;; Variables
-(setq company-selection-wrap-around t
-      tab-always-indent 'complete)
+(use-package company
+  :idle
+  :config
+  (progn
+    (global-company-mode)
+    ;; Variables
+    (setq company-selection-wrap-around t
+          tab-always-indent 'complete)
+    ;; Remove backends I'll never use
+    (delete 'company-bbdb company-backends)
+    (delete 'company-eclim company-backends)
+    (delete 'company-xcode company-backends)
+    (delete 'company-semantic company-backends)
+    ;; Keys
+    ;; keys active while completing
+    (define-key company-active-map (kbd "TAB") 'company-complete)
+    (define-key company-active-map [tab] 'company-complete)
+    (define-key company-active-map (kbd "<right>") 'company-complete-common)
+    ;; keys active in the global minor mode
+    (define-key company-mode-map (kbd "M-/") 'company-complete-common)
+    (define-key company-mode-map [remap indent-for-tab-command]
+      'company-indent-for-tab-command)
 
-;; Remove backends I'll never use
-(delete 'company-bbdb company-backends)
-(delete 'company-eclim company-backends)
-(delete 'company-xcode company-backends)
-(delete 'company-semantic company-backends)
+    ;; Any other extensions?
+    (when (require 'company-irony nil t)
+      (add-to-list 'company-backends 'company-irony))))
+
 
 ;; company-yasnippet must be at the end of the list
 ;; (when (require 'company-yasnippet nil t)
@@ -55,31 +73,6 @@
   (let ((completion-at-point-functions-saved completion-at-point-functions)
         (completion-at-point-functions '(company-complete-common-wrapper)))
     (indent-for-tab-command arg)))
-
-; Make tab cycle through choices
-(eval-after-load 'company
-  '(progn
-     ;; keys active while completing
-     (define-key company-active-map (kbd "TAB") 'company-complete)
-     (define-key company-active-map [tab] 'company-complete)
-     (define-key company-active-map (kbd "<right>") 'company-complete-common)
-     ;; keys active in the global minor mode
-     (define-key company-mode-map (kbd "M-/") 'company-complete-common)
-     (define-key company-mode-map [remap indent-for-tab-command]
-       'company-indent-for-tab-command)))
-
-;; Any other extensions?
-(when (require 'company-irony nil t)
-  (eval-after-load 'company
-    '(progn
-       (add-to-list 'company-backends 'company-irony))))
-
-;(global-set-key (kbd "<tab>") 'indent-for-tab-command)
-;(global-set-key (kbd "C-c y") 'company-yasnippet)
-;(global-unset-key (kbd "C-c y"))
-
-;; Global mode
-(add-hook 'after-init-hook 'global-company-mode)
 
 (provide 'my-company)
 ;;; my-company.el ends here

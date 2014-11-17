@@ -9,19 +9,28 @@
 
 ;; Require prerequisites
 (require 'my-vars)
-
-;; Variables
+(require 'use-package)
 
 ;; Window navigation and size control
-(when (maybe-load-library "windmove")
+(use-package windmove
+  :idle
+  :config
   (windmove-default-keybindings))
 
-(unless (and (fboundp 'crmbk-running-in-host-x11-p)
-             (crmbk-running-in-host-x11-p))
-  (global-set-key (kbd "<M-down>") 'enlarge-window)
-  (global-set-key (kbd "<M-right>") 'enlarge-window-horizontally)
-  (global-set-key (kbd "<M-up>") 'shrink-window)
-  (global-set-key (kbd "<M-left>") 'shrink-window-horizontally))
+;; winner-mode to remember window layouts
+(use-package winner
+  :idle
+  :config
+  (winner-mode t))
+
+;; Window key bindings
+(use-package window
+  :if (not (and (fboundp 'crmbk-running-in-host-x11-p)
+                (crmbk-running-in-host-x11-p)))
+  :bind (("M-<down>" . enlarge-window)
+         ("<M-right>" . enlarge-window-horizontally)
+         ("<M-up>" . shrink-window)
+         ("<M-left>" . shrink-window-horizontally)))
 
 ;; Allow windows to be dedicated to one thing interactively
 ;; Toggle window dedication
@@ -55,20 +64,9 @@ Assumes that the frame is only split into two."
 (global-set-key (kbd "C-x %") 'toggle-frame-split)
 
 
-;; ace-window makes switching less painful, but only if there are more
-;; than two windows visible.
-(when (require 'ace-window nil t)
-  (defun my-other-ace-window ()
-    "Switch to other window, using ace-window if there are more than
-  2"
-    (interactive)
-    (unless (active-minibuffer-window)
-      (if (> (count-windows) 2)
-          (ace-window nil)
-        (other-window 1))))
-
-  (global-set-key (kbd "C-x o") 'my-other-ace-window))
+;; ace-window makes switching less painful
+(use-package ace-window
+  :bind ("C-x o" . ace-window))
 
 (provide 'my-windows)
 ;;; my-windows.el ends here
-

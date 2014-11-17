@@ -1,30 +1,49 @@
+;;; my-htmlize --- htmlize tweaks
 ;;
-;; htmlize
+;; Copyright (C) 2014 Alex Bennée
+;;
+;; Author: Alex Bennée <alex@bennee.com>
+;;
+;; This file is not part of GNU Emacs.
+;;
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
 ;;
 
-(require 'htmlize)
+;; Code
 
-(setq htmlize-output-type 'inline-css)
+(require 'use-package)
 
-; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
-(defun my-htmlize-region (beg end)
-  "Htmlize region and put into <pre> tag style that is left in <body> tag
+(use-package htmlize
+  :commands my-htmlize-region
+  :init
+  (progn
+    ;; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
+    (defun my-htmlize-region (beg end)
+      "Htmlize region and put into <pre> tag style that is left in <body> tag
 plus add font-size: 8pt"
-  (interactive "r")
-  (let* ((buffer-faces (htmlize-faces-in-buffer))
-         (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
-         (pre-tag (format
-                   "<pre style=\"%s font-size: 8pt\">"
-                   (mapconcat #'identity (htmlize-css-specs
-                                          (gethash 'default face-map)) " ")))
-         (htmlized-reg (htmlize-region-for-paste beg end)))
-    (switch-to-buffer-other-window "*htmlized output*")
+      (interactive "r")
+      (let* ((buffer-faces (htmlize-faces-in-buffer))
+             (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
+             (pre-tag (format
+                       "<pre style=\"%s font-size: 8pt\">"
+                       (mapconcat #'identity (htmlize-css-specs
+                                              (gethash 'default face-map)) " ")))
+             (htmlized-reg (htmlize-region-for-paste beg end)))
+        (switch-to-buffer-other-window "*htmlized output*")
                                         ; clear buffer
-    (kill-region (point-min) (point-max))
+        (kill-region (point-min) (point-max))
                                         ; set mode to have syntax highlighting
-    (web-mode)
-    (save-excursion
-      (insert htmlized-reg))
-    (while (re-search-forward "<pre>" nil t)
-      (replace-match pre-tag nil nil))
-    (goto-char (point-min))))
+        (web-mode)
+        (save-excursion
+          (insert htmlized-reg))
+        (while (re-search-forward "<pre>" nil t)
+          (replace-match pre-tag nil nil))
+        (goto-char (point-min)))))
+  :config
+  (setq htmlize-output-type 'inline-css))
+
+(provide 'my-htmlize)
+;;; my-htmlize.el ends here

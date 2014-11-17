@@ -34,14 +34,14 @@
   (interactive)
   (concat "Alex Bennée"))
 
+(use-package mu4e-vars)
+
 (use-package mu4e
   :commands mu4e
   :bind ("C-c m" . my-switch-to-mue4)
   :config
   (progn
-    (require 'message)
     (require 'mu4e-vars)
-    (require 'mu4e-draft)
     (setq
      ;; generic mail options
      user-mail-address "alex.bennee@linaro.org"

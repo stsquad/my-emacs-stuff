@@ -8,8 +8,10 @@
 
 (require 'my-utils)
 (require 'ispell)
-(require 'flyspell)
 
+(use-package flyspell
+  :commands flyspell-mode)
+  
 (defun turn-on-flyspell ()
   "Force 'flyspell-mode' on using a positive arg.  For use in hooks."
   (interactive)

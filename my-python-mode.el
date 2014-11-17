@@ -11,13 +11,12 @@
 (setq elpy-rpc-backend "jedi"
       elpy-rpc-project-specific 't)
 (elpy-enable)
-(elpy-clean-modeline)
+;(elpy-clean-modeline)
 
 ;  (define-key elpy-mode-map (kbd "C-c C-f") 'elpy-eldoc-documentation))
 
 (when (require 'flycheck nil t)
-  (setq elpy-default-minor-modes (delete 'flymake-mode elpy-default-minor-modes))
-  (add-to-list 'elpy-default-minor-modes 'flycheck-mode))
+  (setq elpy-modules (delete 'elpy-module-flymake elpy-modules)))
 
 (message "Done loading my-python-mode")
 

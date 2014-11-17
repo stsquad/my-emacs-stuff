@@ -6,14 +6,22 @@
 ;;
 ;;; Code:
 
-(require 'yasnippet)
-(require 's) ; I use in some snippets
+(require 'use-package)
 
-(when (file-exists-p "~/.emacs.d/my-snippets")
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
+;; Some snippets use the s library
+(use-package s
+  :commands s-chop-suffix)
 
-(setq yas-prompt-functions
-      '(yas-ido-prompt yas-completing-prompt yas-no-prompt))
+;; YASnippet itself
+(use-package yasnippet
+  :idle
+  :config
+  (progn
+    (when (file-exists-p "~/.emacs.d/my-snippets")
+      (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
+    (setq yas-prompt-functions
+          '(yas-ido-prompt yas-completing-prompt yas-no-prompt))
+    (yas-global-mode)))
 
 ;; Helper functions
 (defvar my-yas-emails
@@ -35,7 +43,11 @@
     (assoc-default (buffer-file-name) my-yas-emails 'string-match))
    (t "alex@....")))
 
-(yas-global-mode)
+(defun my-yas-local-exit-function (func)
+  "Call FUNC in the buffer-local yas-after-exit-snippet-hook."
+  (save-excursion
+    (make-local-variable 'yas-after-exit-snippet-hook)
+    (add-hook 'yas-after-exit-snippet-hook func)))
 
 (provide 'my-yasnippet.el)
 ;;; my-yasnippet.el ends here

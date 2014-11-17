@@ -1,6 +1,7 @@
 # -*- mode: snippet -*-
 # name: signature
 # key: $sig
+# expand-env: ((yas-after-exit-snippet-hook '#(lambda () (delete-region yas-snippet-end (point-max)))))
 # TODO: add smart deletion to end of mail, add link summary
 # --
 ${1:$$(yas/choose-value '("Cheers" "Yours sincerely"))},

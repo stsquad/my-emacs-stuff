@@ -10,27 +10,37 @@
 ;;
 ;;; Code:
 
-(require 'midnight)
-(require 'ibuf-ext)
-(require 'ido)
-(eval-when-compile (require 'cl))
+(require 'use-package)
 
-(message "Setting up buffer handling")
+;; midnight mode, clean-up unused buffers overnight
+(use-package midnight
+  :idle
+  :config
+  (setq midnight-mode t))
 
-(setq midnight-mode t)
+;; ido-mode - better buffer selection, although lusty does a lot of it
+(use-package ido
+  :idle
+  :config
+  (ido-mode t))
 
-;; ido-mode - better buffer selection
-(ido-mode t)
+;; CURRENT UNUSED
+(defun my-lusty-buffer-explorer ()
+  "Wrapper to select between `lusty-buffer-explorer' and `helm-buffers-list'.
+This chooses helm when the buffer list gets a  bit too big."
+  (interactive)
+  (if (> (length (buffer-list)) 20)
+      (helm-buffers-list)
+    (lusty-buffer-explorer)))
 
-;(when (require 'ido-ubiquitous nil t)
-;  (ido-ubiquitous-mode))
+;;
+;; Lusty Explorer
+;;
+(use-package lusty-explorer
+  :bind (("C-x C-f" . lusty-file-explorer)
+         ("C-x b"   . lusty-buffer-explorer)))
 
-;; but if we have lusty still use that...
-(when (require 'lusty-explorer nil t)
-  ;; over-ride the normal file-opening, buffer switching
-  (global-set-key (kbd "C-x C-f") 'lusty-file-explorer)
-  (global-set-key (kbd "C-x b")   'lusty-buffer-explorer))
-
+;;
 ;; ibuffer has been around for some time
 (defun my-ibuffer-bs-show ()
   "Emulate `bs-show' from the bs.el package."
@@ -38,19 +48,23 @@
   (ibuffer nil "*Ibuffer-my-bs*" '((filename . ".*")) nil t)
   (define-key (current-local-map) "a" 'ibuffer-bs-toggle-all))
 
-(global-set-key (kbd "C-x C-b") 'my-ibuffer-bs-show)
-
-(setq ibuffer-saved-filters
-      (quote (("csrc" ((filename . "/export/csrc/*")))
-              ("tramp" ((filename . "\\/ssh:")))
-              ("irc" ((mode . erc-mode)))
-              ("magit" ((mode . magit-status-mode)))
-              ("programming" ((or (mode . emacs-lisp-mode)
-                                  (mode . cperl-mode)
-                                  (mode . c-mode)
-                                  (mode . java-mode)
-                                  (mode . idl-mode)
-                                  (mode . lisp-mode)))))))
+(use-package ibuffer
+  :commands ibuffer
+  :bind ("C-x C-b" . my-ibuffer-bs-show)
+  :config
+  (progn
+    (require 'ibuf-ext)
+    (setq ibuffer-saved-filters
+          (quote (("mysrc" ((filename . "~/mysrc/*")))
+                  ("tramp" ((filename . "\\/ssh:")))
+                  ("irc" ((mode . circe-mode)))
+                  ("magit" ((mode . magit-status-mode)))
+                  ("programming" ((or (mode . emacs-lisp-mode)
+                                      (mode . cperl-mode)
+                                      (mode . c-mode)
+                                      (mode . java-mode)
+                                      (mode . idl-mode)
+                                      (mode . lisp-mode)))))))))
 
 (message "Done Buffer Handling Tweaks")
 

@@ -8,88 +8,55 @@
 
 (require 'my-vars)
 (require 'my-find)
+(require 'use-package)
 
+;; Currently I'm still unsettled about which project library to use
 (cond
  ((require 'eproject nil t) (load-library "my-eproject"))
  ((require 'projectile nil t) (load-library "my-projectile"))
  (t (load-library "my-project")))
 
-;; Flycheck
-(when (locate-library "flycheck")
-  (require 'my-flycheck nil t))
-
-;; Compilation mode tweaks
-(when I-am-emacs-23+
-    (setq compilation-auto-jump-to-first-error 'nil))
-
-(setq compilation-scroll-output t
-      compilation-window-height 10)
-
-; lets not overtax the regex matcher on our huge compilation buffers
-(when I-am-at-work
-  (setq compilation-error-regexp-alist '(gcc-include gnu)))
-
-;; currently errors in CI, must figure out why
-;; (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
-;; (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)
-
-; Global keybindings for compiling
-(global-set-key (kbd "C-c c") 'compile)
-(global-set-key (kbd "C-c r") 'recompile)
-
-;; If we have the tracking library add compilation buffer when complete
-(when (require 'tracking nil 'noerror)
-  (defun my-hide-compilation-buffer (proc)
-    "Hide the compile buffer"
-    (delete-window (get-buffer-window "*compilation*")))
-
-  (defun my-report-compilation-finished (buf exit-string)
-    "Report the compilation buffer to tracker"
-    (tracking-add-buffer buf)
-    (when (fboundp 'global-flycheck-mode)
-      (global-flycheck-mode 0)))
-
-  (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
-  (add-hook 'compilation-finish-functions 'my-report-compilation-finished))
-
-;; Makefiles
-;
-; The auto-mode-alist isn't quite set-up to handle Makefile.something
-(setq auto-mode-alist
-      (append (list (cons "Makefile\.*" 'makefile-gmake-mode))
-	      auto-mode-alist))
-
-;; PHP
-;
-
-(defun my-wordpress-hook ()
-  "Hook function for editing Wordpress code."
-  (interactive)
-  (setq tab-width 4
-	indent-tabs-mode 't))
-
-(defvar my-php-hooks-alist
-  (mapc
-   (lambda (elt)
-     (cons (purecopy (car elt)) (cdr elt)))
-   '(
-     (".*/wp-content.*php$" . my-wordpress-hook )
-     (".*/wordpress.*php$" . my-wordpress-hook )))
-  "A list of reg-ex to php-mode hooks.")
-
 ;;
-;; Web stuff, use web-mode
+;; Compile Mode
 ;;
+(use-package compile
+  :bind (("C-c c" . compile)
+         ("C-c r" . recompile))
+  :config
+  (progn
+    (setq
+     compilation-auto-jump-to-first-error nil
+     compilation-scroll-output t
+     compilation-window-height 10)
+    ;; lets not overtax the regex matcher on our huge compilation buffers
+    (when I-am-at-work
+      (setq compilation-error-regexp-alist '(gcc-include gnu)))
+    ;; shortcut keybindings
+    (define-key compilation-mode-map (kbd "n") 'compilation-next-error)
+    (define-key compilation-mode-map (kbd "p") 'compilation-previous-error)))
 
-(defun my-web-mode-hook ()
-  "Hooks for Web mode."
-  (visual-line-mode)
-  (flyspell-mode))
+;; Use tracking with compilation-mode if we have it
+(use-package tracking
+  :commands tracking-add-buffer
+  :init
+  (progn
+    (defun my-hide-compilation-buffer (proc)
+      "Hide the compile buffer"
+      (delete-window (get-buffer-window "*compilation*")))
 
-(when (featurep 'web-mode)
-  (add-hook 'web-mode-hook  'my-web-mode-hook))
+    (defun my-report-compilation-finished (buf exit-string)
+      "Report the compilation buffer to tracker"
+      (tracking-add-buffer buf)
+      (when (fboundp 'global-flycheck-mode)
+        (global-flycheck-mode 0))))
+  :config
+  (progn
+    (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
+    (add-hook 'compilation-finish-functions 'my-report-compilation-finished)))
 
-(add-to-list 'auto-mode-alist '("\\.php$" . web-mode))
+;; Handle Makefile.blah 
+(use-package files
+  :mode ("Makefile\.*" . makefile-gmake-mode))
 
 (provide 'my-devel)
 ;;; my-devel.el ends here

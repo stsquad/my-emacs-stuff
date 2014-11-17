@@ -7,17 +7,25 @@
 ;;; Code:
 
 (require 'my-vars)
-(require 'magit)
-
-(message "Setting up GIT bits")
-
-; if we have magit then stop VC mode messing about
-(setq vc-handled-backends (remq 'Git vc-handled-backends))
-(autoload 'magit-status "magit" "magit front end" t)
+(require 'use-package)
 
 ; work-around stale shells
 (when I-am-at-work
   (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
+
+(use-package magit
+  :commands magit-status
+  :bind ("C-x g" . my-magit-start)
+  :config
+  '(progn
+     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
+     (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
+     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
+     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
+     (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
+     (setq
+      magit-status-buffer-switch-function 'switch-to-buffer
+      magit-rewrite-inclusive 'nil)))
 
 (defun my-magit-start ()
   "My personal start magit from anywhere function."
@@ -74,42 +82,21 @@
       (setq magit-checkpatch-script script)
       (local-set-key (kbd "C") 'my-magit-run-checkpatch))))
 
-; hook into magit-log-mode to check for checkpatch scripts
-; (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
 
-;; C-c C-a to amend without any prompt
-;; From: http://whattheemacsd.com/setup-magit.el-05.html
-;; (defun magit-just-amend ()
-;;   "Amend the last commit."
-;;   (interactive)
-;;   (save-window-excursion
-;;     (magit-with-refresh
-;;       (shell-command "git --no-pager commit --amend --reuse-message=HEAD"))))
+;;;
+;;; Additional GIT bits
+;;;
+(use-package git
+  :commands git-status)
 
-(eval-after-load "magit"
-  '(progn
-     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-     (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
-     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
-     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
-     (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
-     (setq
-      magit-status-buffer-switch-function 'switch-to-buffer
-      magit-rewrite-inclusive 'nil)))
-  
-; Also the git-blame and git-status stuff
-(when (locate-library "git")
-  (autoload 'git-status "git"
-    "Git Status" t))
+(use-package git-blame
+  :commands git-blame-mode)
 
-(when (locate-library "git-blame")
-  (autoload 'git-blame-mode "git-blame"
-    "Minor mode for incremental blame for Git." t))
-
-(when (locate-library "git-messenger")
-  (global-set-key (kbd "C-h g") 'git-messenger:popup-message)
-  (eval-after-load "git-messenger"
-    (setq git-messenger:show-detail t)))
+(use-package git-messenger
+  :commands git-messenger:popup-message
+  :bind ("C-h g" . git-messenger:popup-message)
+  :init
+  (setq git-messenger:show-detail t))
 
 (message "Done GIT hooks")
 

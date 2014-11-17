@@ -14,8 +14,11 @@
 ;;; Commentary:
 ;;
 ;; This enables all the common built-in modes I use in Emacs.
+;; Specifically these are modes enabled at start and not on demand.
 ;;
 ;;; Code:
+
+(require 'use-package)
 
 ;; Automagically decompress files
 (auto-compression-mode t)
@@ -24,12 +27,18 @@
 (savehist-mode)
 
 ;; Nice window sizing
-(when (require 'golden-ratio nil t)
+(use-package golden-ratio
+  :idle
+  :config
   (golden-ratio))
 
-(when (require 'keyfreq nil 'noerror)
-  (keyfreq-mode)
-  (keyfreq-autosave-mode))
+;; Keep track of my key-presses
+(use-package keyfreq
+  :idle
+  :config
+  (progn
+    (keyfreq-mode)
+    (keyfreq-autosave-mode)))
 
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here

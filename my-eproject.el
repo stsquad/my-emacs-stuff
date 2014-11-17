@@ -7,11 +7,17 @@
 ;;
 ;;; Code:
 
+(require 'use-package)
 (require 'eproject)
-(require 'eproject-extras)
-(require 'eproject-compile)
 (require 'my-find)
 (require 'my-c-mode)
+
+;; Helper variables
+(defvar my-core-count
+  (string-to-number
+   (shell-command-to-string
+    "cat /proc/cpuinfo | grep processor | wc -l"))
+  "Count of the CPU cores on this system.")
 
 ;; Work around the compiler, (look-for) is actually
 ;; flet inside eproject's run-selector code.
@@ -21,15 +27,23 @@
 (setcdr (assq 'eproject-mode minor-mode-alist) '(" eprj"))
 
 ;; Config
-(setq eproject-completing-read-function 'eproject--ido-completing-read)
+
+(use-package eproject-compile
+  :commands eproject-compile)
+
+(use-package eproject-extras
+  :commands eproject-ibuffer
+  :config
+  (setq eproject-completing-read-function 'eproject--ido-completing-read))
+
+(use-package helm-eproject
+  :commands helm-eproject)
 
 ;; Key hooks
 ; Hook in eproject-compile to normal key-binding
 (define-key eproject-mode-map (kbd "C-c c") 'eproject-compile)
 (define-key eproject-mode-map (kbd "C-x C-b") 'eproject-ibuffer)
-
-(when (require 'helm-eproject 'nil 'noerror)
-  (define-key eproject-mode-map (kbd "C-c h") 'helm-eproject))
+(define-key eproject-mode-map (kbd "C-c h") 'helm-eproject)
 
 (defun my-eproj-is-c ()
   "Require my-c-mode for project."
@@ -38,6 +52,7 @@
 (defun my-eproject-c-hook ()
   "Hook for cc-mode to run on eproject based projects."
   (message "in my-eproject-c-hook")
+  (eproject-maybe-turn-on)
   (when (eproject-attribute :c-style)
     (message "setting C style based on eproject")
     (c-set-style (eproject-attribute :c-style))))
@@ -47,8 +62,11 @@
   (eq (eproject-attribute :type) type))
 
 (defun my-eproject-asm-hook ()
-  "Hook for assembly mode"
+  "Hook for assembly mode."
+  (message "Running my-eproject-asm-hook")
+  (eproject-maybe-turn-on)
   (when (my-eproject-is-type-p 'kernel)
+    (message "Setting indent")
     (setq indent-tabs-mode t)))
 
 (add-hook 'c-mode-hook 'my-eproject-c-hook)
@@ -95,11 +113,36 @@
 (add-hook 'chrome-extension-visit-hook '(lambda ()
 					  (require "js2-mode" nil t)))
 
+(defun my-kernel-compile-strings (root)
+  "Return a list of compile strings for the kernel at `ROOT'"
+  (let ((j-field (format "-j%d" (1+ my-core-count)))
+        (build-dirs (directory-files
+                     (file-name-directory (directory-file-name root)) t "build"))
+        (builds '()))
+    (--each build-dirs
+      (let ((arch
+             (cond
+              ((string-match "v7" it) "arm")
+              ((string-match "v8" it) "arm64")
+              (nil))))
+        (setq builds
+              (if arch
+                  (cons
+                   (format
+                    "cd %s && ARCH=%s make %s" it arch j-field)
+                   (cons
+                    (format "cd %s && ARCH=%s make gtags" root arch) builds))
+                  (cons (format "cd %s && make %s" it j-field) builds)))))
+    builds))
+
+; (my-kernel-compile-strings "/home/alex/lsrc/kvm/linux.git/")
+  
+
 (define-project-type kernel
   (generic-git)
   (look-for "Documentation/CodingStyle")
   :c-style "linux-tabs-style"
-  :common-compiles ("ARCH=arm64 make -j9" "ARCH=x86 make" "make" "ARCH=x86 make TAGS"))
+  :common-compiles (my-kernel-compile-strings "make" "make gtags" "make TAGS"))
 
 (add-hook 'kernel-project-file-visit-hook 'my-eproj-is-c)
 

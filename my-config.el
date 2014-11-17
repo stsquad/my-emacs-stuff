@@ -65,6 +65,21 @@
 ;; X selection magic
 (setq x-select-enable-primary t) ; ensure killed text goes to primary
 
+;;; Backup settings
+;;
+;; I like to use symbolic links for a lot of my ~/bin scripts to my
+;; working dir. By default these get broken when emacs writes a new
+;; file.
+
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.saves"))   ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 3
+   version-control t)       ; use versioned backups
+
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 
