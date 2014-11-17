@@ -96,65 +96,6 @@
 (setq frame-title-format "%b")
 (setq  icon-title-format "%b")
 
-;; want to reduce the amount of white space in the mode-line
-(setq global-mode-string
-      '("" org-mode-line-string))
-
-(setq-default mode-line-format
-              '("-"
-                mode-line-mule-info
-                mode-line-modified
-                " "
-                mode-line-buffer-identification
-                " "
-                "%l/%c "
-                "%[("
-                mode-name
-                mode-line-process
-                minor-mode-alist
-                "%n"
-                ")%]"
-                "--"
-                global-mode-string
-                "--"
-                ))
-
-
-
-;; Let's shrink the minor-mode-alist down to size.
-(setcdr (assq 'abbrev-mode minor-mode-alist) '(" Ab"))
-(setcdr (assq 'auto-fill-function minor-mode-alist) '(" Fl"))
-
-;; Not added until the relevant mode is loaded.
-(setq minor-mode-alist (cons '(compilation-in-progress nil)
-                             minor-mode-alist))
-
-;; Uses a separate variable. Isn't that nice?
-(setq eldoc-minor-mode-string nil)
-
-;; (display-time) is needed for appt to display in the mode-line, but
-;; we don't want the time taking up precious space.
-(require 'time)
-(setq display-time-interval 20
-      display-time-format 'nil
-      display-time-string-forms '( 24-hours ":" minutes ))
-(display-time-mode)
-
-;; Displays current function() in programming modes.
-(when (require 'which-func nil t)
-  (which-function-mode))
-
-;; Reduce white space
-(setq-default mode-line-buffer-identification '("%b"))
-
-(when (require 'smart-mode-line nil t)
-  (sml/setup))
-
-
-(eval-when-compile (defvar tracking-most-recent-first))
-(when (require 'tracking nil t)
-  (setq tracking-most-recent-first t)
-  (tracking-mode))
 
 ;; Make fill do the Right Thing with full-stops.
 (setq sentence-end-double-space nil)
@@ -182,16 +123,15 @@
 
 (message "Done Display Hacks")
 
-;; Don't prompt me to revert something
-(global-auto-revert-mode 1)
 
 ;; I hate tabs - they are set in cc-mode but not everything respects that
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent 'complete)
 
-; TODO: clean-up my defaults for this
-(defvar whitespace-style)
-(when (require 'whitespace nil t)
+;; Whitespace mode
+(use-package whitespace
+  :commands whitespace-mode
+  :config
   (setq whitespace-style '(face
                            tabs trailing lines-tail empty
                            space-after-tab tab-mark)))

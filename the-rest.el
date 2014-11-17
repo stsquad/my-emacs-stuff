@@ -25,19 +25,6 @@
 
 (require 'my-utils)
 
-
-(message "Done defuns")
-
-
-
-
-
-(message "Done key mapping")
-
-
-(message "Setting up display")
-
-
 ;; ediff
 ;
 ; Need to setup properly
@@ -188,15 +175,14 @@
 
 (message "Done various programming modes")
 
-(require 'my-buffer)
 
 (when I-am-at-work
   (setenv "DEBEMAIL" "alex.bennee@linaro.org")
   (setenv "DEBFULLNAME" "Alex Bennée"))
 
 ;; Lets use mark-tools if we can
-(when (maybe-load-library "mark-tools")
-  (global-set-key (kbd "C-x m") 'list-marks))
+(use-package mark-tools
+  :bind ("C-x m" . list-marks))
 
 
 ;;

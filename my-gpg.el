@@ -21,9 +21,8 @@
 
 ;; Keychain access
 (use-package keychain-environment
-  :idle
-  :config
-  (keychain-refresh-environment))
+  :commands keychain-refresh-environment
+  :idle (keychain-refresh-environment))
 
 ;; enable EasyPG handling
 ; gpg-agent confuses epa when getting passphrase
@@ -33,10 +32,11 @@
 
 (use-package epa-file
   :if (string-match "socrates" (system-name))
+  :commands epa-file-enable
+  :idle (epa-file-enable)
   :config
   (progn
-    (add-hook 'after-make-frame-functions 'my-squash-gpg)
-    (epa-file-enable)))
+    (add-hook 'after-make-frame-functions 'my-squash-gpg)))
 
 (provide 'my-gpg)
 ;;; my-gpg.el ends here

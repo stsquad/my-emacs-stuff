@@ -26,18 +26,22 @@
 ;; Save history
 (savehist-mode)
 
+;; Don't prompt me to revert something
+(use-package autorevert
+  :commands global-auto-revert-mode
+  :idle (global-auto-revert-mode 1))
+
 ;; Nice window sizing
 (use-package golden-ratio
-  :idle
-  :config
-  (golden-ratio))
+  :commands golden-ration
+  :idle (golden-ratio))
 
 ;; Keep track of my key-presses
 (use-package keyfreq
-  :idle
+  :commands keyfreq-mode
+  :idle (keyfreq-mode)
   :config
   (progn
-    (keyfreq-mode)
     (keyfreq-autosave-mode)))
 
 (provide 'my-basic-modes)

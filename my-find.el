@@ -7,6 +7,8 @@
 ;   f6 - from where I am (or somewhere else)
 ;
 
+(require 'use-package)
+
 (defvar my-find-history
   '()
   "History of searches I've done")
@@ -43,13 +45,20 @@
 
 (global-set-key (kbd "<f5>") 'my-project-find)
 
-(global-set-key (kbd "<f6>")
-                (cond
-                 ((require 'helm-ag nil t) 'helm-ag)
-                 ((require 'ack-and-a-half nil t) 'ack-and-a-half)
-                 (t '(lambda (root search)
-                       (interactive (my-find-paramters))
-                       (funcall my-project-find-fallback-func
-                                root search)))))
+;;
+;; <f6> for project search, last successful one wins
+;;
+
+(global-set-key (kbd "<f6>") '(lambda (root search)
+                                (interactive (my-find-paramters))
+                                (funcall my-project-find-fallback-func
+                                         root search)))
+(use-package ack-and-a-half
+  :commands ack-and-a-half
+  :init (global-set-key (kbd "<f6>") 'ack-and-a-half))
+
+(use-package helm-ag
+  :commands helm-ag
+  :init (global-set-key (kbd "<f6>") 'helm-ag))
 
 (provide 'my-find)

@@ -44,16 +44,20 @@
 (make-variable-buffer-local 'magit-checkpatch-script)
 (put 'magit-checkpatch-script 'permanent-local t)
 
-;; Match checkpatch.pl output
-(add-to-list
- 'compilation-error-regexp-alist-alist
- '(checkpatch
-   "\\(WARNING\\|ERROR\\).*\n#.*FILE: \\([^:]+\\):\\([^:digit:]+\\).*\n.*"
-   2 ; file
-   3 ; line
-   ))
-
-(add-to-list 'compilation-error-regexp-alist 'checkpatch)
+(use-package compile
+  :commands compilation-mode
+  :config
+  (progn
+    ;; Match checkpatch.pl output
+    (add-to-list
+     'compilation-error-regexp-alist-alist
+     '(checkpatch
+       "\\(WARNING\\|ERROR\\).*\n#.*FILE: \\([^:]+\\):\\([^:digit:]+\\).*\n.*"
+       2 ; file
+       3 ; line
+       ))
+    ;; add reference
+    (add-to-list 'compilation-error-regexp-alist 'checkpatch)))
 
 (defun my-magit--do-run-checkpatch (commit)
   "Run the checkpatch script against `COMMIT'."
@@ -97,8 +101,6 @@
   :bind ("C-h g" . git-messenger:popup-message)
   :init
   (setq git-messenger:show-detail t))
-
-(message "Done GIT hooks")
 
 (provide 'my-git)
 ;;; my-git.el ends here

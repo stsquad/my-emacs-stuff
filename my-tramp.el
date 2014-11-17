@@ -5,7 +5,7 @@
 (require 'use-package)
 
 (use-package tramp
-  :idle
+  :defer
   :config
   (progn
     (setq tramp-default-method "scp"

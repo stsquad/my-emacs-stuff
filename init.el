@@ -91,8 +91,9 @@
   ;; More keybindings
   ;; (load-library "my-toggles")
   (require 'my-toggles)
-  ;; Window navigation
+  ;; Window and buffer navigation
   (load-library "my-windows")
+  (load-library "my-buffer")
 
   ;; Locally installed pkgs
   (load-library "my-local-pkgs")
@@ -128,9 +129,9 @@
 
   ;; Learn key strokes
   (use-package guide-key
-    :idle
+    :commands guide-key-mode
+    :idle (guide-key-mode 1)
     :config
-    (guide-key-mode 1)
     (setq guide-key/guide-key-sequence
           '("C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8")))
 

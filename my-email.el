@@ -11,6 +11,7 @@
 (require 'my-vars)
 
 (use-package smtpmail
+  :commands smtpmail-send-queued-mail
   :config
   (setq smtpmail-queue-mail  nil  ;; start in non-queuing mode
         smtpmail-queue-dir   "~/Maildir/queue/cur"
@@ -34,12 +35,10 @@
   (interactive)
   (concat "Alex Bennée"))
 
-(use-package mu4e-vars)
-
 (use-package mu4e
   :commands mu4e
   :bind ("C-c m" . my-switch-to-mue4)
-  :config
+  :requires mu4e-vars
   (progn
     (require 'mu4e-vars)
     (setq
