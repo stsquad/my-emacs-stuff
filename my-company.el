@@ -24,6 +24,7 @@
 (use-package company
   :commands global-company-mode
   :idle (global-company-mode)
+  :diminish "Com"
   :config
   (progn
     ;; Variables

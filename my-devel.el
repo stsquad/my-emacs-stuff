@@ -54,8 +54,8 @@
     (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
     (add-hook 'compilation-finish-functions 'my-report-compilation-finished)))
 
-;; Handle Makefile.blah 
-(use-package files
+;; Handle Makefile.blah
+(use-package make-mode
   :mode ("Makefile\.*" . makefile-gmake-mode))
 
 (provide 'my-devel)

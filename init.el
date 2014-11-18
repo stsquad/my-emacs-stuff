@@ -66,10 +66,8 @@
   (use-package edit-server
     :if (and window-system (daemonp) (not (= 0 (user-uid))))
     :commands edit-server-start
-    :init
-    (add-hook 'after-init-hook 'edit-server-start t)
-    :config
-    (load-library "my-edit-server.el"))
+    :idle (edit-server-start)
+    :config (load-library "my-edit-server.el"))
 
   (use-package async
     :commands ido-dired dired
@@ -139,8 +137,8 @@
   ;; God-mode
   (use-package god-mode
     :commands god-mode-all
-    :init
-    (define-key my-toggle-map "g" 'god-mode-all)
+    :requires my-toggles
+    :init (define-key my-toggle-map "g" 'god-mode-all)
     :config
     (progn
       (defun my-update-god-cursor ()
@@ -148,9 +146,12 @@
         (setq cursor-type (if (or god-local-mode buffer-read-only)
                               'hollow
                             'box)))
-      (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)))
-      (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)
+      (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
+      (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
+  ;; Lets use mark-tools if we can
+  (use-package mark-tools
+    :bind ("C-x m" . list-marks))
   
   (load "the-rest.el"))
 

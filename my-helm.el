@@ -12,7 +12,8 @@
 (require 'use-package)
 
 (use-package helm-config
-  :bind (("M-x" . helm-M-x)
+  :bind (("C-c h" . helm-mini)
+         ("M-x" . helm-M-x)
          ("C-f" . helm-semantic-or-imenu)
          ("C-<f1>" . helm-apropos))
   :config

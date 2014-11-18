@@ -38,6 +38,7 @@
 
 ;; Keep track of my key-presses
 (use-package keyfreq
+  :if (daemonp)
   :commands keyfreq-mode
   :idle (keyfreq-mode)
   :config

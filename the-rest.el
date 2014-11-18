@@ -152,10 +152,6 @@
   (setenv "DEBEMAIL" "alex.bennee@linaro.org")
   (setenv "DEBFULLNAME" "Alex Bennée"))
 
-;; Lets use mark-tools if we can
-(use-package mark-tools
-  :bind ("C-x m" . list-marks))
-
 
 ;;
 ;; Tcl (and expect)

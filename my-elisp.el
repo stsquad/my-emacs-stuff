@@ -24,6 +24,10 @@
   (interactive)
   (byte-compile-file (buffer-file-name)))
 
+(use-package eldoc
+  :commands eldoc-mode
+  :diminish "")
+
 (defun my-elisp-hook-functions ()
   "A few quick elisp hook customisation."
   (setq mode-name "elisp")

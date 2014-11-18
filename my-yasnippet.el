@@ -11,7 +11,7 @@
 ;; Some snippets use the s library
 (use-package s
   :defer
-  :commands s-chop-suffix)
+  :commands s-chop-suffix s-trim)
 
 ;; YASnippet itself
 (use-package yasnippet
