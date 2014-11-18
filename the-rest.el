@@ -104,34 +104,6 @@
           (lambda ()
             (setq truncate-lines t)))
 
-;; Web Development Modes
-;
-; I used to use nxhtml, now I use web-mode
-
-;; Elisp mode
-;
-; I keep this in the main .emacs as I edit .emacs quite a bit
-
-; auto-mode lists
-(setq auto-mode-alist
-      (append (list
-               '("\\.emacs\\'" . emacs-lisp-mode)
-               '("dotemacs" . emacs-lisp-mode))
-              auto-mode-alist))
-
-(defun my-elisp-compile-buffer ()
-  "Compile the current buffer."
-  (interactive)
-  (byte-compile-file (buffer-file-name)))
-
-(defun my-elisp-hook-functions ()
-  "A few quick elisp hook customisation."
-  (setq mode-name "elisp")
-  (eldoc-mode t)
-  (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer)
-  (turn-on-auto-fill))
-
-(add-hook 'emacs-lisp-mode-hook 'my-elisp-hook-functions)
 
 ;;
 ;; Simple mail-mode and message-mode hooks.

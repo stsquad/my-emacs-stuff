@@ -83,6 +83,7 @@
   ;; Development related stuff, including project root
   (load-library "my-devel")
   (load-library "my-web")
+  (load-library "my-elisp")
   (load-library "my-flycheck")
   ;; Org configuration
   (load-library "my-org")
