@@ -39,6 +39,7 @@
   :commands mu4e
   :bind ("C-c m" . my-switch-to-mue4)
   :requires mu4e-vars
+  :config
   (progn
     (require 'mu4e-vars)
     (setq
