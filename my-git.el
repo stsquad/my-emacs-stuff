@@ -15,6 +15,7 @@
 
 (use-package magit
   :commands magit-status
+  :diminish ((magit-auto-revert-mode . "MR"))
   :bind ("C-x g" . my-magit-start)
   :config
   '(progn

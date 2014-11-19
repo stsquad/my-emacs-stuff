@@ -7,8 +7,9 @@
 ;;
 ;;; Code:
 ;;
-(require 'my-utils)
 (require 'use-package)
+(require 'my-utils)
+(require 'my-tracking)
 
 ;; currently in my branch of RISU
 (use-package risu
@@ -31,10 +32,6 @@
         qemu-drive-device-params
         nil))
 
-;; I may use tracking
-(use-package tracking
-  :commands tracking-add-buffer)
-
 ;; LAVA mode
 (use-package lava-rpc
   :commands lava-xml-rpc-call
@@ -52,7 +49,7 @@
                        (add-to-list 'tabulated-list-revert-hook
                                     #'(lambda ()
                                         (tracking-add-buffer (current-buffer)))))))))
-1
+
 (use-package lava-mode
   :mode ("lava-mode.*\\.json$" . lava-mode)
   :config
