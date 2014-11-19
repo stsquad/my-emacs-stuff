@@ -80,9 +80,10 @@
   (load-library "my-email")
   ;; Development related stuff, including project root
   (load-library "my-devel")
+  (load-library "my-flycheck")
   (load-library "my-web")
   (load-library "my-elisp")
-  (load-library "my-flycheck")
+  (load-library "my-python")
   ;; Org configuration
   (load-library "my-org")
   ;; Helm
@@ -109,6 +110,7 @@
   (load-library "my-htmlize")
   (load-library "my-eshell")
   (load-library "my-circe")
+  (load-library "my-diff")
   
   ;; Nice for jumping about windows.
   (use-package ace-jump-mode

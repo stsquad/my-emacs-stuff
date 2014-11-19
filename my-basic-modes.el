@@ -30,7 +30,7 @@
 (use-package autorevert
   :commands global-auto-revert-mode
   :idle (global-auto-revert-mode 1))
-
+  
 ;; Nice window sizing
 (use-package golden-ratio
   :commands golden-ration
@@ -44,6 +44,10 @@
   :config
   (progn
     (keyfreq-autosave-mode)))
+
+;; Simple access to the calculator
+(use-package calculator
+  :bind ("C-<RET>" . calculator))
 
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here

@@ -80,6 +80,12 @@
    kept-old-versions 3
    version-control t)       ; use versioned backups
 
+; I like to use .git/.bzr etc in my directory names
+(setq completion-ignored-extensions
+      (remove ".git/"
+              (remove ".bzr/"
+                      (remove ".svn/" completion-ignored-extensions))))
+
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")
 

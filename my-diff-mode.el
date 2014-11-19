@@ -1,3 +1,36 @@
+;;; my-diff-mode --- A derived version of diff-mode for heavy patch use
+;;
+;; Copyright (C) 2014 Alex Bennée
+
+;; Author: Alex Bennée <alex.bennee@linaro.org>
+;; Maintainer: Alex Bennée <alex.bennee@linaro.org>
+;; Version: 0.1
+;; Homepage: 
+
+;; This file is not part of GNU Emacs.
+
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+
+;; This file is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;;
+;;; Commentary:
+;;
+;; This provides a simple derived version of diff mode with a single
+;; keypress map and a few helper functions.
+;;
+;;; Code:
+
+
+
 ;
 ; my-diff-mode
 ;
@@ -113,16 +146,6 @@ succeded"
     (diff-apply-hunk))
   (diff-hunk-kill))
 
-
-
-;; my-diff-mode
-;
-; Define my-diff-mode and associated bits and pieces
-;
-
-(message "Setting up my-diff-mode")
-
-
 ;
 ; Define a new key-map
 ;
@@ -152,35 +175,5 @@ succeded"
   ; its ok to able to modify this buffer
   (setq buffer-read-only nil))
 
-
-;; Patches and Diffs
-
-; We want to find files like
-;
-; 0001-Remove-old-pre-SIGNAL_MANAGER-code.patch
-; mypatch.patch
-; adiff.diff
-; .dotest/0001
-;
-; But not files like
-;  ~/.mozilla/firefox/adxbrp73.default/itsalltext/www.bennee.com.3022372z35.txt
-
-(setq auto-mode-alist (cons '("\\.diff$" . my-diff-mode)
-			    auto-mode-alist))
-
-(setq auto-mode-alist (cons '("\\.patch$" . my-diff-mode)
-			    auto-mode-alist))
-
-;; Git Patches
-;
-; Auto set my-diff-mode for various forms of git patchs
-
-;(setq auto-mode-alist (cons '("0.*\.txt" . my-diff-mode)
-;			    auto-mode-alist))
-
-(setq auto-mode-alist
-      (cons
-       '("\\.dotest/[0123456789][0123456789][0123456789][0123456789]" . my-diff-mode)
-       auto-mode-alist))
-
-(message "my-diff-mode created")
+(provide 'my-diff-mode)
+;;; my-diff-mode.el ends here

@@ -25,67 +25,6 @@
 
 (require 'my-utils)
 
-;; ediff
-;
-; Need to setup properly
-;
-;? Also need to find a way to restore it all on
-;  resume. This stuff is all far from bullet-proof.
-
-(eval-when-compile
-  (defvar ediff-custom-diff-options)
-  (defvar ediff-split-window-function)
-  (defvar ediff-window-setup-function))
-
-(eval-after-load "ediff"
-  '(progn
-     (message "doing ediff customisation")
-     (setq diff-switches               "-u"
-           ediff-custom-diff-options   "-U3"
-           ediff-split-window-function 'split-window-horizontally
-           ediff-window-setup-function 'ediff-setup-windows-plain)
-     (add-hook 'ediff-before-setup-hook 'new-frame)
-     (add-hook 'ediff-quit-hook 'delete-frame)
-     (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
-     (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
-     (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
-
-;; diff-mode and its derivitives
-;
-; Here we have some tweaks to the diff-mode for testing a series of
-; patchs and/or applying a whole patch
-;
-
-(when (locate-library "diff-mode")
-  (if (locate-library "my-diff-mode")
-      (progn
-        (message "Hooking in my-diff-mode")
-        (autoload 'my-diff-mode "my-diff-mode")
-        (defalias 'dmode-alias 'my-diff-mode))
-    (autoload 'diff-mode "diff-mode")
-    (defalias 'dmode-alias 'diff-mode))
-
-  ; Which ever version we have we need to set the
-  ; automode up so it loads when we need it
-  (setq auto-mode-alist (append (list
-                                 (cons "\.diff$"  'dmode-alias)
-                                 (cons "\.patch$" 'dmode-alias)
-                                 (cons "\.rej$" 'dmode-alias)
-                                 (cons "\.dotest/0.*"
-                                       'dmode-alias))
-                                auto-mode-alist)))
-
-
-;; calculator
-;
-; If we have the calculator library available lets load it in
-;
-
-(when (locate-library "calculator")
-  (autoload 'calculator "calculator"
-    "Run the Emacs calculator." t)
-  (global-set-key [(control return)] 'calculator))
-
 
 ;; my-find-binary
 ;
@@ -93,11 +32,6 @@
 (when (locate-library "my-find-binary")
     (autoload 'find-binary-file "my-find-binary"))
 
-; I like to use .git/.bzr etc in my directory names
-(setq completion-ignored-extensions
-      (remove ".git/"
-              (remove ".bzr/"
-                      (remove ".svn/" completion-ignored-extensions))))
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
