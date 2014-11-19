@@ -51,7 +51,8 @@
 
 
 (use-package diminish
-  :config
+  :commands diminish
+  :idle
   (progn
     (diminish 'auto-fill-function "Fl")
     (diminish 'abbrev-mode "Ab")))

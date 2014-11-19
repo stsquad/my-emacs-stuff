@@ -30,6 +30,7 @@
 
 (use-package helm-gtags
   :commands helm-gtags-mode
+  :diminish "HGt"
   :config
   (progn
     ;; keys

@@ -132,6 +132,7 @@
   (use-package guide-key
     :commands guide-key-mode
     :idle (guide-key-mode 1)
+    :diminish ""
     :config
     (setq guide-key/guide-key-sequence
           '("C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8")))
