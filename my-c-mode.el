@@ -13,9 +13,7 @@
 
 (require 'use-package)
 (require 'my-vars)
-(require 'cc-styles)
-
-(message "Starting my-c-mode.el customisation")
+  
 
 (defconst my-c-style
   '((indent-tabs-mode . nil)
@@ -53,7 +51,7 @@
 ; We don't set this as the default style as it gets in the way when
 ; editing Random C code.
 
-(c-add-style "my-c-style" my-c-style)
+
 
 ; GTKG
 (defconst gtkg-style
@@ -63,7 +61,7 @@
     (c-tab-always-indent . t))
   "Style for GTK Gnutella Development")
 
-(c-add-style "gtkg-style" gtkg-style)
+
 
 ; Rockbox
 (defconst rockbox-c-style
@@ -83,7 +81,7 @@
     )
   "Rockbox C Programming Style")
 
-(c-add-style "rockbox-c-style" rockbox-c-style)
+
 
 ; GIT
 (defconst git-c-style
@@ -93,7 +91,7 @@
     (indent-tabs-mode . t))
   "GIT C programming style")
 
-(c-add-style "git-c-style" git-c-style)
+
 
 ; EasyTag
 (defconst easytag-c-style
@@ -104,7 +102,7 @@
     (c-comment-only-line-offset . 0))
   "EasyTag Programming Style")
 
-(c-add-style "easytag-c-style" easytag-c-style)
+
 
 ; Qemu C Style
 (defconst qemu-c-style
@@ -141,7 +139,7 @@
     )
   "QEMU C Programming Style")
 
-(c-add-style "qemu-c-style" qemu-c-style)
+
 
 (defconst risu-style
   '("ellemtel"
@@ -165,7 +163,7 @@
     )
     "RISU Style (PMM's C Programming Style)")
 
-(c-add-style "risu-c-style" risu-style)
+
 
 ;; Linux style
 ;
@@ -189,7 +187,24 @@
       c-lineup-gcc-asm-reg
       c-lineup-arglist-tabs-only))))
 
-(c-add-style "linux-tabs-style" linux-tabs-style)
+
+;;
+;; cc-styles
+;;
+;; Add the style definitions on demand when we load it
+(use-package cc-styles
+  :commands (c-add-style c-set-style)
+  :config
+  (progn
+    (c-add-style "my-c-style" my-c-style)
+    (c-add-style "gtkg-style" gtkg-style)
+    (c-add-style "rockbox-c-style" rockbox-c-style)
+    (c-add-style "git-c-style" git-c-style)
+    (c-add-style "easytag-c-style" easytag-c-style)
+    (c-add-style "qemu-c-style" qemu-c-style)
+    (c-add-style "risu-c-style" risu-style)
+    (c-add-style "linux-tabs-style" linux-tabs-style)))
+
 
 ;; my-c-style-guesser
 ;
