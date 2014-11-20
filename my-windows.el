@@ -64,6 +64,7 @@ Assumes that the frame is only split into two."
 
 ;; ace-window makes switching less painful
 (use-package ace-window
+  :ensure ace-window
   :bind ("C-x o" . ace-window))
 
 (provide 'my-windows)

@@ -41,6 +41,7 @@
   (add-hook 'emacs-lisp-mode-hook 'my-elisp-hook-functions))
 
 (use-package macrostep
+  :ensure macrostep
   :commands macrostep-expand
   :init (define-key emacs-lisp-mode-map (kbd "C-c e") 'macrostep-expand))
 
