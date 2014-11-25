@@ -31,11 +31,6 @@
   :commands global-auto-revert-mode
   :idle (global-auto-revert-mode 1))
   
-;; Nice window sizing
-(use-package golden-ratio
-  :commands golden-ration
-  :idle (golden-ratio))
-
 ;; Keep track of my key-presses
 (use-package keyfreq
   :if (daemonp)

@@ -136,6 +136,11 @@
                            tabs trailing lines-tail empty
                            space-after-tab tab-mark)))
 
+;; Nice window sizing
+(use-package golden-ratio
+  :commands golden-ratio
+  :idle (golden-ratio))
+
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook
           '(lambda ()
