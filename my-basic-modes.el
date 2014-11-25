@@ -44,6 +44,10 @@
 (use-package calculator
   :bind ("C-<RET>" . calculator))
 
+;; Recentf
+(use-package recentf
+  :config (setq recentf-max-saved-items nil))
+
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here
 
