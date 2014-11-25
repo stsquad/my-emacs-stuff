@@ -86,7 +86,7 @@
   (set-cursor-color
    (if overwrite-mode
        "red"
-     "black")))
+     "grey")))
 
 (if I-am-emacs-21+
     (blink-cursor-mode -1))
