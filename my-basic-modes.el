@@ -45,7 +45,10 @@
   :bind ("C-<RET>" . calculator))
 
 ;; Recentf
+;;
+;; This is mainly for the benefit of helm-mini
 (use-package recentf
+  :commands recentf-mode
   :config (setq recentf-max-saved-items nil))
 
 (provide 'my-basic-modes)
