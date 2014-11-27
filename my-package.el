@@ -9,12 +9,7 @@
 (require 'package)
 
 (defvar my-useful-packages
-  '(ac-etags ac-c-headers ac-dabbrev ac-helm ac-js2
-    ace-jump-mode ace-jump-buffer
-    android-mode
-    apache-mode
-    auto-complete
-    backtrace-mode
+  '(ace-jump-mode ace-jump-buffer
     circe
     edit-server edit-server-htmlize
     elpy
@@ -43,21 +38,13 @@
     mediawiki
     mc-extras multiple-cursors
     org ox-reveal
-    paredit
-    pastebin
-    projectile
-    protobuf-mode
     use-package
-    rainbow-delimiters
     smart-mode-line
-    ssh-config-mode
     solarized-theme
-    syslog-mode
     tangotango-theme
     tracking
     web-mode
     yasnippet
-    yaml-mode
     zenburn-theme)
   "List of packages I use a lot.")
 
