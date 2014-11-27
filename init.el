@@ -155,6 +155,12 @@
   ;; Lets use mark-tools if we can
   (use-package mark-tools
     :bind ("C-x m" . list-marks))
+
+  (use-package paradox
+    :ensure paradox
+    :commands paradox-list-packages
+    :config
+    (setq paradox-github-token (my-pass-password "paradox" t)))
   
   (load "the-rest.el"))
 
