@@ -10,16 +10,21 @@
 (require 'edit-server)
 
 ;; Handy for wiki editing
-(when (require 'mediawiki nil t)
-  (add-to-list 'edit-server-url-major-mode-alist '("mediawiki" .
-                                                   mediawiki-mode))
-  (add-to-list 'edit-server-url-major-mode-alist '("wikipedia" .
-                                                   mediawiki-mode)))
+(use-package mediawiki
+  :commands mediawiki-mode
+  :init
+  (progn
+    (add-to-list 'edit-server-url-major-mode-alist
+                 '("mediawiki" . mediawiki-mode))
+    (add-to-list 'edit-server-url-major-mode-alist
+                 '("wikipedia" . mediawiki-mode))
+    (add-to-list 'edit-server-url-major-mode-alist
+                 '("wiki.qemu.org" . mediawiki-mode))))
 
 ;; Markdown sites
 (when (require 'markdown-mode nil t)
-  (add-to-list 'edit-server-url-major-mode-alist '("stackexchange" .
-                                                   markdown-mode)))
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("stackexchange" . markdown-mode)))
 
 (setq edit-server-edit-mode-hook nil)
 (add-hook 'edit-server-edit-mode-hook 'flyspell-mode t)
