@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: pull
+# key: $pull
+# This inserts a pull request header into a mail
+# --
+${1:$$(my-yas-pull-req-helper)}
