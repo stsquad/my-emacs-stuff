@@ -62,7 +62,10 @@
      ;; compose options
      mu4e-compose-signature 'my-sig-function
      mu4e-compose-complete-only-personal nil
-     mu4e-user-mail-address-list '("alex.bennee@linaro.org")
+     mu4e-user-mail-address-list
+     '("alex.bennee@linaro.org"
+       "alex@bennee.com"
+       "kernel-hacker@bennee.com")
      mu4e-compose-complete-only-after "2013-11-01"
      ;; view options
      mu4e-view-show-images t
@@ -154,14 +157,17 @@
   "Pick new `user-mail-address' based on the parent email.
 Sadly this is not a local variable as at the time of the
 hook we are not yet in the compose buffer."
-  (setq user-mail-address
-    (if mu4e-compose-parent-message
-        (assoc-default
-         (plist-get mu4e-compose-parent-message :path)
-         my-email-address-alist 'string-match)
-      (cond
-       (I-am-at-work "alex.bennee@linaro.org")
-       (t "alex@bennee.com")))))
+  (let ((email
+         (when mu4e-compose-parent-message
+           (assoc-default
+            (plist-get mu4e-compose-parent-message :path)
+            my-email-address-alist 'string-match))))
+    (setq user-mail-address
+          (if email
+              email
+            (cond
+             (I-am-at-work "alex.bennee@linaro.org")
+             (t "alex@bennee.com"))))))
 
 ;; Utility functions for email
 
