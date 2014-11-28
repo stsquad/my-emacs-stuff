@@ -108,10 +108,10 @@
     (setenv "DISPLAY" nil)))
 
 (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
-(add-hook 'focus-in-hook #'(lambda() ((my-fixup-gpg-agent (selected-frame)))))
+(add-hook 'focus-in-hook #'(lambda() (my-fixup-gpg-agent (selected-frame))))
 
 (defun my-switch-browser (frame)
-  "Tweak default browser depending on frame visibility"
+  "Tweak default browser depending on frame visibility."
   (setq browse-url-browser-function
         (cond
          (I-am-on-pixel 'eww-browse-url)
