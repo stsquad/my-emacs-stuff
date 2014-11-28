@@ -8,17 +8,21 @@
 
 (require 'use-package)
 
-(use-package em-hist)
-
 (use-package eshell
   :bind ("C-c e" . eshell)
   :config
-  ;; eshell-mode-map only exists in eshell buffers so we
-  ;; add our bindings there.
-  (add-hook 'eshell-mode-hook
-            #'(lambda ()
-                (define-key eshell-mode-map (kbd "C-c C-o") 'my-eshell-kill-output)
-                (define-key eshell-mode-map (kbd "C-r") 'my-eshell-search-history))))
+  (progn
+    ;; eshell-mode-map only exists in eshell buffers so we
+    ;; add our bindings there.
+    (add-hook 'eshell-mode-hook
+              #'(lambda ()
+                  (define-key eshell-mode-map (kbd "C-c C-o")
+                    'my-eshell-kill-output)))
+    (use-package em-hist
+      :config
+      (add-hook 'eshell-mode-hook
+                #'(lambda ()
+                    (define-key eshell-mode-map (kbd "C-r") 'my-eshell-search-history))))))
 
 (defun my-eshell-search-history ()
   "Prompt for shell history."

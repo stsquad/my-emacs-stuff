@@ -13,15 +13,13 @@
 
 ;; Window navigation and size control
 (use-package windmove
-  :idle
-  :config
-  (windmove-default-keybindings))
+  :commands windmove-default-keybindings
+  :idle (windmove-default-keybindings))
 
 ;; winner-mode to remember window layouts
 (use-package winner
-  :idle
-  :config
-  (winner-mode t))
+  :commands winner-mode
+  :idle (winner-mode t))
 
 ;; Window key bindings
 (use-package window
@@ -66,6 +64,7 @@ Assumes that the frame is only split into two."
 
 ;; ace-window makes switching less painful
 (use-package ace-window
+  :ensure ace-window
   :bind ("C-x o" . ace-window))
 
 (provide 'my-windows)

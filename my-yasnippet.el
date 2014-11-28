@@ -7,21 +7,23 @@
 ;;; Code:
 
 (require 'use-package)
+(require 'my-utils)
 
 ;; Some snippets use the s library
 (use-package s
-  :commands s-chop-suffix)
+  :defer
+  :commands s-chop-suffix s-trim)
 
 ;; YASnippet itself
 (use-package yasnippet
-  :idle
+  :commands yas-global-mode
+  :idle (yas-global-mode)
   :config
   (progn
     (when (file-exists-p "~/.emacs.d/my-snippets")
       (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
     (setq yas-prompt-functions
-          '(yas-ido-prompt yas-completing-prompt yas-no-prompt))
-    (yas-global-mode)))
+          '(yas-ido-prompt yas-completing-prompt yas-no-prompt))))
 
 ;; Helper functions
 (defvar my-yas-emails
@@ -42,6 +44,15 @@
    ((buffer-file-name)
     (assoc-default (buffer-file-name) my-yas-emails 'string-match))
    (t "alex@....")))
+
+(defun my-yas-pull-req-helper ()
+  "Return a pull request string from a given directory"
+  (interactive)
+  (let ((default-directory (my-choose-directory "Git Tree: "))
+        (base "origin/master")
+        (repo "github"))
+    (shell-command-to-string
+     (format "git request-pull %s %s" base repo))))
 
 (defun my-yas-local-exit-function (func)
   "Call FUNC in the buffer-local yas-after-exit-snippet-hook."

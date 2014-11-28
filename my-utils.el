@@ -108,7 +108,7 @@
     (setenv "DISPLAY" nil)))
 
 (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
-;(my-fixup-gpg-agent (selected-frame))
+(add-hook 'focus-in-hook #'(lambda() ((my-fixup-gpg-agent (selected-frame)))))
 
 (defun my-switch-browser (frame)
   "Tweak default browser depending on frame visibility"
@@ -119,7 +119,7 @@
           (t 'browse-url-xdg-open))))
 
 (add-hook 'after-make-frame-functions 'my-switch-browser)
-;(my-switch-browser (selected-frame))
+(add-hook 'focus-in-hook #'(lambda() (my-switch-browser (selected-frame))))
 
 ;; Simple caching
 (defvar my-cached-passwords
@@ -183,7 +183,18 @@
 
 (global-set-key (kbd "<C-f8>") 'insert-sequence-key)
 
-
+;; Choose a directory
+(defun my-choose-directory (&optional prompt)
+  "Return a history aware directory. `PROMPT' is optional."
+  (interactive)
+  (let* ((query (or prompt "Target directory: "))
+         (path
+          (ido-read-directory-name query
+                                   (car ido-work-directory-list)
+                                   "~/" t)))
+    (setf ido-work-directory-list
+          (cons path (delete path ido-work-directory-list)))
+  path))
 
 (provide 'my-utils)
 ;;; my-utils.el ends here

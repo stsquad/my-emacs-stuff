@@ -11,16 +11,14 @@
 
 (use-package flycheck
   :commands global-flycheck-mode
-  :idle
-  :init (global-flycheck-mode)
+  :idle (global-flycheck-mode)
   :config
   (progn
     ;; Other pkgs
     (use-package flycheck-tip
-      :commands 'flycheck-tip-cycle
-      :idle
-      :init
-      (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
+      :commands 'flycheck-tip-cycle)
+
+    (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle)
     
     ;; Settings
     (setq-default flycheck-emacs-lisp-initialize-packages t

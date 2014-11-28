@@ -22,6 +22,7 @@
 
 (use-package circe
   :commands (circe circe-set-display-handler)
+  :requires my-tracking
   :config
   (progn
     ;; Don't spam me with JOIN/QUIT etc messages
@@ -31,12 +32,6 @@
       :commands enable-lui-autopaste
       :init
       (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste))
-    ;; Chanel tracking
-    (use-package tracking
-      :init
-      (add-to-list 'global-mode-string
-                   'tracking-mode-line-buffers
-                   t))
     ;; spell checking
     (use-package flyspell
       :init

@@ -8,7 +8,6 @@
 ;;; Code:
 
 (require 'use-package)
-(require 'eproject)
 (require 'my-find)
 (require 'my-c-mode)
 
@@ -19,12 +18,15 @@
     "cat /proc/cpuinfo | grep processor | wc -l"))
   "Count of the CPU cores on this system.")
 
-;; Work around the compiler, (look-for) is actually
-;; flet inside eproject's run-selector code.
-(declare-function look-for "eproject" t t)
-
-;; Shrink mode line for mode display
-(setcdr (assq 'eproject-mode minor-mode-alist) '(" eprj"))
+(use-package eproject
+  :commands define-project
+  :diminish "eprj"
+  :config
+  (progn
+    ;; Key bindings
+    (define-key eproject-mode-map (kbd "C-c c") 'eproject-compile) ; override 'compile
+    (define-key eproject-mode-map (kbd "C-x C-b") 'eproject-ibuffer)
+    (define-key eproject-mode-map (kbd "C-c h") 'helm-eproject)))
 
 ;; Config
 
@@ -38,12 +40,6 @@
 
 (use-package helm-eproject
   :commands helm-eproject)
-
-;; Key hooks
-; Hook in eproject-compile to normal key-binding
-(define-key eproject-mode-map (kbd "C-c c") 'eproject-compile)
-(define-key eproject-mode-map (kbd "C-x C-b") 'eproject-ibuffer)
-(define-key eproject-mode-map (kbd "C-c h") 'helm-eproject)
 
 (defun my-eproj-is-c ()
   "Require my-c-mode for project."
@@ -114,7 +110,7 @@
 					  (require "js2-mode" nil t)))
 
 (defun my-kernel-compile-strings (root)
-  "Return a list of compile strings for the kernel at `ROOT'"
+  "Return a list of compile strings for the kernel at `ROOT'."
   (let ((j-field (format "-j%d" (1+ my-core-count)))
         (build-dirs (directory-files
                      (file-name-directory (directory-file-name root)) t "build"))

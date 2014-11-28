@@ -11,14 +11,9 @@
 ;;
 ;;; Code:
 
+(require 'use-package)
 (require 'my-vars)
-
-; Need cc-style
-(require 'cc-mode)
-(require 'cc-styles)
-(require 'cperl-mode nil t)
-
-(message "Starting my-c-mode.el customisation")
+  
 
 (defconst my-c-style
   '((indent-tabs-mode . nil)
@@ -56,7 +51,7 @@
 ; We don't set this as the default style as it gets in the way when
 ; editing Random C code.
 
-(c-add-style "my-c-style" my-c-style)
+
 
 ; GTKG
 (defconst gtkg-style
@@ -66,7 +61,7 @@
     (c-tab-always-indent . t))
   "Style for GTK Gnutella Development")
 
-(c-add-style "gtkg-style" gtkg-style)
+
 
 ; Rockbox
 (defconst rockbox-c-style
@@ -86,7 +81,7 @@
     )
   "Rockbox C Programming Style")
 
-(c-add-style "rockbox-c-style" rockbox-c-style)
+
 
 ; GIT
 (defconst git-c-style
@@ -96,7 +91,7 @@
     (indent-tabs-mode . t))
   "GIT C programming style")
 
-(c-add-style "git-c-style" git-c-style)
+
 
 ; EasyTag
 (defconst easytag-c-style
@@ -107,7 +102,7 @@
     (c-comment-only-line-offset . 0))
   "EasyTag Programming Style")
 
-(c-add-style "easytag-c-style" easytag-c-style)
+
 
 ; Qemu C Style
 (defconst qemu-c-style
@@ -144,7 +139,7 @@
     )
   "QEMU C Programming Style")
 
-(c-add-style "qemu-c-style" qemu-c-style)
+
 
 (defconst risu-style
   '("ellemtel"
@@ -168,7 +163,7 @@
     )
     "RISU Style (PMM's C Programming Style)")
 
-(c-add-style "risu-c-style" risu-style)
+
 
 ;; Linux style
 ;
@@ -192,7 +187,24 @@
       c-lineup-gcc-asm-reg
       c-lineup-arglist-tabs-only))))
 
-(c-add-style "linux-tabs-style" linux-tabs-style)
+
+;;
+;; cc-styles
+;;
+;; Add the style definitions on demand when we load it
+(use-package cc-styles
+  :commands (c-add-style c-set-style)
+  :config
+  (progn
+    (c-add-style "my-c-style" my-c-style)
+    (c-add-style "gtkg-style" gtkg-style)
+    (c-add-style "rockbox-c-style" rockbox-c-style)
+    (c-add-style "git-c-style" git-c-style)
+    (c-add-style "easytag-c-style" easytag-c-style)
+    (c-add-style "qemu-c-style" qemu-c-style)
+    (c-add-style "risu-c-style" risu-style)
+    (c-add-style "linux-tabs-style" linux-tabs-style)))
+
 
 ;; my-c-style-guesser
 ;
@@ -260,66 +272,20 @@
   (if I-am-emacs-21+
       (cwarn-mode)))
 
-(add-hook 'c-mode-hook 'my-c-mode-hook)
+(use-package cc-mode
+  :commands c-mode
+  :config
+  (progn
+    (add-hook 'c-mode-hook 'my-c-mode-hook)
+    (define-key c-mode-map (kbd "C-c f") 'find-tag)
+    (use-package etags-select
+      :commands etags-select-find-tag
+      :init (define-key c-mode-map (kbd "C-c f") 'etags-select-find-tag))))
 
 (message "Done with cc-mode customisation")
 
 ;;
 ;; End of c-mode customisations
 ;;
-
-;; load the etags library and bind C-f to something worth using :-)
-(if (require 'etags-select nil t)
-    (define-key c-mode-map (kbd "C-c f") 'etags-select-find-tag)
-  (define-key c-mode-map (kbd "C-c f") 'find-tag))
-
-;; CPerl-mode
-(setq interpreter-mode-alist (append (list (cons "perl" 'cperl-mode)
-					   (cons "perl5" 'cperl-mode)
-					   (cons "miniperl" 'cperl-mode))
-				     interpreter-mode-alist))
-
-(setq auto-mode-alist (append (list 
-			       (cons "\\.\\([pP][Llm]\\|al\\)\\'" 'cperl-mode)
-			       (cons "\\.plx\\'" 'cperl-mode)
-			       (cons "\\.cgi\\'" 'cperl-mode)
-			       (cons "\\.pod\\'" 'cperl-mode)
-			       (cons ".*/perl/.*" 'cperl-mode))
-			      auto-mode-alist))
-
-(setq cperl-info-on-command-no-prompt nil
-      cperl-clobber-lisp-bindings     nil
-      cperl-electric-parens           nil
-      cperl-electric-keywords         nil)
-					 ; cperl-mode tries to load
-					 ; abbrev before running the hook
-
-(add-hook 'cperl-mode-hook
-	  '(lambda ()
-	     (cperl-set-style "BSD")
-	     (setq cperl-hairy                                 nil
-	           cperl-merge-trailing-else                   nil
-	           cperl-tab-always-indent                     nil
-	           cperl-auto-newline                          nil
-	           cperl-electric-lbrace-space                 nil
-	           cperl-electric-linefeed                     t
-	           cperl-electric-parens                       nil
-	           cperl-electric-keywords                     nil
-	           cperl-lazy-help-time                        1
-	           cperl-extra-newline-before-brace            t
-	           cperl-extra-newline-before-brace-multiline  t
-	           cperl-max-help-size                         50)
-	     (turn-on-auto-fill)
-	     (imenu-add-to-menubar "Imenu")
-	     (if (not cperl-lazy-installed)	; Only toggle if it's
-		 (cperl-toggle-autohelp))	; not already set
-	     (if (locate-library "mode-compile")
-		 (define-key cperl-mode-map "\C-cr" 'mode-compile))
-	     (define-key cperl-mode-map "\C-cc" 'cperl-check-syntax)
-	     (define-key cperl-mode-map "\C-j"  'cperl-linefeed)
-	     (message "Ran cperl-mode hook")))
-
-
-(message "Finished my-c-mode.el customisation")
 
 (provide 'my-c-mode)

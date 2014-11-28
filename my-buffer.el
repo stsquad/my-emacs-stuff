@@ -14,15 +14,13 @@
 
 ;; midnight mode, clean-up unused buffers overnight
 (use-package midnight
-  :idle
-  :config
-  (setq midnight-mode t))
+  :defer
+  :idle (setq midnight-mode t))
 
 ;; ido-mode - better buffer selection, although lusty does a lot of it
 (use-package ido
-  :idle
-  :config
-  (ido-mode t))
+  :commands ido-mode
+  :idle (ido-mode t))
 
 ;; CURRENT UNUSED
 (defun my-lusty-buffer-explorer ()
@@ -65,8 +63,6 @@ This chooses helm when the buffer list gets a  bit too big."
                                       (mode . java-mode)
                                       (mode . idl-mode)
                                       (mode . lisp-mode)))))))))
-
-(message "Done Buffer Handling Tweaks")
 
 (provide 'my-buffer)
 ;;; my-buffer.el ends here

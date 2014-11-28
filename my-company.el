@@ -22,10 +22,11 @@
 (require 'use-package)
 
 (use-package company
-  :idle
+  :commands global-company-mode
+  :idle (global-company-mode)
+  :diminish "Com"
   :config
   (progn
-    (global-company-mode)
     ;; Variables
     (setq company-selection-wrap-around t
           tab-always-indent 'complete)

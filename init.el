@@ -66,10 +66,8 @@
   (use-package edit-server
     :if (and window-system (daemonp) (not (= 0 (user-uid))))
     :commands edit-server-start
-    :init
-    (add-hook 'after-init-hook 'edit-server-start t)
-    :config
-    (load-library "my-edit-server.el"))
+    :idle (edit-server-start)
+    :config (load-library "my-edit-server.el"))
 
   (use-package async
     :commands ido-dired dired
@@ -82,8 +80,10 @@
   (load-library "my-email")
   ;; Development related stuff, including project root
   (load-library "my-devel")
-  (load-library "my-web")
   (load-library "my-flycheck")
+  (load-library "my-web")
+  (load-library "my-elisp")
+  (load-library "my-python")
   ;; Org configuration
   (load-library "my-org")
   ;; Helm
@@ -91,8 +91,9 @@
   ;; More keybindings
   ;; (load-library "my-toggles")
   (require 'my-toggles)
-  ;; Window navigation
+  ;; Window and buffer navigation
   (load-library "my-windows")
+  (load-library "my-buffer")
 
   ;; Locally installed pkgs
   (load-library "my-local-pkgs")
@@ -109,6 +110,7 @@
   (load-library "my-htmlize")
   (load-library "my-eshell")
   (load-library "my-circe")
+  (load-library "my-diff")
   
   ;; Nice for jumping about windows.
   (use-package ace-jump-mode
@@ -128,17 +130,18 @@
 
   ;; Learn key strokes
   (use-package guide-key
-    :idle
+    :commands guide-key-mode
+    :idle (guide-key-mode 1)
+    :diminish ""
     :config
-    (guide-key-mode 1)
     (setq guide-key/guide-key-sequence
           '("C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8")))
 
   ;; God-mode
   (use-package god-mode
     :commands god-mode-all
-    :init
-    (define-key my-toggle-map "g" 'god-mode-all)
+    :requires my-toggles
+    :init (define-key my-toggle-map "g" 'god-mode-all)
     :config
     (progn
       (defun my-update-god-cursor ()
@@ -146,9 +149,18 @@
         (setq cursor-type (if (or god-local-mode buffer-read-only)
                               'hollow
                             'box)))
-      (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)))
-      (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)
+      (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
+      (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
+  ;; Lets use mark-tools if we can
+  (use-package mark-tools
+    :bind ("C-x m" . list-marks))
+
+  (use-package paradox
+    :ensure paradox
+    :commands paradox-list-packages
+    :config
+    (setq paradox-github-token (my-pass-password "paradox" t)))
   
   (load "the-rest.el"))
 

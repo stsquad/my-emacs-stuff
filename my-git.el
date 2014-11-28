@@ -15,17 +15,18 @@
 
 (use-package magit
   :commands magit-status
+  :diminish ((magit-auto-revert-mode . "MR"))
   :bind ("C-x g" . my-magit-start)
   :config
-  '(progn
-     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-     (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
-     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
-     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
-     (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
-     (setq
-      magit-status-buffer-switch-function 'switch-to-buffer
-      magit-rewrite-inclusive 'nil)))
+  (progn
+    (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
+    (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
+    (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
+    (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
+    (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
+    (setq
+     magit-status-buffer-switch-function 'switch-to-buffer
+     magit-rewrite-inclusive 'nil)))
 
 (defun my-magit-start ()
   "My personal start magit from anywhere function."
@@ -44,16 +45,20 @@
 (make-variable-buffer-local 'magit-checkpatch-script)
 (put 'magit-checkpatch-script 'permanent-local t)
 
-;; Match checkpatch.pl output
-(add-to-list
- 'compilation-error-regexp-alist-alist
- '(checkpatch
-   "\\(WARNING\\|ERROR\\).*\n#.*FILE: \\([^:]+\\):\\([^:digit:]+\\).*\n.*"
-   2 ; file
-   3 ; line
-   ))
-
-(add-to-list 'compilation-error-regexp-alist 'checkpatch)
+(use-package compile
+  :commands compilation-mode
+  :config
+  (progn
+    ;; Match checkpatch.pl output
+    (add-to-list
+     'compilation-error-regexp-alist-alist
+     '(checkpatch
+       "\\(WARNING\\|ERROR\\).*\n#.*FILE: \\([^:]+\\):\\([^:digit:]+\\).*\n.*"
+       2 ; file
+       3 ; line
+       ))
+    ;; add reference
+    (add-to-list 'compilation-error-regexp-alist 'checkpatch)))
 
 (defun my-magit--do-run-checkpatch (commit)
   "Run the checkpatch script against `COMMIT'."
@@ -62,7 +67,7 @@
     (start-process-shell-command
      proc-name
      buff-name
-     (format "git show %s | %s -" commit magit-checkpatch-script))
+     (format "git show --pretty=email %s | %s -" commit magit-checkpatch-script))
     (switch-to-buffer buff-name)
     (goto-char (point-min))
     (compilation-minor-mode)))
@@ -97,8 +102,6 @@
   :bind ("C-h g" . git-messenger:popup-message)
   :init
   (setq git-messenger:show-detail t))
-
-(message "Done GIT hooks")
 
 (provide 'my-git)
 ;;; my-git.el ends here
