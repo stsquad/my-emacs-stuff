@@ -35,7 +35,7 @@
   :if (string-match "socrates" (system-name))
   :config
   (progn
-    (add-hook 'after-make-frame-functions 'my-squash-gpg)
+    (add-hook 'after-make-frame-functions 'my-squash-gpg t)
     (epa-file-enable)))
 
 (provide 'my-gpg)
