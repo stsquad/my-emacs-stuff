@@ -15,7 +15,10 @@
     ;; Add hooks to enable flyspell
     (add-hook 'text-mode-hook 'turn-on-flyspell)
     (add-hook 'c-mode-common-hook 'flyspell-prog-mode)
-    (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode))
+    (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
+    ;; Hooks for non-possessive its
+    (add-hook 'text-mode-hook 'my-hightlight-non-possessive-its)
+    (add-hook 'prog-mode-hook 'my-hightlight-non-possessive-its))
   :config
   (progn
     (use-package ispell
@@ -29,6 +32,11 @@
   "Force 'flyspell-mode' on using a positive arg.  For use in hooks."
   (interactive)
   (flyspell-mode 1))
+
+(defun my-hightlight-non-possessive-its ()
+  "Turn on hi-lock mode for any (potentially incorrect) usage of it's"
+  (interactive)
+  (hi-lock-face-phrase-buffer "it's"))
 
 (provide 'my-spell)
 ;;; my-spell.el ends here
