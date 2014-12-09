@@ -37,5 +37,10 @@
                            (string-match "apple-darwin" (emacs-version))))
 (defvar I-am-remote (getenv "SSH_TTY"))
 
+;; Environment variables the shell may not have set
+(when I-am-at-work
+  (setenv "DEBEMAIL" "alex.bennee@linaro.org")
+  (setenv "DEBFULLNAME" "Alex Bennée"))
+
 (provide 'my-vars)
 ;;; my-vars.el ends here

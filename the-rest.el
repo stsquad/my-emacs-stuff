@@ -76,15 +76,10 @@
 
 ;; Python Mode
 ;
-; TODO - automode alist
-(add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
 
 (message "Done various programming modes")
 
 
-(when I-am-at-work
-  (setenv "DEBEMAIL" "alex.bennee@linaro.org")
-  (setenv "DEBFULLNAME" "Alex Bennée"))
 
 
 ;;
