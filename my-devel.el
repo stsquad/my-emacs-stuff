@@ -28,11 +28,11 @@
 (defun my-compilation-mode-warn-about-prompt ()
   "Pop up a warning if we stall due to interactive config questions."
   (save-excursion
-    (let ((re '(rx "[" (one-or-more (any "n" "N" "m" "M" "Y" "y") "/") "?]"
-                   (optional " (NEW)") (zero-or-more whitespace) buffer-end))
+    (let ((re (rx "[" (one-or-more (any "n" "N" "m" "M" "Y" "y") "/") "?]"
+                   (optional " (NEW)") (zero-or-more whitespace) buffer-end)))
       (when (re-search-backward re nil 'no-error)
         (lwarn 'emacs :warning "Compilation process in %s seems stalled!"
-               (buffer-name)))))))
+               (buffer-name))))))
 
 (use-package compile
   :bind (("C-c c" . compile)
