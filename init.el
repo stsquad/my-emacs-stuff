@@ -64,10 +64,12 @@
   (require 'my-display)
 
   (use-package edit-server
-    :if (and window-system (daemonp) (not (= 0 (user-uid))))
+    :if (and (getenv "DISPLAY") (daemonp) (not (= 0 (user-uid))))
     :commands edit-server-start
-    :idle (edit-server-start)
-    :config (load-library "my-edit-server.el"))
+    :init (add-hook 'after-init-hook
+                    #'(lambda()
+                          (edit-server-start)
+                          (load-library "my-edit-server.el"))))
 
   (use-package async
     :commands ido-dired dired

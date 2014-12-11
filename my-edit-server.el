@@ -7,6 +7,7 @@
 ;;
 ;;; Code:
 
+(require 'use-package)
 (require 'edit-server)
 
 ;; Handy for wiki editing
@@ -54,12 +55,5 @@
     (add-hook 'edit-server-done-hook
               'edit-server-maybe-htmlize-buffer)))
 
-;; Ensure edit-server is spawned after emacs starts
-(add-hook 'emacs-startup-hook '(lambda ()
-                                 (message "starting up edit-server")
-                                 (edit-server-start)))
-
 (provide 'my-edit-server)
 ;;; my-edit-server.el ends here
-
-
