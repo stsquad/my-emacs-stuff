@@ -33,15 +33,15 @@
 ;; Disable the menu and tool bars, they just take up space.
 (use-package menu-bar
   :commands menu-bar-mode
-  :idle (menu-bar-mode -1))
+  :init (menu-bar-mode -1))
 
 (use-package tool-bar
   :commands tool-bar-mode
-  :idle (tool-bar-mode -1))
+  :init (tool-bar-mode -1))
 
 (use-package scroll-bar
   :commands scroll-bar-mode
-  :idle (scroll-bar-mode -1))
+  :init (scroll-bar-mode -1))
 
 ;; Use imagemagick if we have it to view images
 (use-package image
