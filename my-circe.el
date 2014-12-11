@@ -22,7 +22,12 @@
 
 (use-package circe
   :commands (circe circe-set-display-handler)
+  :diminish ((circe-channel-mode . "CirceChan")
+             (circe-server-mode . "CirceServ"))
   :requires my-tracking
+  :idle (when (and I-am-at-work (daemonp))
+          (my-irc-login))
+  :idle-priority 12
   :config
   (progn
     ;; Don't spam me with JOIN/QUIT etc messages
