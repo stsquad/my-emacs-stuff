@@ -74,19 +74,6 @@
 (add-hook 'mail-mode-hook 'my-mail-mode-tweaks)
 (add-hook 'message-mode-hook 'my-common-mail-tweaks)
 
-;; Python Mode
-;
-
-(message "Done various programming modes")
-
-
-
-
-;;
-;; Tcl (and expect)
-;;
-(add-to-list 'auto-mode-alist '("\\.expect\\'" . tcl-mode))
-
 
 
 (provide 'the-rest)

@@ -74,6 +74,10 @@
 (use-package make-mode
   :mode ("Makefile\.*" . makefile-gmake-mode))
 
+;; Handle expect files
+(use-package tcl
+  :mode ("\\.expect\\'" . tcl-mode))
+
 ;; Smart Parens
 (use-package smartparens
   :commands (smartparens-mode
