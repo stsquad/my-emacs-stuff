@@ -21,7 +21,7 @@
   :commands org-agenda
   :requires (org-clock)
   :bind ("C-c C-o" . org-capture)
-  :config
+  :init
   (progn
     (setq
      ;; General navigation
@@ -30,6 +30,21 @@
      org-agenda-files '("~/org/")
      org-refile-targets '((nil :maxlevel . 2)
                           (org-agenda-files :maxlevel . 2))
+     ;; Capture Temapltes
+     org-directory "~/org"
+     org-capture-templates
+     '(("r" "Review Comment (email)"
+        checkitem
+        (file+headline "review.org" "Review Comments")
+        "  - [ ] %A%?")
+       ("R" "Review Comment (region)"
+        checkitem
+        (file+headline "review.org" "Review Comments")
+        "  - [ ] %i%?")
+       ("t" "Add TODO task"
+        entry
+        (file+headline "team.org" "Tasks")
+        "** TODO %i%?"))
      ;; Clocking behaviour
      org-clock-persist 't
      org-clock-in-resume 't                 ; resume currently open clock
@@ -90,31 +105,6 @@
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-
-(defun ajb-get-trac-summary (id)
-  "Fetch the bug summary directly from trac."
-  (let ((url (format "http://engbot/bugs/ticket/%d?format=csv" id)))
-    (with-current-buffer (url-retrieve-synchronously url)
-      (goto-char (point-min))
-      (forward-line)
-      (re-search-forward (format "%d," id))
-      (buffer-substring (point) (- (re-search-forward ",") 1)))))
-
-(defun ajb-format-trac-item (type &optional id)
-  "Format a ORG TODO item for a given trac item."
-  (interactive "nTrac ID:")
-  (when (not id)
-    (setq id (read-number "Trac ID:")))
-  (format
-   "*** TODO %s [[http://engbot/bugs/ticket/%d][%d]] - %s\n"
-   type id id (ajb-get-trac-summary id)))
-
-;; Capture Templates
-(setq org-capture-templates
-      '(("b" "Bug" entry (file+headline ajb-work-org-file "Bug Fixing")
-             "%(ajb-format-trac-item \"Bug\")" :clock-in)
-	("f" "Feature" entry (file+headline ajb-work-org-file "Development")
-             "%(ajb-format-trac-item \"Feature\")" :clock-in)))
 
 ;; Org Babel configurations
 (setq org-src-fontify-natively t)
