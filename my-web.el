@@ -48,7 +48,7 @@
   :mode ("\\.php$" . web-mode)
   :config
   (progn
-    (add-hook 'web-mode-hook  'my-web-mode-hook)))
+    (add-hook 'web-mode-hook 'my-web-mode-hook)))
 
 ;;
 ;; js2-mode, override javascript-mode
@@ -57,6 +57,12 @@
   :mode ("\\.js\\'" . js2-mode)
   :config
   (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode"))
+
+;;
+;; restclient, make REST calls from Emacs
+;;
+(use-package restclient
+  :commands restclient-mode)
 
 (provide 'my-web)
 ;;; my-web.el ends here

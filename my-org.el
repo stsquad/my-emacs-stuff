@@ -7,14 +7,8 @@
 ;;; Code:
 
 (require 'my-vars)
-
-(require 'org)
-(require 'org-clock)
-(require 'org-capture nil t)
-(require 'org-element nil t)
-(require 'org-list nil t)
-(require 'ox nil t)
-(require 'ox-reveal nil t)
+(require 'my-email)
+(require 'use-package)
 
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
@@ -23,71 +17,86 @@
 (defvar my-org-babel-hashes nil
   "List of known babel hashes to prevent re-asking every bloodly time...")
 
-;; General navigation
-(setq org-return-follows-link t)
-
-;; Clocking behaviour
-(setq org-clock-persist 't
-      org-clock-in-resume 't                 ; resume currently open clock
-      org-clock-persist-query-resume 'nil    ; don't ask me about it
-      org-log-into-drawer 't                 ; roll clocks up into drawers
-      org-clock-idle-time 'nil)
-
-(org-clock-persistence-insinuate)
-
-;; Mode line tweaks
-(setq org-clock-mode-line-total 'current
-      org-clock-clocked-in-display 'frame-title)
-
-;; TODO Hierarchy
-(setq org-provide-todo-statistics t
-      org-checkbox-hierarchical-statistics nil
-      org-hierarchical-todo-statistics nil)
-
-;; Export settings
-(setq org-export-allow-bind-keywords t)
-
-;; ORG JIRA
-(when (and I-am-at-work (require 'org-jira nil t))
-  (setq jiralib-url "https://cards.linaro.org/")
-  (setq org-jira-working-dir (expand-file-name "~/org/jira"))
-  (add-to-list 'org-jira-serv-alist
-               '(linaro .
-                        (:url "https://cards.linaro.org/"
-                              :username "alex.bennee@linaro.org"
-                              :password #'(lambda () (my-pass-password "linaro"))))))
-
-(when I-am-at-work
-  (setq
-   org-agenda-files '("~/org/")
-   org-refile-targets '((nil :maxlevel . 2)
-                        (org-agenda-files :maxlevel . 2))
-   org-publish-project-alist
-   '(
-     ("org-notes"
-      :base-directory "~/org/"
-      :base-extension "org"
-      :publishing-directory "~/public_html/org/"
-      :recursive nil
-      :publishing-function org-html-publish-to-html
-      :headline-levels 4             ; Just the default for this project.
-      :auto-preamble t
-      )
-     ("org-presentations"
-      :base-directory "~/org/presentations"
-      :base-extension "html\\|css\\|js\\|png\\|jpg\\|gif\\|svg\\|pdf\\|mp3\\|ogg\\|swf"
-      :publishing-directory "~/public_html/org/presentations/"
-      :recursive t
-      :publishing-function org-publish-attachment
-      )
-     ("org-static"
-      :base-directory "~/org/"
-      :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
-      :publishing-directory "~/public_html/org/"
-      :recursive t
-      :publishing-function org-publish-attachment
-      )
-     ("org" :components ("org-notes" "org-presentations" "org-static")))))
+(use-package org
+  :commands org-agenda
+  :requires (org-clock)
+  :bind ("C-c C-o" . org-capture)
+  :init
+  (progn
+    (setq
+     ;; General navigation
+     org-return-follows-link t
+     ;; Agenda locations
+     org-agenda-files '("~/org/")
+     org-refile-targets '((nil :maxlevel . 2)
+                          (org-agenda-files :maxlevel . 2))
+     ;; Capture Temapltes
+     org-directory "~/org"
+     org-capture-templates
+     '(("r" "Review Comment (email)"
+        checkitem
+        (file+headline "review.org" "Review Comments")
+        "  - [ ] %A%?")
+       ("R" "Review Comment (region)"
+        checkitem
+        (file+headline "review.org" "Review Comments")
+        "  - [ ] %i%?")
+       ("t" "Add TODO task"
+        entry
+        (file+headline "team.org" "Tasks")
+        "** TODO %i%?"))
+     ;; Clocking behaviour
+     org-clock-persist 't
+     org-clock-in-resume 't                 ; resume currently open clock
+     org-clock-persist-query-resume 'nil    ; don't ask me about it
+     org-log-into-drawer 't                 ; roll clocks up into drawers
+     org-clock-idle-time 'nil
+     ;; Mode line tweaks for clock
+     org-clock-mode-line-total 'current
+     org-clock-clocked-in-display 'frame-title
+     ;; TODO Hierarchy
+     org-provide-todo-statistics t
+     org-checkbox-hierarchical-statistics nil
+     org-hierarchical-todo-statistics nil
+     ;; Export settings
+     org-export-allow-bind-keywords t)
+    (when I-am-at-work
+      (setq
+       org-publish-project-alist
+       '(
+         ("org-notes"
+          :base-directory "~/org/"
+          :base-extension "org"
+          :publishing-directory "~/public_html/org/"
+          :recursive nil
+          :publishing-function org-html-publish-to-html
+          :headline-levels 4             ; Just the default for this project.
+          :auto-preamble t
+          )
+         ("org-presentations"
+          :base-directory "~/org/presentations"
+          :base-extension "html\\|css\\|js\\|png\\|jpg\\|gif\\|svg\\|pdf\\|mp3\\|ogg\\|swf"
+          :publishing-directory "~/public_html/org/presentations/"
+          :recursive t
+          :publishing-function org-publish-attachment
+          )
+         ("org-static"
+          :base-directory "~/org/"
+          :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+          :publishing-directory "~/public_html/org/"
+          :recursive t
+          :publishing-function org-publish-attachment
+          )
+         ("org" :components ("org-notes" "org-presentations"
+                             "org-static")))))
+    ;; Mail integration
+    (use-package org-mu4e
+      :init (add-to-list 'org-modules 'org-mu4e t))
+    ;; Mode keys
+    (define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
+    (define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
+    (define-key org-mode-map (kbd "C-f") nil) ; I use C-x t f for auto-fill-mode
+    (org-clock-persistence-insinuate)))
 
 ; summarise TODOs
 (defun org-summary-todo (n-done n-not-done)
@@ -96,38 +105,6 @@
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
 (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-
-(defun ajb-get-trac-summary (id)
-  "Fetch the bug summary directly from trac."
-  (let ((url (format "http://engbot/bugs/ticket/%d?format=csv" id)))
-    (with-current-buffer (url-retrieve-synchronously url)
-      (goto-char (point-min))
-      (forward-line)
-      (re-search-forward (format "%d," id))
-      (buffer-substring (point) (- (re-search-forward ",") 1)))))
-
-(defun ajb-format-trac-item (type &optional id)
-  "Format a ORG TODO item for a given trac item."
-  (interactive "nTrac ID:")
-  (when (not id)
-    (setq id (read-number "Trac ID:")))
-  (format
-   "*** TODO %s [[http://engbot/bugs/ticket/%d][%d]] - %s\n"
-   type id id (ajb-get-trac-summary id)))
-
-;; Capture Templates
-(setq org-capture-templates
-      '(("b" "Bug" entry (file+headline ajb-work-org-file "Bug Fixing")
-             "%(ajb-format-trac-item \"Bug\")" :clock-in)
-	("f" "Feature" entry (file+headline ajb-work-org-file "Development")
-             "%(ajb-format-trac-item \"Feature\")" :clock-in)))
-
-(global-set-key (kbd "C-c C-o") 'org-capture)
-
-; add binding to bury-buffer... C-x k?
-(define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
-(define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
-(define-key org-mode-map (kbd "C-f") nil) ; I use C-x t f for auto-fill-mode
 
 ;; Org Babel configurations
 (setq org-src-fontify-natively t)
@@ -167,6 +144,20 @@ See `org-confirm-babel-evaluate'."
     (org-babel-goto-named-src-block name)
     (org-babel-execute-src-block-maybe)))
 
+;; not used atm
+;; ORG JIRA
+(use-package org-jira
+  :disabled t
+  :if I-am-at-work
+  :config
+  (progn
+    (setq jiralib-url "https://cards.linaro.org/"
+          org-jira-working-dir (expand-file-name "~/org/jira"))
+    (add-to-list 'org-jira-serv-alist
+                 '(linaro .
+                          (:url "https://cards.linaro.org/"
+                                :username "alex.bennee@linaro.org"
+                                :password #'(lambda () (my-pass-password "linaro")))))))
 
 (provide 'my-org)
 ;;; my-org.el ends here

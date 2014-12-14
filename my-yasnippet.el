@@ -7,6 +7,7 @@
 ;;; Code:
 
 (require 'use-package)
+(require 'my-utils)
 
 ;; Some snippets use the s library
 (use-package s
@@ -43,6 +44,15 @@
    ((buffer-file-name)
     (assoc-default (buffer-file-name) my-yas-emails 'string-match))
    (t "alex@....")))
+
+(defun my-yas-pull-req-helper ()
+  "Return a pull request string from a given directory"
+  (interactive)
+  (let ((default-directory (my-choose-directory "Git Tree: "))
+        (base "origin/master")
+        (repo "github"))
+    (shell-command-to-string
+     (format "git request-pull %s %s" base repo))))
 
 (defun my-yas-local-exit-function (func)
   "Call FUNC in the buffer-local yas-after-exit-snippet-hook."

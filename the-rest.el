@@ -74,24 +74,6 @@
 (add-hook 'mail-mode-hook 'my-mail-mode-tweaks)
 (add-hook 'message-mode-hook 'my-common-mail-tweaks)
 
-;; Python Mode
-;
-; TODO - automode alist
-(add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
-
-(message "Done various programming modes")
-
-
-(when I-am-at-work
-  (setenv "DEBEMAIL" "alex.bennee@linaro.org")
-  (setenv "DEBFULLNAME" "Alex Bennée"))
-
-
-;;
-;; Tcl (and expect)
-;;
-(add-to-list 'auto-mode-alist '("\\.expect\\'" . tcl-mode))
-
 
 
 (provide 'the-rest)

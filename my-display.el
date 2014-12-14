@@ -31,13 +31,22 @@
 
 
 ;; Disable the menu and tool bars, they just take up space.
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(use-package menu-bar
+  :commands menu-bar-mode
+  :init (menu-bar-mode -1))
+
+(use-package tool-bar
+  :commands tool-bar-mode
+  :init (tool-bar-mode -1))
+
+(use-package scroll-bar
+  :commands scroll-bar-mode
+  :init (scroll-bar-mode -1))
 
 ;; Use imagemagick if we have it to view images
-(when (fboundp 'imagemagick-register-types)
-  (imagemagick-register-types))
+(use-package image
+  :commands imagemagick-register-types
+  :idle (imagemagick-register-types))
 
 ; default-frame-alist
 (setq default-frame-alist '((fullscreen . 'fullboth)
@@ -58,8 +67,9 @@
 (message "Display Done")
 
 ;; Prettier unique buffer names.
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
 
 ;; Mouse set-up
 ;
@@ -68,13 +78,17 @@
 ; the occasional scroll of the buffer.
 
 ;; Stop the mouse cursor getting in the way. This is great.
-(unless I-am-xemacs
-  (when 'window-system
-    (mouse-avoidance-mode 'exile)))
+(use-package avoid
+  :if window-system
+  :commands mouse-avoidance-mode
+  :idle
+  (mouse-avoidance-mode 'exile))
 
 ;; enable the mouse wheel
-(autoload 'mwheel-install "mwheel" "Enable wheely mouse")
-(mwheel-install)
+(use-package mwheel
+  :if window-system
+  :commands mwheel-install
+  :idle (mwheel-install))
 
 ; X11 paste to point
 (when (boundp 'mouse-yank-at-point)
@@ -86,7 +100,7 @@
   (set-cursor-color
    (if overwrite-mode
        "red"
-     "black")))
+     "grey")))
 
 (if I-am-emacs-21+
     (blink-cursor-mode -1))
@@ -104,8 +118,6 @@
 (transient-mark-mode t)
 (delete-selection-mode 1)
 
-;; Groovy things with matching parentheses
-(show-paren-mode 1)
 
 ;; Tweaks to scrolling behaviour. Still a bit odd.
 (setq scroll-preserve-screen-position t
@@ -135,6 +147,11 @@
   (setq whitespace-style '(face
                            tabs trailing lines-tail empty
                            space-after-tab tab-mark)))
+
+;; Nice window sizing
+(use-package golden-ratio
+  :commands golden-ratio
+  :idle (golden-ratio))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook

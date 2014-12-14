@@ -18,15 +18,15 @@
   :diminish ((magit-auto-revert-mode . "MR"))
   :bind ("C-x g" . my-magit-start)
   :config
-  '(progn
-     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-     (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
-     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
-     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
-     (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
-     (setq
-      magit-status-buffer-switch-function 'switch-to-buffer
-      magit-rewrite-inclusive 'nil)))
+  (progn
+    (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
+    (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
+    (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
+    (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
+    (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
+    (setq
+     magit-status-buffer-switch-function 'switch-to-buffer
+     magit-rewrite-inclusive 'nil)))
 
 (defun my-magit-start ()
   "My personal start magit from anywhere function."
@@ -67,7 +67,7 @@
     (start-process-shell-command
      proc-name
      buff-name
-     (format "git show %s | %s -" commit magit-checkpatch-script))
+     (format "git show --pretty=email %s | %s -" commit magit-checkpatch-script))
     (switch-to-buffer buff-name)
     (goto-char (point-min))
     (compilation-minor-mode)))

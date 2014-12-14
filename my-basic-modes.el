@@ -31,11 +31,6 @@
   :commands global-auto-revert-mode
   :idle (global-auto-revert-mode 1))
   
-;; Nice window sizing
-(use-package golden-ratio
-  :commands golden-ration
-  :idle (golden-ratio))
-
 ;; Keep track of my key-presses
 (use-package keyfreq
   :if (daemonp)
@@ -48,6 +43,13 @@
 ;; Simple access to the calculator
 (use-package calculator
   :bind ("C-<RET>" . calculator))
+
+;; Recentf
+;;
+;; This is mainly for the benefit of helm-mini
+(use-package recentf
+  :commands recentf-mode
+  :config (setq recentf-max-saved-items nil))
 
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here
