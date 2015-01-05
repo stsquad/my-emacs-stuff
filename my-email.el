@@ -61,7 +61,7 @@
      mu4e-headers-include-related t
      ;; compose options
      mu4e-compose-signature 'my-sig-function
-     mu4e-compose-complete-only-personal nil
+     mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      '("alex.bennee@linaro.org"
        "alex@bennee.com"
