@@ -18,6 +18,7 @@
 (use-package yasnippet
   :commands yas-global-mode
   :idle (yas-global-mode)
+  :idle-priority 10
   :config
   (progn
     (when (file-exists-p "~/.emacs.d/my-snippets")
