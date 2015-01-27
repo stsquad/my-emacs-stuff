@@ -24,7 +24,8 @@
 (auto-compression-mode t)
 
 ;; Save history
-(savehist-mode)
+(use-package savehist
+  :init (savehist-mode))
 
 ;; Don't prompt me to revert something
 (use-package autorevert
@@ -51,6 +52,10 @@
   :commands recentf-mode
   :config (setq recentf-max-saved-items nil))
 
+;; Help+
+(use-package help-fns+
+  :ensure t
+  :commands describe-keymap)
+
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here
-
