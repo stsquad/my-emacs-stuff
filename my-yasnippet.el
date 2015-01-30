@@ -16,7 +16,7 @@
 
 ;; YASnippet itself
 (use-package yasnippet
-  :commands yas-global-mode
+  :commands (snippet-mode yas-global-mode)
   :idle (yas-global-mode)
   :config
   (progn
