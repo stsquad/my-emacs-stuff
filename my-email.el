@@ -78,6 +78,7 @@
      '( ("/linaro/Inbox"     . ?i)
         ("/linaro/mythreads" . ?m)
         ("/linaro/team"      . ?t)
+        ("/linaro/virtualization/.qemu" . ?q)
         ("/sent"             . ?s)))
     ;; key-bindings
     (when (keymapp mu4e-compose-mode-map)
