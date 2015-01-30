@@ -91,6 +91,7 @@
                              "org-static")))))
     ;; Mail integration
     (use-package org-mu4e
+      :if (locate-library "org-mu4e")
       :init (add-to-list 'org-modules 'org-mu4e t))
     ;; Mode keys
     (define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
