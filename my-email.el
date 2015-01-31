@@ -61,7 +61,7 @@
      mu4e-headers-include-related t
      ;; compose options
      mu4e-compose-signature 'my-sig-function
-     mu4e-compose-complete-only-personal nil
+     mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      '("alex.bennee@linaro.org"
        "alex@bennee.com"
@@ -120,6 +120,8 @@
              "Latest QEMU posts" ?q)
             ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
              "QEMU ARM64 posts" ?a)
+            ("to:mttcg@listserver.greensocs.com"
+             "Multi-threaded QEMU posts" ?T)
             ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
              "Android related emails" ?A)
             ("list:kvmarm.lists.cs.columbia.edu and flag:unread"

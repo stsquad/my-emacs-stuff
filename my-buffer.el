@@ -14,7 +14,7 @@
 
 ;; midnight mode, clean-up unused buffers overnight
 (use-package midnight
-  :defer
+  :idle-priority 15
   :idle (setq midnight-mode t))
 
 ;; ido-mode - better buffer selection, although lusty does a lot of it

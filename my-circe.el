@@ -15,9 +15,14 @@
   "Return the password for the `SERVER'."
   (my-pass-password "bitlbee"))
 
-(defun my-znc-password (server)
+(defun my-znc-freenode-password (server)
   "Return the password for the `SERVER'."
-  (format "ajb-linaro:%s"
+  (format "ajb-linaro/Freenode:%s"
+          (my-pass-password "znc")))
+
+(defun my-znc-oftc-password (server)
+  "Return the password for the `SERVER'."
+  (format "ajb-linaro/oftc:%s"
           (my-pass-password "znc")))
 
 (use-package circe
@@ -57,11 +62,18 @@
              :nick "stsquad"
              :channels ("#qemu" "#qemu-gsoc")
              )
-            ("znc"
+            ("znc-freenode"
              :host "ircproxy.linaro.org"
              :port "6697"
-             :pass my-znc-password
+             :pass my-znc-freenode-password
              :channels ("#linaro" "#linaro-virtualization")
+             :tls 't
+             )
+            ("znc-oftc"
+             :host "ircproxy.linaro.org"
+             :port "6697"
+             :pass my-znc-oftc-password
+             :channels ("#qemu" "#qemu-gsoc")
              :tls 't
              )
             ("Pl0rt"
@@ -110,8 +122,8 @@
   "Login into my usual IRCs."
   (interactive)
   (when I-am-at-work
-    (circe "OFTC")
-    (circe "znc")
+    (circe "znc-freenode")
+    (circe "znc-oftc")
     (circe "bitlbee"))
   (circe "Freenode")
   (circe "Pl0rt"))
