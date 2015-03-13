@@ -23,6 +23,8 @@
     (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
+    ;; really I never use anything but git
+    (setq vc-handled-backends nil)
     (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
     (setq
      magit-status-buffer-switch-function 'switch-to-buffer
