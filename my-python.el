@@ -22,15 +22,24 @@
 
 (require 'use-package)
 
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+  :interpreter ("python" . python-mode)
+  :defines python-mode-hook)
+
 (use-package elpy
   :commands elpy-enable
-  :idle (elpy-enable)
+  :init (add-hook 'python-mode-hook 'elpy-enable)
   :config
   (progn
     (setq elpy-rpc-backend "jedi"
           elpy-rpc-project-specific 't)
     (when (fboundp 'flycheck-mode)
       (setq elpy-modules (delete 'elpy-module-flymake elpy-modules)))))
+
+;; elpy can be enabled better on demand surely?
+;; TODO - automode alist
+;;(add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
 
 (provide 'my-python)
 ;;; my-python.el ends here

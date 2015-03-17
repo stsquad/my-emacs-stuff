@@ -10,6 +10,7 @@
 (require 'use-package)
 (require 'my-vars)
 (require 'my-utils)
+(require 'my-spell)
 
 (defun my-bitlbee-password (server)
   "Return the password for the `SERVER'."
@@ -25,14 +26,45 @@
   (format "ajb-linaro/oftc:%s"
           (my-pass-password "znc")))
 
+;; Auto pasting
+
+(defun lui-autopaste-service-linaro (text)
+  "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
+  (let ((url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")
+           ("Referer" . "https://pastebin.linaro.org")))
+        (url-request-data (format "text=%s&language=text&webpage=&private=on"
+                                  (url-hexify-string text)))
+        (url-http-attempt-keepalives nil))
+    (let ((buf (url-retrieve-synchronously
+                "https://pastebin.linaro.org/api/create")))
+      (unwind-protect
+          (with-current-buffer buf
+            (goto-char (point-min))
+            (if (re-search-forward "\\(https://pastebin.linaro.org/view/.*\\)" nil t)
+                (match-string 1)
+              (error "Error during pasting to pastebin.linaro.org")))
+        (kill-buffer buf)))))
+
+;; Auto join everything
+(defun my-irc-login ()
+  "Login into my usual IRCs."
+  (interactive)
+  (when I-am-at-work
+    (circe "znc-freenode")
+    (circe "znc-oftc")
+    (circe "bitlbee"))
+  (circe "Freenode")
+  (circe "Pl0rt"))
+
 (use-package circe
+  :if (and I-am-at-work (daemonp))
   :commands (circe circe-set-display-handler)
-  :diminish ((circe-channel-mode . "CirceChan")
-             (circe-server-mode . "CirceServ"))
+  ;; :diminish ((circe-channel-mode . "CirceChan")
+  ;;            (circe-server-mode . "CirceServ"))
   :requires my-tracking
-  :idle (when (and I-am-at-work (daemonp))
-          (my-irc-login))
-  :idle-priority 12
+  :init (run-with-idle-timer 10 nil 'my-irc-login)
   :config
   (progn
     ;; Don't spam me with JOIN/QUIT etc messages
@@ -43,9 +75,7 @@
       :init
       (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste))
     ;; spell checking
-    (use-package flyspell
-      :init
-      (add-hook 'circe-channel-mode-hook 'turn-on-flyspell))
+    (add-hook 'circe-channel-mode-hook 'turn-on-flyspell)
     ;; Mode line tweaks
     ;; Channel configurations
     (setq circe-reduce-lurker-spam t
@@ -94,39 +124,6 @@
              :host "localhost"
              :service "6667"
              )))))
-
-;; Auto pasting
-
-(defun lui-autopaste-service-linaro (text)
-  "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
-  (let ((url-request-method "POST")
-        (url-request-extra-headers
-         '(("Content-Type" . "application/x-www-form-urlencoded")
-           ("Referer" . "https://pastebin.linaro.org")))
-        (url-request-data (format "text=%s&language=text&webpage=&private=on"
-                                  (url-hexify-string text)))
-        (url-http-attempt-keepalives nil))
-    (let ((buf (url-retrieve-synchronously
-                "https://pastebin.linaro.org/api/create")))
-      (unwind-protect
-          (with-current-buffer buf
-            (goto-char (point-min))
-            (if (re-search-forward "\\(https://pastebin.linaro.org/view/.*\\)" nil t)
-                (match-string 1)
-              (error "Error during pasting to pastebin.linaro.org")))
-        (kill-buffer buf)))))
-
-
-;; Auto join everything
-(defun my-irc-login ()
-  "Login into my usual IRCs."
-  (interactive)
-  (when I-am-at-work
-    (circe "znc-freenode")
-    (circe "znc-oftc")
-    (circe "bitlbee"))
-  (circe "Freenode")
-  (circe "Pl0rt"))
 
 (provide 'my-circe)
 ;;; my-circe.el ends here

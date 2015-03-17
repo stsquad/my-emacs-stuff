@@ -14,12 +14,12 @@
 ;; Window navigation and size control
 (use-package windmove
   :commands windmove-default-keybindings
-  :idle (windmove-default-keybindings))
+  :init (windmove-default-keybindings))
 
 ;; winner-mode to remember window layouts
 (use-package winner
   :commands winner-mode
-  :idle (winner-mode t))
+  :init (winner-mode t))
 
 ;; Window key bindings
 (use-package window

@@ -14,13 +14,12 @@
 
 ;; midnight mode, clean-up unused buffers overnight
 (use-package midnight
-  :idle-priority 15
-  :idle (setq midnight-mode t))
+  :init (setq midnight-mode t))
 
 ;; ido-mode - better buffer selection, although lusty does a lot of it
 (use-package ido
   :commands ido-mode
-  :idle (ido-mode t))
+  :init (ido-mode t))
 
 ;; CURRENT UNUSED
 (defun my-lusty-buffer-explorer ()

@@ -19,8 +19,15 @@
         smtpmail-smtp-server "localhost"
         smtpmail-smtp-service 2500))
 
+
+;; Signature
+(defun my-sig-function ()
+  "Generate a signature."
+  (interactive)
+  (concat "Alex Bennée"))
+
 ;; Switch function
-(defun my-switch-to-mue4 ()
+(defun my-switch-to-mu4e ()
   "Smart dwim switch to mu4e."
   (interactive)
   (if (get-buffer "*mu4e-headers*")
@@ -29,19 +36,13 @@
         (delete-other-windows))
     (mu4e)))
 
-;; Signature
-(defun my-sig-function ()
-  "Generate a signature."
-  (interactive)
-  (concat "Alex Bennée"))
-
 (use-package mu4e
   :commands mu4e
-  :bind ("C-c m" . my-switch-to-mue4)
-  :requires mu4e-vars
+  :init (global-set-key (kbd "C-c m") 'my-switch-to-mu4e)
   :config
   (progn
     (require 'mu4e-vars)
+    ;; config options
     (setq
      ;; generic mail options
      user-mail-address "alex.bennee@linaro.org"

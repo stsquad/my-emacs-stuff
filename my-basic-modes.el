@@ -30,13 +30,13 @@
 ;; Don't prompt me to revert something
 (use-package autorevert
   :commands global-auto-revert-mode
-  :idle (global-auto-revert-mode 1))
+  :init (global-auto-revert-mode 1))
   
 ;; Keep track of my key-presses
 (use-package keyfreq
   :if (daemonp)
   :commands keyfreq-mode
-  :idle (keyfreq-mode)
+  :init (keyfreq-mode)
   :config
   (progn
     (keyfreq-autosave-mode)))

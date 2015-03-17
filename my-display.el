@@ -45,8 +45,9 @@
 
 ;; Use imagemagick if we have it to view images
 (use-package image
+  :if (getenv "DISPLAY")
   :commands imagemagick-register-types
-  :idle (imagemagick-register-types))
+  :init (imagemagick-register-types))
 
 ; default-frame-alist
 (setq default-frame-alist '((fullscreen . 'fullboth)
@@ -81,14 +82,14 @@
 (use-package avoid
   :if window-system
   :commands mouse-avoidance-mode
-  :idle
+  :init
   (mouse-avoidance-mode 'exile))
 
 ;; enable the mouse wheel
 (use-package mwheel
   :if window-system
   :commands mwheel-install
-  :idle (mwheel-install))
+  :init (mwheel-install))
 
 ; X11 paste to point
 (when (boundp 'mouse-yank-at-point)
@@ -151,7 +152,8 @@
 ;; Nice window sizing
 (use-package golden-ratio
   :commands golden-ratio
-  :idle (golden-ratio))
+  :init (golden-ratio)
+  :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode" "mu4e-view-mode")))
 
 ;; Bow down before font-lock
 (add-hook 'font-lock-mode-hook

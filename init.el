@@ -133,7 +133,6 @@
   ;; Learn key strokes
   (use-package guide-key
     :commands guide-key-mode
-    :idle (guide-key-mode 1)
     :diminish ""
     :config
     (setq guide-key/guide-key-sequence
