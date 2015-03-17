@@ -8,7 +8,22 @@
 ;;; Code:
 
 (require 'use-package)
+(require 'my-vars)
 (require 'edit-server)
+
+;; Chromebook Support
+(use-package chromebook
+  :if I-am-on-pixel
+  :config
+  (when (crmbk-running-in-host-x11-p)
+    (set-face-attribute 'default nil :height 250)
+    (add-hook 'crmbk-frame-mode-hook 'crmbk-remap-search)
+    (add-hook 'crmbk-frame-mode-hook 'crmbk-disable-touchpad)
+    (define-key crmbk-frame-mode-map (kbd "<M-up>") 'scroll-down)
+    (define-key crmbk-frame-mode-map (kbd "<M-down>") 'scroll-up)
+    (when (boundp 'edit-server-new-frame-alist)
+      (setq edit-server-new-frame-alist '((name . "Edit Server Frame")
+                                          (fullscreen . 'fullboth))))))
 
 ;; Handy for wiki editing
 (use-package mediawiki
