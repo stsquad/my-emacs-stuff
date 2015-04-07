@@ -5,7 +5,7 @@
 ;; Inspired by the http://endlessparentheses.com/the-toggle-map-and-wizardry.html
 ;;
 ;;; Code:
-(require 'org)
+(require 'my-org)
 
 (defvar my-toggle-map
   nil
@@ -53,6 +53,18 @@ narrowed."
       (buffer-disable-undo (current-buffer)))))
 
 (define-key my-toggle-map "u" 'my-toggle-buffer-undo)
+
+
+;; Toggle tabs
+(defun my-toggle-tabs ()
+  "Toggle tabs"
+  (interactive)
+  (if indent-tabs-mode
+      (setq indent-tabs-mode nil)
+    (setq indent-tabs-mode t
+          c-basic-offset tab-width)))
+
+(define-key my-toggle-map "\t" 'my-toggle-tabs)
 
 (provide 'my-toggles)
 ;;; my-toggles.el ends here

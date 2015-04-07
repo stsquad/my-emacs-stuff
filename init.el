@@ -91,8 +91,7 @@
   ;; Helm
   (load-library "my-helm")
   ;; More keybindings
-  ;; (load-library "my-toggles")
-  (require 'my-toggles)
+  (load-library "my-toggles")
   ;; Window and buffer navigation
   (load-library "my-windows")
   (load-library "my-buffer")
