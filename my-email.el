@@ -36,6 +36,49 @@
         (delete-other-windows))
     (mu4e)))
 
+
+;; Simple mail-mode and message-mode hooks.
+;;
+;; Ostensibly they both do the same thing however message-mode (and
+;; the derived mu4e-compose-mode) assume they are sending from within
+;; emacs. So I'll use the convention that I'll use mail-mode for
+;; edit-server spawned mails and message-mode for the rest
+
+(defun my-common-mail-tweaks ()
+  "Enable common mail tweaks for sending messages."
+  (interactive)
+  (turn-on-flyspell)
+  (turn-on-auto-fill))
+
+(defun my-mail-mode-tweaks()
+  "Customise mail-mode stuff"
+  (interactive)
+  (my-common-mail-tweaks)
+  (when (and
+         buffer-file-name
+         (or
+          (string-match "/tmp/mutt" buffer-file-name)
+          (string-match "gitsend" buffer-file-name)))
+    (define-key (current-local-map) (kbd "C-c C-c") 'server-edit)
+    (define-key (current-local-map) (kbd "C-c C-s") 'server-edit)))
+
+(use-package mail-mode
+  ;; Enable mail-mode for mutt spawned files
+  :mode (("/tmp/mutt-*" . mail-mode)
+         ("0000-cover-letter.patch" . mail-mode)
+         (".*/\.git/\.gitsendemail.MSG.*" . mail-mode))
+  :config (add-hook 'mail-mode-hook 'my-mail-mode-tweaks))
+
+(use-package message-mode
+  :commands message-mode
+  :config (add-hook 'message-mode-hook 'my-common-mail-tweaks))
+
+;;
+;; Finally the mu4e configuration
+;;
+;; This is my main work horse for day to day email.
+;;
+
 (use-package mu4e
   :commands mu4e
   :init (global-set-key (kbd "C-c m") 'my-switch-to-mu4e)
@@ -101,6 +144,7 @@
           (delete-dups
            (append
             '(("gapply git patches" . mu4e-action-git-apply-patch)
+              ("mgit am patch" . mu4e-action-git-apply-mbox)
               ("crun checkpatch script" . my-mu4e-action-run-check-patch)))))
     ;; Bookmarks
     (setq mu4e-bookmarks

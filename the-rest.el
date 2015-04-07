@@ -22,58 +22,20 @@
 (message "Doing the-rest")
 
 ;;; Miscellaneous functions
-
+(require 'use-package)
 (require 'my-utils)
 
 
 ;; my-find-binary
 ;
-; Handy for dumping objdump into a buffer
-(when (locate-library "my-find-binary")
-    (autoload 'find-binary-file "my-find-binary"))
-
+                                        ; Handy for dumping objdump into a buffer
+(use-package my-find-binary
+  :commands find-binary-file)
 
 ;; Dired stuff
 (add-hook 'dired-mode-hook
           (lambda ()
             (setq truncate-lines t)))
-
-
-;;
-;; Simple mail-mode and message-mode hooks.
-;;
-;; Ostensibly they both do the same thing however message-mode (and
-;; the derived mu4e-compose-mode) assume they are sending from within
-;; emacs. So I'll use the convention that I'll use mail-mode for
-;; edit-server spawned mails and message-mode for the rest
-;;
-
-;; Enable mail-mode for mutt spawned files
-(add-to-list 'auto-mode-alist '("/tmp/mutt-*" . mail-mode))
-(add-to-list 'auto-mode-alist '("0000-cover-letter.patch" . mail-mode))
-(add-to-list 'auto-mode-alist '(".*/\.git/\.gitsendemail.MSG.*" . mail-mode))
-
-(defun my-common-mail-tweaks ()
-  "Enable common mail tweaks for sending messages."
-  (interactive)
-  (turn-on-flyspell)
-  (turn-on-auto-fill))
-
-(defun my-mail-mode-tweaks()
-  "Customise mail-mode stuff"
-  (interactive)
-  (my-common-mail-tweaks)
-  (when (and
-         buffer-file-name;
-         (or
-          (string-match "/tmp/mutt" buffer-file-name)
-          (string-match "gitsend" buffer-file-name)))
-    (define-key (current-local-map) (kbd "C-c C-c") 'server-edit)
-    (define-key (current-local-map) (kbd "C-c C-s") 'server-edit)))
-
-(add-hook 'mail-mode-hook 'my-mail-mode-tweaks)
-(add-hook 'message-mode-hook 'my-common-mail-tweaks)
-
 
 
 (provide 'the-rest)
