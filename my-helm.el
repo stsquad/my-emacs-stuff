@@ -12,7 +12,7 @@
 (require 'use-package)
 
 (use-package helm-config
-  :bind (("C-c h" . helm-mini)
+  :bind (("C-x b" . helm-mini)
          ("M-x" . helm-M-x)
          ("C-f" . helm-semantic-or-imenu)
          ("C-<f1>" . helm-apropos))
@@ -20,13 +20,8 @@
   (progn
     ;; Vars
     (setq helm-yank-symbol-first 't
+          helm-buffers-fuzzy-matching t
           helm-git-grep-candidate-number-limit nil)))
-
-;; ;; helm buffers?
-;; ;; Currently undecided - I like lusty but with lots of identical
-;; ;; buffer names helm-buffers-list works better.
-;; (when (fboundp 'helm-buffers-list)
-;;   (global-set-key (kbd "C-x b")   'helm-buffers-list))
 
 (use-package helm-gtags
   :commands helm-gtags-mode
