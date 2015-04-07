@@ -22,14 +22,9 @@
 
 (require 'use-package)
 
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode)
-  :defines python-mode-hook)
-
 (use-package elpy
   :commands elpy-enable
-  :init (add-hook 'python-mode-hook 'elpy-enable)
+  :init (with-eval-after-load 'python (elpy-enable))
   :config
   (progn
     (setq elpy-rpc-backend "jedi"
