@@ -163,7 +163,10 @@
     :config
     (setq paradox-github-token (my-pass-password "paradox" t)))
   
-  (load "the-rest.el"))
+  (load "the-rest.el")
+
+  ;; Finally some additional keybinds
+  (load "my-hydra.el"))
 
 ;; Finished loading
 
