@@ -24,7 +24,7 @@
 ;; More tracking config
 (use-package tracking
   :commands (tracking-mode tracking-add-buffer)
-  :idle (tracking-mode)
+  :init (tracking-mode)
   :config
   (progn
     (add-to-list 'global-mode-string

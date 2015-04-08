@@ -25,7 +25,7 @@
 
 (use-package elpy
   :commands elpy-enable
-  :idle (elpy-enable)
+  :init (with-eval-after-load 'python (elpy-enable))
   :config
   (progn
     (setq elpy-rpc-backend "jedi"
@@ -34,6 +34,10 @@
       (when (fboundp 'flycheck-tip-cycle)
         (define-key elpy-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
       (setq elpy-modules (delete 'elpy-module-flymake elpy-modules)))))
+
+;; elpy can be enabled better on demand surely?
+;; TODO - automode alist
+;;(add-hook 'python-mode-hook #'(lambda () (require 'my-python-mode)))
 
 (provide 'my-python)
 ;;; my-python.el ends here

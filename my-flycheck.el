@@ -2,7 +2,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; Just basic stuff for now
+;; Just basic stuff for now.
 ;;
 ;;; Code:
 ;;
@@ -11,7 +11,7 @@
 
 (use-package flycheck
   :commands global-flycheck-mode
-  :idle (global-flycheck-mode)
+  :init (add-hook 'prog-mode-hook 'global-flycheck-mode)
   :config
   (progn
     ;; Other pkgs

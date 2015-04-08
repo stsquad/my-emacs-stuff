@@ -11,17 +11,17 @@
 
 ;; Some snippets use the s library
 (use-package s
-  :defer
   :commands s-chop-suffix s-trim)
 
 ;; YASnippet itself
 (use-package yasnippet
   :commands (snippet-mode yas-global-mode)
-  :idle (yas-global-mode)
+  :defer 60
   :config
   (progn
     (when (file-exists-p "~/.emacs.d/my-snippets")
-      (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
+          (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
+    (yas-global-mode)
     (setq yas-prompt-functions
           '(yas-ido-prompt yas-completing-prompt yas-no-prompt))))
 

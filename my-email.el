@@ -19,8 +19,15 @@
         smtpmail-smtp-server "localhost"
         smtpmail-smtp-service 2500))
 
+
+;; Signature
+(defun my-sig-function ()
+  "Generate a signature."
+  (interactive)
+  (concat "Alex Bennée"))
+
 ;; Switch function
-(defun my-switch-to-mue4 ()
+(defun my-switch-to-mu4e ()
   "Smart dwim switch to mu4e."
   (interactive)
   (if (get-buffer "*mu4e-headers*")
@@ -29,19 +36,56 @@
         (delete-other-windows))
     (mu4e)))
 
-;; Signature
-(defun my-sig-function ()
-  "Generate a signature."
+
+;; Simple mail-mode and message-mode hooks.
+;;
+;; Ostensibly they both do the same thing however message-mode (and
+;; the derived mu4e-compose-mode) assume they are sending from within
+;; emacs. So I'll use the convention that I'll use mail-mode for
+;; edit-server spawned mails and message-mode for the rest
+
+(defun my-common-mail-tweaks ()
+  "Enable common mail tweaks for sending messages."
   (interactive)
-  (concat "Alex Bennée"))
+  (turn-on-flyspell)
+  (turn-on-auto-fill))
+
+(defun my-mail-mode-tweaks()
+  "Customise mail-mode stuff"
+  (interactive)
+  (my-common-mail-tweaks)
+  (when (and
+         buffer-file-name
+         (or
+          (string-match "/tmp/mutt" buffer-file-name)
+          (string-match "gitsend" buffer-file-name)))
+    (define-key (current-local-map) (kbd "C-c C-c") 'server-edit)
+    (define-key (current-local-map) (kbd "C-c C-s") 'server-edit)))
+
+(use-package mail-mode
+  ;; Enable mail-mode for mutt spawned files
+  :mode (("/tmp/mutt-*" . mail-mode)
+         ("0000-cover-letter.patch" . mail-mode)
+         (".*/\.git/\.gitsendemail.MSG.*" . mail-mode))
+  :config (add-hook 'mail-mode-hook 'my-mail-mode-tweaks))
+
+(use-package message-mode
+  :commands message-mode
+  :config (add-hook 'message-mode-hook 'my-common-mail-tweaks))
+
+;;
+;; Finally the mu4e configuration
+;;
+;; This is my main work horse for day to day email.
+;;
 
 (use-package mu4e
   :commands mu4e
-  :bind ("C-c m" . my-switch-to-mue4)
-  :requires mu4e-vars
+  :init (global-set-key (kbd "C-c m") 'my-switch-to-mu4e)
   :config
   (progn
     (require 'mu4e-vars)
+    ;; config options
     (setq
      ;; generic mail options
      user-mail-address "alex.bennee@linaro.org"
@@ -61,7 +105,7 @@
      mu4e-headers-include-related t
      ;; compose options
      mu4e-compose-signature 'my-sig-function
-     mu4e-compose-complete-only-personal nil
+     mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      '("alex.bennee@linaro.org"
        "alex@bennee.com"
@@ -78,6 +122,7 @@
      '( ("/linaro/Inbox"     . ?i)
         ("/linaro/mythreads" . ?m)
         ("/linaro/team"      . ?t)
+        ("/linaro/virtualization/.qemu" . ?q)
         ("/sent"             . ?s)))
     ;; key-bindings
     (when (keymapp mu4e-compose-mode-map)
@@ -99,6 +144,7 @@
           (delete-dups
            (append
             '(("gapply git patches" . mu4e-action-git-apply-patch)
+              ("mgit am patch" . mu4e-action-git-apply-mbox)
               ("crun checkpatch script" . my-mu4e-action-run-check-patch)))))
     ;; Bookmarks
     (setq mu4e-bookmarks
@@ -120,6 +166,8 @@
              "Latest QEMU posts" ?q)
             ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
              "QEMU ARM64 posts" ?a)
+            ("to:mttcg@listserver.greensocs.com"
+             "Multi-threaded QEMU posts" ?T)
             ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
              "Android related emails" ?A)
             ("list:kvmarm.lists.cs.columbia.edu and flag:unread"

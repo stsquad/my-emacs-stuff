@@ -83,7 +83,7 @@
   :commands (smartparens-mode
              smartparens-global-mode
              show-smartparens)
-  :idle (smartparens-global-mode)
+  :init (smartparens-global-mode)
   :config
   (progn
     (require 'smartparens-config)

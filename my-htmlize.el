@@ -12,12 +12,13 @@
 ;; any later version.
 ;;
 
-;; Code
+;;; Code
 
 (require 'use-package)
+(require 'my-web)
 
 (use-package htmlize
-  :commands my-htmlize-region
+  :commands (htmlize-faces-in-buffer htmlize-make-face-map htmlize-css-specs htmlize-region-for-paste)
   :init
   (progn
     ;; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/

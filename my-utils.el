@@ -196,5 +196,24 @@
           (cons path (delete path ido-work-directory-list)))
   path))
 
+;; arm decoder
+(defun my-decode-arm64-cpreg (input)
+  (let ((op0 (lsh (logand #xc000 input) -14))
+        (op1 (lsh (logand #x3800 input) -11))
+        (crn (lsh (logand #x780 input) -7))
+        (crm (lsh (logand #x78 input) -3))
+        (op2 (lsh (logand #x7 input) 0)))
+    (format "op0:%x op1:%x crn:%x crm:%x op2:%x"
+            op0 op1 crn crm op2)))
+
+(defun my-encode-arm64-cpreg (name op0 op1 crn crm op2)
+  (format "%s:0x%x"
+          name
+          (logior (lsh op0 14)
+                  (lsh op1 11)
+                  (lsh crn 7)
+                  (lsh crm 3)
+                  (lsh op2 0))))
+
 (provide 'my-utils)
 ;;; my-utils.el ends here

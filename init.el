@@ -133,7 +133,6 @@
   ;; Learn key strokes
   (use-package guide-key
     :commands guide-key-mode
-    :idle (guide-key-mode 1)
     :diminish ""
     :config
     (setq guide-key/guide-key-sequence
@@ -164,7 +163,10 @@
     :config
     (setq paradox-github-token (my-pass-password "paradox" t)))
   
-  (load "the-rest.el"))
+  (load "the-rest.el")
+
+  ;; Finally some additional keybinds
+  (load "my-hydra.el"))
 
 ;; Finished loading
 

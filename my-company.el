@@ -22,8 +22,8 @@
 (require 'use-package)
 
 (use-package company
-  :commands global-company-mode
-  :idle (global-company-mode)
+  :commands (global-company-mode company-complete-common)
+  :init (add-hook 'prog-mode-hook 'global-company-mode)
   :diminish "Com"
   :config
   (progn
@@ -47,7 +47,8 @@
 
     ;; Any other extensions?
     (when (require 'company-irony nil t)
-      (add-to-list 'company-backends 'company-irony))))
+      (add-to-list 'company-backends 'company-irony t)
+      (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))))
 
 
 ;; company-yasnippet must be at the end of the list

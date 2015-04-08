@@ -1,0 +1,32 @@
+# -*- mode: snippet -*-
+# name: Plain Lisp Mode Header
+# key: $head
+# --
+;;; ${1:`(s-chop-suffix ".el" (buffer-name))`} --- $2
+;;
+;; Copyright (C) 2014 Alex Bennée
+;;
+;; Author: Alex Bennée <alex@bennee.com>
+;;
+;; This file is not part of GNU Emacs.
+;;
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;;; Commentary:
+;;
+;; $4
+;;
+;;; Code:
+
+;; Require prerequisites
+
+;; Variables
+
+;; Code
+
+(provide '$1)
+;;; $1.el ends here
+
