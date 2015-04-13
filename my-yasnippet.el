@@ -15,6 +15,7 @@
 
 ;; YASnippet itself
 (use-package yasnippet
+  :commands (snippet-mode yas-global-mode)
   :defer 60
   :config
   (progn
