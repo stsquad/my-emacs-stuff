@@ -86,13 +86,13 @@
       "Switch the `default-directory' depending on the mailing list we
   are in."
       (interactive)
-      (setq default-directory
-            (expand-file-name
-             (assoc-default
-              (mu4e-message-field
-               (mu4e-message-at-point) :mailing-list)
-              '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
-                 ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )))))
+      (let ((list (mu4e-message-field (mu4e-message-at-point) :mailing-list)))
+        (when list
+          (setq default-directory
+                (expand-file-name
+                 (assoc-default list
+                                '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
+                                   ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )))))))
     )
   :bind ("C-c m" . my-switch-to-mu4e)
   :config
