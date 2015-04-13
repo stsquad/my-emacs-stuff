@@ -26,17 +26,6 @@
   (interactive)
   (concat "Alex Bennée"))
 
-;; Switch function
-(defun my-switch-to-mu4e ()
-  "Smart dwim switch to mu4e."
-  (interactive)
-  (if (get-buffer "*mu4e-headers*")
-      (progn
-        (switch-to-buffer "*mu4e-headers*")
-        (delete-other-windows))
-    (mu4e)))
-
-
 ;; Simple mail-mode and message-mode hooks.
 ;;
 ;; Ostensibly they both do the same thing however message-mode (and
@@ -81,7 +70,31 @@
 
 (use-package mu4e
   :commands mu4e
-  :init (global-set-key (kbd "C-c m") 'my-switch-to-mu4e)
+  :preface
+  (progn
+    ;; Switch function
+    (defun my-switch-to-mu4e ()
+      "Smart dwim switch to mu4e."
+      (interactive)
+      (if (get-buffer "*mu4e-headers*")
+          (progn
+            (switch-to-buffer "*mu4e-headers*")
+            (delete-other-windows))
+        (mu4e)))
+    ;; Set default directory when viewing messages
+    (defun my-set-view-directory ()
+      "Switch the `default-directory' depending on the mailing list we
+  are in."
+      (interactive)
+      (setq default-directory
+            (expand-file-name
+             (assoc-default
+              (mu4e-message-field
+               (mu4e-message-at-point) :mailing-list)
+              '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
+                 ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )))))
+    )
+  :bind ("C-c m" . my-switch-to-mu4e)
   :config
   (progn
     (require 'mu4e-vars)
