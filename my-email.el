@@ -144,6 +144,8 @@
     (add-hook 'mu4e-headers-mode-hook
               '(lambda () (yas-minor-mode -1)))
     (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)
+    (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)
+    (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
     ;; Header actions
     (setq mu4e-headers-actions
           (delete-dups
