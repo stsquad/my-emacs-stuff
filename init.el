@@ -71,12 +71,6 @@
                           (edit-server-start)
                           (load-library "my-edit-server.el"))))
 
-  (use-package async
-    :commands ido-dired dired
-    :config
-    (when (require 'dired-aux)
-      (require 'dired-async)))
-
   ;; Stuff I always want
   ;; email
   (load-library "my-email")
@@ -96,6 +90,7 @@
   ;; Window and buffer navigation
   (load-library "my-windows")
   (load-library "my-buffer")
+  (load-library "my-dired")
 
   ;; Locally installed pkgs
   (load-library "my-local-pkgs")
