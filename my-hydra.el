@@ -44,6 +44,7 @@
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture"))))
     ;; Toggles with hydra
+    (require 'whitespace)
     (global-set-key
      (kbd "C-x t")
      (defhydra my-hydra-toggle (:color blue)
