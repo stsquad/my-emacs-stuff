@@ -82,18 +82,28 @@
             (delete-other-windows))
         (mu4e)))
     ;; Set default directory when viewing messages
+    (defvar my-mailing-list-dir-mapping
+      '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
+         ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+      "Mapping from mailing lists to source tree.")
+    (defvar my-maildir-mapping
+      '( ("linaro/virtualization/.qemu" . "~/lsrc/qemu/qemu.git/")
+         ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
+      "Mapping from maildirs to source tree.")
     (defun my-set-view-directory ()
       "Switch the `default-directory' depending on the mailing list we
   are in."
       (interactive)
-      (let ((list (mu4e-message-field (mu4e-message-at-point) :mailing-list)))
-        (when list
-          (setq default-directory
-                (expand-file-name
-                 (assoc-default list
-                                '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
-                                   ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )))))))
-    )
+      (let ((list (mu4e-message-field (mu4e-message-at-point)
+                                      :mailing-list))
+            (maildir (mu4e-message-field (mu4e-message-at-point)
+                                         :maildir)))
+        (setq default-directory
+              (expand-file-name
+               (or
+                (assoc-default list my-mailing-list-dir-mapping)
+                (assoc-default maildir my-maildir-mapping 'string-match)
+                "~")))))
   :bind ("C-c m" . my-switch-to-mu4e)
   :config
   (progn
@@ -110,7 +120,7 @@
      message-send-mail-function 'smtpmail-send-it
      ;; mu4e functions
      ;; mail fetch
-     mu4e-get-mail-command  "mbsync linaro-sync"
+     mu4e-get-mail-command "mbsync linaro-sync"
      mu4e-update-interval 600
      ;; navigate options
      mu4e-use-fancy-chars t
