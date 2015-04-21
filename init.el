@@ -132,10 +132,14 @@
   ;; Learn key strokes
   (use-package guide-key
     :commands guide-key-mode
+    :defer 60
     :diminish ""
     :config
-    (setq guide-key/guide-key-sequence
-          '("C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4" "C-x 8")))
+    (progn
+      (setq guide-key/guide-key-sequence
+            '("C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4"
+              "C-x 8"))
+      (guide-key-mode)))
 
   ;; God-mode
   (use-package god-mode
