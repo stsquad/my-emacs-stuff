@@ -51,14 +51,14 @@
     (define-key (current-local-map) (kbd "C-c C-c") 'server-edit)
     (define-key (current-local-map) (kbd "C-c C-s") 'server-edit)))
 
-(use-package mail-mode
+(use-package sendmail
   ;; Enable mail-mode for mutt spawned files
   :mode (("/tmp/mutt-*" . mail-mode)
          ("0000-cover-letter.patch" . mail-mode)
          (".*/\.git/\.gitsendemail.MSG.*" . mail-mode))
   :config (add-hook 'mail-mode-hook 'my-mail-mode-tweaks))
 
-(use-package message-mode
+(use-package message
   :commands message-mode
   :config (add-hook 'message-mode-hook 'my-common-mail-tweaks))
 
@@ -103,7 +103,7 @@
                (or
                 (assoc-default list my-mailing-list-dir-mapping)
                 (assoc-default maildir my-maildir-mapping 'string-match)
-                "~")))))
+                "~"))))))
   :bind ("C-c m" . my-switch-to-mu4e)
   :config
   (progn
