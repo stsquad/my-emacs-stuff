@@ -2,64 +2,57 @@
 ;;
 ;;; Commentary:
 ;;
-;; Not much in here as I'm not yet a heavy user of org-mode
+;; I'm slowly using org-mode more and more although there seem to be
+;; some poor interactions with use-package. As a result I need to
+;; split up the various sub-modes of org-mode.
 ;;
 ;;; Code:
 
 (require 'my-vars)
 (require 'my-email)
+(require 'my-basic-modes)
+
 (require 'use-package)
+(require 'hydra nil t)
 
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
   "The location of my main work scratchpad.")
 
 (defvar my-org-babel-hashes nil
-  "List of known babel hashes to prevent re-asking every bloodly time...")
+  "List of known babel code hashes.
+This prevents org re-asking every time I restart.")
+(add-to-list 'savehist-additional-variables 'my-org-babel-hashes)
 
-(use-package org
+(use-package org-agenda
   :commands org-agenda
-  :requires (org-clock)
-  :bind ("C-c C-o" . org-capture)
-  :init
-  (progn
-    (setq
-     ;; General navigation
-     org-return-follows-link t
-     ;; Agenda locations
-     org-agenda-files '("~/org/")
-     org-refile-targets '((nil :maxlevel . 2)
-                          (org-agenda-files :maxlevel . 2))
-     ;; Capture Temapltes
-     org-directory "~/org"
-     org-capture-templates
-     '(("r" "Review Comment (email)"
-        checkitem
-        (file+headline "review.org" "Review Comments")
-        "  - [ ] %A%?")
-       ("R" "Review Comment (region)"
-        checkitem
-        (file+headline "review.org" "Review Comments")
-        "  - [ ] %i%?")
-       ("t" "Add TODO task"
-        entry
-        (file+headline "team.org" "Tasks")
-        "** TODO %i%?"))
-     ;; Clocking behaviour
-     org-clock-persist 't
-     org-clock-in-resume 't                 ; resume currently open clock
-     org-clock-persist-query-resume 'nil    ; don't ask me about it
-     org-log-into-drawer 't                 ; roll clocks up into drawers
-     org-clock-idle-time 'nil
-     ;; Mode line tweaks for clock
-     org-clock-mode-line-total 'current
-     org-clock-clocked-in-display 'frame-title
-     ;; TODO Hierarchy
-     org-provide-todo-statistics t
-     org-checkbox-hierarchical-statistics nil
-     org-hierarchical-todo-statistics nil
-     ;; Export settings
-     org-export-allow-bind-keywords t)
+  :config
+  (setq 
+   ;; Agenda locations
+   org-agenda-files '("~/org/")
+   org-refile-targets '((nil :maxlevel . 2)
+                        (org-agenda-files :maxlevel . 2))))
+
+(use-package org-capture
+  :commands org-capture
+  :config (setq
+           org-capture-templates
+           '(("r" "Review Comment (email)"
+              checkitem
+              (file+headline "review.org" "Review Comments")
+              "  - [ ] %a%?")
+             ("R" "Review Comment (region)"
+              checkitem
+              (file+headline "review.org" "Review Comments")
+              "  - [ ] %i%?")
+             ("t" "Add TODO task"
+              entry
+              (file+headline "team.org" "Tasks")
+              "** TODO %i%?"))))
+
+(use-package ox-publish
+  :commands org-publish
+  :config
     (when I-am-at-work
       (setq
        org-publish-project-alist
@@ -88,16 +81,68 @@
           :publishing-function org-publish-attachment
           )
          ("org" :components ("org-notes" "org-presentations"
-                             "org-static")))))
-    ;; Mail integration
-    (use-package org-mu4e
-      :if (locate-library "org-mu4e")
-      :init (add-to-list 'org-modules 'org-mu4e t))
+                             "org-static"))))))
+;; Mail integration
+(use-package org-mu4e
+  :if (locate-library "org-mu4e")
+  :config (add-to-list 'org-modules 'org-mu4e t))
+
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :init
+  (progn
+    (message "org init:")
+    (setq
+     ;; General navigation
+     org-return-follows-link t))
+  :config
+  (progn
+    (message "org config:")
+    (setq
+     ;; General navigation
+     org-return-follows-link t
+     ;; Agenda locations
+     org-agenda-files '("~/org/")
+     org-refile-targets '((nil :maxlevel . 2)
+                          (org-agenda-files :maxlevel . 2))
+     ;; Capture Templates
+     org-directory "~/org"
+     ;; Clocking behaviour
+     org-clock-persist 't
+     org-clock-in-resume 't                 ; resume currently open clock
+     org-clock-persist-query-resume 'nil    ; don't ask me about it
+     org-log-into-drawer 't                 ; roll clocks up into drawers
+     org-clock-idle-time 'nil
+     ;; Mode line tweaks for clock
+     org-clock-mode-line-total 'current
+     org-clock-clocked-in-display 'frame-title
+     ;; TODO Hierarchy
+     org-provide-todo-statistics t
+     org-checkbox-hierarchical-statistics nil
+     org-hierarchical-todo-statistics nil
+     ;; Export settings
+     org-export-allow-bind-keywords t)
+
     ;; Mode keys
-    (define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
-    (define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
-    (define-key org-mode-map (kbd "C-f") nil) ; I use C-x t f for auto-fill-mode
+    ;; (define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
+    ;; (define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
+    (when (fboundp 'helm-org-agenda-files-headings)
+      (define-key org-mode-map (kbd "C-f")
+        'helm-org-agenda-files-headings))
+    (when (fboundp 'defhydra)
+      (define-key org-mode-map (kbd "C-c C-o")
+       (defhydra my-hydra-in-org (:color blue)
+         "org-actions:"
+         ("a" org-agenda "org-agenda")
+         ("A" org-archive-subtree "org-archive-subtree")
+         ("c" org-capture "org-capture")
+         ("h" helm-org-agenda-files-headings "org-headings (helm)"))))
+
     (org-clock-persistence-insinuate)))
+
+;; Mail integration
+(use-package org-mu4e
+  :config (add-to-list 'org-modules 'org-mu4e t))
 
 ; summarise TODOs
 (defun org-summary-todo (n-done n-not-done)
@@ -118,7 +163,8 @@
      (makefile . t)
      (python . t)
      (sh . t)
-     (risu . t))))
+     (risu . t)
+     (text . t))))
 
 ;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
 (defun my-babel-hashed-confirm (lang body)
