@@ -76,11 +76,16 @@
     (defun my-switch-to-mu4e ()
       "Smart dwim switch to mu4e."
       (interactive)
-      (if (get-buffer "*mu4e-headers*")
+      (cond
+       ((get-buffer "*mu4e-headers*")
           (progn
             (switch-to-buffer "*mu4e-headers*")
-            (delete-other-windows))
-        (mu4e)))
+            (delete-other-windows)))
+       ((get-buffer "*mu4e-view*")
+          (progn
+            (switch-to-buffer "*mu4e-view*")
+            (delete-other-windows)))
+        (t (mu4e))))
     ;; Set default directory when viewing messages
     (defvar my-mailing-list-dir-mapping
       '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
@@ -94,16 +99,16 @@
       "Switch the `default-directory' depending on the mailing list we
   are in."
       (interactive)
-      (let ((list (mu4e-message-field (mu4e-message-at-point)
-                                      :mailing-list))
-            (maildir (mu4e-message-field (mu4e-message-at-point)
-                                         :maildir)))
-        (setq default-directory
-              (expand-file-name
-               (or
-                (assoc-default list my-mailing-list-dir-mapping)
-                (assoc-default maildir my-maildir-mapping 'string-match)
-                "~"))))))
+      (let ((msg (mu4e-message-at-point t)))
+        (when msg
+          (let ((list (mu4e-message-field msg :mailing-list))
+                (maildir (mu4e-message-field msg :maildir)))
+            (setq default-directory
+                  (expand-file-name
+                   (or
+                    (assoc-default list my-mailing-list-dir-mapping)
+                    (assoc-default maildir my-maildir-mapping 'string-match)
+                    "~"))))))))
   :bind ("C-c m" . my-switch-to-mu4e)
   :config
   (progn
