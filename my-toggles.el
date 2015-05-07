@@ -5,7 +5,9 @@
 ;; Inspired by the http://endlessparentheses.com/the-toggle-map-and-wizardry.html
 ;;
 ;;; Code:
+
 (require 'my-org)
+(require 'use-package)
 
 (defvar my-toggle-map
   nil
@@ -65,6 +67,22 @@ narrowed."
           c-basic-offset tab-width)))
 
 (define-key my-toggle-map "\t" 'my-toggle-tabs)
+
+
+;; God-mode
+(use-package god-mode
+  :commands god-mode-all
+  :requires my-toggles
+  :init (define-key my-toggle-map "g" 'god-mode-all)
+  :config
+  (progn
+    (defun my-update-god-cursor ()
+      "Update the cursor style depending on status of god-mode."
+      (setq cursor-type (if (or god-local-mode buffer-read-only)
+                            'hollow
+                          'box)))
+    (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
+    (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
 (provide 'my-toggles)
 ;;; my-toggles.el ends here
