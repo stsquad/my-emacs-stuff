@@ -33,6 +33,7 @@
   (setq mode-name "elisp")
   (eldoc-mode t)
   (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer)
+  (show-smartparens-global-mode)
   (turn-on-auto-fill))
 
 (use-package lisp-mode

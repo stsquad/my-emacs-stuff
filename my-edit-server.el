@@ -37,6 +37,11 @@
     (add-to-list 'edit-server-url-major-mode-alist
                  '("wiki.qemu.org" . mediawiki-mode))))
 
+(use-package moinmoin-mode
+  :commands moinmoin-mode
+  :init (add-to-list 'edit-server-url-major-mode-alist
+                 '("wiki.linaro.org" . moinmoin-mode)))
+
 ;; Markdown sites
 (when (require 'markdown-mode nil t)
   (add-to-list 'edit-server-url-major-mode-alist
