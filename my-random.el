@@ -42,11 +42,12 @@
 ;; Lets try a macro
 (require 'async)
 
-(defmacro my-async-org-function (async-form)
+(defmacro my-async-org-function (async-form &optional post-form)
   "Expands `ASYNC-FORM' as an asynchronus org-bable function.
 If executed inside an org file will insert the results into the src
   blocks results.  Otherwise the result will be echoed to the Message
-  buffer."
+  buffer. An optional `POST-FORM' can concatenate results to the async
+  forms."
 
   ;; All the my-async-* values we need to make available to the
   ;; asynchronus call. They need to be pure strings as the async
@@ -74,16 +75,31 @@ If executed inside an org file will insert the results into the src
         (let ((buf (cdr (assoc 'buffer result)))
               (name (cdr (assoc 'name result)))
               (res (cdr (assoc 'result result))))
+
+          ;; Do we have a post-form to execute?
+          (when ,post-form
+            (setq res (append
+                       (if (listp res)
+                           res
+                         (list (cons 'async-form res)))
+                       (list (cons 'post-form (eval ,post-form))))))
+
+          ;; Send the results somewhere
           (if name
             (save-excursion
               (with-current-buffer buf
                 (org-babel-goto-named-result name)
                 (next-line)
                 (goto-char (org-babel-result-end))
-                (org-babel-insert-result (format "we got: %s" res))))
-            (message "async-result: %s" res)))))))
+                (org-babel-insert-result (format "%s" res))))
+            (message (pp (format "async-result: %s" res)))))))))
 
-(my-async-org-function (format "hello there:%s" "alex"))
+;; Example calls
+(my-async-org-function
+ (shell-command-to-string
+  "dd status=none count=8192 bs=8192 if=/dev/urandom | md5sum")
+ (format "and this was on the return"))
+
 
 (provide 'my-random)
 ;;; my-random.el ends here
