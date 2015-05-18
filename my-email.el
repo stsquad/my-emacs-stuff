@@ -70,6 +70,7 @@
 
 (use-package mu4e
   :commands mu4e
+  :if (string-match "zen" (system-name))
   :preface
   (progn
     ;; Switch function
