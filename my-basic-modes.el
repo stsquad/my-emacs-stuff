@@ -43,14 +43,15 @@
 
 ;; Simple access to the calculator
 (use-package calculator
-  :bind ("C-<RET>" . calculator))
+  :bind ("C-<return>" . calculator))
 
 ;; Recentf
 ;;
 ;; This is mainly for the benefit of helm-mini
 (use-package recentf
   :commands recentf-mode
-  :config (setq recentf-max-saved-items nil))
+  :config (setq recentf-max-saved-items nil
+                recentf-exclude '("Maildir/.*")))
 
 ;; Help+
 (use-package help-fns+
