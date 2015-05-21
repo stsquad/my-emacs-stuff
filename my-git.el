@@ -15,29 +15,22 @@
 
 (use-package magit
   :commands magit-status
-  :diminish ((magit-auto-revert-mode . "MR"))
-  :bind ("C-x g" . my-magit-start)
+  :bind ("C-x g" . magit-status)
+  :init
+  (progn
+    (setq magit-last-seen-setup-instructions "1.4.0"))
   :config
   (progn
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-    (add-hook 'magit-commit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
     ;; really I never use anything but git
     (setq vc-handled-backends nil)
-    (define-key magit-status-mode-map (kbd "C-c C-a") 'magit-just-amend)
     (setq
      magit-status-buffer-switch-function 'switch-to-buffer
-     magit-rewrite-inclusive 'nil)))
+     magit-rewrite-inclusive 'nil
+     magit-revert-buffers 'silent)))
 
-(defun my-magit-start ()
-  "My personal start magit from anywhere function."
-  (interactive)
-  (if buffer-file-name
-      (magit-status (file-name-directory (file-chase-links buffer-file-name)))
-    (magit-status default-directory)))
-
-(global-set-key (kbd "C-x g") 'my-magit-start)
 
 ;;;
 ;; Run checkpatch.pl if we can
@@ -78,9 +71,7 @@
   "Run a checkpatch script against current commit."
   (interactive)
   (when (derived-mode-p 'magit-log-mode)
-    (magit-section-action checkpatch (info)
-      (commit
-       (my-magit--do-run-checkpatch info)))))
+    (my-magit--do-run-checkpatch (magit-commit-at-point))))
 
 (defun my-magit-add-checkpatch-hook ()
   "Add the ability to run a checkpatch script if we can."
@@ -94,7 +85,13 @@
 ;;; Additional GIT bits
 ;;;
 (use-package git
-  :commands git-status)
+  :commands git-status
+  ; currently disabled due to magit-next
+  :disabled t)
+
+(use-package git-commit-mode
+  ; currently disabled due to magit-next
+  :disabled t)
 
 (use-package git-blame
   :commands git-blame-mode)
