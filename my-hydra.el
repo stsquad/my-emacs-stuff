@@ -19,6 +19,8 @@
 
 ;; Require prerequisites
 (require 'use-package)
+(require 'hydra)
+
 (require 'my-display)
 (require 'my-toggles)
 (require 'my-org)
@@ -42,7 +44,9 @@
        (defhydra my-hydra-org (:color blue)
          "Access org-mode"
          ("a" org-agenda "org-agenda")
-         ("c" org-capture "org-capture"))))
+         ("c" org-capture "org-capture")
+         ("h" helm-org-agenda-files-headings "org-headings (helm)")
+         ("r" (org-capture nil "r") "org-capture-email-review"))))
     ;; Toggles with hydra
     (require 'whitespace)
     (global-set-key
