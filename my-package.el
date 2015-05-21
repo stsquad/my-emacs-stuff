@@ -11,20 +11,16 @@
 (defvar my-useful-packages
   '(ace-jump-mode ace-jump-buffer
     circe
-    edit-server edit-server-htmlize
     elpy
-    eproject
     expand-region
     flycheck
-    flycheck-tip
-    git-blame
-    git-commit-mode
     git-messenger
     gitconfig-mode
     gitignore-mode
     guide-key
+    golden-ratio
     helm
-    helm-ack helm-git-grep helm-descbinds helm-c-yasnippet
+    helm-ack helm-descbinds
     helm-swoop helm-themes
     htmlize
     js2-mode
@@ -40,7 +36,9 @@
     org ox-reveal
     use-package
     smart-mode-line
+    smartparens
     solarized-theme
+    swiper
     tangotango-theme
     tracking
     web-mode
@@ -52,7 +50,7 @@
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
              '("org" . "http://orgmode.org/elpa/") t)
 
@@ -62,9 +60,8 @@
   "Check and potentially install `PKG'."
   (when (not (package-installed-p pkg))
     (when (not (require pkg nil t))
-      (message "Installing: %s" pkg)
-      (package-install pkg)
-      (message "Installed: %s" pkg))))
+      (ignore-errors
+	(package-install pkg)))))
 
 (defun my-packages-reset()
   "Reset package manifest to the defined set."
