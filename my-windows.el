@@ -65,7 +65,8 @@ Assumes that the frame is only split into two."
 ;; ace-window makes switching less painful
 (use-package ace-window
   :ensure ace-window
-  :bind ("C-x o" . ace-window))
+  :bind ("C-x o" . ace-window)
+  :config (setq aw-scope 'frame))
 
 (provide 'my-windows)
 ;;; my-windows.el ends here
