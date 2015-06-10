@@ -136,21 +136,6 @@
               "C-x 8"))
       (guide-key-mode)))
 
-  ;; God-mode
-  (use-package god-mode
-    :commands god-mode-all
-    :requires my-toggles
-    :init (define-key my-toggle-map "g" 'god-mode-all)
-    :config
-    (progn
-      (defun my-update-god-cursor ()
-        "Update the cursor style depending on status of god-mode."
-        (setq cursor-type (if (or god-local-mode buffer-read-only)
-                              'hollow
-                            'box)))
-      (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
-      (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
-
   ;; Lets use mark-tools if we can
   (use-package mark-tools
     :bind ("C-x m" . list-marks))
