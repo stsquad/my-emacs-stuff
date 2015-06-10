@@ -43,9 +43,14 @@
                  '("wiki.linaro.org" . moinmoin-mode)))
 
 ;; Markdown sites
-(when (require 'markdown-mode nil t)
-  (add-to-list 'edit-server-url-major-mode-alist
-               '("stackexchange" . markdown-mode)))
+(use-package markdown-mode
+  :config
+  (progn
+    (setq markdown-reference-location 'end)
+    (add-to-list 'edit-server-url-major-mode-alist
+                 '("stackexchange" . markdown-mode))
+    (add-to-list 'edit-server-url-major-mode-alist
+                 '("github.com" . markdown-mode))))
 
 (setq edit-server-edit-mode-hook nil)
 (add-hook 'edit-server-edit-mode-hook 'flyspell-mode t)
