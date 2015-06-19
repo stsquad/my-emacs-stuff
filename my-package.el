@@ -40,6 +40,7 @@
     org ox-reveal
     use-package
     smart-mode-line
+    smartparens
     solarized-theme
     tangotango-theme
     tracking
