@@ -27,6 +27,7 @@
     helm-ack helm-git-grep helm-descbinds helm-c-yasnippet
     helm-swoop helm-themes
     htmlize
+    hydra
     js2-mode
     json-mode
     keychain-environment
@@ -50,8 +51,8 @@
   "List of packages I use a lot.")
 
 
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+;; (add-to-list 'package-archives
+;;              '("marmalade" . "https://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives
