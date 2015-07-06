@@ -7,6 +7,7 @@
 ;;; Code:
 
 (require 'my-org)
+(require 'my-hydra)
 (require 'use-package)
 
 (defvar my-toggle-map
@@ -68,7 +69,6 @@ narrowed."
 
 (define-key my-toggle-map "\t" 'my-toggle-tabs)
 
-
 ;; God-mode
 (use-package god-mode
   :commands god-mode-all
@@ -83,6 +83,32 @@ narrowed."
                           'box)))
     (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
     (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
+
+(with-eval-after-load 'hydra
+  (require 'whitespace)
+  (global-set-key
+   (kbd "C-x t")
+   (defhydra my-hydra-toggle (:hint nil :color red :timeout 10)
+     (concat "\n"
+             "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit "
+             "_f_ill: %`auto-fill-function _t_abs: %`indent-tabs-mode\n")
+     ;; Debugging
+     ("d" toggle-debug-on-error)
+     ("q" toggle-debug-on-quit)
+     ;; Fill, whitespace and other display modes
+     ("f" auto-fill-mode)
+     ("t" my-toggle-tabs)
+     ("l" visual-line-mode "visual-line")
+     ("w" whitespace-mode "whitespace")
+     
+     ;; Narrowing, region selection
+     ("n" my-narrow-or-widen-dwim "arrow-or-w" :exit t)
+     ("e" er/expand-region "xpand-r" :exit t)
+     ;; misc
+     ("u" my-toggle-buffer-undo "toggle undo")
+     ("g" god-mode-all "god-mode" :exit t)
+     ;; quit the hydra
+     ("x" nil "exit" :exit t))))
 
 (provide 'my-toggles)
 ;;; my-toggles.el ends here
