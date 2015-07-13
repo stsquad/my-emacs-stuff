@@ -61,7 +61,17 @@
 
 ;; Expand region
 (use-package expand-region
-  :bind ("C-=" . er/expand-region))
+  :init (progn
+          (defun my-mark-or-expand-dwim (arg)
+            "Set the mark or if mark already set call expand-region."
+            (interactive "P")
+            (if (or (use-region-p)
+                    (and mark-active
+                         (eq (point) (mark))))
+                (call-interactively #'er/expand-region)
+              (call-interactively #'set-mark-command))))
+  :bind (("C-@" . my-mark-or-expand-dwim)
+         ("C-=" . er/expand-region)))
 
 (provide 'my-editing)
 ;;; my-editing.el ends here
