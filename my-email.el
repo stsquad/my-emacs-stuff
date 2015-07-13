@@ -78,19 +78,26 @@
     (defun my-switch-to-mu4e ()
       "Smart dwim switch to mu4e."
       (interactive)
-      (cond
-       ((get-buffer "*mu4e-headers*")
-          (progn
-            (switch-to-buffer "*mu4e-headers*")
-            (delete-other-windows)))
-       ((get-buffer "*mu4e-view*")
-          (progn
-            (switch-to-buffer "*mu4e-view*")
-            (delete-other-windows)))
-       (t (mu4e))))
+      (let ((candidate
+             (or
+              ;; unsent emails
+              (car (--filter
+                    (with-current-buffer it
+                      (and
+                       (eq major-mode 'mu4e-compose-mode)
+                       (not message-sent-message-via)))
+                    (buffer-list)))
+              ;; current search
+              (get-buffer "*mu4e-headers*")
+              ;; current view
+              (get-buffer "*mu4e-view*"))))
+        (if candidate
+            (progn
+              (switch-to-buffer candidate)
+              (delete-other-windows))
+          (mu4e))))
 
     ;; Jump to current thread
-    ;; FIXME: should work in headers-mode
     (defun my-switch-to-thread ()
       "Switch to headers view of current thread."
       (interactive)
