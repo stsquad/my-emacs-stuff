@@ -11,17 +11,29 @@
 
 (require 'use-package)
 
-(use-package helm-config
+(use-package helm
+  :ensure helm
+  :init (progn
+          (require 'helm-config)
+          (setq helm-yank-symbol-first t
+                helm-idle-delay 0.0
+                helm-input-idle-delay 0.01
+                helm-quick-update t
+                helm-M-x-requires-pattern nil
+                helm-ff-skip-boring-files t))
   :bind (("C-x b" . helm-mini)
          ("M-x" . helm-M-x)
          ("C-f" . helm-semantic-or-imenu)
-         ("C-<f1>" . helm-apropos))
-  :config
-  (progn
-    ;; Vars
-    (setq helm-yank-symbol-first 't
-          helm-buffers-fuzzy-matching t
-          helm-git-grep-candidate-number-limit nil)))
+         ("C-<f1>" . helm-apropos)))
+
+(use-package helm-git-grep
+  :config (setq helm-git-grep-candidate-number-limit nil))
+
+(use-package helm-buffers
+  :config (setq helm-buffers-fuzzy-matching t))
+
+(use-package helm-elisp
+  :bind ("C-h a" . helm-apropos))
 
 (use-package helm-gtags
   :commands helm-gtags-mode
@@ -42,7 +54,8 @@
 (add-hook 'asm-mode-hook 'helm-gtags-mode)
 
 (use-package helm-swoop
-  :bind ("C-c o" . helm-swoop))
+  :bind (("C-c o" . helm-swoop)
+         ("C-c O" . helm-multi-swoop)))
 
 (use-package helm-descbinds
   :bind ("C-h h" . helm-descbinds))

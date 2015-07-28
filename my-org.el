@@ -48,7 +48,11 @@ This prevents org re-asking every time I restart.")
              ("t" "Add TODO task"
               entry
               (file+headline "team.org" "Tasks")
-              "** TODO %i%?"))))
+              "** TODO %i%?")
+             ("T" "Add TODO task with mail reference"
+              entry
+              (file+headline "team.org" "Tasks")
+              "** TODO %i%?\nSee %a%?"))))
 
 (use-package ox-publish
   :commands org-publish

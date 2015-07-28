@@ -70,9 +70,15 @@
       (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
       (add-hook 'compilation-finish-functions 'my-report-compilation-finished))))
 
+;; asm-mode
+(use-package asm-mode
+  :if (not (featurep 'gas-mode))
+  :config (setq asm-comment-char ?\#))
+
 ;; Handle Makefile.blah
 (use-package make-mode
-  :mode ("Makefile\.*" . makefile-gmake-mode))
+  :mode (("*\.mak" . makefile-gmake-mode)
+         ("Makefile\.*" . makefile-gmake-mode)))
 
 ;; Handle expect files
 (use-package tcl

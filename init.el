@@ -72,6 +72,8 @@
                           (load-library "my-edit-server.el"))))
 
   ;; Stuff I always want
+  ;; general editing
+  (use-package my-editing)
   ;; email
   (load-library "my-email")
   ;; Development related stuff, including project root
@@ -108,22 +110,6 @@
   (load-library "my-circe")
   (load-library "my-diff")
   
-  ;; Nice for jumping about windows.
-  (use-package ace-jump-mode
-    :bind ("C-x j" . ace-jump-mode))
-
-  ;; Multiple cursors
-  (use-package multiple-cursors
-    :bind (( "C->" . mc/mark-next-like-this)
-           ( "C-<" . mc/mark-previous-like-this)
-           ( "C-x ;" . mc/mark-all-like-this-dwim)
-           ( "C-+" . mc/mark-all-like-this-dwim)
-           ( "M-+" . mc/edit-lines)))
-
-  ;; Expand region
-  (use-package expand-region
-    :bind ("C-=" . er/expand-region))
-
   ;; Learn key strokes
   (use-package guide-key
     :commands guide-key-mode
@@ -135,21 +121,6 @@
             '("C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4"
               "C-x 8"))
       (guide-key-mode)))
-
-  ;; God-mode
-  (use-package god-mode
-    :commands god-mode-all
-    :requires my-toggles
-    :init (define-key my-toggle-map "g" 'god-mode-all)
-    :config
-    (progn
-      (defun my-update-god-cursor ()
-        "Update the cursor style depending on status of god-mode."
-        (setq cursor-type (if (or god-local-mode buffer-read-only)
-                              'hollow
-                            'box)))
-      (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
-      (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
   ;; Lets use mark-tools if we can
   (use-package mark-tools

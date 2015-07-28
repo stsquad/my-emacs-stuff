@@ -23,6 +23,7 @@
     helm-ack helm-descbinds
     helm-swoop helm-themes
     htmlize
+    hydra
     js2-mode
     json-mode
     keychain-environment
@@ -47,8 +48,8 @@
   "List of packages I use a lot.")
 
 
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+;; (add-to-list 'package-archives
+;;              '("marmalade" . "https://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives

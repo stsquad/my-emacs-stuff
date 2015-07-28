@@ -64,11 +64,10 @@
   ;; :diminish ((circe-channel-mode . "CirceChan")
   ;;            (circe-server-mode . "CirceServ"))
   :requires my-tracking
-  :init (run-with-idle-timer 10 nil 'my-irc-login)
+  :init (run-with-idle-timer 120 nil 'my-irc-login)
   :config
   (progn
-    ;; Don't spam me with JOIN/QUIT etc messages
-    (circe-set-display-handler "JOIN" (lambda (&rest ignored) nil))
+    (require 'tls)
     ;; Paste Support
     (use-package lui-autopaste
       :commands enable-lui-autopaste
@@ -82,11 +81,13 @@
           circe-network-options
           `(("Freenode"
              :host "chat.freenode.net"
-             :nick "ajb-mark-tools"
+             :server-buffer-name "⇄ Freenode"
+             :nick "stsquad"
              :channels ("#emacs" "#emacs-circe")
              )
             ("OFTC"
              :host "irc.oftc.net"
+             :server-buffer-name "⇄ OFTC"
              :port "6697"
              :tls t
              :nick "stsquad"
@@ -94,6 +95,7 @@
              )
             ("znc-freenode"
              :host "ircproxy.linaro.org"
+             :server-buffer-name "⇄ Freenode (ZNC)"
              :port "6697"
              :pass my-znc-freenode-password
              :channels ("#linaro" "#linaro-virtualization")
@@ -101,6 +103,7 @@
              )
             ("znc-oftc"
              :host "ircproxy.linaro.org"
+             :server-buffer-name "⇄ OFTC (ZNC)"
              :port "6697"
              :pass my-znc-oftc-password
              :channels ("#qemu" "#qemu-gsoc")
@@ -108,6 +111,7 @@
              )
             ("Pl0rt"
              :host "irc.pl0rt.org"
+             :server-buffer-name "⇄ Pl0rt"
              :nick "ajb"
              :service "6697"
              :tls 't
@@ -115,7 +119,9 @@
              )
             ("bitlbee"
              :nick "ajb"
-             :pass my-bitlbee-password
+             :server-buffer-name "⇄ bitlbee"
+             ;; :pass my-bitlbee-password
+             :nickserv-password my-bitlbee-password
              :nickserv-mask "\\(bitlbee\\|root\\)!\\(bitlbee\\|root\\)@"
              :nickserv-identify-challenge "use the \x02identify\x02 command to identify yourself"
              :nickserv-identify-command "PRIVMSG &bitlbee :identify {password}"
