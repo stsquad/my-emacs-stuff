@@ -77,7 +77,8 @@
 
 ;; Handle Makefile.blah
 (use-package make-mode
-  :mode ("Makefile\.*" . makefile-gmake-mode))
+  :mode (("*\.mak" . makefile-gmake-mode)
+         ("Makefile\.*" . makefile-gmake-mode)))
 
 ;; Handle expect files
 (use-package tcl

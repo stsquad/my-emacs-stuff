@@ -55,7 +55,6 @@
 
 ;; Help+
 (use-package help-fns+
-  :ensure t
   :commands describe-keymap)
 
 (provide 'my-basic-modes)

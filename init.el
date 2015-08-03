@@ -72,6 +72,8 @@
                           (load-library "my-edit-server.el"))))
 
   ;; Stuff I always want
+  ;; general editing
+  (use-package my-editing)
   ;; email
   (use-package my-email
     :if (or I-am-at-work I-am-on-server))
@@ -109,22 +111,6 @@
   (load-library "my-circe")
   (load-library "my-diff")
   
-  ;; Nice for jumping about windows.
-  (use-package ace-jump-mode
-    :bind ("C-x j" . ace-jump-mode))
-
-  ;; Multiple cursors
-  (use-package multiple-cursors
-    :bind (( "C->" . mc/mark-next-like-this)
-           ( "C-<" . mc/mark-previous-like-this)
-           ( "C-x ;" . mc/mark-all-like-this-dwim)
-           ( "C-+" . mc/mark-all-like-this-dwim)
-           ( "M-+" . mc/edit-lines)))
-
-  ;; Expand region
-  (use-package expand-region
-    :bind ("C-=" . er/expand-region))
-
   ;; Learn key strokes
   (use-package guide-key
     :commands guide-key-mode

@@ -36,7 +36,7 @@
 (use-package lava-rpc
   :commands lava-xml-rpc-call
   :config
-  (setq lava-user-name "ajbennee"
+  (setq lava-user-name "alex.bennee"
         lava-api-token #'(lambda () (my-pass-password "lava" t))))
 
 (use-package lava-job-list-mode
@@ -51,11 +51,14 @@
                                         (tracking-add-buffer (current-buffer)))))))))
 
 (use-package lava-mode
-  :mode ("lava-mode.*\\.json$" . lava-mode)
+  :mode (("lava-mode.*\\.json$" . lava-mode)
+         ("test-runners.*\\.json$" . lava-mode))
   :config
   (progn
-    (setq-default lava-mode-test-repository
-                  "http://git.linaro.org/people/alex.bennee/test-definitions.git")
+    (setq-default
+     lava-mode-test-repository
+     "http://git.linaro.org/people/alex.bennee/test-definitions.git"
+     lava-mode-default-bundle-stream "/anonymous/alex.bennee/")
     (setq lava-mode-default-device-image-alist
           '(("arndale" . (("command" . "deploy_linaro_image")
                           ("metadata" . (("rootfs.type" . "server")
@@ -66,8 +69,9 @@
                                             "http://snapshots.linaro.org/ubuntu/pre-built/arndale/618/arndale-saucy_server_20140325-618.img.gz")))))
             ("kvm" . (("command" ."deploy_linaro_image")
                       ("parameters" . (("image" .
-                                        "http://community.validation.linaro.org/images/kvm/ubuntu-12-04-server-base-lava.img.gz")))))
-            ("mustang" . (("command" . "deploy_linaro_kernel")
+                                        "http://people.linaro.org/~matthew.hart/images/trusty-lg.img.gz")))))
+            ("mustang" . (("qemu-arch" . "aarch64")
+                          ("command" . "deploy_linaro_kernel")
                           ("parameters" . (("dtb" .
                                             "http://images-internal/mustang/mustang.dtb")
                                            ("kernel" .

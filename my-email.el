@@ -73,20 +73,40 @@
   :if (or I-am-at-work I-am-on-server)
   :preface
   (progn
+
     ;; Switch function
     (defun my-switch-to-mu4e ()
       "Smart dwim switch to mu4e."
       (interactive)
-      (cond
-       ((get-buffer "*mu4e-headers*")
-          (progn
-            (switch-to-buffer "*mu4e-headers*")
-            (delete-other-windows)))
-       ((get-buffer "*mu4e-view*")
-          (progn
-            (switch-to-buffer "*mu4e-view*")
-            (delete-other-windows)))
-        (t (mu4e))))
+      (let ((candidate
+             (or
+              ;; unsent emails
+              (car (--filter
+                    (with-current-buffer it
+                      (and
+                       (eq major-mode 'mu4e-compose-mode)
+                       (not message-sent-message-via)))
+                    (buffer-list)))
+              ;; current search
+              (get-buffer "*mu4e-headers*")
+              ;; current view
+              (get-buffer "*mu4e-view*"))))
+        (if candidate
+            (progn
+              (switch-to-buffer candidate)
+              (delete-other-windows))
+          (mu4e))))
+
+    ;; Jump to current thread
+    (defun my-switch-to-thread ()
+      "Switch to headers view of current thread."
+      (interactive)
+      (let ((id (or (mu4e-message-field-at-point :in-reply-to)
+                    (mu4e-message-field-at-point :message-id))))
+        (mu4e-headers-search (format "i:%s" (s-replace-all '(("<" . "")
+                                                             (">" . ""))
+                                                           id)))))
+
     ;; Set default directory when viewing messages
     (defvar my-mailing-list-dir-mapping
       '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
@@ -110,11 +130,20 @@
                     (assoc-default list my-mailing-list-dir-mapping)
                     (assoc-default maildir my-maildir-mapping 'string-match)
                     "~"))))))))
+
+  ;; Bindings
   :bind ("C-c m" . my-switch-to-mu4e)
   :config
   (progn
     (require 'mu4e-vars)
-    ;; config options
+    (require 'mu4e-headers)
+    (require 'mu4e-view)
+    ;; My mode bindings
+    (define-key mu4e-headers-mode-map (kbd "C-c l") 'org-store-link)
+    (define-key mu4e-headers-mode-map (kbd "C-c t") 'my-switch-to-thread)
+    (define-key mu4e-view-mode-map (kbd "C-c l") 'org-store-link)
+    (define-key mu4e-view-mode-map (kbd "C-c t") 'my-switch-to-thread)
+   ;; config options
     (setq
      ;; generic mail options
      user-mail-address "alex.bennee@linaro.org"
@@ -160,6 +189,7 @@
           ("/linaro/mythreads" . ?m)
           ("/linaro/team"      . ?t)
           ("/linaro/virtualization/.qemu" . ?q)
+          ("/linaro/virtualization/.kvm-arm" . ?k)
           ("/sent"             . ?s) ))
       (t
        '( ("/"     . ?i)
@@ -252,6 +282,12 @@
               ("to:bugzilla@bennee.com" "Bug Mail" ?B)
               ))))))
 
+
+(use-package helm-mu
+  :commands helm-mu
+  :if (and (string-match "zen" (system-name))
+           (locate-library "helm-mu"))
+  :config (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu))
 
 ;; Magic handling for multiple email addrsses
 (defvar my-email-address-alist
