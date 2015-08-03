@@ -17,7 +17,7 @@
         smtpmail-queue-dir   "~/Maildir/queue/cur"
         smtpmail-default-smtp-server "localhost"
         smtpmail-smtp-server "localhost"
-        smtpmail-smtp-service 2500))
+        smtpmail-smtp-service 25))
 
 
 ;; Signature
@@ -70,7 +70,7 @@
 
 (use-package mu4e
   :commands mu4e
-  :if (string-match "zen" (system-name))
+  :if (or I-am-at-work I-am-on-server)
   :preface
   (progn
     ;; Switch function
@@ -126,7 +126,10 @@
      message-send-mail-function 'smtpmail-send-it
      ;; mu4e functions
      ;; mail fetch
-     mu4e-get-mail-command "mbsync linaro-sync"
+     mu4e-get-mail-command
+     (cond
+      (I-am-at-work "mbsync linaro-sync")
+      (t "true"))
      mu4e-update-interval 600
      ;; navigate options
      mu4e-use-fancy-chars t
@@ -136,9 +139,11 @@
      mu4e-compose-signature 'my-sig-function
      mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
-     '("alex.bennee@linaro.org"
-       "alex@bennee.com"
-       "kernel-hacker@bennee.com")
+     (cond
+      (I-am-at-work  '("alex.bennee@linaro.org"
+                       "alex@bennee.com"
+                       "kernel-hacker@bennee.com"))
+      (t '("alex@bennee.com")))
      mu4e-compose-complete-only-after "2013-11-01"
      ;; view options
      mu4e-view-show-images t
@@ -146,13 +151,21 @@
      mu4e-view-fill-headers nil
      mu4e-html2text-command "html2text -utf8 -width 72"
      mu4e-view-fields
-     '(:from :to :cc :subject :flags :date :tags :attachments :signature)
+     '(:from :to :cc :subject :flags :date :tags :attachments
+             :signature)
      mu4e-maildir-shortcuts
-     '( ("/linaro/Inbox"     . ?i)
-        ("/linaro/mythreads" . ?m)
-        ("/linaro/team"      . ?t)
-        ("/linaro/virtualization/.qemu" . ?q)
-        ("/sent"             . ?s)))
+     (cond
+      (I-am-at-work
+       '( ("/linaro/Inbox"     . ?i)
+          ("/linaro/mythreads" . ?m)
+          ("/linaro/team"      . ?t)
+          ("/linaro/virtualization/.qemu" . ?q)
+          ("/sent"             . ?s) ))
+      (t
+       '( ("/"     . ?i)
+          ("/.Spam" . ?s)
+          ("/.Oldmail" . ?o) ))))
+
     ;; key-bindings
     (when (keymapp mu4e-compose-mode-map)
       (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region))
@@ -179,50 +192,65 @@
               ("crun checkpatch script" . my-mu4e-action-run-check-patch)))))
     ;; Bookmarks
     (setq mu4e-bookmarks
-          '(
-            ;; Personal bookmarks
-            ("\(to:alex.bennee or cc:alex.bennee\) NOT m:/linaro/misc/ AND flag:unread "
-             "Unread posts addressed to me" ?M)
-            ("\(to:alex.bennee or cc:alex.bennee\) AND flag:list AND flag:unread "
-             "Unread list email addressed to me" ?m)
-            ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
-             "Mail addressed to me with git tags" ?g)
-            ("\(from:alex.bennee OR from:bennee.com\)"
-             "Mail sent by me" ?s)
-            ("flag:flagged" "Flagged and Starred posts" ?f)
-            ("to:alex.bennee@linaro.org AND (from:agustin OR from:christoffer.dall@linaro.org)"
-             "From my various bosses" ?B)
-            ;; Virt related
-            ("list:qemu-devel.nongnu.org and flag:unread"
-             "Latest QEMU posts" ?q)
-            ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
-             "QEMU ARM64 posts" ?a)
-            ("to:mttcg@listserver.greensocs.com"
-             "Multi-threaded QEMU posts" ?T)
-            ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
-             "Android related emails" ?A)
-            ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
-             "Latest ARM KVM posts" ?k)
-            ("list:virtualization.linaro.org and flag:unread"
-             "Linaro Virtualization List" ?v)
-            ("maildir:\"/linaro/virtualization/*\" AND flag:list AND flag:unread"
-             "All unread Virtualization email" ?V)
-            ;; Linaro Specific
-            ("list:linaro-dev.lists.linaro.org AND flag:unread"
-             "Latest Linaro-Dev emails" ?d)
-            ("list:tech.lists.linaro.org AND flag:unread"
-             "Latest Linaro-Tech emails" ?t)
-            ("\(to:lists.linaro.org OR cc:lists.linaro.org\) AND flag:list AND flag:unread"
-             "Unread work mailing lists (lists.linaro.org)" ?l)
-            ("from:linaro.org and flag:unread"
-             "Latest unread Linaro posts from Linaro emails" ?L)
-            ;; Emacs
-            ("list:emacs-devel.gnu.org and flag:unread"
-             "Latest unread Emacs developer posts" ?E)
-            ("list:help-gnu-emacs.gnu.org and flag:unread"
-             "Latest unread Emacs user posts" ?e)
-            ("list:emacs-orgmode.gnu.org and flag:unread"
-             "Latest unread org-mode posts" ?o)))))
+          (cond
+           (I-am-at-work
+            '(
+              ;; Personal bookmarks
+              ("\(to:alex.bennee or cc:alex.bennee\) NOT m:/linaro/misc/ AND flag:unread "
+               "Unread posts addressed to me" ?M)
+              ("\(to:alex.bennee or cc:alex.bennee\) AND flag:list AND flag:unread "
+               "Unread list email addressed to me" ?m)
+              ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
+               "Mail addressed to me with git tags" ?g)
+              ("\(from:alex.bennee OR from:bennee.com\)"
+               "Mail sent by me" ?s)
+              ("flag:flagged" "Flagged and Starred posts" ?f)
+              ("to:alex.bennee@linaro.org AND (from:agustin OR from:christoffer.dall@linaro.org)"
+               "From my various bosses" ?B)
+              ;; Virt related
+              ("list:qemu-devel.nongnu.org and flag:unread"
+               "Latest QEMU posts" ?q)
+              ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
+               "QEMU ARM64 posts" ?a)
+              ("to:mttcg@listserver.greensocs.com"
+               "Multi-threaded QEMU posts" ?T)
+              ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
+               "Android related emails" ?A)
+              ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
+               "Latest ARM KVM posts" ?k)
+              ("list:virtualization.linaro.org and flag:unread"
+               "Linaro Virtualization List" ?v)
+              ("maildir:\"/linaro/virtualization/*\" AND flag:list AND flag:unread"
+               "All unread Virtualization email" ?V)
+              ;; Linaro Specific
+              ("list:linaro-dev.lists.linaro.org AND flag:unread"
+               "Latest Linaro-Dev emails" ?d)
+              ("list:tech.lists.linaro.org AND flag:unread"
+               "Latest Linaro-Tech emails" ?t)
+              ("\(to:lists.linaro.org OR cc:lists.linaro.org\) AND flag:list AND flag:unread"
+               "Unread work mailing lists (lists.linaro.org)" ?l)
+              ("from:linaro.org and flag:unread"
+               "Latest unread Linaro posts from Linaro emails" ?L)
+              ;; Emacs
+              ("list:emacs-devel.gnu.org and flag:unread"
+               "Latest unread Emacs developer posts" ?E)
+              ("list:help-gnu-emacs.gnu.org and flag:unread"
+               "Latest unread Emacs user posts" ?e)
+              ("list:emacs-orgmode.gnu.org and flag:unread"
+               "Latest unread org-mode posts" ?o)))
+           (I-am-on-server
+            '(
+              ;; Personal bookmarks
+              ("\(to:alex@bennee.com or cc:alex@bennee.com\) AND flag:unread "
+               "Unread posts addressed to me" ?M)
+              ("flag:list AND flag:unread "
+               "Unread list/notification email" ?m)
+              ("\(from:alex.bennee OR from:bennee.com\)"
+               "Mail sent by me" ?s)
+              ("from:eileen OR from:nigel"
+               "From parents" ?P)
+              ("to:bugzilla@bennee.com" "Bug Mail" ?B)
+              ))))))
 
 
 ;; Magic handling for multiple email addrsses
