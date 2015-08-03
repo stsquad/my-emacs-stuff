@@ -73,7 +73,8 @@
 
   ;; Stuff I always want
   ;; email
-  (load-library "my-email")
+  (use-package my-email
+    :if (or I-am-at-work I-am-on-server))
   ;; Development related stuff, including project root
   (load-library "my-devel")
   (load-library "my-flycheck")
@@ -144,7 +145,8 @@
     :ensure paradox
     :commands paradox-list-packages
     :config
-    (setq paradox-github-token (my-pass-password "paradox" t)))
+    (when my-primary-machine-p
+      (setq paradox-github-token (my-pass-password "paradox" t))))
   
   (load "the-rest.el")
 
