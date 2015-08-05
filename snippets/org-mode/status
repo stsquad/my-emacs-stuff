@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: org-status-template
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# key: $status
+# --
+** Current
+*** Progress
+  - $1
+*** Plans
+  - $2
+*** Absences
+  - KVM Forum 19/8/2015 to 21/8/2015 (definite)
+  - Linaro Connect 21/9/2015 to 25/9/2015

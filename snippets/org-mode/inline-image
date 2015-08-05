@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
 # name: org-image
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
 # key: $i
 # --
 #+ATTR_HTML: :alt $2 :style border: none;
