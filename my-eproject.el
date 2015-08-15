@@ -33,7 +33,10 @@
 (use-package eproject-compile
   :commands eproject-compile)
 
-(use-package eproject-extras
+;; HACK - something is breaking autoloads
+(require 'eproject-contrib-autoloads nil t)
+
+(use-package eproject-ibuffer
   :commands eproject-ibuffer
   :config
   (setq eproject-completing-read-function 'eproject--ido-completing-read))
@@ -49,7 +52,7 @@
   "Hook for cc-mode to run on eproject based projects."
   (message "in my-eproject-c-hook")
   (eproject-maybe-turn-on)
-  (when (eproject-attribute :c-style)
+  (when (and eproject-root (eproject-attribute :c-style))
     (message "setting C style based on eproject")
     (c-set-style (eproject-attribute :c-style))))
 
@@ -60,10 +63,11 @@
 (defun my-eproject-asm-hook ()
   "Hook for assembly mode."
   (message "Running my-eproject-asm-hook")
-  (eproject-maybe-turn-on)
-  (when (my-eproject-is-type-p 'kernel)
-    (message "Setting indent")
-    (setq indent-tabs-mode t)))
+  (when buffer-file-name
+    (eproject-maybe-turn-on)
+    (when (my-eproject-is-type-p 'kernel)
+      (message "Setting indent")
+      (setq indent-tabs-mode t))))
 
 (add-hook 'c-mode-hook 'my-eproject-c-hook)
 (add-hook 'asm-mode-hook 'my-eproject-asm-hook)
@@ -85,6 +89,7 @@
 
 (add-hook 'qemu-project-file-visit-hook 'my-eproj-is-c)
 (add-hook 'qemu-project-file-visit-hook 'whitespace-mode)
+(add-hook 'qemu-project-file-visit-hook 'ws-butler-mode)
 
 (define-project-type debian-package
   (generic)
@@ -109,11 +114,23 @@
 (add-hook 'chrome-extension-visit-hook '(lambda ()
 					  (require "js2-mode" nil t)))
 
+
+(defun my-kernel-build-dirs (root)
+  "Return a list of build directories for the kernel at `ROOT'.
+
+Return in order of most recently updated."
+  (mapcar #'car
+          (sort
+           (directory-files-and-attributes
+            (file-name-directory (directory-file-name root)) t "build")
+           #'(lambda (x y) (time-less-p (nth 6 y) (nth 6 x))))))
+
+; (my-kernel-build-dirs "/home/alex/lsrc/kvm/linux.git/")
+
 (defun my-kernel-compile-strings (root)
   "Return a list of compile strings for the kernel at `ROOT'."
   (let ((j-field (format "-j%d" (1+ my-core-count)))
-        (build-dirs (directory-files
-                     (file-name-directory (directory-file-name root)) t "build"))
+        (build-dirs (my-kernel-build-dirs root))
         (builds '()))
     (--each build-dirs
       (let ((arch
@@ -141,6 +158,15 @@
   :common-compiles (my-kernel-compile-strings "make" "make gtags" "make TAGS"))
 
 (add-hook 'kernel-project-file-visit-hook 'my-eproj-is-c)
+(add-hook 'kernel-project-file-visit-hook 'ws-butler-mode)
+
+(define-project-type kvm-unit-tests
+  (generic-git)
+  (look-for "arm/selftest.c")
+  :c-style "linux-tabs-style")
+
+(add-hook 'kvm-unit-tests-project-file-visit-hook 'my-eproj-is-c)
+(add-hook 'kvm-unit-tests-project-file-visit-hook 'ws-butler-mode)
 
 (define-project-type easytag
   (generic-git)
@@ -171,9 +197,13 @@
 ;
 ; In theory eproject should already be catching this when major modes
 ; are switched. But this does make sure.
-(add-hook 'c-mode-common-hook 'eproject-maybe-turn-on)
-(add-hook 'makefile-mode-hook 'eproject-maybe-turn-on)
-(add-hook 'java-mode-hook 'eproject-maybe-turn-on)
+;; (add-hook 'c-mode-common-hook 'eproject-maybe-turn-on)
+;; (add-hook 'makefile-mode-hook 'eproject-maybe-turn-on)
+;; (add-hook 'java-mode-hook 'eproject-maybe-turn-on)
+;; ensure eproject is at the start, before any mode hooks
+(setq find-file-hook
+      (append '(eproject-maybe-turn-on) (remq 'eproject-maybe-turn-on
+                                              find-file-hook)))
 
 ;; Find methods
 ;
@@ -197,6 +227,7 @@
     (funcall my-project-find-fallback-func eproject-root (my-find-search-string))))
 
 (define-key eproject-mode-map (kbd "<f5>") 'my-eproject-find)
+(define-key eproject-mode-map (kbd "<S-s-XF86TouchpadToggle>") 'my-eproject-find)
 
 (provide 'my-eproject)
 ;;; my-eproject.el ends here

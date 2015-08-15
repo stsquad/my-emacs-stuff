@@ -1,4 +1,4 @@
-;;; my-buffer.el --- buffer naviagtion tweaks
+;;; my-buffer.el --- buffer navigation tweaks
 ;;
 ;;; Commentary:
 ;;
@@ -27,6 +27,7 @@
 ;; Lusty Explorer
 ;;
 ;; moved C-x b to helm-mini (see my-helm)
+;; (global-set-key (kbd "C-x b") 'lusty-buffer-explorer)
 (use-package lusty-explorer
   :bind (("C-x C-f" . lusty-file-explorer)))
 

@@ -38,8 +38,12 @@
   'my-grep-find
   "The function I call to do the actual search")
 
-(defun my-project-find (&optional search)
-  "Search within the project"
+;;   (interactive (list
+;;                 (eproject--do-completing-read
+;;                  "Project name: " (eproject-project-names))))
+
+(defun my-project-find (prefix &optional search)
+  "Search within the project. If prefix is set prompt for a directory."
   (interactive (list (my-find-search-string)))
   (funcall my-project-find-fallback-func default-directory search))
 
@@ -59,6 +63,9 @@
 
 (use-package helm-ag
   :commands helm-ag
-  :init (global-set-key (kbd "<f6>") 'helm-ag))
+  :init (global-set-key (kbd "<f6>") 'helm-do-ag))
+
+(use-package swiper
+  :bind ("C-s" . swiper))
 
 (provide 'my-find)
