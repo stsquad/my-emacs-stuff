@@ -29,12 +29,13 @@
   :commands (ediff-buffers ediff-files)
   :config
   (progn
-    (setq diff-switches               "-u"
+    (setq diff-switches               "-ub"
           ediff-custom-diff-options   "-U3"
           ediff-split-window-function 'split-window-horizontally
           ediff-window-setup-function 'ediff-setup-windows-plain)
-    (add-hook 'ediff-before-setup-hook 'new-frame)
-    (add-hook 'ediff-quit-hook 'delete-frame)
+    (when (display-graphic-p)
+      (add-hook 'ediff-before-setup-hook 'new-frame)
+      (add-hook 'ediff-quit-hook 'delete-frame))
     (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
     (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
     (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))

@@ -25,20 +25,21 @@
 
 ;; Save history
 (use-package savehist
+  :defer 60
   :init (savehist-mode))
 
 ;; Don't prompt me to revert something
 (use-package autorevert
-  :commands global-auto-revert-mode
+  :defer 240
   :init (global-auto-revert-mode 1))
   
 ;; Keep track of my key-presses
 (use-package keyfreq
   :if (daemonp)
-  :commands keyfreq-mode
-  :init (keyfreq-mode)
+  :defer 240
   :config
   (progn
+    (keyfreq-mode)
     (keyfreq-autosave-mode)))
 
 ;; Simple access to the calculator

@@ -1,0 +1,24 @@
+# -*- mode: snippet -*-
+# name: org-dotty-image
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# key: $dot
+# --
+#+name: $1
+#+begin_src dot :cmdline -v -Tsvg :file generated/${1:$(replace-regexp-in-string "-" "_" yas-text)}.svg
+digraph ${1:$(replace-regexp-in-string "-" "_" yas-text)} {
+
+          ranksep=equally;
+          splines=true;
+          
+          $0
+          /* Default rankdir is TB, global to graph */
+          node [shape=none
+                label=<<table>
+                <tr><td><b>$2</b></td></tr>
+                <tr><td>$3</td></tr>
+                </table>>];
+}
+#+end_src
+#+ATTR_HTML: :width 600 :alt ${1:$(replace-regexp-in-string "-" " " yas-text)} :class squeeze :style border:none; box-shadow:none;
+#+RESULTS: $1
+[[file:generated/${1:$(replace-regexp-in-string "-" "_" yas-text)}.svg]]

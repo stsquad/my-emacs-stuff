@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: org-ditta-image
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# key: $dit
+# --
+#+name: $1
+#+begin_src ditaa :cmdline -o :file generated/${1:$(replace-regexp-in-string "-" "_" yas-text)}.png
+$0                                                                  
+#+end_src
+
+#+ATTR_HTML: :width 600 :alt ${1:$(replace-regexp-in-string "-" " " yas-text)} :class squeeze :style border:none; box-shadow:none;
+#+RESULTS: $1
+[[file:generated/${1:$(replace-regexp-in-string "-" "_" yas-text)}.png]]
