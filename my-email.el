@@ -101,11 +101,13 @@
     (defun my-switch-to-thread ()
       "Switch to headers view of current thread."
       (interactive)
-      (let ((id (or (mu4e-message-field-at-point :in-reply-to)
-                    (mu4e-message-field-at-point :message-id))))
-        (mu4e-headers-search (format "i:%s" (s-replace-all '(("<" . "")
-                                                             (">" . ""))
-                                                           id)))))
+      (let* ((msg (mu4e-message-at-point))
+             (id (or (mu4e-message-field-raw msg :in-reply-to)
+                     (mu4e-message-field-raw msg :message-id))))
+        (when (> (length id) 0)
+          (mu4e-headers-search (format "i:%s" (s-replace-all '(("<" . "")
+                                                               (">" . ""))
+                                                             id))))))
 
     ;; Set default directory when viewing messages
     (defvar my-mailing-list-dir-mapping
@@ -166,8 +168,7 @@
      mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      '("alex.bennee@linaro.org"
-       "alex@bennee.com"
-       "kernel-hacker@bennee.com")
+       "alex@bennee.com")
      mu4e-compose-complete-only-after "2013-11-01"
      ;; view options
      mu4e-view-show-images t
@@ -259,7 +260,8 @@
   :commands helm-mu
   :if (and (string-match "zen" (system-name))
            (locate-library "helm-mu"))
-  :config (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu))
+  :config (progn
+            (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu)))
 
 ;; Magic handling for multiple email addrsses
 (defvar my-email-address-alist
