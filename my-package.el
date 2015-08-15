@@ -49,9 +49,15 @@
 
 
 ;; (add-to-list 'package-archives
-;;              '("marmalade" . "https://marmalade-repo.org/packages/") t)
+;;              '("marmalade" .
+;;              "https://marmalade-repo.org/packages/") t)
+
 (add-to-list 'package-archives
-             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+             (if I-am-at-work
+                 '("melpa" . "http://melpa.org/packages/")
+               '("melpa-stable" . "http://stable.melpa.org/packages/"))
+             t)
+             
 (add-to-list 'package-archives
              '("org" . "http://orgmode.org/elpa/") t)
 
@@ -70,5 +76,11 @@
   (package-refresh-contents)
   (mapc 'my-check-and-maybe-install my-useful-packages))
 
+(defun my-package-recompile()
+  "Recompile all packages"
+  (interactive)
+  (byte-recompile-directory "~/.emacs.d/elpa" 0 t))
+
 (provide 'my-package)
 ;;; my-package.el ends here
+
