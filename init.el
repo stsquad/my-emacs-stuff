@@ -118,7 +118,7 @@
     :config
     (progn
       (setq guide-key/guide-key-sequence
-            '("C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4"
+            '("C-x" "C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4"
               "C-x 8"))
       (guide-key-mode)))
 
