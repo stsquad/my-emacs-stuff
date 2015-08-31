@@ -114,10 +114,13 @@
       '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
          ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
       "Mapping from mailing lists to source tree.")
+
     (defvar my-maildir-mapping
-      '( ("linaro/virtualization/.qemu" . "~/lsrc/qemu/qemu.git/")
+      '( ("linaro/virtualization/qemu" . "~/lsrc/qemu/qemu.git/")
+         ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu/qemu.git/")
          ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
       "Mapping from maildirs to source tree.")
+
     (defun my-set-view-directory ()
       "Switch the `default-directory' depending on the mailing list we
   are in."
@@ -181,8 +184,8 @@
      '( ("/linaro/Inbox"     . ?i)
         ("/linaro/mythreads" . ?m)
         ("/linaro/team"      . ?t)
-        ("/linaro/virtualization/.qemu" . ?q)
-        ("/linaro/virtualization/.kvm-arm" . ?k)
+        ("/linaro/virtualization/qemu" . ?q)
+        ("/linaro/virtualization/kvm-arm" . ?k)
         ("/sent"             . ?s)))
     ;; key-bindings
     (when (keymapp mu4e-compose-mode-map)
