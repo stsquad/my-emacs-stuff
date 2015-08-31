@@ -198,20 +198,41 @@
     (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)
     (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
     ;; Header markers
+    (defvar my-mu4e-patches nil
+      "List of mu4e-messages snagged by the (Patches) actions.")
+
+    (defun my-mu4e-apply-marked-mbox-patches ()
+      "Apply patches in order."
+      (interactive)
+      (let ((patches
+             (sort
+              my-mu4e-patches
+              #'(lambda(a b)
+                  (string<
+                   (mu4e-message-field-raw
+                    a :subject)
+                   (mu4e-message-field-raw
+                    b :subject))))))
+        (mapc 'mu4e-action-git-apply-mbox patches)))
+    
     (add-to-list
      'mu4e-headers-custom-markers
      '("Patches"
        ;; Match function
        (lambda (msg parent-id)
-                 (and
-                  (string-match
-                   parent-id
-                   (or
-                    (mu4e-message-field-raw msg :in-reply-to)
-                    ""))
-                  (string-match "^\\[" (mu4e-message-field-raw msg :subject))))
+         (when
+             (and
+              (string-match
+               parent-id
+               (or
+                (mu4e-message-field-raw msg :in-reply-to)
+                ""))
+              (string-match "^\\[" (mu4e-message-field-raw msg
+                                                           :subject)))
+           (add-to-list 'my-mu4e-patches msg)))
        ;; Param function
        (lambda ()
+         (setq my-mu4e-patches nil)
          (let ((msg (mu4e-message-at-point)))
            (mu4e-message-field-raw msg :message-id)))))
     ;; Header actions
