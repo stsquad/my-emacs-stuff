@@ -195,7 +195,25 @@
               '(lambda () (yas-minor-mode -1)))
     (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)
     (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)
+    (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)
     (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
+    ;; Header markers
+    (add-to-list
+     'mu4e-headers-custom-markers
+     '("Patches"
+       ;; Match function
+       (lambda (msg parent-id)
+                 (and
+                  (string-match
+                   parent-id
+                   (or
+                    (mu4e-message-field-raw msg :in-reply-to)
+                    ""))
+                  (string-match "^\\[" (mu4e-message-field-raw msg :subject))))
+       ;; Param function
+       (lambda ()
+         (let ((msg (mu4e-message-at-point)))
+           (mu4e-message-field-raw msg :message-id)))))
     ;; Header actions
     (setq mu4e-headers-actions
           (delete-dups
