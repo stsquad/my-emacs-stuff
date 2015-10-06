@@ -62,80 +62,85 @@
   :commands message-mode
   :config (add-hook 'message-mode-hook 'my-common-mail-tweaks))
 
+;; BBDB
+(use-package bbdb
+  :config (progn
+            (setq bbdb-add-aka t
+                  bbdb-layout 'one-line
+                  bbdb-mua-auto-update-p 'query)
+            (bbdb-initialize 'mu4e 'rmail 'gnus 'message)))
+
 ;;
 ;; Finally the mu4e configuration
 ;;
 ;; This is my main work horse for day to day email.
 ;;
 
+;; Switch function
+(defun my-switch-to-mu4e ()
+  "Smart dwim switch to mu4e."
+  (interactive)
+  (let ((candidate
+         (or
+          ;; unsent emails
+          (car (--filter
+                (with-current-buffer it
+                  (and
+                   (eq major-mode 'mu4e-compose-mode)
+                   (not message-sent-message-via)))
+                (buffer-list)))
+          ;; current search
+          (get-buffer "*mu4e-headers*")
+          ;; current view
+          (get-buffer "*mu4e-view*"))))
+    (if candidate
+        (progn
+          (switch-to-buffer candidate)
+          (delete-other-windows))
+      (mu4e))))
+
+;; Jump to current thread
+(defun my-switch-to-thread ()
+  "Switch to headers view of current thread."
+  (interactive)
+  (let* ((msg (mu4e-message-at-point))
+         (id (or (mu4e-message-field-raw msg :in-reply-to)
+                 (mu4e-message-field-raw msg :message-id))))
+    (when (> (length id) 0)
+      (mu4e-headers-search (format "i:%s" (s-replace-all '(("<" . "")
+                                                           (">" . ""))
+                                                         id))))))
+
+;; Set default directory when viewing messages
+(defvar my-mailing-list-dir-mapping
+  '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
+     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+  "Mapping from mailing lists to source tree.")
+
+(defvar my-maildir-mapping
+  '( ("linaro/virtualization/qemu" . "~/lsrc/qemu/qemu.git/")
+     ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu/qemu.git/")
+     ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
+  "Mapping from maildirs to source tree.")
+
+(defun my-set-view-directory ()
+  "Switch the `default-directory' depending on the mailing list we
+  are in."
+  (interactive)
+  (let ((msg (mu4e-message-at-point t)))
+    (when msg
+      (let ((list (mu4e-message-field msg :mailing-list))
+            (maildir (mu4e-message-field msg :maildir)))
+        (setq default-directory
+              (expand-file-name
+               (or
+                (assoc-default list my-mailing-list-dir-mapping)
+                (assoc-default maildir my-maildir-mapping 'string-match)
+                "~")))))))
+
 (use-package mu4e
   :commands mu4e
   :if (string-match "zen" (system-name))
-  :preface
-  (progn
-
-    ;; Switch function
-    (defun my-switch-to-mu4e ()
-      "Smart dwim switch to mu4e."
-      (interactive)
-      (let ((candidate
-             (or
-              ;; unsent emails
-              (car (--filter
-                    (with-current-buffer it
-                      (and
-                       (eq major-mode 'mu4e-compose-mode)
-                       (not message-sent-message-via)))
-                    (buffer-list)))
-              ;; current search
-              (get-buffer "*mu4e-headers*")
-              ;; current view
-              (get-buffer "*mu4e-view*"))))
-        (if candidate
-            (progn
-              (switch-to-buffer candidate)
-              (delete-other-windows))
-          (mu4e))))
-
-    ;; Jump to current thread
-    (defun my-switch-to-thread ()
-      "Switch to headers view of current thread."
-      (interactive)
-      (let* ((msg (mu4e-message-at-point))
-             (id (or (mu4e-message-field-raw msg :in-reply-to)
-                     (mu4e-message-field-raw msg :message-id))))
-        (when (> (length id) 0)
-          (mu4e-headers-search (format "i:%s" (s-replace-all '(("<" . "")
-                                                               (">" . ""))
-                                                             id))))))
-
-    ;; Set default directory when viewing messages
-    (defvar my-mailing-list-dir-mapping
-      '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
-         ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
-      "Mapping from mailing lists to source tree.")
-
-    (defvar my-maildir-mapping
-      '( ("linaro/virtualization/qemu" . "~/lsrc/qemu/qemu.git/")
-         ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu/qemu.git/")
-         ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
-      "Mapping from maildirs to source tree.")
-
-    (defun my-set-view-directory ()
-      "Switch the `default-directory' depending on the mailing list we
-  are in."
-      (interactive)
-      (let ((msg (mu4e-message-at-point t)))
-        (when msg
-          (let ((list (mu4e-message-field msg :mailing-list))
-                (maildir (mu4e-message-field msg :maildir)))
-            (setq default-directory
-                  (expand-file-name
-                   (or
-                    (assoc-default list my-mailing-list-dir-mapping)
-                    (assoc-default maildir my-maildir-mapping 'string-match)
-                    "~"))))))))
-
   ;; Bindings
   :bind ("C-c m" . my-switch-to-mu4e)
   :config

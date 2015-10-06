@@ -96,14 +96,14 @@
   (setq mouse-yank-at-point t))
 
 ;; Change the cursor colour in Ovwrt mode
+(defun ins-cursor-set ()
+  "Set cursor colour according to insert mode."
+  (set-cursor-color
+   (if overwrite-mode
+       "red"
+     "grey")))
+
 (use-package simple
-  :preface
-  (defun ins-cursor-set ()
-    "Set cursor colour according to insert mode."
-    (set-cursor-color
-     (if overwrite-mode
-         "red"
-       "grey")))
   :config
   (add-hook 'overwrite-mode-hook 'ins-cursor-set))
 
