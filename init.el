@@ -131,7 +131,7 @@
     :ensure paradox
     :commands paradox-list-packages
     :config
-    (when my-primary-machine-p
+    (when (my-primary-machine-p)
       (setq paradox-github-token (my-pass-password "paradox" t))))
   
   (load "the-rest.el")
