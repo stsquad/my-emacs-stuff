@@ -54,16 +54,16 @@
                             (vertical-scroll-bars)))
 
 ; Re-use existing frames if buffer already exists in one
-  (setq-default display-buffer-reuse-frames t)
+(setq-default display-buffer-reuse-frames t)
 
-  ; messing about - what about dynamic-font stuff?
-  (set-face-attribute 'default nil
-                      :family "DejaVu Sans Mono"
-                      :height 145
-                      ;; :family "Symbola"
-                      ;; :height 180
-                      :weight 'normal
-                      :width 'normal)
+; messing about - what about dynamic-font stuff?
+(set-face-attribute 'default nil
+                    :family "DejaVu Sans Mono"
+                    :height 145
+                    ;; :family "Symbola"
+                    ;; :height 180
+                    :weight 'normal
+                    :width 'normal)
 
 (message "Display Done")
 
@@ -81,8 +81,8 @@
 ;; Stop the mouse cursor getting in the way. This is great.
 (use-package avoid
   :if window-system
-  :commands mouse-avoidance-mode
-  :init
+  :defer 60
+  :config
   (mouse-avoidance-mode 'exile))
 
 ;; enable the mouse wheel
@@ -103,14 +103,17 @@
        "red"
      "grey")))
 
+(use-package simple
+  :config
+  (add-hook 'overwrite-mode-hook 'ins-cursor-set))
+
 (if I-am-emacs-21+
     (blink-cursor-mode -1))
-
-(add-hook 'post-command-hook 'ins-cursor-set)
 
 (setq frame-title-format "%b")
 (setq  icon-title-format "%b")
 
+(setq cursor-type 'box)
 
 ;; Make fill do the Right Thing with full-stops.
 (setq sentence-end-double-space nil)
@@ -118,7 +121,6 @@
 ;; Highlights region _all_ the time. Slightly buggy...
 (transient-mark-mode t)
 (delete-selection-mode 1)
-
 
 ;; Tweaks to scrolling behaviour. Still a bit odd.
 (setq scroll-preserve-screen-position t
@@ -151,38 +153,40 @@
 
 ;; Nice window sizing
 (use-package golden-ratio
-  :commands golden-ratio
-  :init (golden-ratio)
-  :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode" "mu4e-view-mode")))
+  :defer 30
+  :config (progn
+            (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
+                                               "mu4e-view-mode"))
+            (golden-ratio)))
 
-;; Bow down before font-lock
-(add-hook 'font-lock-mode-hook
-          '(lambda ()
-             (setq font-lock-maximum-decoration  t
-                   font-lock-verbose             t
-                   font-lock-support-mode        'jit-lock-mode
-                   lazy-lock-defer-on-scrolling  nil
-                   lazy-lock-defer-contextually  t
-                   lazy-lock-stealth-verbose     t
-                   lazy-lock-stealth-lines       50
-                   lazy-lock-stealth-time        3)))
-(global-font-lock-mode t)
+;; ;; Bow down before font-lock
+;; (add-hook 'font-lock-mode-hook
+;;           '(lambda ()
+;;              (setq font-lock-maximum-decoration  t
+;;                    font-lock-verbose             t
+;;                    font-lock-support-mode        'jit-lock-mode
+;;                    lazy-lock-defer-on-scrolling  nil
+;;                    lazy-lock-defer-contextually  t
+;;                    lazy-lock-stealth-verbose     t
+;;                    lazy-lock-stealth-lines       50
+;;                    lazy-lock-stealth-time        3)))
+;; (global-font-lock-mode t)
 
 
-;; Font locking info mode (from Andy.Ling@quantel.com)
-(defvar info-font-lock-keywords
-  (list
-   '("^\\* [^:]+:+" . font-lock-function-name-face)
-   '("\\*[Nn]ote\\b[^:]+:+" . font-lock-reference-face)
-   '("  \\(Next\\|Prev\\|Up\\):" . font-lock-reference-face))
-  "Additional expressions to highlight in Info mode.")
+;; ;; Font locking info mode (from Andy.Ling@quantel.com)
+;; (defvar info-font-lock-keywords
+;;   (list
+;;    '("^\\* [^:]+:+" . font-lock-function-name-face)
+;;    '("\\*[Nn]ote\\b[^:]+:+" . font-lock-reference-face)
+;;    '("  \\(Next\\|Prev\\|Up\\):" . font-lock-reference-face))
+;;   "Additional expressions to highlight in Info mode.")
 
-(add-hook 'Info-mode-hook
-          (lambda ()
-            (make-local-variable 'font-lock-defaults)
-            (setq
-             font-lock-defaults '(info-font-lock-keywords nil t)
-             case-fold-search nil)))
+;; (add-hook 'Info-mode-hook
+;;           (lambda ()
+;;             (make-local-variable 'font-lock-defaults)
+;;             (setq
+;;              font-lock-defaults '(info-font-lock-keywords nil t)
+;;              case-fold-search nil)))
 
 
 (provide 'my-display)

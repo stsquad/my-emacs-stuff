@@ -24,12 +24,15 @@
   :bind (("C-x b" . helm-mini)
          ("M-x" . helm-M-x)
          ("C-f" . helm-semantic-or-imenu)
+         ("C-x 8 <RET>" . helm-ucs)
          ("C-<f1>" . helm-apropos)))
 
 (use-package helm-git-grep
+  :commands helm-git-grep
   :config (setq helm-git-grep-candidate-number-limit nil))
 
 (use-package helm-buffers
+  :commands helm-buffers-list
   :config (setq helm-buffers-fuzzy-matching t))
 
 (use-package helm-elisp

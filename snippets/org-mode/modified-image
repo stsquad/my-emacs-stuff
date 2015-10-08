@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: org-modified-image
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# key: $mi
+# --
+#+name: resize-${1:$(file-name-sans-extension (file-name-nondirectory yas-text))}
+#+begin_src sh :file generated/${1:$(file-name-nondirectory yas-text)} :exports results
+convert -resize 640x480 ${1:./`(file-relative-name
+                                (ido-read-file-name "image file:")
+                                default-directory)`} generated/${1:$(file-name-nondirectory yas-text)}
+#+end_src
+
+#+ATTR_HTML: :style border:none
+#+RESULTS: resize-${1:$(file-name-sans-extension (file-name-nondirectory yas-text))}
+[[file:generated/${1:$(file-name-nondirectory yas-text)}]]
+$0

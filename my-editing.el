@@ -27,7 +27,12 @@
 
 ;; Nice for jumping about windows.
 (use-package ace-jump-mode
+  :disabled t
   :bind ("C-x j" . ace-jump-mode))
+
+(use-package avy
+  :bind ("C-x j" . avy-goto-word-or-subword-1)
+  )
 
 ;; Multiple cursors
 (use-package multiple-cursors

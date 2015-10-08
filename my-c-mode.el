@@ -107,10 +107,11 @@
 ; Qemu C Style
 (defconst qemu-c-style
   '(
-    "my-c-style"
+    "my-c-style"       ; derived from style
     (tab-width . 8)
     (indent-tabs-mode . nil)
     (comment-style 'extra-line)
+    (c-doc-comment-style . javadoc)
     (c-basic-offset . 4)
     (c-comment-only-line-offset . 0)
     (c-hanging-braces-alist . ((substatement-open before after)))
@@ -157,8 +158,8 @@
                              (brace-list-intro)
                              (brace-list-entry)
                              (brace-list-close)
-                                                          (block-close
-                                                           . c-snug-do-while)))
+                             (block-close
+                              . c-snug-do-while)))
     (comment-column . 70)
     )
     "RISU Style (PMM's C Programming Style)")

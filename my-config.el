@@ -43,7 +43,7 @@
 ;; Searches are case sensitive
 (setq-default case-fold-search nil)
 
-;; Use .el if it's newer
+;; Use .el if it is newer
 (when (boundp 'load-prefer-newer)
   (setq load-prefer-newer t))
 
@@ -85,6 +85,8 @@
       (remove ".git/"
               (remove ".bzr/"
                       (remove ".svn/" completion-ignored-extensions))))
+
+(put 'downcase-region 'disabled nil)
 
 ;; Move the custom file out of init.el
 (setq custom-file "~/.emacs.d/my-custom.el")

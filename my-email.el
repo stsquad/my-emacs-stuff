@@ -62,75 +62,85 @@
   :commands message-mode
   :config (add-hook 'message-mode-hook 'my-common-mail-tweaks))
 
+;; BBDB
+(use-package bbdb
+  :config (progn
+            (setq bbdb-add-aka t
+                  bbdb-layout 'one-line
+                  bbdb-mua-auto-update-p 'query)
+            (bbdb-initialize 'mu4e 'rmail 'gnus 'message)))
+
 ;;
 ;; Finally the mu4e configuration
 ;;
 ;; This is my main work horse for day to day email.
 ;;
 
+;; Switch function
+(defun my-switch-to-mu4e ()
+  "Smart dwim switch to mu4e."
+  (interactive)
+  (let ((candidate
+         (or
+          ;; unsent emails
+          (car (--filter
+                (with-current-buffer it
+                  (and
+                   (eq major-mode 'mu4e-compose-mode)
+                   (not message-sent-message-via)))
+                (buffer-list)))
+          ;; current search
+          (get-buffer "*mu4e-headers*")
+          ;; current view
+          (get-buffer "*mu4e-view*"))))
+    (if candidate
+        (progn
+          (switch-to-buffer candidate)
+          (delete-other-windows))
+      (mu4e))))
+
+;; Jump to current thread
+(defun my-switch-to-thread ()
+  "Switch to headers view of current thread."
+  (interactive)
+  (let* ((msg (mu4e-message-at-point))
+         (id (or (mu4e-message-field-raw msg :in-reply-to)
+                 (mu4e-message-field-raw msg :message-id))))
+    (when (> (length id) 0)
+      (mu4e-headers-search (format "i:%s" (s-replace-all '(("<" . "")
+                                                           (">" . ""))
+                                                         id))))))
+
+;; Set default directory when viewing messages
+(defvar my-mailing-list-dir-mapping
+  '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
+     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+  "Mapping from mailing lists to source tree.")
+
+(defvar my-maildir-mapping
+  '( ("linaro/virtualization/qemu" . "~/lsrc/qemu/qemu.git/")
+     ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu/qemu.git/")
+     ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
+  "Mapping from maildirs to source tree.")
+
+(defun my-set-view-directory ()
+  "Switch the `default-directory' depending on the mailing list we
+  are in."
+  (interactive)
+  (let ((msg (mu4e-message-at-point t)))
+    (when msg
+      (let ((list (mu4e-message-field msg :mailing-list))
+            (maildir (mu4e-message-field msg :maildir)))
+        (setq default-directory
+              (expand-file-name
+               (or
+                (assoc-default list my-mailing-list-dir-mapping)
+                (assoc-default maildir my-maildir-mapping 'string-match)
+                "~")))))))
+
 (use-package mu4e
   :commands mu4e
-  :if (or I-am-at-work I-am-on-server)
-  :preface
-  (progn
-
-    ;; Switch function
-    (defun my-switch-to-mu4e ()
-      "Smart dwim switch to mu4e."
-      (interactive)
-      (let ((candidate
-             (or
-              ;; unsent emails
-              (car (--filter
-                    (with-current-buffer it
-                      (and
-                       (eq major-mode 'mu4e-compose-mode)
-                       (not message-sent-message-via)))
-                    (buffer-list)))
-              ;; current search
-              (get-buffer "*mu4e-headers*")
-              ;; current view
-              (get-buffer "*mu4e-view*"))))
-        (if candidate
-            (progn
-              (switch-to-buffer candidate)
-              (delete-other-windows))
-          (mu4e))))
-
-    ;; Jump to current thread
-    (defun my-switch-to-thread ()
-      "Switch to headers view of current thread."
-      (interactive)
-      (let ((id (or (mu4e-message-field-at-point :in-reply-to)
-                    (mu4e-message-field-at-point :message-id))))
-        (mu4e-headers-search (format "i:%s" (s-replace-all '(("<" . "")
-                                                             (">" . ""))
-                                                           id)))))
-
-    ;; Set default directory when viewing messages
-    (defvar my-mailing-list-dir-mapping
-      '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
-         ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
-      "Mapping from mailing lists to source tree.")
-    (defvar my-maildir-mapping
-      '( ("linaro/virtualization/.qemu" . "~/lsrc/qemu/qemu.git/")
-         ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
-      "Mapping from maildirs to source tree.")
-    (defun my-set-view-directory ()
-      "Switch the `default-directory' depending on the mailing list we
-  are in."
-      (interactive)
-      (let ((msg (mu4e-message-at-point t)))
-        (when msg
-          (let ((list (mu4e-message-field msg :mailing-list))
-                (maildir (mu4e-message-field msg :maildir)))
-            (setq default-directory
-                  (expand-file-name
-                   (or
-                    (assoc-default list my-mailing-list-dir-mapping)
-                    (assoc-default maildir my-maildir-mapping 'string-match)
-                    "~"))))))))
-
+  :if (string-match "zen" (system-name))
   ;; Bindings
   :bind ("C-c m" . my-switch-to-mu4e)
   :config
@@ -194,8 +204,7 @@
       (t
        '( ("/"     . ?i)
           ("/.Spam" . ?s)
-          ("/.Oldmail" . ?o) ))))
-
+          ("/.Oldmail" . ?o) )))
     ;; key-bindings
     (when (keymapp mu4e-compose-mode-map)
       (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region))
@@ -204,7 +213,46 @@
               '(lambda () (yas-minor-mode -1)))
     (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)
     (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)
+    (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)
     (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
+    ;; Header markers
+    (defvar my-mu4e-patches nil
+      "List of mu4e-messages snagged by the (Patches) actions.")
+
+    (defun my-mu4e-apply-marked-mbox-patches ()
+      "Apply patches in order."
+      (interactive)
+      (let ((patches
+             (sort
+              my-mu4e-patches
+              #'(lambda(a b)
+                  (string<
+                   (mu4e-message-field-raw
+                    a :subject)
+                   (mu4e-message-field-raw
+                    b :subject))))))
+        (mapc 'mu4e-action-git-apply-mbox patches)))
+    
+    (add-to-list
+     'mu4e-headers-custom-markers
+     '("Patches"
+       ;; Match function
+       (lambda (msg parent-id)
+         (when
+             (and
+              (string-match
+               parent-id
+               (or
+                (mu4e-message-field-raw msg :in-reply-to)
+                ""))
+              (string-match "^\\[" (mu4e-message-field-raw msg
+                                                           :subject)))
+           (add-to-list 'my-mu4e-patches msg)))
+       ;; Param function
+       (lambda ()
+         (setq my-mu4e-patches nil)
+         (let ((msg (mu4e-message-at-point)))
+           (mu4e-message-field-raw msg :message-id)))))
     ;; Header actions
     (setq mu4e-headers-actions
           (delete-dups
@@ -287,7 +335,8 @@
   :commands helm-mu
   :if (and (string-match "zen" (system-name))
            (locate-library "helm-mu"))
-  :config (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu))
+  :config (progn
+            (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu)))
 
 ;; Magic handling for multiple email addrsses
 (defvar my-email-address-alist

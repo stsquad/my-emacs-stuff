@@ -4,14 +4,11 @@
 ;;
 ;; Author: Alex Bennée <alex@bennee.com>
 ;;
-;; This file is not part of GNU Emacs.
+;;; Commentary:
 ;;
-;; This file is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
+;; I don't use this so much now but it is useful for posting codedumps
+;; in a formatted way
 ;;
-
 ;;; Code
 
 (require 'use-package)
@@ -19,32 +16,31 @@
 
 (use-package htmlize
   :commands (htmlize-faces-in-buffer htmlize-make-face-map htmlize-css-specs htmlize-region-for-paste)
-  :init
-  (progn
-    ;; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
-    (defun my-htmlize-region (beg end)
-      "Htmlize region and put into <pre> tag style that is left in <body> tag
-plus add font-size: 8pt"
-      (interactive "r")
-      (let* ((buffer-faces (htmlize-faces-in-buffer))
-             (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
-             (pre-tag (format
-                       "<pre style=\"%s font-size: 8pt\">"
-                       (mapconcat #'identity (htmlize-css-specs
-                                              (gethash 'default face-map)) " ")))
-             (htmlized-reg (htmlize-region-for-paste beg end)))
-        (switch-to-buffer-other-window "*htmlized output*")
-                                        ; clear buffer
-        (kill-region (point-min) (point-max))
-                                        ; set mode to have syntax highlighting
-        (web-mode)
-        (save-excursion
-          (insert htmlized-reg))
-        (while (re-search-forward "<pre>" nil t)
-          (replace-match pre-tag nil nil))
-        (goto-char (point-min)))))
   :config
   (setq htmlize-output-type 'inline-css))
+
+;; From http://ruslanspivak.com/2007/08/18/htmlize-your-erlang-code-buffer/
+(defun my-htmlize-region (beg end)
+  "Htmlize region and put into <pre> tag style that is left in <body> tag
+plus add font-size: 8pt"
+  (interactive "r")
+  (let* ((buffer-faces (htmlize-faces-in-buffer))
+         (face-map (htmlize-make-face-map (adjoin 'default buffer-faces)))
+         (pre-tag (format
+                   "<pre style=\"%s font-size: 8pt\">"
+                   (mapconcat #'identity (htmlize-css-specs
+                                          (gethash 'default face-map)) " ")))
+         (htmlized-reg (htmlize-region-for-paste beg end)))
+    (switch-to-buffer-other-window "*htmlized output*")
+                                        ; clear buffer
+    (kill-region (point-min) (point-max))
+                                        ; set mode to have syntax highlighting
+    (web-mode)
+    (save-excursion
+      (insert htmlized-reg))
+    (while (re-search-forward "<pre>" nil t)
+      (replace-match pre-tag nil nil))
+    (goto-char (point-min))))
 
 (provide 'my-htmlize)
 ;;; my-htmlize.el ends here

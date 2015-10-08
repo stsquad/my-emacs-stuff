@@ -22,7 +22,8 @@
 ;; Keychain access
 (use-package keychain-environment
   :commands keychain-refresh-environment
-  :init (keychain-refresh-environment))
+  :defer 60
+  :config (keychain-refresh-environment))
 
 ;; enable EasyPG handling
 ; gpg-agent confuses epa when getting passphrase

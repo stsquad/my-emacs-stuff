@@ -37,6 +37,10 @@
           (lambda ()
             (setq truncate-lines t)))
 
+;; remove log4j-mode from auto-mode-alist
+;; it just chokes on large files
+(setq auto-mode-alist (delq (rassoc 'log4j-mode auto-mode-alist)
+                            auto-mode-alist))
 
 (provide 'the-rest)
 ;;; the-rest.el ends here

@@ -26,33 +26,42 @@
 
 ;; Smart Mode line
 (use-package smart-mode-line
-  :idle (sml/setup)
+  :commands (sml/setup)
+  :defer 10
   :config
-  (setq-default
-   ;; format
-   mode-line-format '("-"
-                    mode-line-mule-info
-                    mode-line-modified
-                    " "
-                    mode-line-buffer-identification
-                    " "
-                    "%l/%c "
-                    "%[("
-                    mode-name
-                    mode-line-process
-                    minor-mode-alist
-                    "%n"
-                    ")%]"
-                    "--"
-                    global-mode-string
-                    "--")
-   ;; Reduce white space
-   mode-line-buffer-identification '("%b")))
-
+  (progn
+    (setq
+     ;; format
+     mode-line-format
+     '( "%e"
+        mode-line-front-space
+        mode-line-mule-info
+        mode-line-modified
+        mode-line-remote
+        mode-line-frame-identification
+        " "
+        mode-line-buffer-identification
+        " "
+        "%l/%c "
+        "%[("
+        mode-name
+        mode-line-process
+        minor-mode-alist
+        "%n"
+        ")%]"
+        "--"
+        tracking-mode-line-buffers
+        "--"
+        mode-line-misc-info
+        mode-line-end-spaces
+        )
+     sml/theme 'dark)
+    (sml/setup)
+    (sml/apply-theme 'powerline)))
 
 (use-package diminish
   :commands diminish
-  :idle
+  :init
   (progn
     (diminish 'auto-fill-function "Fl")
     (diminish 'abbrev-mode "Ab")))
@@ -61,7 +70,7 @@
 ;; we don't want the time taking up precious space.
 (use-package time
   :commands display-time-mode
-  :idle (display-time-mode)
+  :init (display-time-mode)
   :config
   (setq display-time-interval 20
         display-time-format 'nil
@@ -69,7 +78,8 @@
 
 ;; Displays current function() in programming modes.
 (use-package which-func
-  :idle (which-function-mode))
+  :commands which-function-mode
+  :init (which-function-mode))
 
 (provide 'my-modeline)
 ;;; my-modeline.el ends here

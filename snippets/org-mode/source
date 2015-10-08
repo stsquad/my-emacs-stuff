@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
 # name: org-source
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
 # key: $s
 # --
 #+name: ${1:name of block}

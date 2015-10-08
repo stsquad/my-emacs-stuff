@@ -112,11 +112,12 @@
 
 (defun my-switch-browser (frame)
   "Tweak default browser depending on frame visibility."
-  (setq browse-url-browser-function
-        (cond
-         (I-am-on-pixel 'eww-browse-url)
-         ((not (display-graphic-p frame)) 'eww-browse-url)
-          (t 'browse-url-xdg-open))))
+  (message "my-switch-browser: %s"
+           (setq browse-url-browser-function
+                 (cond
+                  (I-am-on-pixel 'eww-browse-url)
+                  ((not (display-graphic-p frame)) 'eww-browse-url)
+                  (t 'browse-url-xdg-open)))))
 
 (add-hook 'after-make-frame-functions 'my-switch-browser)
 (add-hook 'focus-in-hook #'(lambda() (my-switch-browser (selected-frame))))
@@ -130,7 +131,7 @@
 (defun my-pass-password (pass-name &optional cache)
   "Return the password for the `PASS-NAME'."
   (let ((cached-pass (assoc-default pass-name my-cached-passwords)))
-    (if cached-pass
+    (if (and cached-pass cache)
         cached-pass
       (when (selected-frame)
         (my-fixup-gpg-agent (selected-frame))
@@ -214,6 +215,19 @@
                   (lsh crn 7)
                   (lsh crm 3)
                   (lsh op2 0))))
+
+;; Adding paths to environment
+(defun my-add-world-to-env (root)
+  "Add `root'/bin and `root'/lib to run env if they exist."
+  (let ((bin-path (format "%s/bin" root))
+        (lib-path (format "%s/lib" root)))
+    (when (file-exists-p bin-path)
+      (let ((new-path (getenv "PATH")))
+        (setenv "PATH" (format "%s:%s" bin-path new-path))))
+    (when (file-exists-p lib-path)
+      (let ((new-lib-path (getenv "LD_LIBRARY_PATH")))
+        (setenv "LD_LIBRARY_PATH" (format "%s:%s" lib-path new-lib-path))))))
+
 
 (provide 'my-utils)
 ;;; my-utils.el ends here
