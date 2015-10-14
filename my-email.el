@@ -140,7 +140,6 @@
 
 (use-package mu4e
   :commands mu4e
-  :if (string-match "zen" (system-name))
   ;; Bindings
   :bind ("C-c m" . my-switch-to-mu4e)
   :config
