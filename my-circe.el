@@ -59,12 +59,12 @@
   (circe "Pl0rt"))
 
 (use-package circe
-  :if (and I-am-at-work (daemonp))
   :commands (circe circe-set-display-handler)
   ;; :diminish ((circe-channel-mode . "CirceChan")
   ;;            (circe-server-mode . "CirceServ"))
   :requires my-tracking
-  :init (run-with-idle-timer 120 nil 'my-irc-login)
+  :init (when (and I-am-at-work (daemonp))
+          (run-with-idle-timer 120 nil 'my-irc-login))
   :config
   (progn
     (require 'tls)
