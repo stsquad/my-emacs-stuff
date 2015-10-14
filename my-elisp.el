@@ -22,7 +22,9 @@
 (defun my-elisp-compile-buffer ()
   "Compile the current buffer."
   (interactive)
-  (byte-compile-file (buffer-file-name)))
+  (let ((bfn (buffer-file-name)))
+    (when bfn
+        (byte-compile-file bfn))))
 
 (use-package eldoc
   :commands eldoc-mode

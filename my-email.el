@@ -176,6 +176,7 @@
      mu4e-headers-include-related t
      ;; compose options
      mu4e-compose-signature 'my-sig-function
+     mu4e-compose-complete-addresses nil
      mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      (cond
@@ -283,8 +284,12 @@
               ("\(from:alex.bennee OR from:bennee.com\)"
                "Mail sent by me" ?s)
               ("flag:flagged" "Flagged and Starred posts" ?f)
-              ("to:alex.bennee@linaro.org AND (from:agustin OR from:christoffer.dall@linaro.org)"
-               "From my various bosses" ?B)
+              ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
+               "From my boss" ?B)
+              ("date:1h..now"
+               "In the last hour" ?h)
+              ("date:1h..now AND flag:unread"
+               "In the last hour (unread)" ?H)
               ;; Virt related
               ("list:qemu-devel.nongnu.org and flag:unread"
                "Latest QEMU posts" ?q)
@@ -301,6 +306,8 @@
               ("maildir:\"/linaro/virtualization/*\" AND flag:list AND flag:unread"
                "All unread Virtualization email" ?V)
               ;; Linaro Specific
+              ("list:conf.lists.linaro.org AND flag:unread"
+               "Latest Conf emails" ?c)
               ("list:linaro-dev.lists.linaro.org AND flag:unread"
                "Latest Linaro-Dev emails" ?d)
               ("list:tech.lists.linaro.org AND flag:unread"
@@ -327,10 +334,9 @@
                "Mail sent by me" ?s)
               ("from:eileen OR from:nigel"
                "From parents" ?P)
-              ("to:bugzilla@bennee.com" "Bug Mail" ?B)
-              ))))))
+              ("to:bugzilla@bennee.com" "Bug Mail" ?B))))))))
 
-
+              
 (use-package helm-mu
   :commands helm-mu
   :if (and (string-match "zen" (system-name))
