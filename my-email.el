@@ -138,6 +138,35 @@
                 (assoc-default maildir my-maildir-mapping 'string-match)
                 "~")))))))
 
+(use-package mu4e-compose
+  :commands mu4e-compose-mode
+  :config (progn
+            ;; key-bindings
+            (when (keymapp mu4e-compose-mode-map)
+              (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region))
+            (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
+            (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)))
+
+(use-package mu4e-headers
+  :commands mu4e-headers-mode
+  :config (progn
+            ;; My mode bindings
+            (define-key mu4e-headers-mode-map (kbd "C-c l") 'org-store-link)
+            (define-key mu4e-headers-mode-map (kbd "C-c t")
+              'my-switch-to-thread)
+            (add-hook 'mu4e-headers-mode-hook
+                      '(lambda () (yas-minor-mode -1)))
+            (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)))
+
+(use-package mu4e-view
+  :commands mu4e-view
+  :config (progn
+            ;; My mode bindings
+            (define-key mu4e-view-mode-map (kbd "C-c l") 'org-store-link)
+            (define-key mu4e-view-mode-map (kbd "C-c t") 'my-switch-to-thread)
+            ;; mode hooks
+            (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)))
+
 (use-package mu4e
   :commands mu4e
   ;; Bindings
@@ -145,14 +174,7 @@
   :config
   (progn
     (require 'mu4e-vars)
-    (require 'mu4e-headers)
-    (require 'mu4e-view)
-    ;; My mode bindings
-    (define-key mu4e-headers-mode-map (kbd "C-c l") 'org-store-link)
-    (define-key mu4e-headers-mode-map (kbd "C-c t") 'my-switch-to-thread)
-    (define-key mu4e-view-mode-map (kbd "C-c l") 'org-store-link)
-    (define-key mu4e-view-mode-map (kbd "C-c t") 'my-switch-to-thread)
-   ;; config options
+    ;; config options
     (setq
      ;; generic mail options
      user-mail-address "alex.bennee@linaro.org"
@@ -204,17 +226,8 @@
       (t
        '( ("/"     . ?i)
           ("/.Spam" . ?s)
-          ("/.Oldmail" . ?o) )))
-    ;; key-bindings
-    (when (keymapp mu4e-compose-mode-map)
-      (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region))
-    ;; mode hooks
-    (add-hook 'mu4e-headers-mode-hook
-              '(lambda () (yas-minor-mode -1)))
-    (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)
-    (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)
-    (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)
-    (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
+          ("/.Oldmail" . ?o) ))))
+
     ;; Header markers
     (defvar my-mu4e-patches nil
       "List of mu4e-messages snagged by the (Patches) actions.")
@@ -333,7 +346,7 @@
                "Mail sent by me" ?s)
               ("from:eileen OR from:nigel"
                "From parents" ?P)
-              ("to:bugzilla@bennee.com" "Bug Mail" ?B))))))))
+              ("to:bugzilla@bennee.com" "Bug Mail" ?B)))))))
 
               
 (use-package helm-mu
