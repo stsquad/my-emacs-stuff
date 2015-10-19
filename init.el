@@ -76,7 +76,7 @@
   (use-package my-editing)
   ;; email
   (use-package my-email
-    :if (or I-am-at-work I-am-on-server))
+    :if (file-accessible-directory-p "~/Maildir"))
   ;; Development related stuff, including project root
   (load-library "my-devel")
   (load-library "my-flycheck")
