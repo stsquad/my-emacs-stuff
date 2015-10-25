@@ -43,10 +43,6 @@
 ;; Searches are case sensitive
 (setq-default case-fold-search nil)
 
-;; Use .el if it is newer
-(when (boundp 'load-prefer-newer)
-  (setq load-prefer-newer t))
-
 ;; Moar history
 (setq history-length 1000)
 

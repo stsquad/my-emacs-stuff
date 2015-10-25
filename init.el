@@ -17,6 +17,10 @@
 ;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
 ;(setq debug-on-error 't)
 
+;; Use .el if it is newer
+(when (boundp 'load-prefer-newer)
+  (setq load-prefer-newer t))
+
 ;; Manually load this (as paths not yet set)
 ;(eval-when-compile (defvar god-local-mode))
 (declare-function my-add-config-paths "~/.emacs.d/my-elisp/my-paths" t t)
