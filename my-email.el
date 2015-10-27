@@ -220,8 +220,8 @@
        '( ("/linaro/Inbox"     . ?i)
           ("/linaro/mythreads" . ?m)
           ("/linaro/team"      . ?t)
-          ("/linaro/virtualization/.qemu" . ?q)
-          ("/linaro/virtualization/.kvm-arm" . ?k)
+          ("/linaro/virtualization/qemu" . ?q)
+          ("/linaro/virtualization/kvm-arm" . ?k)
           ("/sent"             . ?s) ))
       (t
        '( ("/"     . ?i)
