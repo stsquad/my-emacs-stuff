@@ -17,7 +17,6 @@
     git-messenger
     gitconfig-mode
     gitignore-mode
-    guide-key
     golden-ratio
     helm
     helm-ack helm-descbinds

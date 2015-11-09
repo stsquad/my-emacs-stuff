@@ -97,6 +97,7 @@
   (load-library "my-windows")
   (load-library "my-buffer")
   (load-library "my-dired")
+  (load-library "my-keyhelp")
 
   ;; Locally installed pkgs
   (load-library "my-local-pkgs")
@@ -115,18 +116,6 @@
   (load-library "my-circe")
   (load-library "my-diff")
   
-  ;; Learn key strokes
-  (use-package guide-key
-    :commands guide-key-mode
-    :defer 60
-    :diminish ""
-    :config
-    (progn
-      (setq guide-key/guide-key-sequence
-            '("C-x" "C-x C-k" "C-x c" "C-x t" "C-x n" "ESC" "C-x r" "C-x 4"
-              "C-x 8"))
-      (guide-key-mode)))
-
   ;; Lets use mark-tools if we can
   (use-package mark-tools
     :bind ("C-x m" . list-marks))
