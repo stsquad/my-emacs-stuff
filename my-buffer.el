@@ -29,6 +29,7 @@
 ;; moved C-x b to helm-mini (see my-helm)
 ;; (global-set-key (kbd "C-x b") 'lusty-buffer-explorer)
 (use-package lusty-explorer
+  :if (locate-library "lusty-explorer")
   :bind (("C-x C-f" . lusty-file-explorer)))
 
 
