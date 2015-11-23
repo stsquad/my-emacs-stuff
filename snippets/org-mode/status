@@ -5,9 +5,10 @@
 # --
 ** Current
 *** Progress
-  - $1
+  - Android Emulator ([[virt:118][VIRT-118]], [[virt:59][VIRT-59]])
+  - QEMU Support for Guest Debug ([[virt:120][VIRT-120]])
+  - QEMU Multithread TCG ([[virt:48][VIRT-48]])
 *** Plans
-  - $2
+  - 
 *** Absences
-  - KVM Forum 19/8/2015 to 21/8/2015 (definite)
-  - Linaro Connect 21/9/2015 to 25/9/2015
+  - Christmas
