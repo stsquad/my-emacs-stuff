@@ -64,6 +64,8 @@
 
 (when (fboundp 'use-package)
 
+  (use-package my-libs)
+
   (require 'my-basic-modes)
   (require 'my-display)
 

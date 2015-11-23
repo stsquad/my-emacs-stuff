@@ -7,11 +7,7 @@
 ;;; Code:
 
 (require 'use-package)
-(require 'my-utils)
-
-;; Some snippets use the s library
-(use-package s
-  :commands s-chop-suffix s-trim)
+(require 'my-libs)
 
 ;; YASnippet itself
 (use-package yasnippet
