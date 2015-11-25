@@ -27,7 +27,7 @@
 
 ;; Magnar's string handling library
 (use-package s
-  :commands s-replace-all s-chop-suffix s-trim)
+  :commands s-contains? s-replace-all s-chop-suffix s-trim)
 
 (provide 'my-libs)
 ;;; my-libs.el ends here
