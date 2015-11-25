@@ -119,6 +119,7 @@
 
 (defvar my-maildir-mapping
   '( ("linaro/virtualization/qemu" . "~/lsrc/qemu/qemu.git/")
+     ("linaro/virtualization/qemu-arm" . "~/lsrc/qemu/qemu.git/")
      ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu/qemu.git/")
      ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
   "Mapping from maildirs to source tree.")
@@ -220,7 +221,9 @@
        '( ("/linaro/Inbox"     . ?i)
           ("/linaro/mythreads" . ?m)
           ("/linaro/team"      . ?t)
+          ("/linaro/kernel/lkml"      . ?l)
           ("/linaro/virtualization/qemu" . ?q)
+          ("/linaro/virtualization/qemu-arm" . ?a)
           ("/linaro/virtualization/kvm-arm" . ?k)
           ("/sent"             . ?s) ))
       (t
