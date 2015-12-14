@@ -61,7 +61,9 @@ This is used by my-org-run-default-block which is added to
 
 (use-package org-src
   :commands org-edit-src-code
-  :config (setq org-src-window-setup 'current-window))
+  :config (progn
+            (define-key org-src-mode-map (kbd "C-c C-c") 'org-edit-src-exit)
+            (setq org-src-window-setup 'current-window)))
 
 (use-package org-capture
   :commands org-capture
