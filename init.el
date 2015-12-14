@@ -36,20 +36,14 @@
 (defvar I-completed-loading-dotinit 'nil
   "Flag indicating succesful start-up.")
 
-;; Packaging, if we have it
-(when (or I-am-emacs-24+
-          (require 'package "package" t))
-  (load-library "my-package.el"))
+;; Packaging
+(load-library "my-package.el")
 
 ;; Add ~/.emacs.d/*.git project into search path
 ;; They are added in-front of all other paths so will override
 ;; ELPA/MELPA versions
 (when (fboundp 'my-add-git-project-paths)
   (my-add-git-project-paths))
-
-;;;; Benchmarking - only occurs if setup
-(when (require 'benchmark-init nil t)
-  (benchmark-init/activate))
 
 (require 'my-config)
 
@@ -62,86 +56,81 @@
 
 (require 'use-package nil t)
 
-(when (fboundp 'use-package)
+(use-package my-libs)
 
-  (use-package my-libs)
+(require 'my-basic-modes)
+(require 'my-display)
 
-  (require 'my-basic-modes)
-  (require 'my-display)
+(use-package edit-server
+  :if (and (getenv "DISPLAY") (daemonp) (not (= 0 (user-uid))))
+  :commands edit-server-start
+  :init (add-hook 'after-init-hook
+                  #'(lambda()
+                      (edit-server-start)
+                      (load-library "my-edit-server.el"))))
 
-  (use-package edit-server
-    :if (and (getenv "DISPLAY") (daemonp) (not (= 0 (user-uid))))
-    :commands edit-server-start
-    :init (add-hook 'after-init-hook
-                    #'(lambda()
-                          (edit-server-start)
-                          (load-library "my-edit-server.el"))))
+;; Stuff I always want
+;; general editing
+(use-package my-editing)
+;; email
+(use-package my-email
+  :if (file-accessible-directory-p "~/Maildir"))
+;; Development related stuff, including project root
+(load-library "my-devel")
+(load-library "my-flycheck")
+(load-library "my-web")
+(load-library "my-elisp")
+(load-library "my-python")
+;; Org configuration
+(load-library "my-org")
+;; Helm
+(load-library "my-helm")
+;; More keybindings
+(load-library "my-toggles")
+;; Window and buffer navigation
+(load-library "my-windows")
+(load-library "my-buffer")
+(load-library "my-dired")
+(load-library "my-keyhelp")
 
-  ;; Stuff I always want
-  ;; general editing
-  (use-package my-editing)
-  ;; email
-  (use-package my-email
-    :if (file-accessible-directory-p "~/Maildir"))
-  ;; Development related stuff, including project root
-  (load-library "my-devel")
-  (load-library "my-flycheck")
-  (load-library "my-web")
-  (load-library "my-elisp")
-  (load-library "my-python")
-  ;; Org configuration
-  (load-library "my-org")
-  ;; Helm
-  (load-library "my-helm")
-  ;; More keybindings
-  (load-library "my-toggles")
-  ;; Window and buffer navigation
-  (load-library "my-windows")
-  (load-library "my-buffer")
-  (load-library "my-dired")
-  (load-library "my-keyhelp")
+;; Locally installed pkgs
+(load-library "my-local-pkgs")
 
-  ;; Locally installed pkgs
-  (load-library "my-local-pkgs")
+;; Useful modes
+(load-library "my-company")
+(load-library "my-yasnippet")
 
-  ;; Useful modes
-  (load-library "my-company")
-  (load-library "my-yasnippet")
+;; other customisations
+(load-library "my-tramp")
+(load-library "my-spell")
+(load-library "my-gpg")
+(load-library "my-git")
+(load-library "my-htmlize")
+(load-library "my-eshell")
+(load-library "my-circe")
+(load-library "my-diff")
 
-  ;; other customisations
-  (load-library "my-tramp")
-  (load-library "my-spell")
-  (load-library "my-gpg")
-  (load-library "my-git")
-  (load-library "my-htmlize")
-  (load-library "my-eshell")
-  (load-library "my-circe")
-  (load-library "my-diff")
-  
-  ;; Lets use mark-tools if we can
-  (use-package mark-tools
-    :bind ("C-x m" . list-marks))
+;; Lets use mark-tools if we can
+(use-package mark-tools
+  :bind ("C-x m" . list-marks))
 
-  (use-package paradox
-    :ensure paradox
-    :commands paradox-list-packages
-    :config
-    (when (my-primary-machine-p)
-      (setq paradox-github-token (my-pass-password "paradox" t))))
-  
-  (load "the-rest.el")
+(use-package paradox
+  :ensure paradox
+  :commands paradox-list-packages
+  :config
+  (when (my-primary-machine-p)
+    (setq paradox-github-token (my-pass-password "paradox" t))))
 
-  ;; Finally some additional keybinds
-  (load "my-hydra.el"))
+(load "the-rest.el")
+
+;; Finally some additional keybinds
+(load "my-hydra.el")
 
 ;; Finished loading
 
 (message "Done .emacs")
 
 (setq I-completed-loading-dotinit 't)
-(when (fboundp 'benchmark-init/deactivate)
-  (benchmark-init/deactivate)
-  (require 'benchmark-init-modes))
 
 (provide 'init)
 ;;; init.el ends here

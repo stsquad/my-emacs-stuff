@@ -8,6 +8,10 @@
 
 (require 'package)
 
+(defvar my-essential-packages
+  '(use-package)
+  "List of essential packages.")
+
 (defvar my-useful-packages
   '(ace-jump-mode ace-jump-buffer
     circe
@@ -19,7 +23,7 @@
     gitignore-mode
     golden-ratio
     helm
-    helm-ack helm-descbinds
+    helm-ag helm-descbinds
     helm-swoop helm-themes
     htmlize
     hydra
@@ -46,21 +50,10 @@
     zenburn-theme)
   "List of packages I use a lot.")
 
-
-;; (add-to-list 'package-archives
-;;              '("marmalade" .
-;;              "https://marmalade-repo.org/packages/") t)
-
-(add-to-list 'package-archives
-             (if I-am-at-work
-                 '("melpa" . "http://melpa.org/packages/")
-               '("melpa-stable" . "http://stable.melpa.org/packages/"))
-             t)
-             
-(add-to-list 'package-archives
-             '("org" . "http://orgmode.org/elpa/") t)
-
-(package-initialize)
+(defun my-have-package-p (pkg)
+  "Check if `PKG' is installed manually or via package."
+  (or (package-installed-p pkg)
+      (require pkg nil t)))
 
 (defun my-check-and-maybe-install (pkg)
   "Check and potentially install `PKG'."
@@ -79,6 +72,32 @@
   "Recompile all packages"
   (interactive)
   (byte-recompile-directory "~/.emacs.d/elpa" 0 t))
+
+;;
+;; Always run on loading
+;;
+
+;; Setup packages
+(add-to-list
+ 'package-archives
+ (if I-am-at-work
+     '("melpa" . "http://melpa.org/packages/")
+   '("melpa-stable" . "http://stable.melpa.org/packages/"))
+ t)
+
+(add-to-list
+ 'package-archives
+ '("org" . "http://orgmode.org/elpa/") t)
+
+(package-initialize)
+
+;; Ensure we have the minimum set required
+(when (not (cl-reduce
+            (lambda (a b) (and a b))
+            (mapcar 'my-have-package-p my-essential-packages)))
+  (package-refresh-contents)
+  (ignore-errors
+    (mapc 'package-install my-essential-packages)))
 
 (provide 'my-package)
 ;;; my-package.el ends here
