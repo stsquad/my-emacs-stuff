@@ -125,35 +125,48 @@
      ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
   "Mapping from maildirs to source tree.")
 
+
+(defun my-get-code-dir-from-email ()
+  "Return the associated code directory depending on email."
+  (let* ((msg (mu4e-message-at-point t))
+         (list (mu4e-message-field msg :mailing-list))
+         (maildir (mu4e-message-field msg :maildir)))
+    (expand-file-name
+     (or
+      (assoc-default list my-mailing-list-dir-mapping)
+      (assoc-default maildir my-maildir-mapping 'string-match)
+      "~"))))
+
 (defun my-set-view-directory ()
-  "Switch the `default-directory' depending on the mailing list we
-  are in."
+  "Switch the `default-directory' depending mail contents."
   (interactive)
-  (let ((msg (mu4e-message-at-point t)))
-    (when msg
-      (let ((list (mu4e-message-field msg :mailing-list))
-            (maildir (mu4e-message-field msg :maildir)))
-        (setq default-directory
-              (expand-file-name
-               (or
-                (assoc-default list my-mailing-list-dir-mapping)
-                (assoc-default maildir my-maildir-mapping 'string-match)
-                "~")))))))
+  (when (mu4e-message-at-point t)
+    (setq default-directory (my-get-code-dir-from-email))))
+
+(defun my-search-code-from-email ()
+  "Search code depending on email."
+  (interactive)
+  (my-project-find (my-get-code-dir-from-email)))
 
 (use-package mu4e-compose
   :commands mu4e-compose-mode
+  :defines mu4e-compose-mode-map
   :config (progn
             ;; key-bindings
             (when (keymapp mu4e-compose-mode-map)
-              (define-key mu4e-compose-mode-map (kbd "C-w") 'my-snip-region))
-            (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
+              (define-key mu4e-compose-mode-map (kbd "C-w")
+                'my-snip-region)
+              (define-key mu4e-compose-mode-map (kbd "<f5>")
+                'my-search-code-from-email))
+              (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
             (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)))
 
 (use-package mu4e-headers
   :commands mu4e-headers-mode
+  :defines mu4e-headers-mode-map
   :config (progn
             ;; My mode bindings
-            (define-key mu4e-headers-mode-map (kbd "C-c l") 'org-store-link)
+            (define-key mu4e-headers-mode-map (kbd "C-c C-l") 'org-store-link)
             (define-key mu4e-headers-mode-map (kbd "C-c t")
               'my-switch-to-thread)
             (add-hook 'mu4e-headers-mode-hook
@@ -162,9 +175,10 @@
 
 (use-package mu4e-view
   :commands mu4e-view
+  :defines mu4e-view-mode-map
   :config (progn
             ;; My mode bindings
-            (define-key mu4e-view-mode-map (kbd "C-c l") 'org-store-link)
+            (define-key mu4e-view-mode-map (kbd "C-c C-l") 'org-store-link)
             (define-key mu4e-view-mode-map (kbd "C-c t") 'my-switch-to-thread)
             ;; mode hooks
             (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)))
