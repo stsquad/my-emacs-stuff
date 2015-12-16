@@ -26,7 +26,8 @@
 ;; Require prerequisites
 (require 'use-package)
 
-(use-package hydra)
+(use-package hydra
+  :commands defhydra)
 
 (provide 'my-hydra)
 ;;; my-hydra.el ends here
