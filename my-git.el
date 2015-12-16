@@ -84,15 +84,6 @@
 ;;;
 ;;; Additional GIT bits
 ;;;
-(use-package git
-  :commands git-status
-  ; currently disabled due to magit-next
-  :disabled t)
-
-(use-package git-commit-mode
-  ; currently disabled due to magit-next
-  :disabled t)
-
 (use-package git-blame
   :commands git-blame-mode)
 
@@ -100,7 +91,18 @@
   :commands git-messenger:popup-message
   :bind ("C-h g" . git-messenger:popup-message)
   :init
-  (setq git-messenger:show-detail t))
+  (setq git-messenger:show-detail t)
+  :config
+  (progn
+    ;; As we have magit we may as well use it instead of
+    ;; git-messenger's own stuff.
+    (defun my-git-messenger-show ()
+      (interactive)
+      (magit-show-commit git-messenger:last-commit-id)
+      (git-messenger:popup-close))
+    (define-key git-messenger-map (kbd "d") 'my-git-messenger-show)
+    (define-key git-messenger-map (kbd "s") 'my-git-messenger-show)
+    (define-key git-messenger-map (kbd "S") 'my-git-messenger-show)))
 
 (provide 'my-git)
 ;;; my-git.el ends here
