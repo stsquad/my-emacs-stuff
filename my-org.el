@@ -138,6 +138,7 @@ This is used by my-org-run-default-block which is added to
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
+  :commands (org-agenda org-capture)
   :init
   (progn
     (message "org init:")
@@ -159,7 +160,13 @@ This is used by my-org-run-default-block which is added to
      ;; TODO Hierarchy
      org-provide-todo-statistics t
      org-checkbox-hierarchical-statistics nil
-     org-hierarchical-todo-statistics nil
+     org-hierarchical-todo-statistics t
+     org-log-done 'note
+     org-todo-keywords '((sequence "TODO" "ACTIVE" "BLOCKED" "DONE"))
+     org-todo-keyword-faces '(("TODO" . org-todo )
+                              ("ACTIVE" . "blue")
+                              ("BLOCKED" . org-warning)
+                              ("DONE" . org-done))
      ;; Export settings
      org-export-allow-bind-keywords t)
 
@@ -195,14 +202,6 @@ This is used by my-org-run-default-block which is added to
 
 ;; Org reveal
 (use-package ox-reveal)
-
-; summarise TODOs
-(defun org-summary-todo (n-done n-not-done)
-  "Switch entry to DONE when all subentries are done, to TODO otherwise."
-  (let (org-log-done org-log-states)   ; turn off logging
-    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-
-(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
 
 ;; Org Babel configurations
 (ignore-errors
