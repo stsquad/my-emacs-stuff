@@ -31,8 +31,7 @@
   :bind ("C-x j" . ace-jump-mode))
 
 (use-package avy
-  :bind ("C-x j" . avy-goto-word-or-subword-1)
-  )
+  :bind ("C-x j" . avy-goto-word-or-subword-1))
 
 ;; Multiple cursors
 (use-package multiple-cursors
@@ -45,7 +44,7 @@
   (with-eval-after-load 'hydra
     (global-set-key
      (kbd "C-x ;")
-     (defhydra my-hyrda-mc
+     (defhydra my-hydra-mc
        (:hint nil)
        "
      ^Up^            ^Down^        ^Miscellaneous^
@@ -66,6 +65,7 @@
 
 ;; Expand region
 (use-package expand-region
+  :commands (er/expand-region)
   :init (progn
           (defun my-mark-or-expand-dwim (arg)
             "Set the mark or if mark already set call expand-region."
@@ -77,6 +77,10 @@
               (call-interactively #'set-mark-command))))
   :bind (("C-@" . my-mark-or-expand-dwim)
          ("C-=" . er/expand-region)))
+
+(use-package ws-butler
+  :defer 120
+  :config (ws-butler-global-mode))
 
 (provide 'my-editing)
 ;;; my-editing.el ends here
