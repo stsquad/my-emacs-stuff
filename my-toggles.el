@@ -73,7 +73,7 @@ already narrowed."
 
 ;; Toggle tabs
 (defun my-toggle-tabs ()
-  "Toggle tabs"
+  "Toggle `indent-tabs-mode'."
   (interactive)
   (if indent-tabs-mode
       (setq indent-tabs-mode nil)
