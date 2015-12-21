@@ -116,7 +116,6 @@ If frame is not set use (current-frame)."
   (message "my-switch-browser: %s"
            (setq browse-url-browser-function
                  (cond
-                  (I-am-on-pixel 'eww-browse-url)
                   ((not (display-graphic-p (or frame (selected-frame)))) 'eww-browse-url)
                   (t 'browse-url-xdg-open)))))
 
@@ -126,11 +125,13 @@ If frame is not set use (current-frame)."
 ;; Simple caching
 (defvar my-cached-passwords
   nil
-  "Cache of passwords. Stored in plain text so you only want to cache
-  them if of low value.")
+  "Cache of passwords.
+Stored in plain text so you only want to cache them if of low value.")
 
 (defun my-pass-password (pass-name &optional cache)
-  "Return the password for the `PASS-NAME'."
+  "Return the password for the `PASS-NAME'.
+Save password if `CACHE' is non nil."
+
   (let ((cached-pass (assoc-default pass-name my-cached-passwords)))
     (if (and cached-pass cache)
         cached-pass
@@ -186,8 +187,10 @@ If frame is not set use (current-frame)."
 (global-set-key (kbd "<C-f8>") 'insert-sequence-key)
 
 ;; Choose a directory
+;; MACRO CANDIDATE
 (defun my-choose-directory (&optional prompt)
-  "Return a history aware directory. `PROMPT' is optional."
+  "Return a history aware directory.
+`PROMPT' is optional."
   (interactive)
   (let* ((query (or prompt "Target directory: "))
          (path
