@@ -86,6 +86,19 @@ This is used by my-org-run-default-block which is added to
               (file+headline "team.org" "Tasks")
               "** TODO %i%?\nSee %a%?"))))
 
+;; Clocking behaviour
+(use-package org-clock
+  :disabled t
+  :init (setq
+         org-clock-persist 't
+         org-clock-in-resume 't                 ; resume currently open clock
+         org-clock-persist-query-resume 'nil    ; don't ask me about it
+         org-log-into-drawer 't                 ; roll clocks up into drawers
+         org-clock-idle-time 'nil
+         ;; Mode line tweaks for clock
+         org-clock-mode-line-total 'current
+         org-clock-clocked-in-display 'frame-title))
+
 (use-package ox-publish
   :commands org-publish
   :config
@@ -143,15 +156,6 @@ This is used by my-org-run-default-block which is added to
                           (org-agenda-files :maxlevel . 2))
      ;; Capture Templates
      org-directory "~/org"
-     ;; Clocking behaviour
-     org-clock-persist 't
-     org-clock-in-resume 't                 ; resume currently open clock
-     org-clock-persist-query-resume 'nil    ; don't ask me about it
-     org-log-into-drawer 't                 ; roll clocks up into drawers
-     org-clock-idle-time 'nil
-     ;; Mode line tweaks for clock
-     org-clock-mode-line-total 'current
-     org-clock-clocked-in-display 'frame-title
      ;; TODO Hierarchy
      org-provide-todo-statistics t
      org-checkbox-hierarchical-statistics nil
