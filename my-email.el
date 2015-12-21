@@ -115,7 +115,9 @@
 ;; Set default directory when viewing messages
 (defvar my-mailing-list-dir-mapping
   '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
-     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/")
+     ("kvm.vger.kernel.org" . "~/lsrc/kvm/linux.git/")
+     ("virtualization.lists.linux-foundation.org" . "~/lsrc/kvm/linux.git/") )
   "Mapping from mailing lists to source tree.")
 
 (defvar my-maildir-mapping
@@ -239,6 +241,7 @@
           ("/linaro/kernel/lkml"      . ?l)
           ("/linaro/virtualization/qemu" . ?q)
           ("/linaro/virtualization/qemu-arm" . ?a)
+          ("/linaro/virtualization/qemu-multithread" . ?M)
           ("/linaro/virtualization/kvm-arm" . ?k)
           ("/sent"             . ?s) ))
       (t
@@ -325,7 +328,7 @@
                "Latest QEMU posts" ?q)
               ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
                "QEMU ARM64 posts" ?a)
-              ("to:mttcg@listserver.greensocs.com"
+              ("list:mttcg.listserver.greensocs.com"
                "Multi-threaded QEMU posts" ?T)
               ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
                "Android related emails" ?A)
