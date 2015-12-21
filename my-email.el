@@ -434,7 +434,8 @@ hook we are not yet in the compose buffer."
   "Run checkpatch against the [patch] `MSG'."
   (let ((last-script (car my-checkpatch-script-history)))
     ;; prompt the user if we can't go with the last run
-    (when (not (and (file-exists-p last-script)
+    (when (not (and last-script
+                    (file-exists-p last-script)
                     (s-contains? default-directory last-script)))
       (let ((ido-work-file-list my-checkpatch-script-history))
         (setf last-script
