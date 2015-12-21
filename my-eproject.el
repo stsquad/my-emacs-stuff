@@ -213,10 +213,7 @@ Return in order of most recently updated."
 (defun my-eproject-find ()
   "Do a find across the project."
   (interactive)
-  (if (and (file-exists-p (concat eproject-root ".git"))
-           (functionp 'helm-git-grep))
-      (helm-git-grep)
-    (my-project-find)))
+  (my-project-find eproject-root))
 
 (define-key eproject-mode-map (kbd "<f5>") 'my-eproject-find)
 (define-key eproject-mode-map (kbd "<S-s-XF86TouchpadToggle>") 'my-eproject-find)

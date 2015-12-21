@@ -38,15 +38,24 @@
 (use-package swiper
   :bind ("C-s" . swiper))
 
-(defun my-project-find (prefix)
-  "Search within the default-directory. This is mainly for
-  the benefit of things like mail. Pass the prefix to the ultimate
-  function."
-  (interactive "P")
-  (if (and (file-directory-p (format "%s.git/" default-directory))
-           (functionp 'helm-git-grep))
-      (call-interactively #'helm-git-grep)
-    (call-interactively #'helm-do-ag default-directory)))
+(defun my-project-find (&optional directory)
+  "Search within `DIRECTORY' using various search helpers.
+If no directory is passed try and infer from the `default-directory' or
+variable `buffer-file-name'."
+  (interactive)
+
+  ;; Use default-directory or buffer-name if nothing passed
+  (when (not directory)
+    (setq directory (or default-directory buffer-file-name)))
+
+  (let ((is-git-dir (locate-dominating-file directory ".git")))
+    (if (and
+         is-git-dir
+         (file-directory-p is-git-dir)
+         (functionp 'helm-git-grep))
+        (let ((default-directory directory))
+          (call-interactively #'helm-git-grep))
+    (call-interactively #'helm-do-ag directory))))
 
 (global-set-key (kbd "<f5>") 'my-project-find)
 
