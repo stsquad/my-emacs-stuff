@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: Emacs Lisp Header
+# key: $head
+# --
+;;; ${1:`(s-chop-suffix ".el" (buffer-name))`} --- $2
+;;
+;;; Commentary:
+;;
+;; $3
+;;
+;;; Code:
+
+$0
+
+(provide '$1)
+;;; $1.el ends here
+
