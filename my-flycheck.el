@@ -17,9 +17,9 @@
   (progn
     ;; Other pkgs
     (use-package flycheck-tip
-      :commands 'flycheck-tip-cycle)
-
-    (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle)
+      :if (locate-library "flycheck-tip")
+      :commands 'flycheck-tip-cycle
+      :init (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
     
     ;; Settings
     (setq-default flycheck-emacs-lisp-initialize-packages t
