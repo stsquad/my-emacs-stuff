@@ -61,7 +61,8 @@
          ("C-c O" . helm-multi-swoop)))
 
 (use-package helm-descbinds
-  :bind ("C-h h" . helm-descbinds))
+  :bind (("C-h b" . helm-descbinds)
+         ("C-h h" . helm-descbinds)))
 
 ;; Helm git grep
 
