@@ -10,15 +10,16 @@
 (require 'use-package)
 
 (use-package flycheck
+  :if (version<= "24.4" emacs-version)
   :commands global-flycheck-mode
   :init (add-hook 'prog-mode-hook 'global-flycheck-mode)
   :config
   (progn
     ;; Other pkgs
     (use-package flycheck-tip
-      :commands 'flycheck-tip-cycle)
-
-    (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle)
+      :if (locate-library "flycheck-tip")
+      :commands 'flycheck-tip-cycle
+      :init (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
     
     ;; Settings
     (setq-default flycheck-emacs-lisp-initialize-packages t

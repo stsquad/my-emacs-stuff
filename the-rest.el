@@ -26,6 +26,15 @@
 (require 'my-utils)
 
 
+
+(use-package esup
+  :commands esup
+  :config
+  (progn
+    (when (string-match "dumb" (getenv "TERM"))
+      (setenv "TERM" "xterm-256color")
+      (setq esup-run-as-batch-p t))))
+
 ;; my-find-binary
 ;
                                         ; Handy for dumping objdump into a buffer

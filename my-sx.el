@@ -1,4 +1,4 @@
-;;; my-hydra --- Hydra configurations
+;;; my-sx --- Stack Exchange Access
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 ;;
@@ -13,22 +13,22 @@
 ;;
 ;;; Commentary:
 ;;
-;; This really just configures hydra. Actual hydras should be defined
-;; in the respective modules. You can wrap the defhydra with a:
-;;
-;; (with-eval-after-load 'hydra
-;;   (global-set-key
-;;    (kbd "C-c C-o")
-;;    ...)
+;; Access to stack Exchange sites
 ;;
 ;;; Code:
 
 ;; Require prerequisites
+
+;; Variables
+
 (require 'use-package)
 
-(use-package hydra
-  :commands defhydra)
+;; Code
 
-(provide 'my-hydra)
-;;; my-hydra.el ends here
+(use-package sx
+  :commands sx-search)
+
+
+(provide 'my-sx)
+;;; my-sx.el ends here
 
