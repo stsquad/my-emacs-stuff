@@ -68,6 +68,12 @@ already narrowed."
         (setq buffer-undo-list nil)
       (buffer-disable-undo (current-buffer)))))
 
+(defun my-undo-status ()
+  "Report a string describing the undo status"
+  (if (and (not (sequencep buffer-undo-list)))
+      (format "disabled")
+    (format "%d entries" (length buffer-undo-list))))
+
 (define-key my-toggle-map "u" 'my-toggle-buffer-undo)
 
 
@@ -102,9 +108,10 @@ already narrowed."
   (global-set-key
    (kbd "C-x t")
    (defhydra my-hydra-toggle (:hint nil :color red :timeout 10)
-     (concat "\n"
-             "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit "
-             "_f_ill: %`auto-fill-function _t_abs: %`indent-tabs-mode\n")
+     (concat
+      "\n"
+      "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _t_abs: %`indent-tabs-mode\n"
+      "_u_ndo: %(my-undo-status)\n")
      ;; Debugging
      ("d" toggle-debug-on-error)
      ("q" toggle-debug-on-quit)
@@ -118,7 +125,7 @@ already narrowed."
      ("n" my-narrow-or-widen-dwim "arrow-or-w" :exit t)
      ("e" er/expand-region "xpand-r" :exit t)
      ;; misc
-     ("u" my-toggle-buffer-undo "toggle undo")
+     ("u" my-toggle-buffer-undo)
      ("g" god-mode-all "god-mode" :exit t)
      ;; quit the hydra
      ("x" nil "exit" :exit t))))
