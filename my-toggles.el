@@ -88,6 +88,21 @@ already narrowed."
 
 (define-key my-toggle-map "\t" 'my-toggle-tabs)
 
+;; Toggle M-SPC binding
+(defun my-meta-space-status ()
+  "Report the current M-SPC binding."
+  (key-binding (kbd "M-SPC")))
+
+(defun my-toggle-meta-space ()
+    "Cycle through settings for M-SPC. This is mainly for the benefit
+of things where C-SPC can't be used."
+  (interactive)
+  (let ((cmd (my-meta-space-status)))
+    (global-set-key (kbd "M-SPC")
+                    (cond
+                     ((eq cmd 'cycle-space) 'my-mark-or-expand-dwim)
+                     (t 'cycle-space)))))
+
 ;; God-mode
 (use-package god-mode
   :commands god-mode-all
@@ -110,14 +125,18 @@ already narrowed."
    (defhydra my-hydra-toggle (:hint nil :color red :timeout 10)
      (concat
       "\n"
-      "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _t_abs: %`indent-tabs-mode\n"
-      "_u_ndo: %(my-undo-status)\n")
+      "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _t_abs: %`indent-tabs-mode "
+      "_u_ndo: %(my-undo-status) meta _s_pace: %(my-meta-space-status)\n")
      ;; Debugging
      ("d" toggle-debug-on-error)
      ("q" toggle-debug-on-quit)
-     ;; Fill, whitespace and other display modes
+     ;; Fill, whitespace and other editing modes
      ("f" auto-fill-mode)
      ("t" my-toggle-tabs)
+     ("u" my-toggle-buffer-undo)
+     ("s" my-toggle-meta-space)
+
+     ;; Auto-strings
      ("l" visual-line-mode "visual-line")
      ("w" whitespace-mode "whitespace")
      
@@ -125,7 +144,6 @@ already narrowed."
      ("n" my-narrow-or-widen-dwim "arrow-or-w" :exit t)
      ("e" er/expand-region "xpand-r" :exit t)
      ;; misc
-     ("u" my-toggle-buffer-undo)
      ("g" god-mode-all "god-mode" :exit t)
      ;; quit the hydra
      ("x" nil "exit" :exit t))))
