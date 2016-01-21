@@ -126,7 +126,7 @@ of things where C-SPC can't be used."
      (concat
       "\n"
       "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _t_abs: %`indent-tabs-mode "
-      "_u_ndo: %(my-undo-status) meta _s_pace: %(my-meta-space-status)\n")
+      "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
      ;; Debugging
      ("d" toggle-debug-on-error)
      ("q" toggle-debug-on-quit)

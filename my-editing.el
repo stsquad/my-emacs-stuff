@@ -35,12 +35,12 @@
 
 ;; Multiple cursors
 (use-package multiple-cursors
-  :bind (( "C->" . mc/mark-next-like-this)
-         ( "C-<" . mc/mark-previous-like-this)
-         ( "C-x ;" . mc/mark-all-like-this-dwim)
-         ( "C-+" . mc/mark-all-like-this-dwim)
-         ( "M-+" . mc/edit-lines))
-  :config
+  :commands (mc/edit-lines
+             mc/mark-all-like-this mc/mark-all-like-this-dwim
+             mc/mark-next-like-this mc/mark-previous-like-this
+             mc/skip-to-next-like-this mc/skip-to-previous-like-this
+             mc/unmark-next-like-this mc/unmark-previous-like-this)
+  :init
   (with-eval-after-load 'hydra
     (global-set-key
      (kbd "C-x ;")
@@ -66,17 +66,17 @@
 ;; Expand region
 (use-package expand-region
   :commands (er/expand-region)
-  :init (progn
-          (defun my-mark-or-expand-dwim (arg)
-            "Set the mark or if mark already set call expand-region."
-            (interactive "P")
-            (if (or (use-region-p)
-                    (and mark-active
-                         (eq (point) (mark))))
-                (call-interactively #'er/expand-region)
-              (call-interactively #'set-mark-command))))
   :bind (("C-@" . my-mark-or-expand-dwim)
          ("C-=" . er/expand-region)))
+
+(defun my-mark-or-expand-dwim (&optional arg)
+  "Set the mark (with prefix `ARG') or if mark already set call expand-region."
+  (interactive "P")
+  (if (or (use-region-p)
+          (and mark-active
+               (eq (point) (mark))))
+      (call-interactively #'er/expand-region)
+    (call-interactively #'set-mark-command)))
 
 (use-package ws-butler
   :defer 120

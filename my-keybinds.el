@@ -60,6 +60,7 @@
 ;; Return => newline-and-indent
 (global-unset-key "\C-m")
 (global-set-key "\C-m" 'newline-and-indent)
+(global-set-key (kbd "M-SPC") 'cycle-spacing)
 
 ;; Make delete do what I expect
 ;? Do I still need this?
