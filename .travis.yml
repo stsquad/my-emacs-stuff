@@ -1,18 +1,12 @@
-language: elisp
+sudo: false
+language: emacs-lisp
 env:
-#  - EVM_EMACS=emacs-24.1-bin
-#  - EVM_EMACS=emacs-24.2-bin
-  - EVM_EMACS=emacs-24.3-bin
-  - EVM_EMACS=emacs-24.4-bin
-#  - EVM_EMACS=emacs-git-snapshot
-before_install:
-  - sudo apt-get install -qq ack-grep
+  - EVM_EMACS=emacs-24.3-travis
+  - EVM_EMACS=emacs-24.4-travis
+  - EVM_EMACS=emacs-24.5-travis
 install:
-  - sudo mkdir /usr/local/evm
-  - sudo chown $(id -u):$(id -g) /usr/local/evm
-  - curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
-  - export PATH="$HOME/.evm/bin:$PATH"
-  - evm install $EVM_EMACS --use
+  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
+  - evm install $EVM_EMACS --use --skip
   - ./setup_emacs.sh
 script:
   - ./tests/check_daemon_starts.sh 0

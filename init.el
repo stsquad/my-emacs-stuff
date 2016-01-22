@@ -77,7 +77,10 @@
   :if (file-accessible-directory-p "~/Maildir"))
 ;; Development related stuff, including project root
 (load-library "my-devel")
-(load-library "my-flycheck")
+
+(use-package my-flycheck
+  :if (version<= "24.4" emacs-version))
+
 (load-library "my-web")
 (load-library "my-elisp")
 (load-library "my-python")
