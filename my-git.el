@@ -16,6 +16,7 @@
 (use-package magit
   :commands magit-status
   :bind ("C-x g" . magit-status)
+  :pin melpa-stable
   :init
   (progn
     (setq magit-last-seen-setup-instructions "1.4.0"))
