@@ -37,6 +37,7 @@
   "Flag indicating succesful start-up.")
 
 ;; Packaging
+;; (package-initialize) is called in here.
 (load-library "my-package.el")
 
 ;; Add ~/.emacs.d/*.git project into search path
