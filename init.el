@@ -76,6 +76,9 @@
 ;; email
 (use-package my-email
   :if (file-accessible-directory-p "~/Maildir"))
+;; gnus for backup
+(use-package my-gnus)
+
 ;; Development related stuff, including project root
 (load-library "my-devel")
 
