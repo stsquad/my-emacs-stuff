@@ -7,7 +7,7 @@
 ;;
 ;;; Code:
 
-(when (not (symbolp 'with-eval-after-load))
+(when (not (fboundp 'with-eval-after-load))
     (defmacro with-eval-after-load (file &rest body)
       "Execute BODY after FILE is loaded.
 FILE is normally a feature name, but it can also be a file name,
