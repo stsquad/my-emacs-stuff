@@ -120,7 +120,10 @@
 (load-library "my-git")
 (load-library "my-htmlize")
 (load-library "my-eshell")
-(load-library "my-circe")
+
+(use-package my-circe
+  :if (not I-am-root))
+
 (load-library "my-diff")
 
 ;; Lets use mark-tools if we can
