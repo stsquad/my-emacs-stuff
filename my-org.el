@@ -136,6 +136,21 @@ This is used by my-org-run-default-block which is added to
   :if (locate-library "org-mu4e")
   :config (add-to-list 'org-modules 'org-mu4e t))
 
+
+;; Toggle org-mode in other mode buffers
+(defvar my-org-mode-last-major-mode nil
+  "Previous `major-mode' of this buffer.")
+(make-variable-buffer-local 'my-org-mode-last-major-mode)
+(put 'my-org-mode-last-major-mode 'permanent-local t)
+
+(defun my-toggle-org-mode ()
+  "Toggle `org-mode' in this buffer."
+  (interactive)
+  (if (eq major-mode 'org-mode)
+      (funcall my-org-mode-last-major-mode)
+    (setq my-org-mode-last-major-mode major-mode)
+    (org-mode)))
+
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :commands (org-agenda org-capture)
@@ -190,6 +205,7 @@ This is used by my-org-run-default-block which is added to
        (kbd "C-c C-o")
        (defhydra my-hydra-org (:color blue)
          "Access org-mode"
+         ("t" my-toggle-org-mode "toggle org-mode in this buffer")
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
          ("h" helm-org-agenda-files-headings "org-headings (helm)")
