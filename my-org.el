@@ -69,7 +69,7 @@ This is used by my-org-run-default-block which is added to
   :commands org-capture
   :config (setq
            org-capture-templates
-           '(("lr" "Review Comment (email)"
+           '(("r" "Review Comment (email)"
               checkitem
               (file+headline "review.org" "Review Comments")
               "  - [ ] %a%?")
@@ -84,7 +84,11 @@ This is used by my-org-run-default-block which is added to
              ("T" "Add TODO task with mail reference"
               entry
               (file+headline "team.org" "Tasks")
-              "** TODO %i%?\nSee %a%?"))))
+              "** TODO %i%?\nSee %a%?")
+             ("Q" "Queue Review (email)"
+              entry
+              (file+headline "team.org" "Review Queue")
+              "** TODO %a"))))
 
 ;; Clocking behaviour
 (use-package org-clock
