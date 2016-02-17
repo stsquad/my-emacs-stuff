@@ -34,7 +34,8 @@
   "A few quick elisp hook customisation."
   (setq mode-name "elisp")
   (eldoc-mode t)
-  (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer)
+  (when buffer-file-name
+    (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer))
   (when (boundp 'show-smartparens-global-mode)
     (show-smartparens-global-mode))
   (turn-on-auto-fill))
