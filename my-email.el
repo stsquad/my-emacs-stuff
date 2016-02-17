@@ -239,7 +239,10 @@ Useful for replies and drafts")
     ;; config options
     (setq
      ;; generic mail options
-     user-mail-address "alex.bennee@linaro.org"
+     user-mail-address
+     (cond
+      (I-am-at-work  "alex.bennee@linaro.org")
+      (t "alex@bennee.com"))
      user-full-name  "Alex Bennée"
      mail-signature '(insert (concat "\n--\n" (my-sig-function)))
      mail-user-agent 'mu4e-user-agent

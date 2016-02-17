@@ -79,6 +79,10 @@
     (enable-circe-color-nicks)
     ;; Mode line tweaks
     ;; Channel configurations
+    (when I-am-on-server
+      (setq circe-default-nick "pythonlike"
+            circe-default-user "pythonlike"
+            circe-default-realname "pythonlike"))
     (setq circe-reduce-lurker-spam t
           circe-network-options
           `(("Freenode"
