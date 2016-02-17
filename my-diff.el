@@ -35,10 +35,10 @@
           ediff-window-setup-function 'ediff-setup-windows-plain)
     (when (display-graphic-p)
       (add-hook 'ediff-before-setup-hook 'new-frame)
-      (add-hook 'ediff-quit-hook 'delete-frame))
-    (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
-    (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
-    (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display)))
+      (add-hook 'ediff-quit-hook 'delete-frame)
+      (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
+      (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
+      (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display))))
 
 ;; I'm just going to assume I have my-diff-mode
 ;; We want to find files like

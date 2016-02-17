@@ -128,16 +128,27 @@
      ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
   "Mapping from maildirs to source tree.")
 
+(defvar my-mail-address-mapping
+  ' ( ("qemu-devel@nongnu.org" . "~/lsrc/qemu/qemu.git/")
+      ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+    "Mapping from target address to source tree.
+Useful for replies and drafts")
 
 (defun my-get-code-dir-from-email ()
   "Return the associated code directory depending on email."
   (let* ((msg (mu4e-message-at-point t))
          (list (mu4e-message-field msg :mailing-list))
-         (maildir (mu4e-message-field msg :maildir)))
+         (maildir (mu4e-message-field msg :maildir))
+         (addresses (-map 'cdr (append (mu4e-message-field msg :to)
+                                       (mu4e-message-field msg :cc)))))
     (expand-file-name
      (or
       (assoc-default list my-mailing-list-dir-mapping)
       (assoc-default maildir my-maildir-mapping 'string-match)
+      (assoc-default (-first
+                      #'(lambda (mail)
+                          (assoc-default mail my-mail-address-mapping))
+                      addresses) my-mail-address-mapping)
       "~"))))
 
 (defun my-set-view-directory ()
@@ -248,13 +259,13 @@
      mu4e-headers-include-related t
      ;; compose options
      mu4e-compose-signature 'my-sig-function
-     mu4e-compose-complete-addresses nil
+     ;; this ensures completion-at-point functionality is setup
+     ;; which eventually percolates to company-capf.
+     mu4e-compose-complete-addresses t
      mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      (cond
-      (I-am-at-work  '("alex.bennee@linaro.org"
-                       "alex@bennee.com"
-                       "kernel-hacker@bennee.com"))
+      (I-am-at-work  '("alex.bennee@linaro.org"))
       (t '("alex@bennee.com")))
      mu4e-compose-complete-only-after "2013-11-01"
      ;; view options
@@ -361,8 +372,8 @@
               ;; Virt related
               ("list:qemu-devel.nongnu.org and flag:unread"
                "Latest QEMU posts" ?q)
-              ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
-               "QEMU ARM64 posts" ?a)
+              ("((list:qemu-devel.nongnu.org AND (aarch64 OR arm OR A64)) OR list:qemu-arm.nongnu.org)"
+               "QEMU ARM posts" ?a)
               ("list:mttcg.listserver.greensocs.com"
                "Multi-threaded QEMU posts" ?T)
               ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
@@ -410,6 +421,7 @@
   :if (and (string-match "zen" (system-name))
            (locate-library "helm-mu"))
   :config (progn
+            (setq helm-mu-contacts-personal t)
             (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu)))
 
 ;; Magic handling for multiple email addrsses

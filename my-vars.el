@@ -42,6 +42,7 @@
 (defvar I-am-on-MacOSX (or (string-match "Carbon" (emacs-version))
                            (string-match "apple-darwin" (emacs-version))))
 (defvar I-am-remote (getenv "SSH_TTY"))
+(defvar I-am-root (= (user-uid) 0))
 
 ;; Environment variables the shell may not have set
 (when I-am-at-work

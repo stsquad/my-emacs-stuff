@@ -63,7 +63,7 @@
   ;; :diminish ((circe-channel-mode . "CirceChan")
   ;;            (circe-server-mode . "CirceServ"))
   :requires my-tracking
-  :init (when (and I-am-at-work (daemonp))
+  :init (when (and I-am-at-work (daemonp) (not I-am-root))
           (run-with-idle-timer 120 nil 'my-irc-login))
   :config
   (progn
@@ -75,6 +75,8 @@
       (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste))
     ;; spell checking
     (add-hook 'circe-channel-mode-hook 'turn-on-flyspell)
+    ;; Colour nicks
+    (enable-circe-color-nicks)
     ;; Mode line tweaks
     ;; Channel configurations
     (setq circe-reduce-lurker-spam t
