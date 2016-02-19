@@ -86,9 +86,9 @@ This is used by my-org-run-default-block which is added to
               (file+headline "team.org" "Tasks")
               "** TODO %i%?\nSee %a%?")
              ("Q" "Queue Review (email)"
-              entry
+              checkitem
               (file+headline "team.org" "Review Queue")
-              "** TODO %a"))))
+              "  - [ ] %a"))))
 
 ;; Clocking behaviour
 (use-package org-clock
