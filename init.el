@@ -63,7 +63,10 @@
 (require 'my-display)
 
 (use-package edit-server
-  :if (and (getenv "DISPLAY") (daemonp) (not I-am-root))
+  :if (and (getenv "DISPLAY")
+           (daemonp)
+           (not I-am-root)
+           (locate-library "edit-server.el"))
   :commands edit-server-start
   :init (add-hook 'after-init-hook
                   #'(lambda()
