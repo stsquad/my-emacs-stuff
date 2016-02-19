@@ -138,7 +138,10 @@ This is used by my-org-run-default-block which is added to
 ;; Mail integration
 (use-package org-mu4e
   :if (locate-library "org-mu4e")
-  :config (add-to-list 'org-modules 'org-mu4e t))
+  :config
+  (progn
+    (setq org-mu4e-link-query-in-headers-mode t)
+    (add-to-list 'org-modules 'org-mu4e t)))
 
 
 ;; Toggle org-mode in other mode buffers
@@ -215,10 +218,6 @@ This is used by my-org-run-default-block which is added to
          ("h" helm-org-agenda-files-headings "org-headings (helm)")
          ("r" (org-capture nil "r") "org-capture-email-review"))))
     (org-clock-persistence-insinuate)))
-
-;; Mail integration
-(use-package org-mu4e
-  :config (add-to-list 'org-modules 'org-mu4e t))
 
 ;; Org reveal
 (use-package ox-reveal)
