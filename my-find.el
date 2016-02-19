@@ -35,6 +35,17 @@
   :commands helm-ag
   :init (global-set-key (kbd "<f6>") 'helm-do-ag))
 
+(use-package flx)
+
+;; ivy is a general completion framework, I only use it for swiper ATM
+;; C-o enters options via ivy-hydra
+(use-package ivy
+  :config
+  (setq ivy-re-builders-alist
+        '((ivy-switch-buffer . ivy--regex-plus)
+          (t . ivy--regex-fuzzy))))
+
+;; See swiper-map for extra keys
 (use-package swiper
   :bind ("C-s" . swiper))
 
