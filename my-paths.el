@@ -12,7 +12,7 @@
   "Where all my config files are kept.")
 
 (defvar my-config-paths
-  '("~/.emacs.d/my-elisp" "~/.emacs.d")
+  '("~/.emacs.d/my-elisp" "~/.emacs.d/my-local-pkgs")
   "Additional search paths I use.")
 
 (defun my-add-config-paths (&optional paths)
