@@ -63,7 +63,7 @@
 (require 'my-display)
 
 (use-package edit-server
-  :if (and (getenv "DISPLAY") (daemonp) (not (= 0 (user-uid))))
+  :if (and (getenv "DISPLAY") (daemonp) (not I-am-root))
   :commands edit-server-start
   :init (add-hook 'after-init-hook
                   #'(lambda()
@@ -75,9 +75,11 @@
 (use-package my-editing)
 ;; email
 (use-package my-email
-  :if (file-accessible-directory-p "~/Maildir"))
+  :if (and (file-accessible-directory-p "~/Maildir")
+           (not I-am-root)))
 ;; gnus for backup
-(use-package my-gnus)
+(use-package my-gnus
+  :if (not I-am-root))
 
 ;; Development related stuff, including project root
 (load-library "my-devel")
@@ -88,8 +90,12 @@
 (load-library "my-web")
 (load-library "my-elisp")
 (load-library "my-python")
+
+
+
 ;; Org configuration
-(load-library "my-org")
+(use-package my-org
+  :if (not I-am-root))
 ;; Helm
 (load-library "my-helm")
 ;; More keybindings
@@ -114,15 +120,21 @@
 (load-library "my-git")
 (load-library "my-htmlize")
 (load-library "my-eshell")
-(load-library "my-circe")
+
+(use-package my-circe
+  :if (not I-am-root))
+
 (load-library "my-diff")
+
+(use-package my-transmission
+  :if I-am-on-server)
 
 ;; Lets use mark-tools if we can
 (use-package mark-tools
   :bind ("C-x m" . list-marks))
 
 (use-package paradox
-  :ensure paradox
+  :if (version< "24.4.4" emacs-version)
   :commands paradox-list-packages
   :config
   (when (my-primary-machine-p)

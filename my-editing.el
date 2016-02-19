@@ -19,6 +19,7 @@
 
 ;; Require prerequisites
 (require 'use-package)
+(require 'my-compat)
 (require 'my-hydra)
 
 ;; Variables

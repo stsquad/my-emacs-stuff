@@ -10,6 +10,7 @@
 (require 'use-package)
 (require 'my-vars)
 (require 'my-libs)
+(require 'async)
 
 (use-package smtpmail
   :commands smtpmail-send-queued-mail
@@ -196,6 +197,38 @@ Useful for replies and drafts")
             ;; mode hooks
             (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)))
 
+;; spam learning: ionice -c 3 sa-learn --progress --spam ~/Maildir/.Spam/cur/*
+
+;; loosely hacked from mu4e-control.el HEAD
+(defvar my-mu4e-register-spam-cmd
+  "sa-learn --spam %s"
+  "Command for invoking spam processor to register message as spam.")
+
+(defvar my-mu4e-register-ham-cmd
+  "sa-learn --ham %s"
+  "Command for invoking spam processor to register message as ham.")
+
+(defun my-mu4e-register-spam-action (msg)
+  "Mark `MSG' as spam."
+  (interactive)
+  (let* ((path (shell-quote-argument
+                (mu4e-message-field msg :path)))
+         (command (format my-mu4e-register-spam-cmd path)))
+    ;; (async-shell-command command nil))
+    (start-process "LSPAM" nil "sa-learn" "--spam" path))
+  (mu4e-mark-at-point 'delete nil)
+  (mu4e-headers-next))
+
+
+(defun my-mu4e-register-ham-action (msg)
+  "Mark `MSG' as ham."
+  (interactive)
+  (let* ((path (shell-quote-argument
+                (mu4e-message-field msg :path)))
+         (command (format my-mu4e-register-ham-cmd path)))
+    (async-shell-command command))
+  (mu4e-mark-at-point 'something nil))
+
 (use-package mu4e
   :commands mu4e
   ;; Bindings
@@ -206,7 +239,10 @@ Useful for replies and drafts")
     ;; config options
     (setq
      ;; generic mail options
-     user-mail-address "alex.bennee@linaro.org"
+     user-mail-address
+     (cond
+      (I-am-at-work  "alex.bennee@linaro.org")
+      (t "alex@bennee.com"))
      user-full-name  "Alex Bennée"
      mail-signature '(insert (concat "\n--\n" (my-sig-function)))
      mail-user-agent 'mu4e-user-agent
@@ -307,7 +343,9 @@ Useful for replies and drafts")
             mu4e-headers-actions
             '(("gapply git patches" . mu4e-action-git-apply-patch)
               ("mgit am patch" . mu4e-action-git-apply-mbox)
-              ("rrun checkpatch script" . my-mu4e-action-run-check-patch)))))
+              ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
+              ("sMark SPAM" . my-mu4e-register-spam-action)
+              ("hMark HAM" . my-mu4e-register-ham-action)))))
     ;; Message actions
     (setq mu4e-view-actions
           (delete-dups

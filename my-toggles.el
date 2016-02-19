@@ -118,9 +118,9 @@ of things where C-SPC can't be used."
     (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
     (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
-(with-eval-after-load 'hydra
-  (require 'whitespace)
-  (global-set-key
+
+(require 'whitespace)
+(global-set-key
    (kbd "C-x t")
    (defhydra my-hydra-toggle (:hint nil :color red :timeout 10)
      (concat
@@ -147,7 +147,7 @@ of things where C-SPC can't be used."
      ("o" my-toggle-org-mode "org-mode" :exit t)
      ("g" god-mode-all "god-mode" :exit t)
      ;; quit the hydra
-     ("x" nil "exit" :exit t))))
+     ("x" nil "exit" :exit t)))
 
 (provide 'my-toggles)
 ;;; my-toggles.el ends here
