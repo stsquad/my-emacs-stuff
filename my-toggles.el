@@ -118,13 +118,12 @@ of things where C-SPC can't be used."
     (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
     (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
-(with-eval-after-load 'hydra
-  (require 'whitespace)
-  (global-set-key
+
+(require 'whitespace)
+(global-set-key
    (kbd "C-x t")
    (defhydra my-hydra-toggle (:hint nil :color red :timeout 10)
      (concat
-      "\n"
       "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _t_abs: %`indent-tabs-mode "
       "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
      ;; Debugging
@@ -143,10 +142,12 @@ of things where C-SPC can't be used."
      ;; Narrowing, region selection
      ("n" my-narrow-or-widen-dwim "arrow-or-w" :exit t)
      ("e" er/expand-region "xpand-r" :exit t)
+
      ;; misc
+     ("o" my-toggle-org-mode "org-mode" :exit t)
      ("g" god-mode-all "god-mode" :exit t)
      ;; quit the hydra
-     ("x" nil "exit" :exit t))))
+     ("x" nil "exit" :exit t)))
 
 (provide 'my-toggles)
 ;;; my-toggles.el ends here

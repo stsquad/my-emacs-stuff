@@ -129,6 +129,9 @@
 
 (load-library "my-diff")
 
+(use-package my-transmission
+  :if I-am-on-server)
+
 ;; Lets use mark-tools if we can
 (use-package mark-tools
   :bind ("C-x m" . list-marks))

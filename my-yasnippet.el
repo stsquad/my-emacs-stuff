@@ -12,6 +12,8 @@
 ;; YASnippet itself
 (use-package yasnippet
   :commands (snippet-mode yas-global-mode)
+  :if (version-list-< '(0 9 0 1)
+                      (pkg-info-package-version 'yasnippet))
   :defer 60
   :config
   (progn
@@ -44,11 +46,11 @@
 (defun my-yas-pull-req-helper ()
   "Return a pull request string from a given directory"
   (interactive)
-  (let ((default-directory (my-choose-directory "Git Tree: "))
-        (base "origin/master")
-        (repo "github"))
+  (let ((base "origin/master")
+        (repo "https://github.com/stsquad/qemu.git")
+        (head (shell-command-to-string "git describe")))
     (shell-command-to-string
-     (format "git request-pull %s %s" base repo))))
+     (format "git request-pull %s %s %s" base repo head))))
 
 (defun my-yas-local-exit-function (func)
   "Call FUNC in the buffer-local yas-after-exit-snippet-hook."

@@ -159,35 +159,12 @@
                                                "mu4e-view-mode"))
             (golden-ratio)))
 
-;; ;; Bow down before font-lock
-;; (add-hook 'font-lock-mode-hook
-;;           '(lambda ()
-;;              (setq font-lock-maximum-decoration  t
-;;                    font-lock-verbose             t
-;;                    font-lock-support-mode        'jit-lock-mode
-;;                    lazy-lock-defer-on-scrolling  nil
-;;                    lazy-lock-defer-contextually  t
-;;                    lazy-lock-stealth-verbose     t
-;;                    lazy-lock-stealth-lines       50
-;;                    lazy-lock-stealth-time        3)))
-;; (global-font-lock-mode t)
+;; Manual colour themes
 
-
-;; ;; Font locking info mode (from Andy.Ling@quantel.com)
-;; (defvar info-font-lock-keywords
-;;   (list
-;;    '("^\\* [^:]+:+" . font-lock-function-name-face)
-;;    '("\\*[Nn]ote\\b[^:]+:+" . font-lock-reference-face)
-;;    '("  \\(Next\\|Prev\\|Up\\):" . font-lock-reference-face))
-;;   "Additional expressions to highlight in Info mode.")
-
-;; (add-hook 'Info-mode-hook
-;;           (lambda ()
-;;             (make-local-variable 'font-lock-defaults)
-;;             (setq
-;;              font-lock-defaults '(info-font-lock-keywords nil t)
-;;              case-fold-search nil)))
-
+(use-package moe-theme
+  :if (locate-library "moe-theme")
+  :commands moe-dark
+  :init (moe-dark))
 
 (provide 'my-display)
 ;;; my-display.el ends here

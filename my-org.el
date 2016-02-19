@@ -69,7 +69,7 @@ This is used by my-org-run-default-block which is added to
   :commands org-capture
   :config (setq
            org-capture-templates
-           '(("lr" "Review Comment (email)"
+           '(("r" "Review Comment (email)"
               checkitem
               (file+headline "review.org" "Review Comments")
               "  - [ ] %a%?")
@@ -84,7 +84,11 @@ This is used by my-org-run-default-block which is added to
              ("T" "Add TODO task with mail reference"
               entry
               (file+headline "team.org" "Tasks")
-              "** TODO %i%?\nSee %a%?"))))
+              "** TODO %i%?\nSee %a%?")
+             ("Q" "Queue Review (email)"
+              checkitem
+              (file+headline "team.org" "Review Queue")
+              "  - [ ] %a"))))
 
 ;; Clocking behaviour
 (use-package org-clock
@@ -134,7 +138,25 @@ This is used by my-org-run-default-block which is added to
 ;; Mail integration
 (use-package org-mu4e
   :if (locate-library "org-mu4e")
-  :config (add-to-list 'org-modules 'org-mu4e t))
+  :config
+  (progn
+    (setq org-mu4e-link-query-in-headers-mode t)
+    (add-to-list 'org-modules 'org-mu4e t)))
+
+
+;; Toggle org-mode in other mode buffers
+(defvar my-org-mode-last-major-mode nil
+  "Previous `major-mode' of this buffer.")
+(make-variable-buffer-local 'my-org-mode-last-major-mode)
+(put 'my-org-mode-last-major-mode 'permanent-local t)
+
+(defun my-toggle-org-mode ()
+  "Toggle `org-mode' in this buffer."
+  (interactive)
+  (if (eq major-mode 'org-mode)
+      (funcall my-org-mode-last-major-mode)
+    (setq my-org-mode-last-major-mode major-mode)
+    (org-mode)))
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
@@ -190,15 +212,12 @@ This is used by my-org-run-default-block which is added to
        (kbd "C-c C-o")
        (defhydra my-hydra-org (:color blue)
          "Access org-mode"
+         ("t" my-toggle-org-mode "toggle org-mode in this buffer")
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
          ("h" helm-org-agenda-files-headings "org-headings (helm)")
          ("r" (org-capture nil "r") "org-capture-email-review"))))
     (org-clock-persistence-insinuate)))
-
-;; Mail integration
-(use-package org-mu4e
-  :config (add-to-list 'org-modules 'org-mu4e t))
 
 ;; Org reveal
 (use-package ox-reveal)

@@ -10,6 +10,7 @@
 (require 'use-package)
 (require 'my-vars)
 (require 'my-libs)
+(require 'async)
 
 (use-package smtpmail
   :commands smtpmail-send-queued-mail
@@ -196,6 +197,38 @@ Useful for replies and drafts")
             ;; mode hooks
             (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)))
 
+;; spam learning: ionice -c 3 sa-learn --progress --spam ~/Maildir/.Spam/cur/*
+
+;; loosely hacked from mu4e-control.el HEAD
+(defvar my-mu4e-register-spam-cmd
+  "sa-learn --spam %s"
+  "Command for invoking spam processor to register message as spam.")
+
+(defvar my-mu4e-register-ham-cmd
+  "sa-learn --ham %s"
+  "Command for invoking spam processor to register message as ham.")
+
+(defun my-mu4e-register-spam-action (msg)
+  "Mark `MSG' as spam."
+  (interactive)
+  (let* ((path (shell-quote-argument
+                (mu4e-message-field msg :path)))
+         (command (format my-mu4e-register-spam-cmd path)))
+    ;; (async-shell-command command nil))
+    (start-process "LSPAM" nil "sa-learn" "--spam" path))
+  (mu4e-mark-at-point 'delete nil)
+  (mu4e-headers-next))
+
+
+(defun my-mu4e-register-ham-action (msg)
+  "Mark `MSG' as ham."
+  (interactive)
+  (let* ((path (shell-quote-argument
+                (mu4e-message-field msg :path)))
+         (command (format my-mu4e-register-ham-cmd path)))
+    (async-shell-command command))
+  (mu4e-mark-at-point 'something nil))
+
 (use-package mu4e
   :commands mu4e
   ;; Bindings
@@ -206,7 +239,10 @@ Useful for replies and drafts")
     ;; config options
     (setq
      ;; generic mail options
-     user-mail-address "alex.bennee@linaro.org"
+     user-mail-address
+     (cond
+      (I-am-at-work  "alex.bennee@linaro.org")
+      (t "alex@bennee.com"))
      user-full-name  "Alex Bennée"
      mail-signature '(insert (concat "\n--\n" (my-sig-function)))
      mail-user-agent 'mu4e-user-agent
@@ -220,6 +256,7 @@ Useful for replies and drafts")
       (I-am-at-work "mbsync linaro-sync")
       (t "true"))
      mu4e-update-interval 600
+     mu4e-change-filenames-when-moving t ; keep mbsync happy
      ;; navigate options
      mu4e-use-fancy-chars t
      mu4e-headers-skip-duplicates t
@@ -248,6 +285,7 @@ Useful for replies and drafts")
       (I-am-at-work
        '( ("/linaro/Inbox"     . ?i)
           ("/linaro/mythreads" . ?m)
+          ("/linaro/archived" . ?A)
           ("/linaro/team"      . ?t)
           ("/linaro/kernel/lkml"      . ?l)
           ("/linaro/virtualization/qemu" . ?q)
@@ -305,7 +343,9 @@ Useful for replies and drafts")
             mu4e-headers-actions
             '(("gapply git patches" . mu4e-action-git-apply-patch)
               ("mgit am patch" . mu4e-action-git-apply-mbox)
-              ("rrun checkpatch script" . my-mu4e-action-run-check-patch)))))
+              ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
+              ("sMark SPAM" . my-mu4e-register-spam-action)
+              ("hMark HAM" . my-mu4e-register-ham-action)))))
     ;; Message actions
     (setq mu4e-view-actions
           (delete-dups
@@ -325,7 +365,7 @@ Useful for replies and drafts")
                "Unread list email addressed to me" ?m)
               ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
                "Mail addressed to me with git tags" ?g)
-              ("\(from:alex.bennee OR from:bennee.com\)"
+              ("\(from:alex.bennee OR from:bennee.com\) NOT m:/linaro/archived"
                "Mail sent by me" ?s)
               ("flag:flagged" "Flagged and Starred posts" ?f)
               ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
@@ -339,7 +379,7 @@ Useful for replies and drafts")
                "Latest QEMU posts" ?q)
               ("((list:qemu-devel.nongnu.org AND (aarch64 OR arm OR A64)) OR list:qemu-arm.nongnu.org)"
                "QEMU ARM posts" ?a)
-              ("list:mttcg.listserver.greensocs.com"
+              ("list:mttcg.listserver.greensocs.com OR maildir:/linaro/virtualization/qemu-multithread"
                "Multi-threaded QEMU posts" ?T)
               ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
                "Android related emails" ?A)
@@ -433,17 +473,26 @@ hook we are not yet in the compose buffer."
 (defvar my-checkpatch-script-history nil
   "History of checkpatch invocations.")
 
-(defun my-mu4e-do-checkpatch (script-path msg-path)
-  "Run `SCRIPT-PATH' on `MSG-PATH'."
+(defun my-mu4e-do-checkpatch (script-path msg)
+  "Run `SCRIPT-PATH' on `MSG'."
   (let ((proc-name "checkpatch")
-        (buff-name (format "*checkpatch*")))
-      (start-process-shell-command
-       proc-name
-       buff-name
-       (format "cat %s | %s -" msg-path script-path))
-      (switch-to-buffer buff-name)
-      (goto-char (point-min))
-      (compilation-minor-mode)))
+        (buff-name (get-buffer-create (format "*checkpatch*")))
+        (msg-path (mu4e-message-field msg :path)))
+    ;; header
+    (with-current-buffer buff-name
+      (goto-char (point-max))
+      (insert (format "Running %s on %s\n"
+                      script-path
+                      (mu4e-message-field msg :subject))))
+    ;; checkpatch
+    (start-process-shell-command
+     proc-name
+     buff-name
+     (format "cat %s | %s -" msg-path script-path))
+    ;;
+    (switch-to-buffer buff-name)
+    (goto-char (point-max))
+    (compilation-minor-mode)))
 
 (defun my-mu4e-action-run-check-patch (msg)
   "Run checkpatch against the [patch] `MSG'."
@@ -460,8 +509,7 @@ hook we are not yet in the compose buffer."
               (cons last-script (delete last-script
                                         my-checkpatch-script-history)))))
       ;; do the checkpatch
-      (my-mu4e-do-checkpatch last-script
-                             (mu4e-message-field msg :path))))
+      (my-mu4e-do-checkpatch last-script msg)))
 
 ;; WIP: Pull requests
 (defun my-insert-pull-request ()
