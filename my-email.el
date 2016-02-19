@@ -220,6 +220,7 @@ Useful for replies and drafts")
       (I-am-at-work "mbsync linaro-sync")
       (t "true"))
      mu4e-update-interval 600
+     mu4e-change-filenames-when-moving t ; keep mbsync happy
      ;; navigate options
      mu4e-use-fancy-chars t
      mu4e-headers-skip-duplicates t
@@ -248,6 +249,7 @@ Useful for replies and drafts")
       (I-am-at-work
        '( ("/linaro/Inbox"     . ?i)
           ("/linaro/mythreads" . ?m)
+          ("/linaro/archived" . ?A)
           ("/linaro/team"      . ?t)
           ("/linaro/kernel/lkml"      . ?l)
           ("/linaro/virtualization/qemu" . ?q)
@@ -325,7 +327,7 @@ Useful for replies and drafts")
                "Unread list email addressed to me" ?m)
               ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
                "Mail addressed to me with git tags" ?g)
-              ("\(from:alex.bennee OR from:bennee.com\)"
+              ("\(from:alex.bennee OR from:bennee.com\) NOT m:/linaro/archived"
                "Mail sent by me" ?s)
               ("flag:flagged" "Flagged and Starred posts" ?f)
               ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
@@ -339,7 +341,7 @@ Useful for replies and drafts")
                "Latest QEMU posts" ?q)
               ("((list:qemu-devel.nongnu.org AND (aarch64 OR arm OR A64)) OR list:qemu-arm.nongnu.org)"
                "QEMU ARM posts" ?a)
-              ("list:mttcg.listserver.greensocs.com"
+              ("list:mttcg.listserver.greensocs.com OR maildir:/linaro/virtualization/qemu-multithread"
                "Multi-threaded QEMU posts" ?T)
               ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
                "Android related emails" ?A)
