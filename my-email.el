@@ -433,17 +433,26 @@ hook we are not yet in the compose buffer."
 (defvar my-checkpatch-script-history nil
   "History of checkpatch invocations.")
 
-(defun my-mu4e-do-checkpatch (script-path msg-path)
-  "Run `SCRIPT-PATH' on `MSG-PATH'."
+(defun my-mu4e-do-checkpatch (script-path msg)
+  "Run `SCRIPT-PATH' on `MSG'."
   (let ((proc-name "checkpatch")
-        (buff-name (format "*checkpatch*")))
-      (start-process-shell-command
-       proc-name
-       buff-name
-       (format "cat %s | %s -" msg-path script-path))
-      (switch-to-buffer buff-name)
-      (goto-char (point-min))
-      (compilation-minor-mode)))
+        (buff-name (get-buffer-create (format "*checkpatch*")))
+        (msg-path (mu4e-message-field msg :path)))
+    ;; header
+    (with-current-buffer buff-name
+      (goto-char (point-max))
+      (insert (format "Running %s on %s\n"
+                      script-path
+                      (mu4e-message-field msg :subject))))
+    ;; checkpatch
+    (start-process-shell-command
+     proc-name
+     buff-name
+     (format "cat %s | %s -" msg-path script-path))
+    ;;
+    (switch-to-buffer buff-name)
+    (goto-char (point-max))
+    (compilation-minor-mode)))
 
 (defun my-mu4e-action-run-check-patch (msg)
   "Run checkpatch against the [patch] `MSG'."
@@ -460,8 +469,7 @@ hook we are not yet in the compose buffer."
               (cons last-script (delete last-script
                                         my-checkpatch-script-history)))))
       ;; do the checkpatch
-      (my-mu4e-do-checkpatch last-script
-                             (mu4e-message-field msg :path))))
+      (my-mu4e-do-checkpatch last-script msg)))
 
 ;; WIP: Pull requests
 (defun my-insert-pull-request ()
