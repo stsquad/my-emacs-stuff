@@ -39,6 +39,7 @@
   (progn
     (add-hook 'after-make-frame-functions 'my-squash-gpg t)
     (remove-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
+    (my-squash-gpg)
     (epa-file-enable)))
 
 (provide 'my-gpg)

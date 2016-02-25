@@ -40,11 +40,12 @@
   :bind ("C-h a" . helm-apropos))
 
 (use-package helm-gtags
-  :commands helm-gtags-mode
+  :commands (helm-gtags-mode helm-gtags-dwim)
   :diminish "HGt"
   :config
   (progn
     ;; keys
+    (define-key helm-gtags-mode-map (kbd "C-c f") 'helm-gtags-dwim)
     (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
     (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
     (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
@@ -62,7 +63,8 @@
          ("C-c O" . helm-multi-swoop)))
 
 (use-package helm-descbinds
-  :bind ("C-h h" . helm-descbinds))
+  :bind (("C-h b" . helm-descbinds)
+         ("C-h h" . helm-descbinds)))
 
 ;; Helm git grep
 

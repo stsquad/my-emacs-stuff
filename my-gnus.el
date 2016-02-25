@@ -13,7 +13,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; I'm using mu4e for reading my email. However it is occasionally
+;; I'm using mu4e for reading my email.  However it is occasionally
 ;; useful to read archives of projects I'm not subscribed to.
 ;;
 ;;; Code:
@@ -22,7 +22,30 @@
 
 (use-package gnus
   :commands gnus
-  :config (setq gnus-select-method '(nntp "news.gmane.org")))
+  :config
+  (progn
+   (setq-default
+    gnus-summary-line-format "%U%R%d %5i %B%-80,80S %-20,20n (%k, %I/%t)\n"
+    gnus-user-date-format-alist '((t . "%d-%m-%Y %H:%M"))
+    ;; use references to gather (so patch series are correct)
+    gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
+    ;; fancy formatting for the thread view
+    gnus-sum-thread-tree-root ""
+    gnus-sum-thread-tree-false-root ""
+    gnus-sum-thread-tree-indent " "
+    gnus-sum-thread-tree-leaf-with-other "├► "
+    gnus-sum-thread-tree-single-leaf "╰► "
+    gnus-sum-thread-tree-vertical "│")
+   (setq
+    gnus-select-method '(nntp "news.gmane.org")
+    gnus-thread-hide-subtree t
+    ;; Thread sorting (primary function is the last)
+    gnus-thread-sort-functions
+    '(gnus-thread-sort-by-most-recent-number
+      gnus-thread-sort-by-total-score
+      gnus-thread-sort-by-most-recent-date))))
+
+
 
 (provide 'my-gnus)
 ;;; my-gnus.el ends here

@@ -26,7 +26,8 @@
 ;; Code
 
 (defun my-narrow-to-pure-magnet ()
-  "From point remove any extraneous information from the magnet link."
+  "From point remove any extraneous information from the magnet link.
+Returns the line as a string."
   (interactive)
   (when (thing-at-point 'url)
     (save-excursion
@@ -35,9 +36,21 @@
         (forward-line 1)
         (delete-region (match-beginning 0) (point)))
       (move-beginning-of-line nil)
-      (kill-ring-save (point) (line-end-position)))))
+      (substring-no-properties (thing-at-point 'line)))))
+
+(defun my-snarf-magnet ()
+  "Snarf a link into transmission."
+  (interactive)
+  (when (thing-at-point 'url)
+    (transmission-add (my-narrow-to-pure-magnet) t)))
+
+(defun my-enable-torrent-snarfing ()
+  "Bind torrent snarfing to action key."
+  (interactive)
+  (local-set-key (kbd "C-c C-c") 'my-snarf-magnet))
 
 (use-package transmission
+  :commands transmission-add
   :config
   (setq transmission-rpc-auth '(:username "transmission" :password "givemetorrents")))
   

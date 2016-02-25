@@ -7,6 +7,7 @@
 ;;; Code:
 
 (require 'package)
+(require 'my-vars)
 
 (defvar my-essential-packages
   '(use-package)
@@ -78,12 +79,14 @@
 ;;
 
 ;; Setup packages
+(when I-am-at-work
+  (add-to-list
+   'package-archives
+   '("melpa" . "http://melpa.org/packages/") t))
+
 (add-to-list
  'package-archives
- (if I-am-at-work
-     '("melpa" . "http://melpa.org/packages/")
-   '("melpa-stable" . "http://stable.melpa.org/packages/"))
- t)
+ '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 
 (add-to-list
  'package-archives

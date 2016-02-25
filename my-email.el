@@ -10,6 +10,7 @@
 (require 'use-package)
 (require 'my-vars)
 (require 'my-libs)
+(require 'async)
 
 (use-package smtpmail
   :commands smtpmail-send-queued-mail
@@ -127,16 +128,27 @@
      ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
   "Mapping from maildirs to source tree.")
 
+(defvar my-mail-address-mapping
+  ' ( ("qemu-devel@nongnu.org" . "~/lsrc/qemu/qemu.git/")
+      ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+    "Mapping from target address to source tree.
+Useful for replies and drafts")
 
 (defun my-get-code-dir-from-email ()
   "Return the associated code directory depending on email."
   (let* ((msg (mu4e-message-at-point t))
          (list (mu4e-message-field msg :mailing-list))
-         (maildir (mu4e-message-field msg :maildir)))
+         (maildir (mu4e-message-field msg :maildir))
+         (addresses (-map 'cdr (append (mu4e-message-field msg :to)
+                                       (mu4e-message-field msg :cc)))))
     (expand-file-name
      (or
       (assoc-default list my-mailing-list-dir-mapping)
       (assoc-default maildir my-maildir-mapping 'string-match)
+      (assoc-default (-first
+                      #'(lambda (mail)
+                          (assoc-default mail my-mail-address-mapping))
+                      addresses) my-mail-address-mapping)
       "~"))))
 
 (defun my-set-view-directory ()
@@ -185,6 +197,38 @@
             ;; mode hooks
             (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)))
 
+;; spam learning: ionice -c 3 sa-learn --progress --spam ~/Maildir/.Spam/cur/*
+
+;; loosely hacked from mu4e-control.el HEAD
+(defvar my-mu4e-register-spam-cmd
+  "sa-learn --spam %s"
+  "Command for invoking spam processor to register message as spam.")
+
+(defvar my-mu4e-register-ham-cmd
+  "sa-learn --ham %s"
+  "Command for invoking spam processor to register message as ham.")
+
+(defun my-mu4e-register-spam-action (msg)
+  "Mark `MSG' as spam."
+  (interactive)
+  (let* ((path (shell-quote-argument
+                (mu4e-message-field msg :path)))
+         (command (format my-mu4e-register-spam-cmd path)))
+    ;; (async-shell-command command nil))
+    (start-process "LSPAM" nil "sa-learn" "--spam" path))
+  (mu4e-mark-at-point 'delete nil)
+  (mu4e-headers-next))
+
+
+(defun my-mu4e-register-ham-action (msg)
+  "Mark `MSG' as ham."
+  (interactive)
+  (let* ((path (shell-quote-argument
+                (mu4e-message-field msg :path)))
+         (command (format my-mu4e-register-ham-cmd path)))
+    (async-shell-command command))
+  (mu4e-mark-at-point 'something nil))
+
 (use-package mu4e
   :commands mu4e
   ;; Bindings
@@ -195,7 +239,10 @@
     ;; config options
     (setq
      ;; generic mail options
-     user-mail-address "alex.bennee@linaro.org"
+     user-mail-address
+     (cond
+      (I-am-at-work  "alex.bennee@linaro.org")
+      (t "alex@bennee.com"))
      user-full-name  "Alex Bennée"
      mail-signature '(insert (concat "\n--\n" (my-sig-function)))
      mail-user-agent 'mu4e-user-agent
@@ -209,19 +256,20 @@
       (I-am-at-work "mbsync linaro-sync")
       (t "true"))
      mu4e-update-interval 600
+     mu4e-change-filenames-when-moving t ; keep mbsync happy
      ;; navigate options
      mu4e-use-fancy-chars t
      mu4e-headers-skip-duplicates t
      mu4e-headers-include-related t
      ;; compose options
      mu4e-compose-signature 'my-sig-function
-     mu4e-compose-complete-addresses nil
+     ;; this ensures completion-at-point functionality is setup
+     ;; which eventually percolates to company-capf.
+     mu4e-compose-complete-addresses t
      mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      (cond
-      (I-am-at-work  '("alex.bennee@linaro.org"
-                       "alex@bennee.com"
-                       "kernel-hacker@bennee.com"))
+      (I-am-at-work  '("alex.bennee@linaro.org"))
       (t '("alex@bennee.com")))
      mu4e-compose-complete-only-after "2013-11-01"
      ;; view options
@@ -237,6 +285,7 @@
       (I-am-at-work
        '( ("/linaro/Inbox"     . ?i)
           ("/linaro/mythreads" . ?m)
+          ("/linaro/archived" . ?A)
           ("/linaro/team"      . ?t)
           ("/linaro/kernel/lkml"      . ?l)
           ("/linaro/virtualization/qemu" . ?q)
@@ -294,7 +343,9 @@
             mu4e-headers-actions
             '(("gapply git patches" . mu4e-action-git-apply-patch)
               ("mgit am patch" . mu4e-action-git-apply-mbox)
-              ("rrun checkpatch script" . my-mu4e-action-run-check-patch)))))
+              ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
+              ("sMark SPAM" . my-mu4e-register-spam-action)
+              ("hMark HAM" . my-mu4e-register-ham-action)))))
     ;; Message actions
     (setq mu4e-view-actions
           (delete-dups
@@ -314,7 +365,7 @@
                "Unread list email addressed to me" ?m)
               ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
                "Mail addressed to me with git tags" ?g)
-              ("\(from:alex.bennee OR from:bennee.com\)"
+              ("\(from:alex.bennee OR from:bennee.com\) NOT m:/linaro/archived"
                "Mail sent by me" ?s)
               ("flag:flagged" "Flagged and Starred posts" ?f)
               ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
@@ -326,9 +377,9 @@
               ;; Virt related
               ("list:qemu-devel.nongnu.org and flag:unread"
                "Latest QEMU posts" ?q)
-              ("list:qemu-devel.nongnu.org AND (aarch64 OR arm64 OR A64)"
-               "QEMU ARM64 posts" ?a)
-              ("list:mttcg.listserver.greensocs.com"
+              ("((list:qemu-devel.nongnu.org AND (aarch64 OR arm OR A64)) OR list:qemu-arm.nongnu.org)"
+               "QEMU ARM posts" ?a)
+              ("list:mttcg.listserver.greensocs.com OR maildir:/linaro/virtualization/qemu-multithread"
                "Multi-threaded QEMU posts" ?T)
               ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
                "Android related emails" ?A)
@@ -375,6 +426,7 @@
   :if (and (string-match "zen" (system-name))
            (locate-library "helm-mu"))
   :config (progn
+            (setq helm-mu-contacts-personal t)
             (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu)))
 
 ;; Magic handling for multiple email addrsses
@@ -421,17 +473,26 @@ hook we are not yet in the compose buffer."
 (defvar my-checkpatch-script-history nil
   "History of checkpatch invocations.")
 
-(defun my-mu4e-do-checkpatch (script-path msg-path)
-  "Run `SCRIPT-PATH' on `MSG-PATH'."
+(defun my-mu4e-do-checkpatch (script-path msg)
+  "Run `SCRIPT-PATH' on `MSG'."
   (let ((proc-name "checkpatch")
-        (buff-name (format "*checkpatch*")))
-      (start-process-shell-command
-       proc-name
-       buff-name
-       (format "cat %s | %s -" msg-path script-path))
-      (switch-to-buffer buff-name)
-      (goto-char (point-min))
-      (compilation-minor-mode)))
+        (buff-name (get-buffer-create (format "*checkpatch*")))
+        (msg-path (mu4e-message-field msg :path)))
+    ;; header
+    (with-current-buffer buff-name
+      (goto-char (point-max))
+      (insert (format "Running %s on %s\n"
+                      script-path
+                      (mu4e-message-field msg :subject))))
+    ;; checkpatch
+    (start-process-shell-command
+     proc-name
+     buff-name
+     (format "cat %s | %s -" msg-path script-path))
+    ;;
+    (switch-to-buffer buff-name)
+    (goto-char (point-max))
+    (compilation-minor-mode)))
 
 (defun my-mu4e-action-run-check-patch (msg)
   "Run checkpatch against the [patch] `MSG'."
@@ -448,8 +509,7 @@ hook we are not yet in the compose buffer."
               (cons last-script (delete last-script
                                         my-checkpatch-script-history)))))
       ;; do the checkpatch
-      (my-mu4e-do-checkpatch last-script
-                             (mu4e-message-field msg :path))))
+      (my-mu4e-do-checkpatch last-script msg)))
 
 ;; WIP: Pull requests
 (defun my-insert-pull-request ()

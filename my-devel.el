@@ -10,6 +10,7 @@
 (require 'my-vars)
 (require 'my-find)
 (require 'my-tracking)
+(require 'my-hydra)
 
 ;; Currently I'm still unsettled about which project library to use
 (cond
@@ -17,12 +18,42 @@
  ((require 'projectile nil t) (load-library "my-projectile"))
  (t (load-library "my-project")))
 
+
+;; Origami code folding
+(use-package origami
+  :commands origami-mode
+  :config
+  (progn
+    (add-hook 'prog-mode-hook 'origami-mode)
+    (with-eval-after-load 'hydra
+      (define-key origami-mode-map (kbd "C-x f")
+        (defhydra hydra-folding (:color red :hint nil)
+   "
+_o_pen node    _n_ext fold       toggle _f_orward    _F_ill column: %`fill-column
+_c_lose node   _p_revious fold   toggle _a_ll        e_x_it
+"
+   ("o" origami-open-node)
+   ("c" origami-close-node)
+   ("n" origami-next-fold)
+   ("p" origami-previous-fold)
+   ("f" origami-forward-toggle-node)
+   ("a" origami-toggle-all-nodes)
+   ("F" fill-column)
+   ("x" nil :color blue))))))
+
+;; Regex's
+
+(use-package rx
+  :commands rx)
+
+(use-package re-builder
+  :commands re-builder
+  :config (setq reb-re-syntax 'rx))
+
 ;;
 ;; Compile Mode
 ;;
 
-(use-package rx
-  :commands rx)
 
 ;; See: http://emacs.stackexchange.com/questions/3802/how-can-i-detect-compilation-mode-is-waiting-for-input/3807?noredirect=1#comment5796_3807
 (defun my-compilation-mode-warn-about-prompt ()
