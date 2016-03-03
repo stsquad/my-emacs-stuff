@@ -104,7 +104,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;; asm-mode
 (use-package asm-mode
   :if (not (featurep 'gas-mode))
-  :config (setq asm-comment-char ?\#))
+  :config (setq asm-comment-char ?\;))
 
 ;; Handle Makefile.blah
 (use-package make-mode
