@@ -85,10 +85,14 @@ This is used by my-org-run-default-block which is added to
               entry
               (file+headline "team.org" "Tasks")
               "** TODO %i%?\nSee %a%?")
+             ("C" "Current activity as progress"
+              entry
+              (file+olp "~/org/team.org" "Meetings" "Current" "Progress")
+              "  - %a")
              ("Q" "Queue Review (email)"
-              checkitem
+              entry
               (file+headline "team.org" "Review Queue")
-              "  - [ ] %a"))))
+              "** TODO %a"))))
 
 ;; Clocking behaviour
 (use-package org-clock
