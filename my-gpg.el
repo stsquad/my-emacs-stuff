@@ -21,6 +21,7 @@
 
 ;; Keychain access
 (use-package keychain-environment
+  :ensure t
   :commands keychain-refresh-environment
   :defer 60
   :config (keychain-refresh-environment))

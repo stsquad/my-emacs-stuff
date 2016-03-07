@@ -27,6 +27,7 @@
 (require 'use-package)
 
 (use-package hydra
+  :ensure t
   :commands defhydra)
 
 (provide 'my-hydra)

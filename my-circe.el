@@ -41,6 +41,7 @@
 
 ;; Auto pasting
 (use-package lui-autopaste
+  :ensure circe
   :commands enable-lui-autopaste)
 
 (defun lui-autopaste-service-linaro (text)
@@ -74,6 +75,7 @@
   (circe "Pl0rt"))
 
 (use-package circe
+  :ensure t
   :commands (circe circe-set-display-handler)
   ;; :diminish ((circe-channel-mode . "CirceChan")
   ;;            (circe-server-mode . "CirceServ"))

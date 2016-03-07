@@ -12,7 +12,7 @@
 (require 'use-package)
 
 (use-package helm
-  :ensure helm
+  :ensure t
   :init (progn
           (require 'helm-config)
           (setq helm-yank-symbol-first t
@@ -27,19 +27,22 @@
          ("C-x 8 <RET>" . helm-ucs)
          ("C-<f1>" . helm-apropos)))
 
-(use-package helm-git-grep
-  :if (locate-library "helm-git-grep")
-  :commands helm-git-grep
-  :config (setq helm-git-grep-candidate-number-limit nil))
-
 (use-package helm-buffers
+  :ensure helm
   :commands helm-buffers-list
   :config (setq helm-buffers-fuzzy-matching t))
 
 (use-package helm-elisp
   :bind ("C-h a" . helm-apropos))
 
+(use-package helm-git-grep
+  :ensure t
+  :if (locate-library "helm-git-grep")
+  :commands helm-git-grep
+  :config (setq helm-git-grep-candidate-number-limit nil))
+
 (use-package helm-gtags
+  :ensure t
   :commands (helm-gtags-mode helm-gtags-dwim)
   :diminish "HGt"
   :config
@@ -59,10 +62,12 @@
 (add-hook 'asm-mode-hook 'helm-gtags-mode)
 
 (use-package helm-swoop
+  :ensure t
   :bind (("C-c o" . helm-swoop)
          ("C-c O" . helm-multi-swoop)))
 
 (use-package helm-descbinds
+  :ensure t
   :bind (("C-h b" . helm-descbinds)
          ("C-h h" . helm-descbinds)))
 

@@ -32,10 +32,12 @@
   :bind ("C-x j" . ace-jump-mode))
 
 (use-package avy
+  :ensure t
   :bind ("C-x j" . avy-goto-word-or-subword-1))
 
 ;; Multiple cursors
 (use-package multiple-cursors
+  :ensure t
   :commands (mc/edit-lines
              mc/mark-all-like-this mc/mark-all-like-this-dwim
              mc/mark-next-like-this mc/mark-previous-like-this
@@ -66,6 +68,7 @@
 
 ;; Expand region
 (use-package expand-region
+  :ensure t
   :commands (er/expand-region)
   :bind (("C-@" . my-mark-or-expand-dwim)
          ("C-=" . er/expand-region)))
@@ -80,6 +83,7 @@
     (call-interactively #'set-mark-command)))
 
 (use-package ws-butler
+  :ensure t
   :defer 120
   :config (ws-butler-global-mode))
 

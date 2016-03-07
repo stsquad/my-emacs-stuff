@@ -45,6 +45,7 @@
   (flyspell-mode))
 
 (use-package web-mode
+  :ensure t
   :mode ("\\.php$" . web-mode)
   :config
   (progn
@@ -54,6 +55,7 @@
 ;; js2-mode, override javascript-mode
 ;;
 (use-package js2-mode
+  :ensure t
   :mode ("\\.js\\'" . js2-mode)
   :config
   (defalias 'javascript-mode 'js2-mode "js2-mode is aliased to javascript mode"))
@@ -62,6 +64,7 @@
 ;; restclient, make REST calls from Emacs
 ;;
 (use-package restclient
+  :ensure t
   :commands restclient-mode)
 
 (provide 'my-web)

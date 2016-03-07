@@ -10,6 +10,7 @@
 (require 'use-package)
 
 (use-package flycheck
+  :ensure t
   :if (version<= "24.4" emacs-version)
   :commands global-flycheck-mode
   :init (add-hook 'prog-mode-hook 'global-flycheck-mode)
@@ -38,6 +39,7 @@
 
 
 (use-package flycheck-clangcheck
+  :ensure t
   :config
   (when (boundp 'kernel-project-file-visit-hook)
     (defun my-set-kernel-clangcheck-build-path ()

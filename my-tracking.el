@@ -23,6 +23,7 @@
 
 ;; More tracking config
 (use-package tracking
+  :ensure t
   :commands (tracking-mode tracking-add-buffer)
   :init (tracking-mode)
   :config

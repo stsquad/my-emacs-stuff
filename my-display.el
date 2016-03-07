@@ -153,6 +153,7 @@
 
 ;; Nice window sizing
 (use-package golden-ratio
+  :ensure t
   :defer 30
   :config (progn
             (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
@@ -162,9 +163,13 @@
 ;; Manual colour themes
 
 (use-package moe-theme
+  :ensure t
   :if (locate-library "moe-theme")
   :commands moe-dark
   :init (moe-dark))
+
+(use-package zenburn-theme
+  :ensure t)
 
 (provide 'my-display)
 ;;; my-display.el ends here

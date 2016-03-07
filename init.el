@@ -57,8 +57,7 @@
 
 (require 'use-package nil t)
 
-(use-package my-libs)
-
+(require 'my-libs)
 (require 'my-basic-modes)
 (require 'my-display)
 
@@ -137,6 +136,7 @@
   :bind ("C-x m" . list-marks))
 
 (use-package paradox
+  :ensure t
   :if (version< "24.4.4" emacs-version)
   :commands paradox-list-packages
   :config
