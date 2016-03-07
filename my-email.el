@@ -79,27 +79,29 @@
 ;;
 
 ;; Switch function
-(defun my-switch-to-mu4e ()
+(defun my-switch-to-mu4e (&optional prefix)
   "Smart dwim switch to mu4e."
-  (interactive)
-  (let ((candidate
-         (or
-          ;; unsent emails
-          (car (--filter
-                (with-current-buffer it
-                  (and
-                   (eq major-mode 'mu4e-compose-mode)
-                   (not message-sent-message-via)))
-                (buffer-list)))
-          ;; current search
-          (get-buffer "*mu4e-headers*")
-          ;; current view
-          (get-buffer "*mu4e-view*"))))
-    (if candidate
-        (progn
-          (switch-to-buffer candidate)
-          (delete-other-windows))
-      (mu4e))))
+  (interactive "P")
+  (if prefix
+      (mu4e)
+    (let ((candidate
+           (or
+            ;; unsent emails
+            (car (--filter
+                  (with-current-buffer it
+                    (and
+                     (eq major-mode 'mu4e-compose-mode)
+                     (not message-sent-message-via)))
+                  (buffer-list)))
+            ;; current search
+            (get-buffer "*mu4e-headers*")
+            ;; current view
+            (get-buffer "*mu4e-view*"))))
+      (if candidate
+          (progn
+            (switch-to-buffer candidate)
+            (delete-other-windows))
+        (mu4e)))))
 
 ;; Jump to current thread
 (defun my-switch-to-thread ()
