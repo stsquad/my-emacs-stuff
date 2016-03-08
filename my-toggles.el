@@ -118,6 +118,19 @@ of things where C-SPC can't be used."
     (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
     (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
+;; Toggle text-mode in other mode buffers
+(defvar my-text-mode-last-major-mode nil
+  "Previous `major-mode' of this buffer.")
+(make-variable-buffer-local 'my-text-mode-last-major-mode)
+(put 'my-text-mode-last-major-mode 'permanent-local t)
+
+(defun my-toggle-text-mode ()
+  "Toggle `text-mode' in this buffer."
+  (interactive)
+  (if (eq major-mode 'text-mode)
+      (funcall my-text-mode-last-major-mode)
+    (setq my-text-mode-last-major-mode major-mode)
+    (text-mode)))
 
 (require 'whitespace)
 (global-set-key
@@ -145,6 +158,7 @@ of things where C-SPC can't be used."
 
      ;; misc
      ("o" my-toggle-org-mode "org-mode" :exit t)
+     ("t" my-toggle-text-mode "text-mode" :exit t)
      ("g" god-mode-all "god-mode" :exit t)
      ;; quit the hydra
      ("x" nil "exit" :exit t)))
