@@ -27,10 +27,6 @@
 
 (require 'use-package)
 
-(use-package ack-and-a-half
-  :commands ack-and-a-half
-  :init (global-set-key (kbd "<f6>") 'ack-and-a-half))
-
 (use-package helm-ag
   :ensure t
   :commands helm-ag
