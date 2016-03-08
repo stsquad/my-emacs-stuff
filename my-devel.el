@@ -21,7 +21,7 @@
 
 ;; Origami code folding
 (use-package origami
-  :ensure t
+  :if (locate-library "origami")
   :commands origami-mode
   :config
   (progn

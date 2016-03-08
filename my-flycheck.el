@@ -39,7 +39,7 @@
 
 
 (use-package flycheck-clangcheck
-  :ensure t
+  :if (locate-library "flycheck-clangcheck")
   :config
   (when (boundp 'kernel-project-file-visit-hook)
     (defun my-set-kernel-clangcheck-build-path ()

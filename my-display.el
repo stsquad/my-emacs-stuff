@@ -163,7 +163,6 @@
 ;; Manual colour themes
 
 (use-package moe-theme
-  :ensure t
   :if (locate-library "moe-theme")
   :commands moe-dark
   :init (moe-dark))

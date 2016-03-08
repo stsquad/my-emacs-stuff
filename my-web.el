@@ -64,7 +64,7 @@
 ;; restclient, make REST calls from Emacs
 ;;
 (use-package restclient
-  :ensure t
+  :if (locate-library "restclient")
   :commands restclient-mode)
 
 (provide 'my-web)
