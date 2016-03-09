@@ -118,7 +118,10 @@
 (load-library "my-tramp")
 (load-library "my-spell")
 (load-library "my-gpg")
-(load-library "my-git")
+
+(use-package my-git
+  :if (version<= "24.4" emacs-version))
+
 (load-library "my-htmlize")
 (load-library "my-eshell")
 
