@@ -11,6 +11,5 @@ install:
 script:
   - ./tests/check_daemon_starts.sh 0
   - ./tests/check_daemon_starts.sh 1
-  - ./tests/check_init_compiles.sh
   - emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
 
