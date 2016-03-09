@@ -39,6 +39,8 @@
   (package-refresh-contents)
     (package-install 'use-package))
 
+(require 'use-package)
+
 (when (version<= "24.4" emacs-version)
   (use-package paradox
     :ensure t
