@@ -131,19 +131,8 @@
 (load-library "my-diff")
 
 (use-package my-transmission
-  :if I-am-on-server)
-
-;; Lets use mark-tools if we can
-(use-package mark-tools
-  :bind ("C-x m" . list-marks))
-
-(use-package paradox
-  :ensure t
-  :if (version< "24.4.4" emacs-version)
-  :commands paradox-list-packages
-  :config
-  (when (my-primary-machine-p)
-    (setq paradox-github-token (my-pass-password "paradox" t))))
+  :if (and I-am-on-server
+           (version<= "24.4" emacs-version)))
 
 (load "the-rest.el")
 

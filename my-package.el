@@ -39,6 +39,14 @@
   (package-refresh-contents)
     (package-install 'use-package))
 
+(when (version<= "24.4" emacs-version)
+  (use-package paradox
+    :ensure t
+    :commands paradox-list-packages
+    :config
+    (when (my-primary-machine-p)
+      (setq paradox-github-token (my-pass-password "paradox" t)))))
+
 (provide 'my-package)
 ;;; my-package.el ends here
 
