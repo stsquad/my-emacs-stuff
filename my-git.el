@@ -84,9 +84,6 @@
 ;;;
 ;;; Additional GIT bits
 ;;;
-(use-package git-blame
-  :ensure t
-  :commands git-blame-mode)
 
 (use-package git-messenger
   :ensure t
