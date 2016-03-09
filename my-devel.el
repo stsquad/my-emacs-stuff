@@ -109,6 +109,10 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :if (not (featurep 'gas-mode))
   :config (setq asm-comment-char ?\;))
 
+;; YAML
+(use-package yaml-mode
+  :ensure t)
+
 ;; Handle Makefile.blah
 (use-package make-mode
   :mode ((".*\.mak" . makefile-gmake-mode)

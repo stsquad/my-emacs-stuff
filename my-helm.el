@@ -70,7 +70,8 @@
   :bind (("C-h b" . helm-descbinds)
          ("C-h h" . helm-descbinds)))
 
-;; Helm git grep
+(use-package helm-themes
+  :ensure t)
 
 (provide 'my-helm)
 ;;; my-helm.el ends here

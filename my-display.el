@@ -170,6 +170,9 @@
 (use-package zenburn-theme
   :ensure t)
 
+(use-package solarized-theme
+  :ensure t)
+
 (provide 'my-display)
 ;;; my-display.el ends here
 
