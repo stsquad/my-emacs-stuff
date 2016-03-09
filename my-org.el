@@ -163,17 +163,16 @@ This is used by my-org-run-default-block which is added to
     (org-mode)))
 
 (use-package org
+  :ensure t
   :mode ("\\.org\\'" . org-mode)
   :commands (org-agenda org-capture)
   :init
   (progn
-    (message "org init:")
     (setq
      ;; General navigation
      org-return-follows-link t))
   :config
   (progn
-    (message "org config:")
     (setq
      ;; General navigation
      org-return-follows-link t
@@ -224,7 +223,8 @@ This is used by my-org-run-default-block which is added to
     (org-clock-persistence-insinuate)))
 
 ;; Org reveal
-(use-package ox-reveal)
+(use-package ox-reveal
+  :if (locate-library "ox-reveal"))
 
 ;; Org Babel configurations
 (ignore-errors
@@ -247,6 +247,7 @@ This is used by my-org-run-default-block which is added to
     (setq org-src-fontify-natively t)))
 
 (use-package graphiz-dot-mode
+  :if (locate-library "graphiz-dot-mode")
   :config (progn
             (let ((cust-install
                    (format "%s/src/graphviz/install"

@@ -2,7 +2,8 @@
 ;;
 ;;; Commentary:
 ;;
-;; Just basic stuff for now.
+;; Just basic stuff for now. As flycheck needs a fairly recent Emacs
+;; this shouldn't be loaded if (version<= "24.4" emacs-version)
 ;;
 ;;; Code:
 ;;
