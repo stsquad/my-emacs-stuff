@@ -22,6 +22,7 @@
 (require 'use-package)
 
 (use-package company
+  :ensure t
   :commands (global-company-mode company-complete-common)
   :init (add-hook 'prog-mode-hook 'global-company-mode)
   :diminish "Com"

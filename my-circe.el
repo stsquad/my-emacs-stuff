@@ -26,7 +26,23 @@
   (format "ajb-linaro/oftc:%s"
           (my-pass-password "znc")))
 
+;; Logging
+(use-package lui-logging
+  :commands enable-lui-logging)
+
+(defvar my-logged-chans
+  '("#qemu" "#linaro-virtualization")
+  "List of channels which I log")
+
+(defun my-maybe-log-channel ()
+  "Maybe start logging the an IRC channel."
+  (when (-contains? my-logged-chans (buffer-name))
+    (enable-lui-logging)))
+
 ;; Auto pasting
+(use-package lui-autopaste
+  :ensure circe
+  :commands enable-lui-autopaste)
 
 (defun lui-autopaste-service-linaro (text)
   "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
@@ -59,6 +75,7 @@
   (circe "Pl0rt"))
 
 (use-package circe
+  :ensure t
   :commands (circe circe-set-display-handler)
   ;; :diminish ((circe-channel-mode . "CirceChan")
   ;;            (circe-server-mode . "CirceServ"))
@@ -69,12 +86,11 @@
   (progn
     (require 'tls)
     ;; Paste Support
-    (use-package lui-autopaste
-      :commands enable-lui-autopaste
-      :init
-      (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste))
+    (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste)
     ;; spell checking
     (add-hook 'circe-channel-mode-hook 'turn-on-flyspell)
+    ;; logging
+    (add-hook 'circe-channel-mode-hook 'my-maybe-log-channel)
     ;; Colour nicks
     (enable-circe-color-nicks)
     ;; Mode line tweaks

@@ -9,11 +9,14 @@
 
 (require 'use-package)
 (require 'my-vars)
-(require 'edit-server)
+
+(use-package edit-server)
 
 ;; Chromebook Support
+;; Un-maintained due to not doing native editing on Chromebook these days
 (use-package chromebook
   :if I-am-on-pixel
+  :disabled t
   :config
   (when (crmbk-running-in-host-x11-p)
     (set-face-attribute 'default nil :height 250)
@@ -27,6 +30,7 @@
 
 ;; Handy for wiki editing
 (use-package mediawiki
+  :ensure t
   :commands mediawiki-mode
   :init
   (progn
@@ -44,6 +48,7 @@
 
 ;; Markdown sites
 (use-package markdown-mode
+  :ensure t
   :config
   (progn
     (setq markdown-reference-location 'end)

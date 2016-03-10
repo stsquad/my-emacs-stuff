@@ -27,15 +27,18 @@
 
 (require 'use-package)
 
-(use-package ack-and-a-half
-  :commands ack-and-a-half
-  :init (global-set-key (kbd "<f6>") 'ack-and-a-half))
-
 (use-package helm-ag
+  :ensure t
   :commands helm-ag
   :init (global-set-key (kbd "<f6>") 'helm-do-ag))
 
-(use-package flx)
+(use-package flx
+  :ensure t)
+
+;; See swiper-map for extra keys
+(use-package swiper
+  :ensure t
+  :bind ("C-s" . swiper))
 
 ;; ivy is a general completion framework, I only use it for swiper ATM
 ;; C-o enters options via ivy-hydra
@@ -44,10 +47,6 @@
   (setq ivy-re-builders-alist
         '((ivy-switch-buffer . ivy--regex-plus)
           (t . ivy--regex-fuzzy))))
-
-;; See swiper-map for extra keys
-(use-package swiper
-  :bind ("C-s" . swiper))
 
 (defun my-project-find (&optional directory)
   "Search within `DIRECTORY' using various search helpers.

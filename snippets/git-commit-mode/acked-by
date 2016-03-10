@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: acked-by
+# key: $ab
+# --
+Acked-by: Alex Bennée <${1:`(my-yas-expand-email)`}>

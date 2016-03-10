@@ -24,6 +24,7 @@
 (require 'my-flycheck)
 
 (use-package elpy
+  :ensure t
   :commands elpy-enable
   :init (with-eval-after-load 'python (elpy-enable))
   :config

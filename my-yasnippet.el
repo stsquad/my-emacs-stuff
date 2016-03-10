@@ -9,8 +9,13 @@
 (require 'use-package)
 (require 'my-libs)
 
+(use-package pkg-info
+  :ensure t
+  :commands pkg-info-package-version)
+
 ;; YASnippet itself
 (use-package yasnippet
+  :ensure t
   :commands (snippet-mode yas-global-mode)
   :if (version-list-< '(0 9 0 1)
                       (pkg-info-package-version 'yasnippet))

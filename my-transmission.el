@@ -50,6 +50,7 @@ Returns the line as a string."
   (local-set-key (kbd "C-c C-c") 'my-snarf-magnet))
 
 (use-package transmission
+  :ensure t
   :commands transmission-add
   :config
   (setq transmission-rpc-auth '(:username "transmission" :password "givemetorrents")))

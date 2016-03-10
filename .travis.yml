@@ -10,8 +10,6 @@ install:
   - ./setup_emacs.sh
 script:
   - ./tests/check_daemon_starts.sh 0
-  - ./tests/install_pkgs.sh
   - ./tests/check_daemon_starts.sh 1
-  - ./tests/check_init_compiles.sh
   - emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
 

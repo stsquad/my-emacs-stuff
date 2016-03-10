@@ -14,6 +14,7 @@
   (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
 
 (use-package magit
+  :ensure t
   :commands magit-status
   :bind ("C-x g" . magit-status)
   :pin melpa-stable
@@ -28,9 +29,7 @@
     ;; really I never use anything but git
     (setq vc-handled-backends nil)
     (setq
-     magit-status-buffer-switch-function 'switch-to-buffer
-     magit-rewrite-inclusive 'nil
-     magit-revert-buffers 'silent)))
+     magit-auto-revert-immediately 't)))
 
 
 ;;;
@@ -85,10 +84,9 @@
 ;;;
 ;;; Additional GIT bits
 ;;;
-(use-package git-blame
-  :commands git-blame-mode)
 
 (use-package git-messenger
+  :ensure t
   :commands git-messenger:popup-message
   :bind ("C-h g" . git-messenger:popup-message)
   :init

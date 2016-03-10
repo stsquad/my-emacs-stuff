@@ -21,6 +21,7 @@
 
 ;; Origami code folding
 (use-package origami
+  :if (locate-library "origami")
   :commands origami-mode
   :config
   (progn
@@ -44,9 +45,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;; Regex's
 
 (use-package rx
+  :ensure t
   :commands rx)
 
 (use-package re-builder
+  :ensure t
   :commands re-builder
   :config (setq reb-re-syntax 'rx))
 
@@ -104,7 +107,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;; asm-mode
 (use-package asm-mode
   :if (not (featurep 'gas-mode))
-  :config (setq asm-comment-char ?\#))
+  :config (setq asm-comment-char ?\;))
+
+;; YAML
+(use-package yaml-mode
+  :ensure t)
 
 ;; Handle Makefile.blah
 (use-package make-mode
@@ -117,6 +124,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 ;; Smart Parens
 (use-package smartparens
+  :ensure t
   :commands (smartparens-mode
              smartparens-global-mode
              show-smartparens)

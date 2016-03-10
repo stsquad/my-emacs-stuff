@@ -22,7 +22,6 @@
   (setq load-prefer-newer t))
 
 ;; Manually load this (as paths not yet set)
-;(eval-when-compile (defvar god-local-mode))
 (declare-function my-add-config-paths "~/.emacs.d/my-elisp/my-paths" t t)
 (when (load-library "~/.emacs.d/my-elisp/my-paths")
   (my-add-config-paths))
@@ -57,8 +56,7 @@
 
 (require 'use-package nil t)
 
-(use-package my-libs)
-
+(require 'my-libs)
 (require 'my-basic-modes)
 (require 'my-display)
 
@@ -120,7 +118,10 @@
 (load-library "my-tramp")
 (load-library "my-spell")
 (load-library "my-gpg")
-(load-library "my-git")
+
+(use-package my-git
+  :if (version<= "24.4" emacs-version))
+
 (load-library "my-htmlize")
 (load-library "my-eshell")
 
@@ -130,18 +131,8 @@
 (load-library "my-diff")
 
 (use-package my-transmission
-  :if I-am-on-server)
-
-;; Lets use mark-tools if we can
-(use-package mark-tools
-  :bind ("C-x m" . list-marks))
-
-(use-package paradox
-  :if (version< "24.4.4" emacs-version)
-  :commands paradox-list-packages
-  :config
-  (when (my-primary-machine-p)
-    (setq paradox-github-token (my-pass-password "paradox" t))))
+  :if (and I-am-on-server
+           (version<= "24.4" emacs-version)))
 
 (load "the-rest.el")
 

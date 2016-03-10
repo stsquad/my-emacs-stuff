@@ -2,7 +2,8 @@
 ;;
 ;;; Commentary:
 ;;
-;; Just basic stuff for now.
+;; Just basic stuff for now. As flycheck needs a fairly recent Emacs
+;; this shouldn't be loaded if (version<= "24.4" emacs-version)
 ;;
 ;;; Code:
 ;;
@@ -10,6 +11,7 @@
 (require 'use-package)
 
 (use-package flycheck
+  :ensure t
   :if (version<= "24.4" emacs-version)
   :commands global-flycheck-mode
   :init (add-hook 'prog-mode-hook 'global-flycheck-mode)
@@ -38,6 +40,7 @@
 
 
 (use-package flycheck-clangcheck
+  :if (locate-library "flycheck-clangcheck")
   :config
   (when (boundp 'kernel-project-file-visit-hook)
     (defun my-set-kernel-clangcheck-build-path ()

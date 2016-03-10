@@ -64,7 +64,7 @@ Assumes that the frame is only split into two."
 
 ;; ace-window makes switching less painful
 (use-package ace-window
-  :if (locate-library "ace-window")
+  :ensure t
   :bind ("C-x o" . ace-window)
   :config (setq aw-scope 'frame))
 
