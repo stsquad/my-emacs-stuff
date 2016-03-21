@@ -36,7 +36,7 @@
   :bind ("C-h a" . helm-apropos))
 
 (use-package helm-git-grep
-  :if (locate-library "helm-git-grep")
+  :ensure t
   :commands helm-git-grep
   :config (setq helm-git-grep-candidate-number-limit nil))
 
