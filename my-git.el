@@ -29,6 +29,7 @@
     ;; really I never use anything but git
     (setq vc-handled-backends nil)
     (setq
+     magit-patch-arguments '("--cover-letter")
      magit-auto-revert-immediately 't)))
 
 
