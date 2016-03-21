@@ -33,8 +33,7 @@
         nil))
 
 ;; LAVA mode
-(use-package xml-rpc
-  :ensure t)
+(use-package xml-rpc)
 
 (use-package json-mode
   :ensure t)
