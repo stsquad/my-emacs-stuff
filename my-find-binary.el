@@ -35,21 +35,12 @@
 
 (defun find-binary-file (filename)
   "Load a file through a binary helper (like objdump)"
-  (interactive (find-file-read-args "Find file: " nil))
-  (if (file-exists-p filename)
-      (progn
-        (let ((helper)
-              (type (shell-command-to-string (concat "file -b "
-                                                     filename))))
-            (setq helper (assoc-default type binary-helper-alist 'string-match))
-
-            (if (and helper
-                     (consp helper)
-                     (cadr helper))
-                (setq helper (car helper)))
-            (when helper
-              (funcall helper filename))))
-  (message "filename doesn't exist")))
+  (interactive "f")
+  (let* ((type (shell-command-to-string
+                (concat "file -b " filename)))
+         (helper (assoc-default type binary-helper-alist 'string-match)))
+    (when helper
+      (funcall helper filename))))
           
 ; (assoc-default "ELF" binary-helper-alist 'string-match)
 
