@@ -381,7 +381,7 @@ Useful for replies and drafts")
               ;; Virt related
               ("list:qemu-devel.nongnu.org and flag:unread"
                "Latest QEMU posts" ?q)
-              ("((list:qemu-devel.nongnu.org AND (aarch64 OR arm OR A64)) OR list:qemu-arm.nongnu.org)"
+              ("((list:qemu-devel.nongnu.org AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm.nongnu.org)"
                "QEMU ARM posts" ?a)
               ("list:mttcg.listserver.greensocs.com OR maildir:/linaro/virtualization/qemu-multithread"
                "Multi-threaded QEMU posts" ?T)
