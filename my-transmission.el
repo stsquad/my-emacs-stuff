@@ -53,7 +53,7 @@ Returns the line as a string."
   :ensure t
   :commands transmission-add
   :config
-  (setq transmission-rpc-auth '(:username "transmission" :password "givemetorrents")))
+  (setq transmission-rpc-auth '(:username "transmission" :password "transmission")))
   
 
 (provide 'my-transmission)

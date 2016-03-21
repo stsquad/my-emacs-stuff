@@ -131,8 +131,7 @@
 (load-library "my-diff")
 
 (use-package my-transmission
-  :if (and I-am-on-server
-           (version<= "24.4" emacs-version)))
+  :if (string-match "seed" (system-name)))
 
 (load "the-rest.el")
 
