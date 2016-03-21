@@ -14,12 +14,21 @@
 ;;; Commentary:
 ;;
 ;; I've been using autocomplete-mode so far so this is currently
-;; experimental. I thought I'd have a look after elpy moved to using company-mode.
+;; experimental.  I thought I'd have a look after elpy moved to using
+;; company-mode.
 ;;
 ;;; Code:
 
 ;; Require prerequisites
 (require 'use-package)
+
+(use-package company-irony
+  :ensure t
+  :commands company-irony-setup-begin-commands)
+
+(use-package company-statistics
+  :defer 60
+  :config (company-statistics-mode))
 
 (use-package company
   :ensure t
