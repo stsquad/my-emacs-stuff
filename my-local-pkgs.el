@@ -33,6 +33,15 @@
         nil))
 
 ;; LAVA mode
+(use-package xml-rpc
+  :ensure t)
+
+(use-package json-mode
+  :ensure t)
+
+(use-package yaml-mode
+  :ensure t)
+
 (use-package lava-rpc
   :commands lava-xml-rpc-call
   :config
