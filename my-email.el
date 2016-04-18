@@ -305,21 +305,38 @@ Useful for replies and drafts")
     ;; Header markers
     (defvar my-mu4e-patches nil
       "List of mu4e-messages snagged by the (Patches) actions.")
+    (defvar my-mu4e-applied-patches nil
+      "List of mu4e-messages successfully applied by the (Patches)
+    actions.")
+    (make-variable-buffer-local 'my-mu4e-patches)
+    (make-variable-buffer-local 'my-mu4e-applied-patches)
 
     (defun my-mu4e-apply-marked-mbox-patches ()
       "Apply patches in order."
       (interactive)
-      (let ((patches
-             (sort
-              my-mu4e-patches
-              #'(lambda(a b)
-                  (string<
-                   (mu4e-message-field-raw
-                    a :subject)
-                   (mu4e-message-field-raw
-                    b :subject))))))
-        (mapc 'mu4e-action-git-apply-mbox patches)))
-    
+      (let ((new-applications
+             (--take-while
+              (= 0 (mu4e-action-git-apply-mbox it))
+              (--sort
+               (string<
+                (mu4e-message-field-raw it :subject)
+                (mu4e-message-field-raw other :subject))
+               (-difference my-mu4e-patches
+                            my-mu4e-applied-patches)))))
+        (setq my-mu4e-applied-patches
+              (-union my-mu4e-applied-patches new-applications))
+
+        (message (format "Applied %d (%d)/%d patches"
+                         (length new-applications)
+                         (length my-mu4e-applied-patches)
+                         (length my-mu4e-patches)))))
+
+    (add-to-list
+     'mu4e-marks
+     '(patch
+       :char ("#" . "#")
+       :prompt "Patch"))
+
     (add-to-list
      'mu4e-headers-custom-markers
      '("Patches"
@@ -337,7 +354,8 @@ Useful for replies and drafts")
            (add-to-list 'my-mu4e-patches msg)))
        ;; Param function
        (lambda ()
-         (setq my-mu4e-patches nil)
+         (setq my-mu4e-patches nil
+               my-mu4e-applied-patches nil)
          (let ((msg (mu4e-message-at-point)))
            (mu4e-message-field-raw msg :message-id)))))
     ;; Header actions
