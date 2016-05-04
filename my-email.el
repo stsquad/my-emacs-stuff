@@ -314,9 +314,17 @@ Useful for replies and drafts")
     (defun my-mu4e-apply-marked-mbox-patches ()
       "Apply patches in order."
       (interactive)
-      (let ((new-applications
+      (let ((applied-or-skipped
              (--take-while
-              (= 0 (mu4e-action-git-apply-mbox it))
+              (let ((docid (plist-get it :docid)))
+                (if (mu4e-mark-docid-marked-p docid)
+                    (if (= 0 (mu4e-action-git-apply-mbox it))
+                        (when (mu4e~headers-goto-docid docid)
+                          (mu4e-mark-set 'unmark) t)
+                      ; failed to apply, stop
+                      nil)
+                  ; not marked, skip
+                  t))
               (--sort
                (string<
                 (mu4e-message-field-raw it :subject)
@@ -324,10 +332,10 @@ Useful for replies and drafts")
                (-difference my-mu4e-patches
                             my-mu4e-applied-patches)))))
         (setq my-mu4e-applied-patches
-              (-union my-mu4e-applied-patches new-applications))
+              (-union my-mu4e-applied-patches applied-or-skipped))
 
         (message (format "Applied %d (%d)/%d patches"
-                         (length new-applications)
+                         (length applied-or-skipped)
                          (length my-mu4e-applied-patches)
                          (length my-mu4e-patches)))))
 
