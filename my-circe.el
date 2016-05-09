@@ -96,9 +96,9 @@
     ;; Mode line tweaks
     ;; Channel configurations
     (when I-am-on-server
-      (setq circe-default-nick "pythonlike"
-            circe-default-user "pythonlike"
-            circe-default-realname "pythonlike"))
+      (setq circe-default-nick "stsquad"
+            circe-default-user "stsquad"
+            circe-default-realname "stsquad"))
     (setq circe-reduce-lurker-spam t
           circe-network-options
           `(("Freenode"
