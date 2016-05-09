@@ -24,6 +24,7 @@
 ;; Code
 
 (use-package which-key
+  :ensure t
   :commands which-key-mode
   :defer 60
   :diminish ""
