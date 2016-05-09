@@ -135,7 +135,7 @@ of things where C-SPC can't be used."
 (require 'whitespace)
 (global-set-key
    (kbd "C-x t")
-   (defhydra my-hydra-toggle (:hint nil :color red :timeout 10)
+   (defhydra my-hydra-toggle (:hint nil :color red :timeout 5)
      (concat
       "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _t_abs: %`indent-tabs-mode "
       "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
