@@ -13,11 +13,9 @@
 (require 'my-hydra)
 
 ;; Currently I'm still unsettled about which project library to use
-(cond
- ((require 'eproject nil t) (load-library "my-eproject"))
- ((require 'projectile nil t) (load-library "my-projectile"))
- (t (load-library "my-project")))
-
+(if (require 'eproject nil t)
+    (load-library "my-eproject")
+  (load-library "my-projectile"))
 
 ;; Origami code folding
 (use-package origami

@@ -1,27 +1,33 @@
+;;; my-projectile.el --- Customisation for projectile
+;;
+;;; Commentary:
 ;;
 ;; Customisation for projectile (https://github.com/bbatsov/projectile)
 ;;
+;;; Code:
+;;
 
-(require 'projectile)
+(eval-when-compile
+  (require 'use-package))
 
-;; Enable projectile for everything
-(projectile-global-mode)
+(defun my-projectile-project-find ()
+  "Do a find across the projectile project."
+  (interactive)
+  (my-project-find (projectile-project-root)))
 
-;; Shrink mode line for mode display
-(setcdr (assq 'projectile-mode minor-mode-alist) '(" prji"))
+(use-package projectile
+  :ensure t
+  :init (projectile-global-mode)
+  :bind (:map projectile-mode-map
+              ("<f5>" . my-projectile-project-find)
+              ("C-c c" . projectile-compile-project))
+  :config
+  (progn
+   (setcdr (assq 'projectile-mode minor-mode-alist) '(" prji"))))
 
-;; Key hooks
-; Hook in projectile-compile to normal keybinding
-(define-key projectile-mode-map (kbd "C-c c") 'projectile-compile-project)
-(define-key projectile-mode-map (kbd "<f5>") 'projectile-ack)
+(use-package helm-projectile
+  :disabled t
+  :bind ("C-c h" . helm-projectile))
 
-(when (require 'helm-projectile nil 'noerror)
-  (global-set-key (kbd "C-c h") 'helm-projectile))
-
-
-
-;; Done
-(message "Done setting up projectile")
-
-
-
+(provide 'my-projectile)
+;;; my-projectile.el ends here
