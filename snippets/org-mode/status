@@ -6,8 +6,10 @@
 ** Current
 *** Progress
   - QEMU Multithread TCG ([[virt:48][VIRT-48]])
+  - QEMU MTTCG Review ([[virt:53][VIRT-53]])
   - Upstream Work ([[virt:109][VIRT-109]])
 *** Plans
   - 
 *** Absences
-  - 24-26 Aug : KVM Forum Toronto (unconfirmed)
+  - 24-26 Aug : KVM Forum Toronto (confirmed)
+  - 26-30 Sep : Linaro Connect Las Vegas (confirmed)
