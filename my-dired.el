@@ -7,6 +7,8 @@
 ;;; Code:
 
 (eval-when-compile (require 'use-package))
+(require 'use-package)
+(require 'my-utils)
 (require 'my-hydra)
 
 (defun my-dired-enable-recursive-delete ()
@@ -31,6 +33,20 @@ Number of marked items: %(length (dired-get-marked-files))
                 ("x" wdired-change-to-wdired-mode "wdired" :exit t)))))
 
 (use-package dired-async)
+
+(use-package dired-quick-sort
+  :config (dired-quick-sort-setup))
+
+(global-set-key
+   (kbd "C-x d")
+   (defhydra my-hydra-directory (:exit t :hint nil :color red :timeout 5)
+     (concat "in %`default-directory "
+      "dired _b_rowse, _s_et new default-directory, set to _l_ast dir %`my-last-set-directory")
+     ;;
+     ("b" ido-dired)
+     ("s" my-set-default-directory)
+     ("l" (lambda () (interactive) (my-set-default-directory my-last-set-directory)))))
+
 
 (provide 'my-dired)
 ;;; my-dired.el ends here
