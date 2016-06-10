@@ -93,6 +93,7 @@ If the region is less than a line long assume I want to mark the next
     (call-interactively #'next-line)))
 
 (use-package region-bindings-mode
+  :if (locate-library "region-bindings-mode")
   :bind (:map region-bindings-mode-map
               ("C-n" . my-next-mc-or-line-dwim))
   :config (region-bindings-mode-enable))
