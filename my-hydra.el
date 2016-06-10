@@ -13,8 +13,8 @@
 ;;
 ;;; Commentary:
 ;;
-;; This really just configures hydra. Actual hydras should be defined
-;; in the respective modules. You can wrap the defhydra with a:
+;; This really just configures hydra.  Actual hydras should be defined
+;; in the respective modules.  You can wrap the defhydra with a:
 ;;
 ;; (with-eval-after-load 'hydra
 ;;   (global-set-key
@@ -24,7 +24,7 @@
 ;;; Code:
 
 ;; Require prerequisites
-(require 'use-package)
+(eval-when-compile (require 'use-package))
 
 (use-package hydra
   :ensure t
