@@ -201,6 +201,18 @@ Save password if `CACHE' is non nil."
           (cons path (delete path ido-work-directory-list)))
   path))
 
+
+(defvar my-last-set-directory
+  nil
+  "Last value I set the directory to")
+
+(defun my-set-default-directory (&optional dir)
+  "Set default-directory."
+  (interactive)
+  (let ((dir (or dir (ido-read-directory-name "Default Directory"))))
+    (setq default-directory dir
+          my-last-set-directory dir)))
+
 ;; arm decoder
 (defun my-decode-arm64-cpreg (input)
   (let ((op0 (lsh (logand #xc000 input) -14))
