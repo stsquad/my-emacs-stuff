@@ -6,7 +6,8 @@
 ;;
 ;;; Code:
 
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+(require 'my-hydra)
 
 (defun my-dired-enable-recursive-delete ()
   "Enable easy recursive delete for temporary directories."
@@ -16,7 +17,18 @@
     (set (make-local-variable 'dired-recursive-deletes) 'always)))
 
 (use-package dired
-  :config (add-hook 'dired-mode-hook 'my-dired-enable-recursive-delete))
+  :config (progn
+            (add-hook 'dired-mode-hook
+                      'my-dired-enable-recursive-delete)
+            (define-key dired-mode-map
+              (kbd "C-x t")
+              (defhydra my-hydra-dired
+                (:hint nil :color red :timeout 5)
+                "
+Number of marked items: %(length (dired-get-marked-files))
+"
+                ("m" dired-mark "mark")
+                ("x" wdired-change-to-wdired-mode "wdired" :exit t)))))
 
 (use-package dired-async)
 
