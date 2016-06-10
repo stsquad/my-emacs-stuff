@@ -57,10 +57,13 @@
                        (add-to-list 'tabulated-list-revert-hook
                                     #'(lambda ()
                                         (tracking-add-buffer (current-buffer)))))))))
+(use-package lava-yaml-mode
+  :mode (("lava-mode.*\\.yaml$" . lava-yaml-mode)
+         ("test-runners.*\\.yaml$" . lava-yaml-mode)))
 
-(use-package lava-mode
-  :mode (("lava-mode.*\\.json$" . lava-mode)
-         ("test-runners.*\\.json$" . lava-mode))
+(use-package lava-json-mode
+  :mode (("lava-mode.*\\.json$" . lava-json-mode)
+         ("test-runners.*\\.json$" . lava-json-mode))
   :config
   (progn
     (setq-default
