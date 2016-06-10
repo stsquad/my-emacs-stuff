@@ -395,9 +395,14 @@ Useful for replies and drafts")
                "Unread list email addressed to me" ?m)
               ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
                "Mail addressed to me with git tags" ?g)
-              ("\(from:alex.bennee OR from:bennee.com\) NOT m:/linaro/archived"
+              ("\(from:alex.bennee OR from:bennee.com\)"
                "Mail sent by me" ?s)
-              ("flag:flagged" "Flagged and Starred posts" ?f)
+              ("\(to:alex.bennee OR cc:alex.bennee\) s:Re NOT flag:seen"
+               "Mail sent by me (unread replied)" ?S)
+              ("\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
+               "My patches" ?P)
+              ("flag:flagged" "Flagged and starred posts" ?f)
+              ("flag:flagged NOT flag:seen" "Unread flagged and starred posts" ?F)
               ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
                "From my boss" ?B)
               ("date:1h..now"
