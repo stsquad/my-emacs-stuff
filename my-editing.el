@@ -82,6 +82,22 @@
       (call-interactively #'er/expand-region)
     (call-interactively #'set-mark-command)))
 
+(defun my-next-mc-or-line-dwim (&optional arg)
+  "Do `next-line' or `mc/mark-next-like-this' intelligently (with prefix `ARG').
+If the region is less than a line long assume I want to mark the next
+  mc entry.  Otherwise treat it as a new line."
+  (interactive "P")
+  (if (= (line-number-at-pos (region-beginning))
+         (line-number-at-pos (region-end)))
+      (call-interactively #'mc/mark-next-like-this)
+    (call-interactively #'next-line)))
+
+(use-package region-bindings-mode
+  :ensure t
+  :bind (:map region-bindings-mode-map
+              ("C-n" . my-next-mc-or-line-dwim))
+  :config (region-bindings-mode-enable))
+
 (use-package ws-butler
   :ensure t
   :defer 120
