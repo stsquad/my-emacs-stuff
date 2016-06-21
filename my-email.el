@@ -339,6 +339,35 @@ Useful for replies and drafts")
                          (length my-mu4e-applied-patches)
                          (length my-mu4e-patches)))))
 
+    ;; The following two functions are custom marker functions
+    ;; Match function
+    (defun my-mu4e-patch-match (msg parent-id)
+      "Match any patches related to the parent-id. Add them
+to `my-mu4e-patches' for later processing."
+      (when
+          (and (string-match parent-id
+                             (or
+                              (mu4e-message-field-raw msg :in-reply-to)
+                              ""))
+               (string-match
+                (rx
+                 (: bol "["
+                    (minimal-match (zero-or-more (not (any "/"))))
+                    (or (: (any "0-9") (any "1-9"))
+                        (: (any "1-9") (any "0-9")))
+                    "/"))
+                (mu4e-message-field-raw msg :subject)))
+        (add-to-list 'my-mu4e-patches msg)))
+
+
+    ;; Param function
+    (defun my-mu4e-patch-setup ()
+      "Reset the patch list and extract parent-id for `my-mu4e-patch-match'"
+      (setq my-mu4e-patches nil
+            my-mu4e-applied-patches nil)
+      (let ((msg (mu4e-message-at-point)))
+        (mu4e-message-field-raw msg :message-id)))
+
     (add-to-list
      'mu4e-marks
      '(patch
@@ -347,25 +376,7 @@ Useful for replies and drafts")
 
     (add-to-list
      'mu4e-headers-custom-markers
-     '("Patches"
-       ;; Match function
-       (lambda (msg parent-id)
-         (when
-             (and
-              (string-match
-               parent-id
-               (or
-                (mu4e-message-field-raw msg :in-reply-to)
-                ""))
-              (string-match "^\\[" (mu4e-message-field-raw msg
-                                                           :subject)))
-           (add-to-list 'my-mu4e-patches msg)))
-       ;; Param function
-       (lambda ()
-         (setq my-mu4e-patches nil
-               my-mu4e-applied-patches nil)
-         (let ((msg (mu4e-message-at-point)))
-           (mu4e-message-field-raw msg :message-id)))))
+     '("Patches" my-mu4e-patch-match my-mu4e-patch-setup))
     ;; Header actions
     (setq mu4e-headers-actions
           (delete-dups
