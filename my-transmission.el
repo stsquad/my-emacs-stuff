@@ -42,7 +42,7 @@ Returns the line as a string."
   "Snarf a link into transmission."
   (interactive)
   (when (thing-at-point 'url)
-    (transmission-add (my-narrow-to-pure-magnet) t)))
+    (transmission-add (my-narrow-to-pure-magnet))))
 
 (defun my-enable-torrent-snarfing ()
   "Bind torrent snarfing to action key."
