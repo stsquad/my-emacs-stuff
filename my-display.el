@@ -49,6 +49,10 @@
   :commands imagemagick-register-types
   :init (imagemagick-register-types))
 
+(use-package unicode-fonts
+  :if (and (getenv "DISPLAY") (locate-library "unicode-fonts"))
+  :config (unicode-fonts-setup))
+
 ; default-frame-alist
 (setq default-frame-alist '((fullscreen . 'fullboth)
                             (vertical-scroll-bars)))
