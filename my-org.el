@@ -69,10 +69,15 @@ This is used by my-org-run-default-block which is added to
   :commands org-capture
   :config (setq
            org-capture-templates
-           '(("r" "Review Comment (email)"
+           '(
+             ("g" "Save reference to review tag"
+              checkitem
+              (file+headline "review.org" "Review Tags")
+              "  - [ ] %a" :immediate-finish t)
+             ("r" "Review Comment (email)"
               checkitem
               (file+headline "review.org" "Review Comments")
-              "  - [ ] %a%?")
+              "  - [ ] %a")
              ("R" "Review Comment (region)"
               checkitem
               (file+headline "review.org" "Review Comments")
@@ -93,6 +98,37 @@ This is used by my-org-run-default-block which is added to
               entry
               (file+headline "team.org" "Review Queue")
               "** TODO %a"))))
+
+;;
+;; DCO Tag snarfing
+;;
+;; This is used for grabbing Reviewed-by and other such tags from a
+;; mailing list.
+;;
+(defvar my-dco-tag-re
+  (rx (: bol (zero-or-more (in blank))                        ;; fresh line
+         (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
+         (one-or-more (in alpha blank "<>@."))                ;; person
+         eol))
+  "Regexp to match DCO style tag.")
+
+(defun my-capture-review-tags ()
+  "Return a list of tags for current buffer"
+  (let ((tags))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward my-dco-tag-re (point-max) t)
+        (add-to-list 'tags (match-string-no-properties 0))))
+    tags))
+
+(defun my-org-maybe-capture-review-tag ()
+  "Check buffer for DCO tags and if found queue a review comment."
+  (interactive)
+  (when (my-capture-review-tags)
+    (org-capture nil "g")))
+
+(when (fboundp 'mu4e-view-mode-map)
+  (define-key mu4e-view-mode-map (kbd "C-c C-c") 'my-org-maybe-capture-review-tag))
 
 ;; Clocking behaviour
 (use-package org-clock
