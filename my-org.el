@@ -113,7 +113,7 @@ This is used by my-org-run-default-block which is added to
   "Regexp to match DCO style tag.")
 
 (defun my-capture-review-tags ()
-  "Return a list of tags for current buffer"
+  "Return a list of DCO style tags for current buffer."
   (let ((tags))
     (save-excursion
       (goto-char (point-min))
@@ -121,14 +121,65 @@ This is used by my-org-run-default-block which is added to
         (add-to-list 'tags (match-string-no-properties 0))))
     tags))
 
-(defun my-org-maybe-capture-review-tag ()
-  "Check buffer for DCO tags and if found queue a review comment."
+(defun my-org-maybe-capture-review-tag-or-comment ()
+  "Check buffer for DCO tags and save, if not queue a review comment."
   (interactive)
-  (when (my-capture-review-tags)
-    (org-capture nil "g")))
+  (let ((tags (my-capture-review-tags)))
+    (if (not tags)
+        (org-capture nil "r")
+      (kill-new (mapconcat 'identity tags "\n"))
+      (org-capture nil "g"))))
 
-(when (fboundp 'mu4e-view-mode-map)
-  (define-key mu4e-view-mode-map (kbd "C-c C-c") 'my-org-maybe-capture-review-tag))
+(with-eval-after-load 'mu4e
+  (when (fboundp 'mu4e-view-mode-map)
+    (define-key mu4e-view-mode-map (kbd "C-c C-c") 'my-org-maybe-capture-review-tag-or-comment)))
+
+(defun my-org-get-elements (file heading)
+  "Search FILE for HEADING and return the AST of that heading."
+  (interactive)
+  (let ((org-buf (org-capture-target-buffer file)))
+    (with-current-buffer org-buf
+      (org-element-map (org-element-parse-buffer) 'headline
+         (lambda (hl)
+           (when (string-match heading (org-element-property :raw-value hl))
+             (identity hl)))))))
+
+(defun my-org-get-unchecked-items (items)
+  "Return the AST of unchecked ITEMS."
+  (org-element-map items 'item
+    (lambda (item) (when (eq (org-element-property :checkbox item) 'off)
+                     (org-element-contents item)))))
+
+(defun my-org-get-headings (items headline level)
+  "Return the AST of matching headlines."
+  (org-element-map items 'headline
+    (lambda (item) (when (string-match-p
+                          headline
+                          (org-element-contents item))))))
+
+(defun my-org-visit-link-and-snarf-tags ()
+  "Visit org-link-at-point and return a set of tags."
+  (save-window-excursion
+    (org-open-at-point t)
+    (my-capture-review-tags)))
+
+(defun my-org-find-review-tags (subject)
+  "Search saved review tags, looking for `SUBJECT' match."
+  (interactive)
+  (let* ((ast (my-org-get-elements "review.org" "Review Tags"))
+         (buffer (org-capture-target-buffer "review.org")))
+    (org-element-map ast 'headline
+      (lambda (headline)
+        (when (and (=
+                    2 (org-element-property :level headline))
+                   (string-match-p
+                    subject (org-element-property :raw-value headline)))
+          (let ((begin
+                 (org-element-property :contents-begin headline))
+                (end
+                 (org-element-property :contents-end headline)))
+            (with-current-buffer buffer
+              (chomp (buffer-substring-no-properties begin end)))))))))
 
 ;; Clocking behaviour
 (use-package org-clock
