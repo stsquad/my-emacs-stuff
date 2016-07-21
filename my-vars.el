@@ -49,5 +49,29 @@
   (setenv "DEBEMAIL" "alex.bennee@linaro.org")
   (setenv "DEBFULLNAME" "Alex Bennée"))
 
+;; Shared regexps
+
+;; DCO Tag snarfing
+;;
+;; This is used for grabbing Reviewed-by and other such tags from a
+;; mailing list.
+;;
+(defvar my-dco-tag-re
+  (rx (: bol (zero-or-more (in blank))                        ;; fresh line
+         (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
+         (one-or-more (in alpha blank "<>@."))                ;; person
+         eol))
+  "Regexp to match DCO style tag.")
+
+(defun my-capture-review-tags ()
+  "Return a list of DCO style tags for current buffer."
+  (let ((tags))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward my-dco-tag-re (point-max) t)
+        (add-to-list 'tags (match-string-no-properties 0))))
+    tags))
+
+
 (provide 'my-vars)
 ;;; my-vars.el ends here
