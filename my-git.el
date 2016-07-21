@@ -32,7 +32,11 @@
      magit-patch-arguments '("--cover-letter")
      magit-auto-revert-immediately 't)))
 
-(defun my-commit-mode-check-for-tags ()
+;; Tweaks to git-commit-mode
+;;
+;; Mainly hooks for automation
+
+(defun my-commit-mode-check-and-apply-tags ()
   "Run in git-commit-mode to check for any archived tags."
   (interactive)
   (let ((title))
@@ -41,10 +45,19 @@
       (setq title (chomp (substring-no-properties (thing-at-point
                                                    'line)))))
     (when title
-      (let ((tags (my-org-find-review-tags title)))
+      (let ((tags (my-org-find-review-tags title "DONE")))
         (when tags
-          (message "We have %d tags copied to kill-ring" (length tags))
-          (kill-new (mapconcat 'identity tags "\n")))))))
+          (save-excursion
+            (goto-char (point-min))
+            (while (re-search-forward my-dco-tag-re (point-max) t))
+            (next-line)
+            (insert (mapconcat 'identity tags "\n"))
+            (message "Added %d tags to buffer" (length tags))))))))
+
+(use-package git-commit
+  :config
+  (define-key git-commit-mode-map
+    (kbd "C-x C-x") 'my-commit-mode-check-and-apply-tags))
 
 ;(add-hook 'git-commit-mode 'my-commit-mode-check-for-tags)
 

@@ -3,7 +3,7 @@
 ;;; Commentary:
 ;;
 ;; I'm slowly using org-mode more and more although there seem to be
-;; some poor interactions with use-package. As a result I need to
+;; some poor interactions with use-package.  As a result I need to
 ;; split up the various sub-modes of org-mode.
 ;;
 ;;; Code:
@@ -66,60 +66,47 @@ This is used by my-org-run-default-block which is added to
             (setq org-src-window-setup 'current-window)))
 
 (use-package org-capture
-  :commands org-capture
-  :config (setq
-           org-capture-templates
-           '(
-             ("g" "Save reference to review tag"
-              checkitem
-              (file+headline "review.org" "Review Tags")
-              "  - [ ] %a" :immediate-finish t)
-             ("r" "Review Comment (email)"
-              checkitem
-              (file+headline "review.org" "Review Comments")
-              "  - [ ] %a")
-             ("R" "Review Comment (region)"
-              checkitem
-              (file+headline "review.org" "Review Comments")
-              "  - [ ] %i%?")
-             ("t" "Add TODO task"
-              entry
-              (file+headline "team.org" "Tasks")
-              "** TODO %i%?")
-             ("T" "Add TODO task with mail reference"
-              entry
-              (file+headline "team.org" "Tasks")
-              "** TODO %i%?\nSee %a%?")
-             ("C" "Current activity as progress"
-              entry
-              (file+olp "~/org/team.org" "Meetings" "Current" "Progress")
-              "  - %a")
-             ("Q" "Queue Review (email)"
-              entry
-              (file+headline "team.org" "Review Queue")
-              "** TODO %a"))))
+  :commands org-capture org-capture-target-buffer
+  :config
+  (setq
+   org-capture-templates
+   '(
+     ("g" "Save reference to review tag"
+      entry
+      (file+headline "review.org" "Review Tags")
+      "** %a
+%c" :immediate-finish t)
+     ("G" "Save reference to review tag (edit))"
+      entry
+      (file+headline "review.org" "Review Tags")
+      "** %a
+%c")
+     ("r" "Save reference to review comment"
+      checkitem
+      (file+headline "review.org" "Review Comments")
+      "  - [ ] %a")
+     ("R" "Review Comment (region)"
+      checkitem
+      (file+headline "review.org" "Review Comments")
+      "  - [ ] %i%?")
+     ("t" "Add TODO task"
+      entry
+      (file+headline "team.org" "Tasks")
+      "** TODO %i")
+     ("T" "Add TODO task with mail reference"
+      entry
+      (file+headline "team.org" "Tasks")
+      "** TODO %i\nSee %a")
+     ("C" "Current activity as progress"
+      entry
+      (file+olp "~/org/team.org" "Meetings" "Current" "Progress")
+      "  - %a")
+     ("Q" "Queue Review (email)"
+      entry
+      (file+headline "team.org" "Review Queue")
+      "** TODO %a"  :immediate-finish t))))
 
-;;
-;; DCO Tag snarfing
-;;
-;; This is used for grabbing Reviewed-by and other such tags from a
-;; mailing list.
-;;
-(defvar my-dco-tag-re
-  (rx (: bol (zero-or-more (in blank))                        ;; fresh line
-         (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
-         (one-or-more (in alpha blank "<>@."))                ;; person
-         eol))
-  "Regexp to match DCO style tag.")
-
-(defun my-capture-review-tags ()
-  "Return a list of DCO style tags for current buffer."
-  (let ((tags))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward my-dco-tag-re (point-max) t)
-        (add-to-list 'tags (match-string-no-properties 0))))
-    tags))
+;; ORG Based review automation
 
 (defun my-org-maybe-capture-review-tag-or-comment ()
   "Check buffer for DCO tags and save, if not queue a review comment."
@@ -159,22 +146,25 @@ If `STATUS' is set then set the TODO state to that on match."
                      (string-match-p subject text)
                      (not (eq todo 'done)))
 
-            ;; Set status
-            (when status
-              (with-current-buffer buffer
-                (save-excursion
-                  (let ((b (org-element-property :begin hl))
-                        (e (org-element-property :end hl)))
-                    ;; hack, aim for the middle of the element
-                    (goto-char (/ (+ b e) 2))
-                    (org-todo status)))))
+            ;; Extract paragraph data first
+            (let* ((begin (org-element-property :contents-begin hl))
+                   (end (org-element-property :contents-end hl))
+                   (tag
+                    (with-current-buffer buffer
+                      (chomp (buffer-substring-no-properties begin end)))))
 
-            ;; Extract paragraph data
-            (let ((begin (org-element-property :contents-begin hl))
-                  (end (org-element-property :contents-end hl)))
-              (with-current-buffer buffer
-                (chomp (buffer-substring-no-properties begin
-                                                       end))))))))))
+              ;; Set status - this fucks up for multiple tags
+              (when status
+                (with-current-buffer buffer
+                  (save-excursion
+                    (let ((b (org-element-property :begin hl))
+                          (e (org-element-property :end hl)))
+                      ;; hack, aim for the middle of the element
+                      (goto-char (/ (+ b e) 2))
+                      (org-todo status)))))
+
+              tag)))))))
+
 
 ;; Clocking behaviour
 (use-package org-clock
@@ -301,7 +291,8 @@ If `STATUS' is set then set the TODO state to that on match."
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
          ("h" helm-org-agenda-files-headings "org-headings (helm)")
-         ("r" (org-capture nil "r") "org-capture-email-review"))))
+         ("q" (org-capture nil "Q") "Queue for review")
+         ("r" (org-capture nil "r") "Capture review comment"))))
     (org-clock-persistence-insinuate)))
 
 ;; Org reveal
