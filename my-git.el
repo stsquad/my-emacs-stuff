@@ -48,6 +48,31 @@
 
 ;(add-hook 'git-commit-mode 'my-commit-mode-check-for-tags)
 
+;; Re-base workflow
+;;
+;; When re-basing I want to tag for re-wording anything that needs
+;; s-o-b and r-b tags applying. I also want to mark for editing
+;; anything that has outstanding review comments.
+
+(defvar my-rebase-match-re
+  (rx (: bol
+         (one-or-more letter) ; rebase action
+         " "
+         (= 7 hex)            ; commitish
+         " "
+         (group (one-or-more nonl)))) ; summary
+  "Regexp to match summary lines in rebase summary.")
+
+(defun my-mark-rebase-commits-for-tagging ()
+  "Set any commits in a re-base buffer to if tagging required."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward my-rebase-match-re (point-max) t)
+      (let ((msg (match-string-no-properties 1)))
+        (when (my-org-find-review-tags msg "ACTIVE")
+          (git-rebase-reword))))))
+
 ;;;
 ;; Run checkpatch.pl if we can
 ;;
