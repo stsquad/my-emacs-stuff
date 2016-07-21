@@ -144,42 +144,37 @@ This is used by my-org-run-default-block which is added to
            (when (string-match heading (org-element-property :raw-value hl))
              (identity hl)))))))
 
-(defun my-org-get-unchecked-items (items)
-  "Return the AST of unchecked ITEMS."
-  (org-element-map items 'item
-    (lambda (item) (when (eq (org-element-property :checkbox item) 'off)
-                     (org-element-contents item)))))
-
-(defun my-org-get-headings (items headline level)
-  "Return the AST of matching headlines."
-  (org-element-map items 'headline
-    (lambda (item) (when (string-match-p
-                          headline
-                          (org-element-contents item))))))
-
-(defun my-org-visit-link-and-snarf-tags ()
-  "Visit org-link-at-point and return a set of tags."
-  (save-window-excursion
-    (org-open-at-point t)
-    (my-capture-review-tags)))
-
-(defun my-org-find-review-tags (subject)
-  "Search saved review tags, looking for `SUBJECT' match."
+(defun my-org-find-review-tags (subject &optional status)
+  "Search saved review tags, looking for `SUBJECT' match.
+If `STATUS' is set then set the TODO state to that on match."
   (interactive)
-  (let* ((ast (my-org-get-elements "review.org" "Review Tags"))
-         (buffer (org-capture-target-buffer "review.org")))
+  (let ((ast (my-org-get-elements "review.org" "Review Tags"))
+        (buffer (org-capture-target-buffer "review.org")))
     (org-element-map ast 'headline
-      (lambda (headline)
-        (when (and (=
-                    2 (org-element-property :level headline))
-                   (string-match-p
-                    subject (org-element-property :raw-value headline)))
-          (let ((begin
-                 (org-element-property :contents-begin headline))
-                (end
-                 (org-element-property :contents-end headline)))
-            (with-current-buffer buffer
-              (chomp (buffer-substring-no-properties begin end)))))))))
+      (lambda (hl)
+        (let ((level (org-element-property :level hl))
+              (text (org-element-property :raw-value hl))
+              (todo (org-element-property :todo-type hl)))
+          (when (and (= 2 level)
+                     (string-match-p subject text)
+                     (not (eq todo 'done)))
+
+            ;; Set status
+            (when status
+              (with-current-buffer buffer
+                (save-excursion
+                  (let ((b (org-element-property :begin hl))
+                        (e (org-element-property :end hl)))
+                    ;; hack, aim for the middle of the element
+                    (goto-char (/ (+ b e) 2))
+                    (org-todo status)))))
+
+            ;; Extract paragraph data
+            (let ((begin (org-element-property :contents-begin hl))
+                  (end (org-element-property :contents-end hl)))
+              (with-current-buffer buffer
+                (chomp (buffer-substring-no-properties begin
+                                                       end))))))))))
 
 ;; Clocking behaviour
 (use-package org-clock
