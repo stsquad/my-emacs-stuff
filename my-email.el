@@ -400,18 +400,19 @@ to `my-mu4e-patches' for later processing."
            (I-am-at-work
             '(
               ;; Personal bookmarks
-              ("\(to:alex.bennee or cc:alex.bennee\) NOT m:/linaro/misc/ AND flag:unread "
+              ("recip:alex.bennee flag:unread "
                "Unread posts addressed to me" ?M)
-              ("\(to:alex.bennee or cc:alex.bennee\) AND flag:list AND flag:unread "
+              ("recip:alex.bennee flag:list flag:unread "
                "Unread list email addressed to me" ?m)
-              ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
+              ("recip:alex.bennee AND \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
                "Mail addressed to me with git tags" ?g)
               ("\(from:alex.bennee OR from:bennee.com\)"
                "Mail sent by me" ?s)
-              ("\(to:alex.bennee OR cc:alex.bennee\) s:Re NOT flag:seen"
+              ("recip:alex.bennee s:Re NOT flag:seen"
                "Mail sent by me (unread replied)" ?S)
               ("\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
-               "My patches" ?P)
+               "My patches" ?p)
+              ("s:PULL \(b:Bennée OR b:Bennee\)" "Pull Reqs with my name" ?P)
               ("flag:flagged" "Flagged and starred posts" ?f)
               ("flag:flagged NOT flag:seen" "Unread flagged and starred posts" ?F)
               ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
