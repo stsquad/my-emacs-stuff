@@ -94,9 +94,10 @@ If the region is less than a line long assume I want to mark the next
 
 (use-package region-bindings-mode
   :if (locate-library "region-bindings-mode")
+  :commands (region-bindings-mode-enable)
   :bind (:map region-bindings-mode-map
               ("C-n" . my-next-mc-or-line-dwim))
-  :config (region-bindings-mode-enable))
+  :init (region-bindings-mode-enable))
 
 (use-package ws-butler
   :ensure t
