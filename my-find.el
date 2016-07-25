@@ -25,12 +25,26 @@
 
 ;; Code
 
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+(require 'my-helm)
+
+(use-package helm-swoop
+  :ensure t
+  :bind (("C-c o" . helm-swoop)
+         ("C-c O" . helm-multi-swoop)))
+
+(use-package helm-git-grep
+  :ensure t
+  :commands helm-git-grep
+  :config (setq helm-git-grep-candidate-number-limit nil))
 
 (use-package helm-ag
   :ensure t
   :commands helm-ag
   :init (global-set-key (kbd "<f6>") 'helm-do-ag))
+
+(use-package wgrep-helm
+  :ensure t)
 
 (use-package flx
   :ensure t)

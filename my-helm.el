@@ -3,8 +3,8 @@
 ;;; Commentary:
 ;;
 ;; Helm provides a fairly comprehensive narrowing framework for
-;; selecting from a list of options. The actions are quite
-;; comprehensive and reasonably well documented. But it's a lot to get
+;; selecting from a list of options.  The actions are quite
+;; comprehensive and reasonably well documented.  But it is a lot to get
 ;; your head around.
 ;;
 ;;; Code:
@@ -34,11 +34,6 @@
 
 (use-package helm-elisp
   :bind ("C-h a" . helm-apropos))
-
-(use-package helm-git-grep
-  :ensure t
-  :commands helm-git-grep
-  :config (setq helm-git-grep-candidate-number-limit nil))
 
 (use-package helm-gtags
   :ensure t
