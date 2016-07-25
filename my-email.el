@@ -10,6 +10,7 @@
 (require 'use-package)
 (require 'my-vars)
 (require 'my-libs)
+(require 'dash)
 
 (use-package async
   :ensure t)
@@ -311,6 +312,25 @@ Useful for replies and drafts")
     (make-variable-buffer-local 'my-mu4e-patches)
     (make-variable-buffer-local 'my-mu4e-applied-patches)
 
+    (defun my-mu4e-get-patch-number (msg)
+      "Return patch number from a message."
+      (let ((subject (mu4e-message-field msg :subject)))
+        (when
+            (string-match
+             (rx (: (group-n 1 (one-or-more (any "0-9"))) (any "/")
+                    (one-or-more (any "0-9"))))
+             subject)
+          (match-string 1 subject))))
+
+    (defun my-mu4e-remaining-patches ()
+    "Return a sorted list of patches left to apply"
+    (--sort
+     (string<
+       (my-mu4e-get-patch-number it)
+       (my-mu4e-get-patch-number other))
+     (-difference my-mu4e-patches
+                  my-mu4e-applied-patches)))
+
     (defun my-mu4e-apply-marked-mbox-patches ()
       "Apply patches in order."
       (interactive)
@@ -325,12 +345,7 @@ Useful for replies and drafts")
                       nil)
                   ; not marked, skip
                   t))
-              (--sort
-               (string<
-                (mu4e-message-field-raw it :subject)
-                (mu4e-message-field-raw other :subject))
-               (-difference my-mu4e-patches
-                            my-mu4e-applied-patches)))))
+              (my-mu4e-remaining-patches))))
         (setq my-mu4e-applied-patches
               (-union my-mu4e-applied-patches applied-or-skipped))
 
@@ -353,8 +368,8 @@ to `my-mu4e-patches' for later processing."
                 (rx
                  (: bol "["
                     (minimal-match (zero-or-more (not (any "/"))))
-                    (or (: (any "0-9") (any "1-9"))
-                        (: (any "1-9") (any "0-9")))
+                    (or (: (any "0-9") (zero-or-one (any "1-9")))
+                        (: (any "1-9") (zero-or-one (any "0-9"))))
                     "/"))
                 (mu4e-message-field-raw msg :subject)))
         (add-to-list 'my-mu4e-patches msg)))
