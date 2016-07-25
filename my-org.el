@@ -165,6 +165,23 @@ If `STATUS' is set then set the TODO state to that on match."
 
               tag)))))))
 
+(defun my-org-find-review-comments (subject)
+  "Return links to comments pertaining to `SUBJECT'."
+  (interactive)
+  (let ((ast (my-org-get-elements "review.org" "Review Comments"))
+        (buffer (org-capture-target-buffer "review.org")))
+    (org-element-map ast 'item
+      (lambda (item)
+        (let ((check (org-element-property :checkbox item))
+              (beg (org-element-property :contents-begin item))
+              (end (org-element-property :contents-end item))
+              (link))
+          (setq link (with-current-buffer buffer
+                       (buffer-substring-no-properties beg end)))
+          (when (and (eq  check 'off)
+                     (string-match-p subject link))
+            (chomp link)))))))
+
 
 ;; Clocking behaviour
 (use-package org-clock

@@ -71,7 +71,7 @@
   (rx (: bol
          (one-or-more letter) ; rebase action
          " "
-         (= 7 hex)            ; commitish
+         (>= 7 hex)            ; commitish
          " "
          (group (one-or-more nonl)))) ; summary
   "Regexp to match summary lines in rebase summary.")
@@ -85,6 +85,16 @@
       (let ((msg (match-string-no-properties 1)))
         (when (my-org-find-review-tags msg "ACTIVE")
           (git-rebase-reword))))))
+
+(defun my-mark-rebase-commits-for-editing ()
+  "Set any commits in the re-base buffer to edit if comments."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward my-rebase-match-re (point-max) t)
+      (let ((msg (match-string-no-properties 1)))
+        (when (my-org-find-review-comments msg)
+          (git-rebase-edit))))))
 
 ;;;
 ;; Run checkpatch.pl if we can
