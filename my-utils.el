@@ -96,20 +96,6 @@
             (insert ":" word)))
         (insert hex-string)))))
 
-
-;; Fix up the frame so we don't send pinentry to the wrong place
-(defun my-fixup-gpg-agent (frame)
-  "Tweak DISPLAY and GPG_TTY environment variables as appropriate to `FRAME'."
-  (when (fboundp 'keychain-refresh-environment)
-    (keychain-refresh-environment))
-  (if (display-graphic-p frame)
-      (setenv "DISPLAY" (terminal-name frame))
-    (setenv "GPG_TTY" (terminal-name frame))
-    (setenv "DISPLAY" nil)))
-
-(add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
-(add-hook 'focus-in-hook #'(lambda() (my-fixup-gpg-agent (selected-frame))))
-
 (defun my-switch-browser (&optional frame)
   "Tweak default browser depending on `FRAME' visibility.
 If frame is not set use (current-frame)."

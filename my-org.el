@@ -3,7 +3,7 @@
 ;;; Commentary:
 ;;
 ;; I'm slowly using org-mode more and more although there seem to be
-;; some poor interactions with use-package. As a result I need to
+;; some poor interactions with use-package.  As a result I need to
 ;; split up the various sub-modes of org-mode.
 ;;
 ;;; Code:
@@ -66,33 +66,122 @@ This is used by my-org-run-default-block which is added to
             (setq org-src-window-setup 'current-window)))
 
 (use-package org-capture
-  :commands org-capture
-  :config (setq
-           org-capture-templates
-           '(("r" "Review Comment (email)"
-              checkitem
-              (file+headline "review.org" "Review Comments")
-              "  - [ ] %a%?")
-             ("R" "Review Comment (region)"
-              checkitem
-              (file+headline "review.org" "Review Comments")
-              "  - [ ] %i%?")
-             ("t" "Add TODO task"
-              entry
-              (file+headline "team.org" "Tasks")
-              "** TODO %i%?")
-             ("T" "Add TODO task with mail reference"
-              entry
-              (file+headline "team.org" "Tasks")
-              "** TODO %i%?\nSee %a%?")
-             ("C" "Current activity as progress"
-              entry
-              (file+olp "~/org/team.org" "Meetings" "Current" "Progress")
-              "  - %a")
-             ("Q" "Queue Review (email)"
-              entry
-              (file+headline "team.org" "Review Queue")
-              "** TODO %a"))))
+  :commands org-capture org-capture-target-buffer
+  :config
+  (setq
+   org-capture-templates
+   '(
+     ("g" "Save reference to review tag"
+      entry
+      (file+headline "review.org" "Review Tags")
+      "** %a
+%c" :immediate-finish t)
+     ("G" "Save reference to review tag (edit))"
+      entry
+      (file+headline "review.org" "Review Tags")
+      "** %a
+%c")
+     ("r" "Save reference to review comment"
+      checkitem
+      (file+headline "review.org" "Review Comments")
+      "  - [ ] %a")
+     ("R" "Review Comment (region)"
+      checkitem
+      (file+headline "review.org" "Review Comments")
+      "  - [ ] %i%?")
+     ("t" "Add TODO task"
+      entry
+      (file+headline "team.org" "Tasks")
+      "** TODO %i")
+     ("T" "Add TODO task with mail reference"
+      entry
+      (file+headline "team.org" "Tasks")
+      "** TODO %i\nSee %a")
+     ("C" "Current activity as progress"
+      entry
+      (file+olp "~/org/team.org" "Meetings" "Current" "Progress")
+      "  - %a")
+     ("Q" "Queue Review (email)"
+      entry
+      (file+headline "team.org" "Review Queue")
+      "** TODO %a"  :immediate-finish t))))
+
+;; ORG Based review automation
+
+(defun my-org-maybe-capture-review-tag-or-comment ()
+  "Check buffer for DCO tags and save, if not queue a review comment."
+  (interactive)
+  (let ((tags (my-capture-review-tags)))
+    (if (not tags)
+        (org-capture nil "r")
+      (kill-new (mapconcat 'identity tags "\n"))
+      (org-capture nil "g"))))
+
+(with-eval-after-load 'mu4e
+  (when (fboundp 'mu4e-view-mode-map)
+    (define-key mu4e-view-mode-map (kbd "C-c C-c") 'my-org-maybe-capture-review-tag-or-comment)))
+
+(defun my-org-get-elements (file heading)
+  "Search FILE for HEADING and return the AST of that heading."
+  (interactive)
+  (let ((org-buf (org-capture-target-buffer file)))
+    (with-current-buffer org-buf
+      (org-element-map (org-element-parse-buffer) 'headline
+         (lambda (hl)
+           (when (string-match heading (org-element-property :raw-value hl))
+             (identity hl)))))))
+
+(defun my-org-find-review-tags (subject &optional status)
+  "Search saved review tags, looking for `SUBJECT' match.
+If `STATUS' is set then set the TODO state to that on match."
+  (interactive)
+  (let ((ast (my-org-get-elements "review.org" "Review Tags"))
+        (buffer (org-capture-target-buffer "review.org")))
+    (org-element-map ast 'headline
+      (lambda (hl)
+        (let ((level (org-element-property :level hl))
+              (text (org-element-property :raw-value hl))
+              (todo (org-element-property :todo-type hl)))
+          (when (and (= 2 level)
+                     (string-match-p subject text)
+                     (not (eq todo 'done)))
+
+            ;; Extract paragraph data first
+            (let* ((begin (org-element-property :contents-begin hl))
+                   (end (org-element-property :contents-end hl))
+                   (tag
+                    (with-current-buffer buffer
+                      (chomp (buffer-substring-no-properties begin end)))))
+
+              ;; Set status - this fucks up for multiple tags
+              (when status
+                (with-current-buffer buffer
+                  (save-excursion
+                    (let ((b (org-element-property :begin hl))
+                          (e (org-element-property :end hl)))
+                      ;; hack, aim for the middle of the element
+                      (goto-char (/ (+ b e) 2))
+                      (org-todo status)))))
+
+              tag)))))))
+
+(defun my-org-find-review-comments (subject)
+  "Return links to comments pertaining to `SUBJECT'."
+  (interactive)
+  (let ((ast (my-org-get-elements "review.org" "Review Comments"))
+        (buffer (org-capture-target-buffer "review.org")))
+    (org-element-map ast 'item
+      (lambda (item)
+        (let ((check (org-element-property :checkbox item))
+              (beg (org-element-property :contents-begin item))
+              (end (org-element-property :contents-end item))
+              (link))
+          (setq link (with-current-buffer buffer
+                       (buffer-substring-no-properties beg end)))
+          (when (and (eq  check 'off)
+                     (string-match-p subject link))
+            (chomp link)))))))
+
 
 ;; Clocking behaviour
 (use-package org-clock
@@ -219,7 +308,8 @@ This is used by my-org-run-default-block which is added to
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
          ("h" helm-org-agenda-files-headings "org-headings (helm)")
-         ("r" (org-capture nil "r") "org-capture-email-review"))))
+         ("q" (org-capture nil "Q") "Queue for review")
+         ("r" (org-capture nil "r") "Capture review comment"))))
     (org-clock-persistence-insinuate)))
 
 ;; Org reveal

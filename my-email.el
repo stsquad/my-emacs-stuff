@@ -10,6 +10,7 @@
 (require 'use-package)
 (require 'my-vars)
 (require 'my-libs)
+(require 'dash)
 
 (use-package async
   :ensure t)
@@ -311,6 +312,25 @@ Useful for replies and drafts")
     (make-variable-buffer-local 'my-mu4e-patches)
     (make-variable-buffer-local 'my-mu4e-applied-patches)
 
+    (defun my-mu4e-get-patch-number (msg)
+      "Return patch number from a message."
+      (let ((subject (mu4e-message-field msg :subject)))
+        (when
+            (string-match
+             (rx (: (group-n 1 (one-or-more (any "0-9"))) (any "/")
+                    (one-or-more (any "0-9"))))
+             subject)
+          (match-string 1 subject))))
+
+    (defun my-mu4e-remaining-patches ()
+    "Return a sorted list of patches left to apply"
+    (--sort
+     (string<
+       (my-mu4e-get-patch-number it)
+       (my-mu4e-get-patch-number other))
+     (-difference my-mu4e-patches
+                  my-mu4e-applied-patches)))
+
     (defun my-mu4e-apply-marked-mbox-patches ()
       "Apply patches in order."
       (interactive)
@@ -325,12 +345,7 @@ Useful for replies and drafts")
                       nil)
                   ; not marked, skip
                   t))
-              (--sort
-               (string<
-                (mu4e-message-field-raw it :subject)
-                (mu4e-message-field-raw other :subject))
-               (-difference my-mu4e-patches
-                            my-mu4e-applied-patches)))))
+              (my-mu4e-remaining-patches))))
         (setq my-mu4e-applied-patches
               (-union my-mu4e-applied-patches applied-or-skipped))
 
@@ -338,6 +353,35 @@ Useful for replies and drafts")
                          (length applied-or-skipped)
                          (length my-mu4e-applied-patches)
                          (length my-mu4e-patches)))))
+
+    ;; The following two functions are custom marker functions
+    ;; Match function
+    (defun my-mu4e-patch-match (msg parent-id)
+      "Match any patches related to the parent-id. Add them
+to `my-mu4e-patches' for later processing."
+      (when
+          (and (string-match parent-id
+                             (or
+                              (mu4e-message-field-raw msg :in-reply-to)
+                              ""))
+               (string-match
+                (rx
+                 (: bol "["
+                    (minimal-match (zero-or-more (not (any "/"))))
+                    (or (: (any "0-9") (zero-or-one (any "1-9")))
+                        (: (any "1-9") (zero-or-one (any "0-9"))))
+                    "/"))
+                (mu4e-message-field-raw msg :subject)))
+        (add-to-list 'my-mu4e-patches msg)))
+
+
+    ;; Param function
+    (defun my-mu4e-patch-setup ()
+      "Reset the patch list and extract parent-id for `my-mu4e-patch-match'"
+      (setq my-mu4e-patches nil
+            my-mu4e-applied-patches nil)
+      (let ((msg (mu4e-message-at-point)))
+        (mu4e-message-field-raw msg :message-id)))
 
     (add-to-list
      'mu4e-marks
@@ -347,25 +391,7 @@ Useful for replies and drafts")
 
     (add-to-list
      'mu4e-headers-custom-markers
-     '("Patches"
-       ;; Match function
-       (lambda (msg parent-id)
-         (when
-             (and
-              (string-match
-               parent-id
-               (or
-                (mu4e-message-field-raw msg :in-reply-to)
-                ""))
-              (string-match "^\\[" (mu4e-message-field-raw msg
-                                                           :subject)))
-           (add-to-list 'my-mu4e-patches msg)))
-       ;; Param function
-       (lambda ()
-         (setq my-mu4e-patches nil
-               my-mu4e-applied-patches nil)
-         (let ((msg (mu4e-message-at-point)))
-           (mu4e-message-field-raw msg :message-id)))))
+     '("Patches" my-mu4e-patch-match my-mu4e-patch-setup))
     ;; Header actions
     (setq mu4e-headers-actions
           (delete-dups
@@ -389,18 +415,19 @@ Useful for replies and drafts")
            (I-am-at-work
             '(
               ;; Personal bookmarks
-              ("\(to:alex.bennee or cc:alex.bennee\) NOT m:/linaro/misc/ AND flag:unread "
+              ("recip:alex.bennee flag:unread "
                "Unread posts addressed to me" ?M)
-              ("\(to:alex.bennee or cc:alex.bennee\) AND flag:list AND flag:unread "
+              ("recip:alex.bennee flag:list flag:unread "
                "Unread list email addressed to me" ?m)
-              ("\(to:alex.bennee or cc:alex.bennee\) and \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
+              ("recip:alex.bennee AND \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
                "Mail addressed to me with git tags" ?g)
               ("\(from:alex.bennee OR from:bennee.com\)"
                "Mail sent by me" ?s)
-              ("\(to:alex.bennee OR cc:alex.bennee\) s:Re NOT flag:seen"
+              ("recip:alex.bennee s:Re NOT flag:seen"
                "Mail sent by me (unread replied)" ?S)
               ("\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
-               "My patches" ?P)
+               "My patches" ?p)
+              ("s:PULL \(b:Bennée OR b:Bennee\)" "Pull Reqs with my name" ?P)
               ("flag:flagged" "Flagged and starred posts" ?f)
               ("flag:flagged NOT flag:seen" "Unread flagged and starred posts" ?F)
               ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"

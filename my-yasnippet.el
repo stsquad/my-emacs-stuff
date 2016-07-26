@@ -49,19 +49,13 @@
    (t "alex@....")))
 
 (defun my-yas-pull-req-helper ()
-  "Return a pull request string from a given directory"
+  "Return a pull request string from a given directory."
   (interactive)
   (let ((base "origin/master")
         (repo "https://github.com/stsquad/qemu.git")
         (head (shell-command-to-string "git describe")))
     (shell-command-to-string
      (format "git request-pull %s %s %s" base repo head))))
-
-(defun my-yas-local-exit-function (func)
-  "Call FUNC in the buffer-local yas-after-exit-snippet-hook."
-  (save-excursion
-    (make-local-variable 'yas-after-exit-snippet-hook)
-    (add-hook 'yas-after-exit-snippet-hook func)))
 
 (provide 'my-yasnippet.el)
 ;;; my-yasnippet.el ends here
