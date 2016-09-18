@@ -27,8 +27,11 @@
   :config (keychain-refresh-environment))
 
 ;; Fix up the frame so we don't send pinentry to the wrong place
-(defun my-fixup-gpg-agent (frame)
-  "Tweak DISPLAY and GPG_TTY environment variables as appropriate to `FRAME'."
+(defun my-fixup-gpg-agent (&optional frame)
+  "Tweak DISPLAY and GPG_TTY environment variables as appropriate to
+`FRAME'."
+  (when (not frame)
+    (setq frame (selected-frame)))
   (when (fboundp 'keychain-refresh-environment)
     (keychain-refresh-environment))
   (if (display-graphic-p frame)
@@ -36,8 +39,9 @@
     (setenv "GPG_TTY" (terminal-name frame))
     (setenv "DISPLAY" nil)))
 
-(add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
-(add-hook 'focus-in-hook #'(lambda() (my-fixup-gpg-agent (selected-frame))))
+(when (getenv "DISPLAY")
+  (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
+  (add-hook 'focus-in-hook 'my-fixup-gpg-agent))
 
 ;; enable EasyPG handling
 ; gpg-agent confuses epa when getting passphrase
@@ -52,7 +56,6 @@
   :config
   (progn
     (add-hook 'after-make-frame-functions 'my-squash-gpg t)
-    (remove-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
     (my-squash-gpg)
     (epa-file-enable)))
 

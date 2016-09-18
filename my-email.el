@@ -383,11 +383,12 @@ to `my-mu4e-patches' for later processing."
       (let ((msg (mu4e-message-at-point)))
         (mu4e-message-field-raw msg :message-id)))
 
-    (add-to-list
-     'mu4e-marks
-     '(patch
-       :char ("#" . "#")
-       :prompt "Patch"))
+    (when (boundp 'mu4e-marks)
+      (add-to-list
+       'mu4e-marks
+       '(patch
+         :char ("#" . "#")
+         :prompt "Patch")))
 
     (add-to-list
      'mu4e-headers-custom-markers
