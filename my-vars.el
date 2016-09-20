@@ -59,7 +59,7 @@
 (defvar my-dco-tag-re
   (rx (: bol (zero-or-more (in blank))                        ;; fresh line
          (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
-         (one-or-more (in alpha blank "<>@."))                ;; person
+         (one-or-more (in alpha blank "<>@.-"))                ;; person
          eol))
   "Regexp to match DCO style tag.")
 
