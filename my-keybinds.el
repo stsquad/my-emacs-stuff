@@ -50,7 +50,7 @@
 ; return (when using xcape)
 (global-set-key (kbd "<key-4660>") 'ignore)
 
-;; This gets over-ridden when auto-complete is in effect
+;; This gets over-ridden when company/auto-complete is in effect
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 ;; Goto-line should be easy
@@ -66,6 +66,9 @@
 ;? Do I still need this?
 (global-unset-key [delete])
 (global-set-key [delete] 'delete-char)
+
+;; C-z is too easy to hit (you can still C-x C-z to suspend)
+(global-unset-key (kbd "C-z"))
 
 ;; C-k deletes whole line
 (global-set-key "\C-k" 'kill-whole-line)
