@@ -70,7 +70,8 @@
 (use-package expand-region
   :ensure t
   :commands (er/expand-region)
-  :bind (("C-@" . my-mark-or-expand-dwim)
+  :bind (("C-SPC" . my-mark-or-expand-dwim)
+         ("C-@" . my-mark-or-expand-dwim)
          ("C-=" . er/expand-region)))
 
 (defun my-mark-or-expand-dwim (&optional arg)

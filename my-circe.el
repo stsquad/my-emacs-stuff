@@ -64,6 +64,10 @@
         (kill-buffer buf)))))
 
 ;; Auto join everything
+(defvar my-irc-login-timer
+  nil
+  "Timer for login.")
+
 (defun my-irc-login ()
   "Login into my usual IRCs."
   (interactive)
@@ -74,14 +78,21 @@
   (circe "Freenode")
   (circe "Pl0rt"))
 
+(defun my-disable-irc-login ()
+  "Disable an idle login."
+  (when my-irc-login-timer
+    (cancel-timer my-irc-login-timer)))
+
 (use-package circe
   :ensure t
   :commands (circe circe-set-display-handler)
   ;; :diminish ((circe-channel-mode . "CirceChan")
   ;;            (circe-server-mode . "CirceServ"))
   :requires my-tracking
-  :init (when (and I-am-at-work (daemonp) (not I-am-root))
-          (run-with-idle-timer 120 nil 'my-irc-login))
+  :init (when (and I-am-at-work
+                   (daemonp)
+                   (not I-am-root))
+          (setq my-irc-login-timer (run-with-idle-timer 120 nil 'my-irc-login)))
   :config
   (progn
     (require 'tls)
