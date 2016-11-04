@@ -10,7 +10,9 @@
 (require 'use-package)
 (require 'my-vars)
 
-(use-package edit-server)
+(use-package edit-server
+  :init (add-hook 'after-init-hook
+                  #'(lambda() (edit-server-start))))
 
 ;; Chromebook Support
 ;; Un-maintained due to not doing native editing on Chromebook these days
