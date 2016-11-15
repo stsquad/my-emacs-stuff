@@ -231,8 +231,10 @@ Useful for replies and drafts")
   (let* ((path (shell-quote-argument
                 (mu4e-message-field msg :path)))
          (command (format my-mu4e-register-ham-cmd path)))
-    (async-shell-command command))
-  (mu4e-mark-at-point 'something nil))
+    ;; (async-shell-command command))
+    (start-process "LHAM" nil "sa-learn" "--ham" path))
+  (mu4e-mark-at-point 'unmark nil)
+  (mu4e-headers-next))
 
 (use-package mu4e
   :commands mu4e

@@ -60,16 +60,11 @@
 (require 'my-basic-modes)
 (require 'my-display)
 
-(use-package edit-server
-  :if (and (getenv "DISPLAY")
-           (daemonp)
-           (not I-am-root)
-           (locate-library "edit-server.el"))
-  :commands edit-server-start
-  :init (add-hook 'after-init-hook
-                  #'(lambda()
-                      (edit-server-start)
-                      (load-library "my-edit-server.el"))))
+;; We only need one edit-server at a time really
+(when (and (getenv "DISPLAY") (daemonp) (not I-am-root))
+  (if (locate-library "atomic-chrome")
+      (use-package my-atomic-chrome)
+    (use-package my-edit-server)))
 
 ;; Stuff I always want
 ;; general editing
@@ -143,6 +138,7 @@
 (message "Done .emacs")
 
 (setq I-completed-loading-dotinit 't)
+(profiler-start 'cpu)
 
 (provide 'init)
 ;;; init.el ends here
