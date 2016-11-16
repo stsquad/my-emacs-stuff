@@ -22,6 +22,7 @@
 ;; Keychain access
 (use-package keychain-environment
   :ensure t
+  :if (or I-am-at-work I-am-at-home)
   :commands keychain-refresh-environment
   :defer 60
   :config (keychain-refresh-environment))
