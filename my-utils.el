@@ -221,6 +221,8 @@ Save password if `CACHE' is non nil."
 ;; Adding paths to environment
 (defun my-add-world-to-env (root)
   "Add `root'/bin and `root'/lib to run env if they exist."
+  (interactive
+   (list (ido-read-directory-name "Add world root:")))
   (let ((bin-path (format "%s/bin" root))
         (lib-path (format "%s/lib" root)))
     (when (file-exists-p bin-path)
