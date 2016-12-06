@@ -47,7 +47,8 @@
     :commands paradox-list-packages
     :config
     (when (my-primary-machine-p)
-      (setq paradox-github-token (my-pass-password "paradox" t)))))
+      (setq paradox-github-token (my-pass-password "paradox" t)
+            paradox-execute-asynchronously nil))))
 
 (provide 'my-package)
 ;;; my-package.el ends here
