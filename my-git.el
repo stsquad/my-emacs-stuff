@@ -16,21 +16,50 @@
 (use-package magit
   :ensure t
   :commands magit-status
-  :bind ("C-x g" . magit-status)
+  :bind (("C-x g" . magit-status)
+         :magit-hunk-section-map
+         ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree))
   :pin melpa-stable
   :init
   (progn
     (setq magit-last-seen-setup-instructions "1.4.0"))
   :config
   (progn
+    (defun my-magit-section-visibilities (section)
+      "Return t/nil for initial visibility of a magit-section"
+      (pcase (magit-section-type section)
+        ('stashes 'hide)
+        ('untracked 'hide)
+        ('unpulled 'hide)
+        ('unpushed 'hide)
+        (_ t)))
+
+    (add-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities)
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
-    ;; really I never use anything but git
-    (setq vc-handled-backends nil)
     (setq
+     ;; really I never use anything but git
+     vc-handled-backends nil
+     ;; tweak magit
      magit-patch-arguments '("--cover-letter")
-     magit-auto-revert-immediately 't)))
+     magit-auto-revert-immediately 't)
+    ;; Hydra for modes
+    (with-eval-after-load 'hydra
+      (define-key magit-mode-map
+        (kbd "C-x t")
+        (defhydra my-git-mode-hydra (:hint nil :color blue :timeout 10)
+          "
+Tweak Buffer State : _l_ock buffer: %`magit-buffer-locked-p
+Navigate History   : _p_revious/_b_ack history: %(nth 3 (car help-xref-stack)) _n_ext/_f_orward history: %(nth 3 (car help-xref-forward-stack))"
+          ;; Lock/unlock
+          ("l" (magit-toggle-buffer-lock))
+          ;; Navigation
+          ("b" (magit-go-backward) nil :color red)
+          ("p" (magit-go-backward) nil :color red)
+          ("f" (magit-go-forward) nil :color red)
+          ("n" (magit-go-forward)  nil :color red))))))
+
 
 ;; Tweaks to git-commit-mode
 ;;
