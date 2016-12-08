@@ -68,7 +68,7 @@
 
 ;; Expand region
 (use-package expand-region
-  :ensure t
+; not stable :ensure t
   :commands (er/expand-region)
   :bind (("C-SPC" . my-mark-or-expand-dwim)
          ("C-@" . my-mark-or-expand-dwim)
@@ -94,6 +94,7 @@ If the region is less than a line long assume I want to mark the next
     (call-interactively #'next-line)))
 
 (use-package region-bindings-mode
+; not in stable  :ensure t
   :if (locate-library "region-bindings-mode")
   :commands (region-bindings-mode-enable)
   :bind (:map region-bindings-mode-map
