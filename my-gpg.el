@@ -40,6 +40,14 @@
     (setenv "GPG_TTY" (terminal-name frame))
     (setenv "DISPLAY" nil)))
 
+(defun my-grab-ssh-agent-from-tmux ()
+  "Grab the SSH config from tmux."
+  (interactive)
+  (let ((ssh (shell-command-to-string "tmux showenv | grep -v '^-'")))
+    (list (and ssh
+               (string-match "SSH_AUTH_SOCK=\\(.*?\\)$" ssh)
+               (setenv       "SSH_AUTH_SOCK" (match-string 1 ssh))))))
+
 (when (getenv "DISPLAY")
   (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
   (add-hook 'focus-in-hook 'my-fixup-gpg-agent))
