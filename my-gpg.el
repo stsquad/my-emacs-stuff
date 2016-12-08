@@ -28,6 +28,7 @@
 ;; Keychain access
 (use-package keychain-environment
   :ensure t
+  :if (or I-am-at-work I-am-at-home)
   :commands keychain-refresh-environment
   :defer 60
   :config (progn
@@ -47,6 +48,14 @@
       (setenv "DISPLAY" (terminal-name frame))
     (setenv "GPG_TTY" (terminal-name frame))
     (setenv "DISPLAY" nil)))
+
+(defun my-grab-ssh-agent-from-tmux ()
+  "Grab the SSH config from tmux."
+  (interactive)
+  (let ((ssh (shell-command-to-string "tmux showenv | grep -v '^-'")))
+    (list (and ssh
+               (string-match "SSH_AUTH_SOCK=\\(.*?\\)$" ssh)
+               (setenv       "SSH_AUTH_SOCK" (match-string 1 ssh))))))
 
 (when (getenv "DISPLAY")
   (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)

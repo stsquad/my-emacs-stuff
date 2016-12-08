@@ -85,6 +85,11 @@
 (global-set-key [kp-divide] 'previous-error)
 (global-set-key (kbd "M-O j") 'next-error)
 (global-set-key [kp-multiply] 'next-error)
+;; above don't seem to preserve across mosh sessions
+(global-set-key (kbd "<f7>") 'previous-error)
+(global-set-key (kbd "<f8>") 'next-error)
+
+
 
 (provide 'my-keybinds)
 ;;; my-keybinds.el ends here

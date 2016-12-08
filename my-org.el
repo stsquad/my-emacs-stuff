@@ -314,6 +314,7 @@ If `STATUS' is set then set the TODO state to that on match."
 
 ;; Org reveal
 (use-package ox-reveal
+  :disabled (not I-am-at-work)
   :if (locate-library "ox-reveal"))
 
 ;; Org Babel configurations

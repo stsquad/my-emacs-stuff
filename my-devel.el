@@ -66,6 +66,23 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
         (lwarn 'emacs :warning "Compilation process in %s seems stalled!"
                (buffer-name))))))
 
+(defvar my-tsan-compilation-mode-regex
+  (rx
+   (: bol (zero-or-more blank)      ; start-of-line
+      "#" (one-or-more digit)       ; stack depth
+      blank
+      (one-or-more (in alnum "_"))  ; function name
+      blank
+      (group-n 1 (one-or-more (in alnum "/.-"))) ; path
+      ":"
+      (group-n 2 (one-or-more digit))            ; line number
+      ))
+  "A regex to match lines of the form:
+
+    #1 page_flush_tb_1 /home/alex/lsrc/qemu/qemu.git/translate-all.c:818 (qemu-arm+0x00006000cb42)
+")
+
+
 (use-package compile
   :bind (("C-c c" . compile)
          ("C-c r" . recompile))
@@ -76,9 +93,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
      compilation-auto-jump-to-first-error nil
      compilation-scroll-output t
      compilation-window-height 10)
+    (add-to-list 'compilation-error-regexp-alist-alist
+                 (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0 ))
     ;; lets not overtax the regex matcher on our huge compilation buffers
     (when I-am-at-work
-      (setq compilation-error-regexp-alist '(gcc-include gnu)))
+      (setq compilation-error-regexp-alist '(gcc-include gnu tsan)))
     ;; shortcut keybindings
     (define-key
       compilation-mode-map (kbd "n") 'compilation-next-error)

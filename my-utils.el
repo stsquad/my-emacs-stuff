@@ -193,9 +193,9 @@ Save password if `CACHE' is non nil."
   "Last value I set the directory to")
 
 (defun my-set-default-directory (&optional dir)
-  "Set default-directory."
+  "Set new `default-directory' to DIR."
   (interactive)
-  (let ((dir (or dir (ido-read-directory-name "Default Directory"))))
+  (let ((dir (or dir (ido-read-directory-name "Default Directory: "))))
     (setq default-directory dir
           my-last-set-directory dir)))
 
