@@ -32,6 +32,7 @@
         ('untracked 'hide)
         ('unpulled 'hide)
         ('unpushed 'hide)
+        ('file 'hide)
         (_ t)))
 
     (add-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities)
