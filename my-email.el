@@ -475,8 +475,10 @@ to `my-mu4e-patches' for later processing."
            (I-am-on-server
             '(
               ;; Personal bookmarks
-              ("\(to:alex@bennee.com or cc:alex@bennee.com\) AND flag:unread "
+              ("recip:alex@bennee.com AND flag:unread "
                "Unread posts addressed to me" ?M)
+              ("flag:unread AND NOT recip:alex@bennee.com"
+               "Unread posts addressed to aliases" ?a)
               ("flag:list AND flag:unread "
                "Unread list/notification email" ?m)
               ("\(from:alex.bennee OR from:bennee.com\)"
