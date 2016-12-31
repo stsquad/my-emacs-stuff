@@ -35,7 +35,7 @@
         ('file 'hide)
         (_ t)))
 
-    (add-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities)
+    (add-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities t)
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (add-hook 'magit-log-mode-hook 'my-magit-add-checkpatch-hook)
