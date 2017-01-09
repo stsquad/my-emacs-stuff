@@ -19,12 +19,22 @@
 
 (require 'use-package)
 
+;; enable EasyPG handling
+; gpg-agent confuses epa when getting passphrase
+(defun my-squash-gpg (&rest ignored-frame)
+  "Kill any GPG_AGENT_INFO in our environment."
+  (setenv "GPG_AGENT_INFO" nil))
+
 ;; Keychain access
 (use-package keychain-environment
   :ensure t
+  :if (or I-am-at-work I-am-at-home)
   :commands keychain-refresh-environment
   :defer 60
-  :config (keychain-refresh-environment))
+  :config (progn
+            (keychain-refresh-environment)
+            (when (string-match "socrates" (system-name))
+              (my-squash-gpg))))
 
 ;; Fix up the frame so we don't send pinentry to the wrong place
 (defun my-fixup-gpg-agent (&optional frame)
@@ -39,15 +49,17 @@
     (setenv "GPG_TTY" (terminal-name frame))
     (setenv "DISPLAY" nil)))
 
+(defun my-grab-ssh-agent-from-tmux ()
+  "Grab the SSH config from tmux."
+  (interactive)
+  (let ((ssh (shell-command-to-string "tmux showenv | grep -v '^-'")))
+    (list (and ssh
+               (string-match "SSH_AUTH_SOCK=\\(.*?\\)$" ssh)
+               (setenv       "SSH_AUTH_SOCK" (match-string 1 ssh))))))
+
 (when (getenv "DISPLAY")
   (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
   (add-hook 'focus-in-hook 'my-fixup-gpg-agent))
-
-;; enable EasyPG handling
-; gpg-agent confuses epa when getting passphrase
-(defun my-squash-gpg (&rest ignored-frame)
-  "Kill any GPG_AGENT_INFO in our environment."
-  (setenv "GPG_AGENT_INFO" nil))
 
 (use-package epa-file
   :if (string-match "socrates" (system-name))
