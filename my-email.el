@@ -514,6 +514,7 @@ to `my-mu4e-patches' for later processing."
 
 (use-package mu4e-alert
   :ensure t
+  :if (locate-library "mu4e")
   :config (progn
             (setq mu4e-alert-interesting-mail-query
                   "recip:alex.bennee flag:unread date:7d..now AND NOT flag:trashed")
