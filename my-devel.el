@@ -139,6 +139,15 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (use-package tcl
   :mode ("\\.expect\\'" . tcl-mode))
 
+;; Markdown
+;; Markdown sites
+(use-package markdown-mode
+  :ensure t
+  :config
+  (progn
+    (setq markdown-reference-location 'end)))
+
+
 ;; Smart Parens
 (use-package smartparens
   :ensure t

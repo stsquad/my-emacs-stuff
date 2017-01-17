@@ -12,7 +12,10 @@
 
 (use-package edit-server
   :init (add-hook 'after-init-hook
-                  #'(lambda() (edit-server-start))))
+                  #'(lambda() (edit-server-start)))
+  :config (setq 'edit-server-url-major-mode-alist
+                (list '("stackexchange" . markdown-mode)
+                      '("github.com" . markdown-mode))))
 
 ;; Chromebook Support
 ;; Un-maintained due to not doing native editing on Chromebook these days
@@ -47,17 +50,6 @@
   :commands moinmoin-mode
   :init (add-to-list 'edit-server-url-major-mode-alist
                  '("wiki.linaro.org" . moinmoin-mode)))
-
-;; Markdown sites
-(use-package markdown-mode
-  :ensure t
-  :config
-  (progn
-    (setq markdown-reference-location 'end)
-    (add-to-list 'edit-server-url-major-mode-alist
-                 '("stackexchange" . markdown-mode))
-    (add-to-list 'edit-server-url-major-mode-alist
-                 '("github.com" . markdown-mode))))
 
 (setq edit-server-edit-mode-hook nil)
 (add-hook 'edit-server-edit-mode-hook 'flyspell-mode t)
