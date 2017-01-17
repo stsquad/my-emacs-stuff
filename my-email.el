@@ -81,10 +81,23 @@
 ;; This is my main work horse for day to day email.
 ;;
 
+(defun my-rig-mu4e-for-idle-running ()
+  "Setup more comprehensive indexing when Emacs is idle."
+  (setq mu4e-index-lazy-check nil   ; more comprehensive
+        mu4e-index-cleanup t))      ; check messages in store still there
+
+(defun my-rig-mu4e-for-active-running ()
+  "Setup faster indexing for when I'm actively using Emacs mail."
+  (setq mu4e-index-lazy-check t     ; faster sync
+        mu4e-index-cleanup nil)     ; skip checking the whole store
+  (when (not (-contains? (--map (aref it 5) timer-idle-list) 'my-rig-mu4e-for-idle-running))
+    (run-with-idle-timer 600 nil 'my-rig-mu4e-for-idle-running)))
+
 ;; Switch function
 (defun my-switch-to-mu4e (&optional prefix)
   "Smart dwim switch to mu4e."
   (interactive "P")
+  (my-rig-mu4e-for-active-running)
   (if prefix
       (mu4e)
     (let ((candidate
@@ -263,7 +276,10 @@ Useful for replies and drafts")
       (I-am-at-work "mbsync linaro-sync")
       (t "true"))
      mu4e-update-interval 600
+     mu4e-hide-index-messages t
      mu4e-change-filenames-when-moving t ; keep mbsync happy
+     mu4e-index-lazy-check t             ; faster sync
+     mu4e-index-cleanup nil              ; should toggle this
      ;; navigate options
      mu4e-use-fancy-chars t
      mu4e-headers-skip-duplicates t
