@@ -135,16 +135,16 @@ of things where C-SPC can't be used."
 (require 'whitespace)
 (global-set-key
    (kbd "C-x t")
-   (defhydra my-hydra-toggle (:hint nil :color red :timeout 5)
+   (defhydra my-hydra-toggle (:hint nil :color blue :timeout 5)
      (concat
-      "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _t_abs: %`indent-tabs-mode "
+      "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _T_abs: %`indent-tabs-mode "
       "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
      ;; Debugging
-     ("d" toggle-debug-on-error)
-     ("q" toggle-debug-on-quit)
+     ("d" toggle-debug-on-error :color red)
+     ("q" toggle-debug-on-quit :color red)
      ;; Fill, whitespace and other editing modes
      ("f" auto-fill-mode)
-     ("t" my-toggle-tabs)
+     ("T" my-toggle-tabs)
      ("u" my-toggle-buffer-undo)
      ("s" my-toggle-meta-space)
 
@@ -153,13 +153,13 @@ of things where C-SPC can't be used."
      ("w" whitespace-mode "whitespace")
      
      ;; Narrowing, region selection
-     ("n" my-narrow-or-widen-dwim "arrow-or-w" :exit t)
-     ("e" er/expand-region "xpand-r" :exit t)
+     ("n" my-narrow-or-widen-dwim "arrow-or-w")
+     ("e" er/expand-region "xpand-r")
 
      ;; misc
-     ("o" my-toggle-org-mode "org-mode" :exit t)
-     ("t" my-toggle-text-mode "text-mode" :exit t)
-     ("g" god-mode-all "god-mode" :exit t)
+     ("o" my-toggle-org-mode "org-mode")
+     ("t" my-toggle-text-mode "text-mode")
+     ("g" god-mode-all "god-mode")
      ;; quit the hydra
      ("x" nil "exit" :exit t)))
 

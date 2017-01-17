@@ -41,18 +41,19 @@ Number of marked items: %(length (dired-get-marked-files))
    (kbd "C-x d")
    (defhydra my-hydra-directory (:exit t :hint nil :color red :timeout 5)
      "
-^Dired Browse^               ^Change default-directory^
+^Dired Browse^   ^Change default-directory^
 ----------------------------------------------------------------
-_b_rowse (select dir)        Cur: %`default-directory
-from _h_ome (~)              _s_et new default-directory
-from _d_efault-directory     _l_ast set %`my-last-set-directory
+_f_rom         _c_urrent default-directory: %`default-directory
+_b_rowse      _l_ast set default-directory: %`my-last-set-directory
+_h_ome         _s_et new default-directory
 "
      ;; Set
      ("s" my-set-default-directory)
      ("l" (lambda () (interactive) (my-set-default-directory my-last-set-directory)))
      ;; Browse
+     ("f" (lambda () (interactive) (dired default-directory)))
+     ("c" (lambda () (interactive) (dired default-directory)))
      ("b" ido-dired)
-     ("d" (lambda () (interactive) (dired default-directory)))
      ("h" (lambda () (interactive) (dired "~")))))
 
 
