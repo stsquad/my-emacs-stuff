@@ -326,7 +326,7 @@ If `STATUS' is set then set the TODO state to that on match."
      (ditaa . t)
      (makefile . t)
      (python . t)
-     (sh . t)
+     (shell . t)
      (risu . t)
      (text . t))))
 ;;      (C . t)
