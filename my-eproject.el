@@ -81,6 +81,17 @@
   (generic)
   (look-for "../../elpa"))
 
+(defun my-docker-compile-strings (root make list-of-tags)
+  "Return a list of compile strings using docker at `ROOT'."
+  (let ((builds '()))
+    (--each list-of-tags
+      (add-to-list
+       'builds
+       (format
+        "docker run --rm -v %s:/src --user alex:alex -w /src %s %s"
+        root it make)))
+    builds))
+
 ;; QEMU
 (define-project-type qemu
   (generic-git)
@@ -183,10 +194,17 @@ Return in order of most recently updated."
 
 (add-hook 'wireshark-project-file-visit-hook 'my-eproj-is-c)
 
+(defun my-risu-compile-strings (root)
+  (my-docker-compile-strings
+   root
+   "/bin/sh -c \"./configure -s && make clean && make\""
+   '("debian:arm64" "debian:armhf" "debian:ppc64el")))
+
 (define-project-type risu
   (generic-git)
   (look-for "risu.c")
-  :c-style "risu-c-style")
+  :c-style "risu-c-style"
+  :common-compiles (my-risu-compile-strings))
 
 (define-project-type gtkg
   (generic-git)
