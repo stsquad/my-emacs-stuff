@@ -131,39 +131,29 @@ This is used by my-org-run-default-block which is added to
            (when (string-match heading (org-element-property :raw-value hl))
              (identity hl)))))))
 
-(defun my-org-find-review-tags (subject &optional status)
-  "Search saved review tags, looking for `SUBJECT' match.
-If `STATUS' is set then set the TODO state to that on match."
+(defun my-org-find-review-tags (subject &optional new-status)
+  "Return first review tag to match `SUBJECT'.
+If `NEW-STATUS' is set then change TODO state."
   (interactive)
-  (let ((ast (my-org-get-elements "review.org" "Review Tags"))
-        (buffer (org-capture-target-buffer "review.org")))
-    (org-element-map ast 'headline
-      (lambda (hl)
-        (let ((level (org-element-property :level hl))
-              (text (org-element-property :raw-value hl))
-              (todo (org-element-property :todo-type hl)))
-          (when (and (= 2 level)
-                     (string-match-p subject text)
-                     (not (eq todo 'done)))
+  (with-current-buffer (org-capture-target-buffer "review.org")
+    (let ((done)
+          (tags))
+      (org-map-entries
+       (fn
+        (when (string-match-p (regexp-quote subject)
+                              (nth 4 (org-heading-components)))
+          ; extract tag
+          (save-restriction
+            (narrow-to-region (point) (org-entry-end-position))
+            (setq tags (append tags (my-capture-review-tags)))
+            ; maybe toggle the status
+            (when new-status
+              (org-todo new-status)))))
+       "tags/-DONE" ; entries not yet marked
+       'file
+       (fn done))
+      tags)))
 
-            ;; Extract paragraph data first
-            (let* ((begin (org-element-property :contents-begin hl))
-                   (end (org-element-property :contents-end hl))
-                   (tag
-                    (with-current-buffer buffer
-                      (chomp (buffer-substring-no-properties begin end)))))
-
-              ;; Set status - this fucks up for multiple tags
-              (when status
-                (with-current-buffer buffer
-                  (save-excursion
-                    (let ((b (org-element-property :begin hl))
-                          (e (org-element-property :end hl)))
-                      ;; hack, aim for the middle of the element
-                      (goto-char (/ (+ b e) 2))
-                      (org-todo status)))))
-
-              tag)))))))
 
 (defun my-org-find-review-comments (subject)
   "Return links to comments pertaining to `SUBJECT'."
