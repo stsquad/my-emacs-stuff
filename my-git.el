@@ -32,8 +32,15 @@
         ('untracked 'hide)
         ('unpulled 'hide)
         ('unpushed 'hide)
-        ('file 'hide)
-        (_ t)))
+        ('file 'hide)))
+
+    (defun my-magit-toggle-section-visibilities ()
+      "Toggle my visibility hook setting."
+      (if (-contains? magit-section-set-visibility-hook
+                      'my-magit-section-visibilities)
+          (remove-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities)
+        (add-hook 'magit-section-set-visibility-hook
+                  'my-magit-section-visibilities t t)))
 
     (add-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities t)
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
@@ -51,10 +58,12 @@
         (kbd "C-x t")
         (defhydra my-git-mode-hydra (:hint nil :color blue :timeout 10)
           "
-Tweak Buffer State : _l_ock buffer: %`magit-buffer-locked-p
+Tweak Buffer State : _l_ock buffer: %`magit-buffer-locked-p toggle  _v_isibility: %(-contains? magit-section-set-visibility-hook 'my-magit-section-visibilities)
 Navigate History   : _p_revious/_b_ack history: %(nth 3 (car help-xref-stack)) _n_ext/_f_orward history: %(nth 3 (car help-xref-forward-stack))"
           ;; Lock/unlock
           ("l" (magit-toggle-buffer-lock))
+          ;; Visibility toggle
+          ("v" (my-magit-toggle-section-visibilities) nil :color red)
           ;; Navigation
           ("b" (magit-go-backward) nil :color red)
           ("p" (magit-go-backward) nil :color red)
@@ -80,7 +89,7 @@ Navigate History   : _p_revious/_b_ack history: %(nth 3 (car help-xref-stack)) _
           (save-excursion
             (goto-char (point-min))
             (while (re-search-forward my-dco-tag-re (point-max) t))
-            (next-line)
+            (beginning-of-line 2)
             (insert (mapconcat 'identity tags "\n"))
             (message "Added %d tags to buffer" (length tags))))))))
 
