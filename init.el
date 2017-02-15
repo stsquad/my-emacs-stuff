@@ -69,6 +69,8 @@
 ;; Stuff I always want
 ;; general editing
 (use-package my-editing)
+(use-package my-hydra)
+
 ;; email
 (use-package my-email
   :if (and (file-accessible-directory-p "~/Maildir")
@@ -129,9 +131,6 @@
   :if (string-match "seed" (system-name)))
 
 (load "the-rest.el")
-
-;; Finally some additional keybinds
-(load "my-hydra.el")
 
 ;; Finished loading
 
