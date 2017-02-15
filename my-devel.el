@@ -121,6 +121,9 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
       (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
       (add-hook 'compilation-finish-functions 'my-report-compilation-finished))))
 
+;; checkpatch
+(use-package checkpatch-mode)
+
 ;; asm-mode
 (use-package asm-mode
   :if (not (featurep 'gas-mode))

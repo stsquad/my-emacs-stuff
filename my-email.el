@@ -561,46 +561,10 @@ hook we are not yet in the compose buffer."
 ;;
 ;; Checkpatch in emails
 ;;
-(defvar my-checkpatch-script-history nil
-  "History of checkpatch invocations.")
-
-(defun my-mu4e-do-checkpatch (script-path msg)
-  "Run `SCRIPT-PATH' on `MSG'."
-  (let ((proc-name "checkpatch")
-        (buff-name (get-buffer-create (format "*checkpatch*")))
-        (msg-path (mu4e-message-field msg :path)))
-    ;; header
-    (with-current-buffer buff-name
-      (goto-char (point-max))
-      (insert (format "Running %s on %s\n"
-                      script-path
-                      (mu4e-message-field msg :subject))))
-    ;; checkpatch
-    (start-process-shell-command
-     proc-name
-     buff-name
-     (format "cat %s | %s -" msg-path script-path))
-    ;;
-    (switch-to-buffer buff-name)
-    (goto-char (point-max))
-    (compilation-minor-mode)))
 
 (defun my-mu4e-action-run-check-patch (msg)
-  "Run checkpatch against the [patch] `MSG'."
-  (let ((last-script (car my-checkpatch-script-history)))
-    ;; prompt the user if we can't go with the last run
-    (when (not (and last-script
-                    (file-exists-p last-script)
-                    (s-contains? default-directory last-script)))
-      (let ((ido-work-file-list my-checkpatch-script-history))
-        (setf last-script
-              (ido-read-file-name
-               "Checkpatch Script: " default-directory))
-        (setf my-checkpatch-script-history
-              (cons last-script (delete last-script
-                                        my-checkpatch-script-history)))))
-      ;; do the checkpatch
-      (my-mu4e-do-checkpatch last-script msg)))
+  "Call checkpatch against `MSG'."
+  (checkpatch-run-against-patch-file (mu4e-message-field msg :path)))
 
 ;; WIP: Pull requests
 (defun my-insert-pull-request ()
