@@ -6,10 +6,9 @@
 ** Current
 *** Progress
   - QEMU Multithread TCG ([[virt:48][VIRT-48]])
-  - QEMU MTTCG Review ([[virt:53][VIRT-53]])
   - Upstream Work ([[virt:109][VIRT-109]])
 *** Plans
   - 
 *** Absences
-  - Christmas/New Year (19th Dec-2nd Jan)
   - Linaro Connect BUD17 (6th-10th Mar 2017)
+  - KVM Forum (25th-27th Oct 2017 - unconfirmed)
