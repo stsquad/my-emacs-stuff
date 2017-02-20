@@ -39,16 +39,18 @@
   (package-refresh-contents)
     (package-install 'use-package))
 
-;; Advise installs to refresh
-;; see: https://github.com/jwiegley/use-package/issues/256
-(defun my-package-install-refresh-contents (&rest args)
-  "Advice wrapper for `package-install' to ensure list upto date.
+(when (version<= "24.4" emacs-version)
+
+  ;; Advise installs to refresh
+  ;; see: https://github.com/jwiegley/use-package/issues/256
+  (defun my-package-install-refresh-contents (&rest args)
+    "Advice wrapper for `package-install' to ensure list upto date.
 This ensures we update the package list at least once when a new
 package is installed programatically."
-  (package-refresh-contents)
-  (advice-remove 'package-install 'my-package-install-refresh-contents))
+    (package-refresh-contents)
+    (advice-remove 'package-install 'my-package-install-refresh-contents))
 
-(advice-add 'package-install :before 'my-package-install-refresh-contents)
+  (advice-add 'package-install :before 'my-package-install-refresh-contents))
 
 (require 'use-package)
 
