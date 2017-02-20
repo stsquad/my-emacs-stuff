@@ -27,6 +27,14 @@ if [ ! -f ${EMACS_CONFIG_HOME}/init.el ] ; then
     ln -s $linkfile $target
 fi
 
+if [ ! -f ${EMACS_CONFIG_HOME}/mininit.el ] ; then
+    echo "Linking $file to .emacs.d"
+    linkfile=`pwd`/mininit.el
+    target=${EMACS_CONFIG_HOME}/mininit.el
+    echo "Linking $linkfile to $target"
+    ln -s $linkfile $target
+fi
+
 #
 # Link in this directory
 #
