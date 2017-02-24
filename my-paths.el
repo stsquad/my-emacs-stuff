@@ -22,8 +22,7 @@
             (when (and (file-exists-p p)
                        (file-directory-p p))
               (add-to-list 'load-path p)))
-        (or paths my-config-paths))
-  (message "load-path is: %s" load-path))
+        (or paths my-config-paths)))
 
 (defun my-add-git-project-paths (&optional root)
   "Add any .git directories in `ROOT' to the `load-path'."
