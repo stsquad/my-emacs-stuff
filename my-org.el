@@ -308,19 +308,19 @@ If `NEW-STATUS' is set then change TODO state."
   :if (locate-library "ox-reveal"))
 
 ;; Org Babel configurations
-(ignore-errors
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (dot . t)
-     (ditaa . t)
-     (makefile . t)
-     (python . t)
-     (shell . t)
-     (risu . t)
-     (text . t))))
-;;      (C . t)
-;;      (asm . t))))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (dot . t)
+   (ditaa . t)
+   (makefile . t)
+   (python . t)
+   (shell . t)))
+;;    (risu . t)
+;;    (text . t)))
+;; ;;      (C . t)
+;; ;;      (asm . t))))
+
 
 (use-package org-src
   :config
