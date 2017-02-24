@@ -321,6 +321,9 @@ If `NEW-STATUS' is set then change TODO state."
 ;; ;;      (C . t)
 ;; ;;      (asm . t))))
 
+(use-package ob-async
+  :ensure t
+  :config (add-to-list 'org-ctrl-c-ctrl-c-hook 'ob-async-org-babel-execute-src-block))
 
 (use-package org-src
   :config
