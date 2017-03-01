@@ -25,24 +25,6 @@
     (setq magit-last-seen-setup-instructions "1.4.0"))
   :config
   (progn
-    (defun my-magit-section-visibilities (section)
-      "Return t/nil for initial visibility of a magit-section"
-      (pcase (magit-section-type section)
-        ('stashes 'hide)
-        ('untracked 'hide)
-        ('unpulled 'hide)
-        ('unpushed 'hide)
-        ('file 'hide)))
-
-    (defun my-magit-toggle-section-visibilities ()
-      "Toggle my visibility hook setting."
-      (if (-contains? magit-section-set-visibility-hook
-                      'my-magit-section-visibilities)
-          (remove-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities)
-        (add-hook 'magit-section-set-visibility-hook
-                  'my-magit-section-visibilities t)))
-
-    (add-hook 'magit-section-set-visibility-hook 'my-magit-section-visibilities t)
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (setq
