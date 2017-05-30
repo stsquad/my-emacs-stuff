@@ -23,8 +23,7 @@
                 helm-ff-skip-boring-files t))
   :bind (("C-x b" . helm-mini)
          ("M-x" . helm-M-x)
-         ("C-x 8 <RET>" . helm-ucs)
-         ("C-<f1>" . helm-apropos)))
+         ("C-x 8 <RET>" . helm-ucs)))
 
 (use-package helm-buffers
   :ensure helm
