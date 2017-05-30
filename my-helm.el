@@ -23,7 +23,6 @@
                 helm-ff-skip-boring-files t))
   :bind (("C-x b" . helm-mini)
          ("M-x" . helm-M-x)
-         ("C-f" . helm-semantic-or-imenu)
          ("C-x 8 <RET>" . helm-ucs)
          ("C-<f1>" . helm-apropos)))
 
