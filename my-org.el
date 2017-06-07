@@ -308,27 +308,29 @@ If `NEW-STATUS' is set then change TODO state."
   :if (locate-library "ox-reveal"))
 
 ;; Org Babel configurations
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (dot . t)
-   (ditaa . t)
-   (makefile . t)
-   (python . t)
-   (shell . t)))
-;;    (risu . t)
-;;    (text . t)))
-;; ;;      (C . t)
-;; ;;      (asm . t))))
 
-(use-package ob-async
-  :ensure t
-  :config (add-to-list 'org-ctrl-c-ctrl-c-hook 'ob-async-org-babel-execute-src-block))
+(when (assoc "melpa" package-archives)
+  (use-package ob-async
+    :ensure t
+    :config (add-to-list 'org-ctrl-c-ctrl-c-hook 'ob-async-org-babel-execute-src-block)))
 
 (use-package org-src
   :config
   (progn
     (setq org-src-fontify-natively t)))
+
+;; Build list of available languages
+(let ((langs '((emacs-lisp . t)
+               (C . t)
+               (dot . t)
+               (ditaa . t)
+               (makefile . t)
+               (python . t))))
+  (if (locate-library "ob-sh")
+      (add-to-list 'langs '(sh . t))
+    (add-to-list 'langs '(shell . t)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages langs))
 
 (use-package graphiz-dot-mode
   :if (locate-library "graphiz-dot-mode")
