@@ -11,9 +11,12 @@
 (require 'my-vars)
 
 (use-package edit-server
-  :init (add-hook 'after-init-hook
-                  #'(lambda() (edit-server-start)))
-  :config (setq 'edit-server-url-major-mode-alist
+  :commands edit-server-start
+  :init (if after-init-time
+            (edit-server-start)
+          (add-hook 'after-init-hook
+                  #'(lambda() (edit-server-start))))
+  :config (setq edit-server-url-major-mode-alist
                 (list '("stackexchange" . markdown-mode)
                       '("github.com" . markdown-mode))))
 
