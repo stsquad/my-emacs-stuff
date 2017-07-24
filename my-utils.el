@@ -99,11 +99,10 @@
 (defun my-switch-browser (&optional frame)
   "Tweak default browser depending on `FRAME' visibility.
 If frame is not set use (current-frame)."
-  (message "my-switch-browser: %s"
-           (setq browse-url-browser-function
-                 (cond
-                  ((not (display-graphic-p (or frame (selected-frame)))) 'eww-browse-url)
-                  (t 'browse-url-xdg-open)))))
+  (setq browse-url-browser-function
+        (cond
+         ((not (display-graphic-p (or frame (selected-frame)))) 'eww-browse-url)
+         (t 'browse-url-xdg-open))))
 
 (add-hook 'after-make-frame-functions 'my-switch-browser)
 (add-hook 'focus-in-hook #'(lambda() (my-switch-browser (selected-frame))))
