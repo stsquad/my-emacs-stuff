@@ -29,6 +29,13 @@
 (use-package s
   :commands s-contains? s-replace-all s-chop-suffix s-trim)
 
+;; Helpers for use-package
+(use-package bind-key
+  :ensure t)
+
+(use-package diminish
+  :ensure t)
+
 (provide 'my-libs)
 ;;; my-libs.el ends here
 

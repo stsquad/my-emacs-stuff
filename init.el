@@ -54,11 +54,12 @@
 
 (require 'my-keybinds)
 
-(require 'use-package nil t)
+(eval-when-compile
+  (require 'use-package))
 
-(require 'my-libs)
-(require 'my-basic-modes)
-(require 'my-display)
+(use-package my-libs)
+(use-package my-basic-modes)
+(use-package my-display)
 
 ;; We only need one edit-server at a time really
 (when (and (getenv "DISPLAY") (daemonp) (not I-am-root))
