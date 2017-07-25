@@ -180,6 +180,16 @@ Useful for replies and drafts")
   (interactive)
   (my-project-find (my-get-code-dir-from-email)))
 
+
+(defun my-strip-msg-to-sig ()
+  "Delete everything from point to my signature."
+  (interactive)
+  (let ((start (point)))
+    (save-excursion
+      (goto-char (point-max))
+      (when (re-search-backward "--")
+        (kill-region start (- (match-beginning 0) 1))))))
+
 (use-package mu4e-compose
   :commands mu4e-compose-mode
   :defines mu4e-compose-mode-map
