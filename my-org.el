@@ -14,6 +14,8 @@
 
 (require 'use-package)
 
+(require 'fn)
+
 (require 'my-vars)
 (require 'my-email)
 (require 'my-basic-modes)
@@ -56,6 +58,12 @@ This is used by my-org-run-default-block which is added to
   (setq 
    ;; Agenda locations
    org-agenda-files '("~/org/")
+   org-agenda-custom-commands
+   '(
+     ("n" "Agenda and top level tasks"
+      ((agenda "")
+       (tags "+LEVEL=2+tasks-TODO=\"DONE\"")))
+     ("r" "Review tasks and comments" tags-todo "reviews/TODO"))
    org-refile-targets '((nil :maxlevel . 2)
                         (org-agenda-files :maxlevel . 2))))
 
@@ -74,7 +82,7 @@ This is used by my-org-run-default-block which is added to
      ("g" "Save reference to review tag"
       entry
       (file+headline "review.org" "Review Tags")
-      "** %a
+      "** TODO %a
 %c" :immediate-finish t)
      ("G" "Save reference to review tag (edit))"
       entry
@@ -91,8 +99,8 @@ This is used by my-org-run-default-block which is added to
       "  - [ ] %i%?")
      ("t" "Add TODO task"
       entry
-      (file+headline "team.org" "Tasks")
-      "** TODO %i")
+      (file+regexp "team.org" "\* Tasks ")
+      "** TODO %i%?\n%T")
      ("T" "Add TODO task with mail reference"
       entry
       (file+headline "team.org" "Tasks")
@@ -103,8 +111,9 @@ This is used by my-org-run-default-block which is added to
       "  - %a")
      ("Q" "Queue Review (email)"
       entry
-      (file+headline "team.org" "Review Queue")
-      "** TODO %a"  :immediate-finish t))))
+      (file+regexp "team.org" "Review Queue")
+      "** TODO %a"
+      :immediate-finish t :prepend t))))
 
 ;; ORG Based review automation
 
