@@ -17,6 +17,13 @@
     (load-library "my-eproject")
   (load-library "my-projectile"))
 
+;; EditorConfig
+(use-package editorconfig
+  :ensure t
+  :diminish "EditConf"
+  :config
+  (editorconfig-mode 1))
+
 ;; Origami code folding
 (use-package origami
   :if (locate-library "origami")
