@@ -147,36 +147,53 @@ of things where C-SPC can't be used."
 ;; Define some mode toggles
 (my-make-mode-toggle text-mode)
 (my-make-mode-toggle org-mode)
+
+;;
+;; Now define some hydra's
+;;
+
+(defhydra my-mode-toggle
+  (:hint nil :color blue :timeout 5)
+  (concat "Toggle mode from %`major-mode to ")
+  ("o" my-toggle-org-mode "org-mode")
+  ("t" my-toggle-text-mode "text-mode")
+  ("g" god-mode-all "god-mode"))
+
+(defhydra my-debug-toggle
+  (:hint nil :color blue :timeout 5)
+  (concat
+   "Debug Toggles: d-o-_e_: %`debug-on-error d-o-_q_: %`debug-on-quit\n")
+  ("e" toggle-debug-on-error :color red)
+  ("q" toggle-debug-on-quit :color red))
+
+;; Master toggle function
 (require 'whitespace)
 (global-set-key
-   (kbd "C-x t")
-   (defhydra my-hydra-toggle (:hint nil :color blue :timeout 5)
-     (concat
-      "_d_-o-e: %`debug-on-error d-o-_q_: %`debug-on-quit _f_ill:%`auto-fill-function _T_abs: %`indent-tabs-mode "
-      "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
-     ;; Debugging
-     ("d" toggle-debug-on-error :color red)
-     ("q" toggle-debug-on-quit :color red)
-     ;; Fill, whitespace and other editing modes
-     ("f" auto-fill-mode)
-     ("T" my-toggle-tabs)
-     ("u" my-toggle-buffer-undo)
-     ("s" my-toggle-meta-space)
+ (kbd "C-x t")
+ (defhydra my-hydra-toggle (:hint nil :color blue :timeout 5)
+   (concat
+    "_f_ill:%`auto-fill-function _T_abs: %`indent-tabs-mode "
+    "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
+   ;; Fill, whitespace and other editing modes
+   ("f" auto-fill-mode)
+   ("T" my-toggle-tabs)
+   ("u" my-toggle-buffer-undo)
+   ("s" my-toggle-meta-space)
 
-     ;; Auto-strings
-     ("l" visual-line-mode "visual-line")
-     ("w" whitespace-mode "whitespace")
-     
-     ;; Narrowing, region selection
-     ("n" my-narrow-or-widen-dwim "arrow-or-w")
-     ("e" er/expand-region "xpand-r")
+   ;; Auto-strings
+   ("l" visual-line-mode "visual-line")
+   ("w" whitespace-mode "whitespace")
 
-     ;; misc
-     ("o" my-toggle-org-mode "org-mode")
-     ("t" my-toggle-text-mode "text-mode")
-     ("g" god-mode-all "god-mode")
-     ;; quit the hydra
-     ("x" nil "exit" :exit t)))
+   ;; Narrowing, region selection
+   ("n" my-narrow-or-widen-dwim "arrow-or-w")
+   ("e" er/expand-region "xpand-r")
+
+   ;; Chained Hydras
+   ("d" my-debug-toggle/body "ebug toggles")
+   ("m" my-mode-toggle/body "mode toggles")
+
+   ;; quit the hydra
+   ("x" nil "exit" :exit t)))
 
 (provide 'my-toggles)
 ;;; my-toggles.el ends here
