@@ -7,7 +7,7 @@
 #+begin_src sh :file generated/${1:$(file-name-nondirectory yas-text)} :exports results
 convert -resize 640x480 ${1:./`(file-relative-name
                                 (ido-read-file-name "image file:")
-                                default-directory)`} generated/${1:$(file-name-nondirectory yas-text)}
+                                default-directory)`} jpg:-
 #+end_src
 
 #+ATTR_HTML: :style border:none
