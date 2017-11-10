@@ -118,20 +118,35 @@ of things where C-SPC can't be used."
     (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
     (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
 
-;; Toggle text-mode in other mode buffers
-(defvar my-text-mode-last-major-mode nil
-  "Previous `major-mode' of this buffer.")
-(make-variable-buffer-local 'my-text-mode-last-major-mode)
-(put 'my-text-mode-last-major-mode 'permanent-local t)
+;; Macro to expand the variable and helper function to toggle a major
+;; mode.
+(defmacro my-make-mode-toggle (mode)
+  "Create a `MODE' toggle function/state variable."
+  (let* ((mode-name (symbol-name mode))
+         (mode-toggle-prefix (format "my-toggle-%s" mode-name))
+         (mode-toggle-func (make-symbol mode-toggle-prefix))
+         (mode-toggle-var  (make-symbol
+                            (format "%s-last-major-mode" mode-toggle-prefix))))
+    `(progn
+       ;; define the state variable
+       (defvar ,mode-toggle-var nil
+         ,(format
+           "Previous `major-mode' of buffer before toggling %s."
+           mode-name))
+       (make-local-variable (quote ,mode-toggle-var))
+       (put (quote ,mode-toggle-var) (quote permanent-local) t)
+       ;; define the toggle function
+       (defun ,mode-toggle-func ()
+         ,(format "Toggle `%s' in current buffer" mode-name)
+         (interactive)
+         (if (eq major-mode (quote ,mode))
+             (funcall ,mode-toggle-var)
+           (setq ,mode-toggle-var major-mode)
+           (,mode))))))
 
-(defun my-toggle-text-mode ()
-  "Toggle `text-mode' in this buffer."
-  (interactive)
-  (if (eq major-mode 'text-mode)
-      (funcall my-text-mode-last-major-mode)
-    (setq my-text-mode-last-major-mode major-mode)
-    (text-mode)))
-
+;; Define some mode toggles
+(my-make-mode-toggle text-mode)
+(my-make-mode-toggle org-mode)
 (require 'whitespace)
 (global-set-key
    (kbd "C-x t")

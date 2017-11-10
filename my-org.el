@@ -235,21 +235,6 @@ If `NEW-STATUS' is set then change TODO state."
     (setq org-mu4e-link-query-in-headers-mode t)
     (add-to-list 'org-modules 'org-mu4e t)))
 
-
-;; Toggle org-mode in other mode buffers
-(defvar my-org-mode-last-major-mode nil
-  "Previous `major-mode' of this buffer.")
-(make-variable-buffer-local 'my-org-mode-last-major-mode)
-(put 'my-org-mode-last-major-mode 'permanent-local t)
-
-(defun my-toggle-org-mode ()
-  "Toggle `org-mode' in this buffer."
-  (interactive)
-  (if (eq major-mode 'org-mode)
-      (funcall my-org-mode-last-major-mode)
-    (setq my-org-mode-last-major-mode major-mode)
-    (org-mode)))
-
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
