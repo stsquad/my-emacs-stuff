@@ -12,9 +12,9 @@
 ;; (add-to-list 'org-export-options-alist '(:title "TITLE" nil nil nil))
 
 
-(require 'use-package)
+(eval-when-compile (require 'use-package))
 
-(require 'fn)
+(require 'my-libs)
 
 (require 'my-vars)
 (require 'my-email)
