@@ -27,7 +27,11 @@
 
 ;; Magnar's string handling library
 (use-package s
+  :ensure t
   :commands s-contains? s-replace-all s-chop-suffix s-trim)
+
+(use-package fn
+  :ensure t)
 
 ;; Helpers for use-package
 (use-package bind-key
