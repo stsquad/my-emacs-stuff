@@ -7,14 +7,12 @@
 ;;; Code:
 
 ; debugging weird start-up issues.
-;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
 (setq debug-on-error 't)
 
 ;; Manually load this (as paths not yet set)
-;(eval-when-compile (defvar god-local-mode))
-(declare-function my-add-config-paths "~/.emacs.d/my-elisp/my-paths" t t)
-(when (load-library "~/.emacs.d/my-elisp/my-paths")
-  (my-add-config-paths))
+(when (load "~/.emacs.d/my-elisp/my-paths.el" t t)
+  (my-add-config-paths)
+  (my-add-git-project-paths))
 
 (require 'my-package)
 
