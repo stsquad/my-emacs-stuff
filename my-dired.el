@@ -19,43 +19,53 @@
     (set (make-local-variable 'dired-recursive-deletes) 'always)))
 
 (use-package dired
+  :commands dired
   :config (progn
             (add-hook 'dired-mode-hook
                       'my-dired-enable-recursive-delete)
-            (define-key dired-mode-map
-              (kbd "C-x t")
-              (defhydra my-hydra-dired
-                (:hint nil :color red :timeout 5)
-                "
-Number of marked items: %(length (dired-get-marked-files))
-"
-                ("m" dired-mark "mark")
-                ("x" wdired-change-to-wdired-mode "wdired" :exit t)))))
+            (setq dired-dwim-target t)))
 
 (use-package dired-async)
+
+(use-package dired-details
+  :ensure t)
 
 (use-package dired-quick-sort
   :config (dired-quick-sort-setup))
 
-(global-set-key
-   (kbd "C-x d")
-   (defhydra my-hydra-directory (:exit t :hint nil :color red :timeout 5)
-     "
+;; Hydras
+(with-eval-after-load 'dired
+  (progn
+    ;; Inside dired
+    (define-key dired-mode-map
+      (kbd "C-x t")
+      (defhydra my-hydra-dired
+        (:hint nil :color red :timeout 5)
+        "
+Number of marked items: %(length (dired-get-marked-files))
+"
+        ("m" dired-mark "mark")
+        ("x" wdired-change-to-wdired-mode "wdired" :exit t)))
+
+    ;; Global access to dired
+    (global-set-key
+     (kbd "C-x d")
+     (defhydra my-hydra-directory (:exit t :hint nil :color red :timeout 5)
+       "
 ^Dired Browse^   ^Change default-directory^
 ----------------------------------------------------------------
 _f_rom         _c_urrent default-directory: %`default-directory
 _b_rowse      _l_ast set default-directory: %`my-last-set-directory
 _h_ome         _s_et new default-directory
 "
-     ;; Set
-     ("s" my-set-default-directory)
-     ("l" (lambda () (interactive) (my-set-default-directory my-last-set-directory)))
-     ;; Browse
-     ("f" (lambda () (interactive) (dired default-directory)))
-     ("c" (lambda () (interactive) (dired default-directory)))
-     ("b" ido-dired)
-     ("h" (lambda () (interactive) (dired "~")))))
-
+       ;; Set
+       ("s" my-set-default-directory)
+       ("l" (lambda () (interactive) (my-set-default-directory my-last-set-directory)))
+       ;; Browse
+       ("f" (lambda () (interactive) (dired default-directory)))
+       ("c" (lambda () (interactive) (dired default-directory)))
+       ("b" ido-dired)
+       ("h" (lambda () (interactive) (dired "~")))))))
 
 (provide 'my-dired)
 ;;; my-dired.el ends here
