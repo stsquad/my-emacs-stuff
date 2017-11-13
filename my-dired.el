@@ -28,9 +28,6 @@
 (use-package dired-async
   :ensure async)
 
-(use-package dired-details
-  :ensure t)
-
 (use-package dired-quick-sort
   :ensure t
   :config (dired-quick-sort-setup))
