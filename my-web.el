@@ -51,6 +51,14 @@
   (progn
     (add-hook 'web-mode-hook 'my-web-mode-hook)))
 
+;; Handy for wiki editing
+(use-package mediawiki
+  :ensure t
+  :commands mediawiki-mode)
+
+(use-package moinmoin-mode
+  :commands moinmoin-mode)
+
 ;;
 ;; js2-mode, override javascript-mode
 ;;

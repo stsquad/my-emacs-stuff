@@ -6,6 +6,7 @@
 ;;the advantage of supporting bi-directional editing.
 ;;
 ;;; Code:
+(use-package my-web)
 
 (defun my-close-buffer-and-frame ()
   "Close the current buffer and the frame it is displayed on."
@@ -21,16 +22,6 @@
                     #'(lambda() (atomic-chrome-start-server))))
   ;; :bind-keymap ("C-c C-c"  . my-close-buffer-and-frame)
   :config (setq atomic-chrome-buffer-open-style 'frame))
-
-;; This is essentially a duplicate of my-edit-server.el
-
-;; Handy for wiki editing
-(use-package mediawiki
-  :ensure t
-  :commands mediawiki-mode)
-
-(use-package moinmoin-mode
-  :commands moinmoin-mode)
 
 ;; Defer setting up handlers until after atomic-chrome has loaded
 (with-eval-after-load 'atomic-chrome

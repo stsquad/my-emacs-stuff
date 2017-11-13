@@ -8,7 +8,9 @@
 ;;; Code:
 
 (require 'use-package)
-(require 'my-vars)
+
+(use-package my-vars)
+(use-package my-web)
 
 (use-package edit-server
   :commands edit-server-start
@@ -20,67 +22,33 @@
                 (list '("stackexchange" . markdown-mode)
                       '("github.com" . markdown-mode))))
 
-;; Chromebook Support
-;; Un-maintained due to not doing native editing on Chromebook these days
-(use-package chromebook
-  :if I-am-on-pixel
-  :disabled t
-  :config
-  (when (crmbk-running-in-host-x11-p)
-    (set-face-attribute 'default nil :height 250)
-    (add-hook 'crmbk-frame-mode-hook 'crmbk-remap-search)
-    (add-hook 'crmbk-frame-mode-hook 'crmbk-disable-touchpad)
-    (define-key crmbk-frame-mode-map (kbd "<M-up>") 'scroll-down)
-    (define-key crmbk-frame-mode-map (kbd "<M-down>") 'scroll-up)
-    (when (boundp 'edit-server-new-frame-alist)
-      (setq edit-server-new-frame-alist '((name . "Edit Server Frame")
-                                          (fullscreen . 'fullboth))))))
-
-;; Handy for wiki editing
-(use-package mediawiki
-  :ensure t
-  :commands mediawiki-mode
-  :init
-  (progn
-    (add-to-list 'edit-server-url-major-mode-alist
-                 '("mediawiki" . mediawiki-mode))
-    (add-to-list 'edit-server-url-major-mode-alist
-                 '("wikipedia" . mediawiki-mode))
-    (add-to-list 'edit-server-url-major-mode-alist
-                 '("wiki.qemu.org" . mediawiki-mode))))
-
-(use-package moinmoin-mode
-  :commands moinmoin-mode
-  :init (add-to-list 'edit-server-url-major-mode-alist
-                 '("wiki.linaro.org" . moinmoin-mode)))
-
-(setq edit-server-edit-mode-hook nil)
-(add-hook 'edit-server-edit-mode-hook 'flyspell-mode t)
-
-;; (when (require 'ox nil t)
-;;   (defun my-maybe-export-org-mode ()
-;;     (when (derived-mode-p 'org-mode)
-;;       (let ((post (org-export-as 'html nil nil t)))
-;;         (delete-region (point-min) (point-max))
-;;         (insert post))))
-;;   (add-hook 'edit-server-done-hook 'my-maybe-export-org-mode)
-;;   (add-to-list 'edit-server-url-major-mode-alist
-;;   '("www.bennee.com/~alex/blog" . org-mode)))
-
-(add-to-list 'edit-server-url-major-mode-alist
-             '("www.bennee.com/~alex/blog" . web-mode))
-
-
-;; Fallbacks for webmail
-(unless (require 'gmail-message-mode nil t)
+(with-eval-after-load 'edit-server
+  ;; Mediawiki
   (add-to-list 'edit-server-url-major-mode-alist
-               '("mail.google" . mail-mode))
-  ;; Rough and ready html munging
-  (when (require 'edit-server-htmlize nil t)
-    (add-hook 'edit-server-start-hook
-              'edit-server-maybe-dehtmlize-buffer)
-    (add-hook 'edit-server-done-hook
-              'edit-server-maybe-htmlize-buffer)))
+               '("mediawiki" . mediawiki-mode))
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("wikipedia" . mediawiki-mode))
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("wiki.qemu.org" . mediawiki-mode))
+  ;; Moin-moin
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("wiki.linaro.org" . moinmoin-mode))
+  ;; Web-mode
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("www.bennee.com/~alex/blog" . web-mode))
+  ;; Fallbacks for webmail
+  (unless (require 'gmail-message-mode nil t)
+    (add-to-list 'edit-server-url-major-mode-alist
+                 '("mail.google" . mail-mode))
+    ;; Rough and ready html munging
+    (when (require 'edit-server-htmlize nil t)
+      (add-hook 'edit-server-start-hook
+                'edit-server-maybe-dehtmlize-buffer)
+      (add-hook 'edit-server-done-hook
+                'edit-server-maybe-htmlize-buffer)))
+  ;; Final bits
+  (setq edit-server-edit-mode-hook nil)
+  (add-hook 'edit-server-edit-mode-hook 'flyspell-mode t))
 
 (provide 'my-edit-server)
 ;;; my-edit-server.el ends here

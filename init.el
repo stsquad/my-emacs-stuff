@@ -62,6 +62,8 @@
 (use-package my-display)
 
 ;; We only need one edit-server at a time really
+(use-package my-web)
+
 (when (and (getenv "DISPLAY") (daemonp) (not I-am-root))
   (if (locate-library "atomic-chrome")
       (use-package my-atomic-chrome)
@@ -86,7 +88,6 @@
 (use-package my-flycheck
   :if (version<= "24.4" emacs-version))
 
-(load-library "my-web")
 (load-library "my-elisp")
 (load-library "my-python")
 
