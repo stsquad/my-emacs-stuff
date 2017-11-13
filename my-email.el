@@ -10,10 +10,8 @@
 (require 'use-package)
 (require 'my-vars)
 (require 'my-libs)
+(require 'my-hydra)
 (require 'dash)
-
-(use-package async
-  :ensure t)
 
 (use-package smtpmail
   :commands smtpmail-send-queued-mail

@@ -25,7 +25,8 @@
                       'my-dired-enable-recursive-delete)
             (setq dired-dwim-target t)))
 
-(use-package dired-async)
+(use-package dired-async
+  :ensure async)
 
 (use-package dired-details
   :ensure t)

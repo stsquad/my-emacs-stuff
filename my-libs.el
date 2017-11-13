@@ -40,6 +40,9 @@
 (use-package diminish
   :ensure t)
 
+(use-package async
+  :ensure t)
+
 (provide 'my-libs)
 ;;; my-libs.el ends here
 
