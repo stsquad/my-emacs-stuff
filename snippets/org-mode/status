@@ -5,10 +5,10 @@
 # --
 ** Current
 *** Progress
-  - QEMU Multithread TCG ([[virt:48][VIRT-48]])
+  - BQL Lock Reduction ([[virt:196][VIRT-196]])
+  - SVE Support ([[virt:198][VIRT-198]])
   - Upstream Work ([[virt:109][VIRT-109]])
 *** Plans
   - 
 *** Absences
-  - Linaro Connect BUD17 (6th-10th Mar 2017)
-  - KVM Forum (25th-27th Oct 2017 - unconfirmed)
+  - Christmas Holidays
