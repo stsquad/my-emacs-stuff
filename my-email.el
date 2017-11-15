@@ -131,7 +131,8 @@
 
 ;; Set default directory when viewing messages
 (defvar my-mailing-list-dir-mapping
-  '( ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
+  '( ("qemu-devel.gnu.org" . "~/lsrc/qemu/qemu.git/")
+     ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
      ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/")
      ("kvm.vger.kernel.org" . "~/lsrc/kvm/linux.git/")
      ("virtualization.lists.linux-foundation.org" . "~/lsrc/kvm/linux.git/") )
@@ -145,7 +146,9 @@
   "Mapping from maildirs to source tree.")
 
 (defvar my-mail-address-mapping
-  ' ( ("qemu-devel@nongnu.org" . "~/lsrc/qemu/qemu.git/")
+  ' (
+     ("qemu-devel@gnu.org" . "~/lsrc/qemu/qemu.git/")
+     ("qemu-devel@nongnu.org" . "~/lsrc/qemu/qemu.git/")
       ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
     "Mapping from target address to source tree.
 Useful for replies and drafts")
