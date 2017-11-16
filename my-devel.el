@@ -53,8 +53,19 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :ensure t
   :commands rx)
 
+
+(defhydra my-reb-hydra (:color teal)
+  (concat "<TAB> Toggle syntax: %`reb-re-syntax ")
+  ("TAB" reb-change-syntax nil)
+  ("t" my-hydra-toggle-body "main toggles")
+  ("q" quit-window "quit"))
+
 (use-package re-builder
   :ensure t
+  :bind (:map reb-mode-map
+              ("C-x t" . my-reb-hydra/body)
+         :map reb-lisp-mode-map
+              ("C-x t" . my-reb-hydra/body))
   :commands re-builder
   :config (setq reb-re-syntax 'rx))
 
@@ -132,6 +143,29 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (use-package checkpatch-mode)
 
 ;; asm-mode
+;;                                       ;
+;; We define some additional regexs to match ARM and TCG style assembler
+;
+;  ldr q1, [x20, x0]
+;  eor v0.16b, v0.16b, v1.16b
+;  add_i64 tmp2,tmp2,tmp3
+;  movi_i64 tmp7,$0x8
+;
+
+(defvar arm-asm-register
+  (rx (: (in "," space) ; leading whitespace or separator
+         (group (in "qwvx") digit (zero-or-one digit) ;;
+                (opt    ; vector type
+                 "."
+                 digit (zero-or-one digit)
+                 (in "bwhsdq"))
+                )))
+  "Match against an ARM register.")
+
+;; (font-lock-add-keywords 'asm-mode
+;;                         '((arm-asm-register (1 'font-lock-variable-name-face))))
+
+
 (use-package asm-mode
   :if (not (featurep 'gas-mode))
   :config (setq asm-comment-char ?\;))
@@ -158,6 +192,10 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
     (setq markdown-reference-location 'end)))
 
 
+;;
+(use-package realgud
+  :commands (realgud:gdb realgud:gdb-pid))
+
 ;; Smart Parens
 (use-package smartparens
   :ensure t
@@ -180,6 +218,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 ;; maybe (show-paren-mode 1) if no smartparens?
 
+;; Docker is useful
+
+(use-package dockerfile-mode
+  :mode ("\\.docker\\'" . dockerfile-mode)
+  :ensure t)
 
 (provide 'my-devel)
 ;;; my-devel.el ends here
