@@ -216,15 +216,25 @@ Useful for replies and drafts")
                       '(lambda () (yas-minor-mode -1)))
             (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)))
 
+(defhydra my-mu4e-view-toggle (:hint nil :color blue :timeout 5)
+  (concat "_c_itation function:%`mu4e-compose-cite-function ")
+  ;; toggle citation mode
+  ("c" (lambda()
+         (interactive)
+         (if (eq mu4e-compose-cite-function
+                 'message-cite-original-without-signature)
+             (setq mu4e-compose-cite-function 'message-cite-original)
+           (setq mu4e-compose-cite-function 'message-cite-original-without-signature))))
+  ("t" my-hydra-toggle-body "main toggles"))
+
 (use-package mu4e-view
   :commands mu4e-view
+  :bind (:map mu4e-view-mode-map
+         ("C-c C-l". org-store-link)
+         ("C-c t" . my-switch-to-thread)
+         ("C-x t" . my-mu4e-view-toggle/body))
   :defines mu4e-view-mode-map
-  :config (progn
-            ;; My mode bindings
-            (define-key mu4e-view-mode-map (kbd "C-c C-l") 'org-store-link)
-            (define-key mu4e-view-mode-map (kbd "C-c t") 'my-switch-to-thread)
-            ;; mode hooks
-            (add-hook 'mu4e-view-mode-hook 'my-set-view-directory)))
+  :config (add-hook 'mu4e-view-mode-hook 'my-set-view-directory))
 
 ;; spam learning: ionice -c 3 sa-learn --progress --spam ~/Maildir/.Spam/cur/*
 
