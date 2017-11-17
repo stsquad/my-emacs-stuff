@@ -38,18 +38,18 @@
       (define-key magit-mode-map
         (kbd "C-x t")
         (defhydra my-git-mode-hydra (:hint nil :color blue :timeout 10)
-          "
-Tweak Buffer State : _l_ock buffer: %`magit-buffer-locked-p toggle  _v_isibility: %(-contains? magit-section-set-visibility-hook 'my-magit-section-visibilities)
-Navigate History   : _p_revious/_b_ack history: %(nth 3 (car help-xref-stack)) _n_ext/_f_orward history: %(nth 3 (car help-xref-forward-stack))"
+          (concat "Tweak Buffer State : _l_ock buffer:%`magit-buffer-locked-p "
+                  "Navigate History   : _p_revious/_b_ack history: %(nth 3 (car help-xref-stack)) _n_ext/_f_orward history: %(nth 3 (car help-xref-forward-stack))")
           ;; Lock/unlock
           ("l" (magit-toggle-buffer-lock))
-          ;; Visibility toggle
-          ("v" (my-magit-toggle-section-visibilities) nil :color red)
           ;; Navigation
           ("b" (magit-go-backward) nil :color red)
           ("p" (magit-go-backward) nil :color red)
           ("f" (magit-go-forward) nil :color red)
-          ("n" (magit-go-forward)  nil :color red))))))
+          ("n" (magit-go-forward)  nil :color red)
+          ;; Main toggles
+          ("t" my-hydra-toggle/body nil)
+          )))))
 
 
 ;; Tweaks to git-commit-mode
@@ -103,7 +103,7 @@ Navigate History   : _p_revious/_b_ack history: %(nth 3 (car help-xref-stack)) _
     (goto-char (point-min))
     (while (re-search-forward my-rebase-match-re (point-max) t)
       (let ((msg (match-string-no-properties 1)))
-        (when (my-org-find-review-tags msg "ACTIVE")
+        (when (my-org-find-review-tags msg "TODO")
           (git-rebase-reword))))))
 
 (defun my-mark-rebase-commits-for-editing ()
