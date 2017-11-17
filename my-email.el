@@ -270,6 +270,32 @@ Useful for replies and drafts")
   (mu4e-mark-at-point 'unmark nil)
   (mu4e-headers-next))
 
+
+;; Check if patch merged into a given tree
+;;
+;; Subject: [Qemu-devel] [PATCH 1/2] tcg: Allow constant pool entries in the prologue
+(defvar my-extract-patch-title
+  (rx (:
+       "[PATCH" (one-or-more print) "]"
+       (zero-or-more space)
+       (group (one-or-more print))
+       eol))
+  "Regex to extract patch title from email subject.")
+
+(defun my-mu4e-action-check-if-merged (msg)
+  "Check if `MSG' is in your tree."
+  (let ((subj (mu4e-message-field-at-point :subject)))
+    (when (string-match my-extract-patch-title subj)
+      (let ((title (match-string-no-properties 1 subj))
+            (default-directory (read-directory-name "Project:")))
+        (let ((result (magit-git-string
+                       "log" "origin/master" "--no-merges" "--oneline"
+                       "--grep" title)))
+          (when (and result
+                     (yes-or-no-p (format "Visit:%s?" result)))
+            (magit-show-commit (car (split-string result)))))))))
+
+
 (use-package mu4e
   :commands mu4e
   ;; Bindings
@@ -441,14 +467,16 @@ to `my-mu4e-patches' for later processing."
               ("mgit am patch" . mu4e-action-git-apply-mbox)
               ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
               ("sMark SPAM" . my-mu4e-register-spam-action)
-              ("hMark HAM" . my-mu4e-register-ham-action)))))
+              ("hMark HAM" . my-mu4e-register-ham-action)
+              ("MCheck if merged" . my-mu4e-action-check-if-merged)))))
     ;; Message actions
     (setq mu4e-view-actions
           (delete-dups
            (append
             '(("gapply git patches" . mu4e-action-git-apply-patch)
               ("mgit am patch" . mu4e-action-git-apply-mbox)
-              ("crun checkpatch script" . my-mu4e-action-run-check-patch)))))
+              ("crun checkpatch script" . my-mu4e-action-run-check-patch)
+              ("MCheck if merged" . my-mu4e-action-check-if-merged)))))
     ;; Bookmarks
     (setq mu4e-bookmarks
           (cond
