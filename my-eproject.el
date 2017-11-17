@@ -52,9 +52,17 @@
   "Hook for cc-mode to run on eproject based projects."
   (message "in my-eproject-c-hook")
   (eproject-maybe-turn-on)
-  (when (and eproject-root (eproject-attribute :c-style))
-    (message "setting C style based on eproject")
-    (c-set-style (eproject-attribute :c-style))))
+  (cond
+   ((and eproject-root (eproject-attribute :c-style))
+    (let ((style (eproject-attribute :c-style)))
+      (message "eproject :c-style %s" style)
+      (c-set-style style)))
+   ((and eproject-root (file-exists-p
+                        (concat
+                         eproject-root ".dir-locals.el")))
+    (message "eproject has .dir-locals.el"))
+   (t
+    (message "eproject did nothing"))))
 
 (defun my-eproject-is-type-p (type)
   "Return t when current project of `TYPE'."
@@ -69,12 +77,19 @@
       (message "Setting indent")
       (setq indent-tabs-mode t))))
 
+;; Let eproject deal with these things
+(remove-hook 'c-mode-hook 'my-c-mode-hook)
 (add-hook 'c-mode-hook 'my-eproject-c-hook)
 (add-hook 'asm-mode-hook 'my-eproject-asm-hook)
 
 ;;
 ;; Individual project definitions
 ;;
+
+;; Packages with their own editor config
+(define-project-type dir-locals-project
+  (generic-git)
+  (look-for ".dir-locals"))
 
 ;; ELPA Packages
 (define-project-type elpa-pkg
@@ -91,16 +106,6 @@
         "docker run --rm -v %s:/src --user alex:alex -w /src %s %s"
         root it make)))
     builds))
-
-;; QEMU
-(define-project-type qemu
-  (generic-git)
-  (look-for "qemu-log.c")
-  :c-style "qemu-c-style")
-
-(add-hook 'qemu-project-file-visit-hook 'my-eproj-is-c)
-(add-hook 'qemu-project-file-visit-hook 'whitespace-mode)
-(add-hook 'qemu-project-file-visit-hook 'ws-butler-mode)
 
 (define-project-type debian-package
   (generic)
