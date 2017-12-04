@@ -13,13 +13,17 @@
 (when I-am-at-work
   (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
 
+(use-package magit-popup
+  :ensure t
+  :pin melpa-stable)
+
 (use-package magit
   :ensure t
+  :pin melpa-stable
   :commands magit-status
   :bind (("C-x g" . magit-status)
          :magit-hunk-section-map
          ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree))
-  :pin melpa-stable
   :init
   (progn
     (setq magit-last-seen-setup-instructions "1.4.0"))

@@ -32,6 +32,11 @@
  'package-archives
  '("org" . "http://orgmode.org/elpa/") t)
 
+;; Pin use-package
+(when (boundp 'package-pinned-packages)
+  (setq package-pinned-packages
+	'((use-package . "melpa-stable"))))
+
 (package-initialize)
 
 ;; Bootstrap `use-package'
