@@ -55,11 +55,13 @@ Number of marked items: %(length (dired-get-marked-files))
 ----------------------------------------------------------------
 _f_rom         _c_urrent default-directory: %`default-directory
 _b_rowse      _l_ast set default-directory: %`my-last-set-directory
-_h_ome         _s_et new default-directory
+_h_ome        _r_eset default-directory to: %(file-name-directory (buffer-file-name))
+               _s_et new default-directory
 "
        ;; Set
        ("s" my-set-default-directory)
        ("l" (lambda () (interactive) (my-set-default-directory my-last-set-directory)))
+       ("r" (lambda () (interactive) (my-set-default-directory (file-name-directory (buffer-file-name)))))
        ;; Browse
        ("f" (lambda () (interactive) (dired default-directory)))
        ("c" (lambda () (interactive) (dired default-directory)))
