@@ -117,7 +117,19 @@
 (setq frame-title-format "%b")
 (setq  icon-title-format "%b")
 
-(setq cursor-type 'box)
+(defun my-flash-modeline ()
+  "Flash the modeline."
+  (let ((orig-fg (face-foreground 'mode-line)))
+    (set-face-foreground 'mode-line "#F2804F")
+    (run-with-idle-timer
+     0.1 nil
+     (lambda (fg)
+       (set-face-foreground 'mode-line fg))
+     orig-fg)))
+
+(setq cursor-type 'box
+      visible-bell t
+      ring-bell-function 'my-flash-modeline)
 
 ;; Make fill do the Right Thing with full-stops.
 (setq sentence-end-double-space nil)
