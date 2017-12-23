@@ -244,6 +244,18 @@ If `NEW-STATUS' is set then change TODO state."
     (setq org-mu4e-link-query-in-headers-mode t)
     (add-to-list 'org-modules 'org-mu4e t)))
 
+(defun my-save-org-position-in-bookmark (&rest args)
+  "Save position at jump."
+  (bookmark-set "org-pos-at-jump" nil))
+
+(defun my-return-to-org ()
+  "Return to position at jump (if set)."
+  (interactive)
+  (ignore-errors
+    (bookmark-jump "org-pos-at-jump")))
+
+
+
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
@@ -280,7 +292,11 @@ If `NEW-STATUS' is set then change TODO state."
     ;; Add my special handler.
     (add-to-list 'org-ctrl-c-ctrl-c-final-hook
                  'my-org-run-default-block)
-    
+
+    ;; Save jump position
+    (add-to-list 'org-open-at-point-functions
+                 'my-save-org-position-in-bookmark)
+
     ;; Ditta
     (let ((ditta-path "/usr/share/ditaa/ditaa.jar"))
       (when (file-exists-p ditta-path)
@@ -296,13 +312,14 @@ If `NEW-STATUS' is set then change TODO state."
       (global-set-key
        (kbd "C-c C-o")
        (defhydra my-hydra-org (:color blue)
-         "Access org-mode"
-         ("t" my-toggle-org-mode "toggle org-mode in this buffer")
+         (concat "Org: _j_ump to:"
+                 "%(cdr (assoc 'filename (assoc \"org-pos-at-jump\" bookmark-alist))) ")
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
          ("h" helm-org-agenda-files-headings "org-headings (helm)")
          ("q" (org-capture nil "Q") "Queue for review")
-         ("r" (org-capture nil "r") "Capture review comment"))))
+         ("r" (org-capture nil "r") "Capture review comment")
+         ("j" my-return-to-org nil))))
     (org-clock-persistence-insinuate)))
 
 ;; Org reveal
