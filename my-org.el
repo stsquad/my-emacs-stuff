@@ -371,20 +371,5 @@ See `org-confirm-babel-evaluate'."
     (org-babel-goto-named-src-block name)
     (org-babel-execute-src-block-maybe)))
 
-;; not used atm
-;; ORG JIRA
-(use-package org-jira
-  :disabled t
-  :if I-am-at-work
-  :config
-  (progn
-    (setq jiralib-url "https://cards.linaro.org/"
-          org-jira-working-dir (expand-file-name "~/org/jira"))
-    (add-to-list 'org-jira-serv-alist
-                 '(linaro .
-                          (:url "https://cards.linaro.org/"
-                                :username "alex.bennee@linaro.org"
-                                :password #'(lambda () (my-pass-password "linaro")))))))
-
 (provide 'my-org)
 ;;; my-org.el ends here
