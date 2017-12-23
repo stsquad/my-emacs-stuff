@@ -222,7 +222,7 @@ If `NEW-STATUS' is set then change TODO state."
           )
          ("org-presentations"
           :base-directory "~/org/presentations"
-          :base-extension "html\\|css\\|js\\|png\\|jpg\\|gif\\|svg\\|pdf\\|mp3\\|ogg\\|swf"
+          :base-extension "html\\|css\\|js\\|png\\|jpg\\|gif\\|svg\\|pdf\\|mp3\\|ogg\\|eot\\|ttf\\|woff"
           :publishing-directory "~/public_html/org/presentations/"
           :recursive t
           :publishing-function org-publish-attachment
