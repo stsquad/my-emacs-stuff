@@ -28,10 +28,12 @@
   :init (tracking-mode)
   :config
   (progn
+    (setq tracking-most-recent-first t
+          tracking-position 'end)
     (add-to-list 'global-mode-string
                  'tracking-mode-line-buffers
-                 t)
-    (setq tracking-most-recent-first t)))
+                 t)))
+
 
 (provide 'my-tracking)
 ;;; my-tracking.el ends here
