@@ -25,6 +25,15 @@
   (when I-am-at-work "/home/alex/org/index.org")
   "The location of my main work scratchpad.")
 
+(use-package ob-shell
+  :defer t
+  :config (setq
+           org-babel-default-header-args:sh
+           '((:prologue . "exec 2>&1") (:epilogue . ":"))))
+
+(use-package ob-core
+  :defer t)
+
 (defvar my-org-babel-hashes nil
   "List of known babel code hashes.
 This prevents org re-asking every time I restart.")
