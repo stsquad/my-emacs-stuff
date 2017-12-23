@@ -1,4 +1,4 @@
-;;; my-keyhelp --- Helpers for keys
+;;; my-keyhelp --- Helpers for keys and other help
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 ;;
@@ -31,6 +31,11 @@
   :config
   (which-key-mode))
 
+;; I currently loose completion
+(use-package helpful
+  :ensure t
+  :bind (("C-h f" . helpful-function)
+         ("C-h v" . helpful-variable)))
 
 (provide 'my-keyhelp)
 ;;; my-keyhelp.el ends here
