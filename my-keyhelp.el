@@ -33,7 +33,7 @@
 
 ;; I currently loose completion
 (use-package helpful
-  :ensure t
+  :if (assoc-default "melpa" package-archives)
   :bind (("C-h f" . helpful-function)
          ("C-h v" . helpful-variable)))
 
