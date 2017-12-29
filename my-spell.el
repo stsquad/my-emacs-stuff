@@ -10,6 +10,7 @@
 
 (use-package flyspell
   :commands (flyspell-mode flyspell-prog-mode)
+  :diminish "fs"
   :init
   (progn
     ;; Add hooks to enable flyspell
@@ -32,6 +33,11 @@
   "Force 'flyspell-mode' on using a positive arg.  For use in hooks."
   (interactive)
   (flyspell-mode 1))
+
+(use-package hi-lock
+  :commands hi-lock-face-phrase-buffer
+  :config (eval-after-load "hi-lock"
+            '(assq-delete-all 'hi-lock-mode minor-mode-map-alist)))
 
 (defun my-hightlight-non-possessive-its ()
   "Turn on hi-lock mode for any (potentially incorrect) usage of it's"
