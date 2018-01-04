@@ -27,6 +27,7 @@
 
 ;; Keychain access
 (use-package keychain-environment
+  :disabled (not (string-match "socrates" (system-name)))
   :ensure t
   :if (or I-am-at-work I-am-at-home)
   :commands keychain-refresh-environment
