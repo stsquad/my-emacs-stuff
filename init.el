@@ -60,6 +60,7 @@
 (use-package my-libs)
 (use-package my-basic-modes)
 (use-package my-display)
+(use-package my-modeline)
 
 ;; We only need one edit-server at a time really
 (use-package my-web)
