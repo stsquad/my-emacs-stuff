@@ -53,11 +53,6 @@
 (add-hook 'c++-mode-hook 'helm-gtags-mode)
 (add-hook 'asm-mode-hook 'helm-gtags-mode)
 
-(use-package helm-swoop
-  :ensure t
-  :bind (("C-c o" . helm-swoop)
-         ("C-c O" . helm-multi-swoop)))
-
 (use-package helm-descbinds
   :ensure t
   :bind (("C-h b" . helm-descbinds)
