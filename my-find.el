@@ -58,13 +58,17 @@
   :ensure t
   :bind ("C-s" . swiper))
 
-;; ivy is a general completion framework, I only use it for swiper ATM
+;; ivy is a general completion framework
 ;; C-o enters options via ivy-hydra
 (use-package ivy
+  :init (ivy-mode)
   :config
-  (setq ivy-re-builders-alist
-        '((ivy-switch-buffer . ivy--regex-plus)
-          (t . ivy--regex-fuzzy))))
+  (setq
+    ivy-use-virtual-buffers t
+    ivy-count-format "%d/%d "
+    ivy-re-builders-alist
+    '((ivy-switch-buffer . ivy--regex-plus)
+      (t . ivy--regex-plus))))
 
 (defun my-project-find (&optional directory)
   "Search within `DIRECTORY' using various search helpers.

@@ -15,23 +15,23 @@
 ;; midnight mode, clean-up unused buffers overnight
 (use-package midnight
   :defer 1000
-  :config (setq midnight-mode t))
-
-;; ido-mode - better buffer selection, although lusty does a lot of it
-(use-package ido
-  :commands ido-mode
-  :defer 100
-  :config (ido-mode t))
+  :init (midnight-mode t))
 
 ;;
 ;; Lusty Explorer
 ;;
 ;; moved C-x b to helm-mini (see my-helm)
 ;; (global-set-key (kbd "C-x b") 'lusty-buffer-explorer)
+(defun my-lusty-file-explorer()
+  "Wrapper to launch, temporarily defaulting completing read."
+  (interactive)
+  (let ((completing-read-function 'completing-read-default))
+    (lusty-file-explorer)))
+
 (use-package lusty-explorer
   :if (locate-library "lusty-explorer")
-  :bind (("C-x C-f" . lusty-file-explorer)))
-
+  :commands lusty-file-explorer
+  :bind (("C-x C-f" . my-lusty-file-explorer)))
 
 ;; ibuffer has been around for some time
 (defun my-ibuffer-bs-show ()
