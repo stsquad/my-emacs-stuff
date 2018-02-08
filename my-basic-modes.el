@@ -58,5 +58,10 @@
 (use-package help-fns+
   :commands describe-keymap)
 
+;; Counsel
+(use-package counsel
+  :ensure t
+  :commands counsel-yank-pop)
+
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here
