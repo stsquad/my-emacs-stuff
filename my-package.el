@@ -8,6 +8,7 @@
 
 (require 'package)
 (require 'my-vars)
+(require 'cl)
 
 (defun my-package-recompile()
   "Recompile all packages"
@@ -38,6 +39,12 @@
 	'((use-package . "melpa-stable"))))
 
 (package-initialize)
+
+;; Remove Org-mode that was shipped with Emacs
+;
+; This seems to be a case of something triggering a load from the
+; original when we should be getting everything from the ELPA version.
+(setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
