@@ -135,7 +135,7 @@ This is used by my-org-run-default-block which is added to
       (kill-new (mapconcat 'identity tags "\n"))
       (org-capture nil "g"))))
 
-(with-eval-after-load 'mu4e
+(with-eval-after-load 'mu4e-view
   (when (fboundp 'mu4e-view-mode-map)
     (define-key mu4e-view-mode-map (kbd "C-c C-c") 'my-org-maybe-capture-review-tag-or-comment)))
 
