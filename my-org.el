@@ -402,7 +402,7 @@ If `NEW-STATUS' is set then change TODO state."
 See `org-confirm-babel-evaluate'."
   (let ((check (list lang (md5 body))))
     ;; If not hashed, prompt
-    (if (not (member (list lang (md5 body)) my-org-babel-hashes))
+    (if (not (member check my-org-babel-hashes))
         ;; Ask if you want to hash
         (if (yes-or-no-p "Store hash for block? ")
             ;; Hash is added, proceed with evaluation
