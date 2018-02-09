@@ -377,6 +377,8 @@ If `NEW-STATUS' is set then change TODO state."
                (ditaa . t)
                (makefile . t)
                (python . t))))
+  (when (locate-library "ob-restclient")
+    (add-to-list 'langs '(restclient . t)))
   (if (locate-library "ob-sh")
       (add-to-list 'langs '(sh . t))
     (add-to-list 'langs '(shell . t)))
