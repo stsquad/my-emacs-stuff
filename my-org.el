@@ -322,6 +322,37 @@ If `NEW-STATUS' is set then change TODO state."
          ("j" my-return-to-org nil))))
     (org-clock-persistence-insinuate)))
 
+;; Exporting
+(defvar my-org-mu4e-index-links
+  (rx
+   (: (or "query:i:" "msgid:") (group-n 1 (one-or-more any))))
+  "A regex to match mu4e links of the form:
+
+    query:i:20170228171921.21602-1-ale+qemu@clearmind.me
+")
+
+(defun my-org-mu4e-export (path desc format)
+  "Format mu4e links for export."
+  (when (string-match my-org-mu4e-index-links path)
+    (cond
+     ((eq format 'html)
+      (format "<a href=\"%s%s\">%s</a>"
+              "https://www.google.com/search?q="
+              (match-string 1 path)
+              desc))
+     ((eq format 'jira)
+      (format "[%s|%s%s]"
+              desc
+              "https://www.google.com/search?q="
+              (match-string 1 path)))
+     ((eq format 'ascii)
+      (format "%s\nMessage-Id: <%s>" desc (match-string 1 path))))))
+
+
+(use-package ox
+  :config
+  (org-link-set-parameters "mu4e" :export 'my-org-mu4e-export))
+
 ;; Org reveal
 (use-package ox-reveal
   :disabled (not I-am-at-work)
