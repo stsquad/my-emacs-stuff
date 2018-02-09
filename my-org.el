@@ -80,7 +80,7 @@ This is used by my-org-run-default-block which is added to
   :commands org-edit-src-code
   :config (progn
             (define-key org-src-mode-map (kbd "C-c C-c") 'org-edit-src-exit)
-            (setq org-src-window-setup 'current-window)))
+            (setq org-src-window-setup 'reorganize-frame)))
 
 (use-package org-capture
   :commands org-capture org-capture-target-buffer
