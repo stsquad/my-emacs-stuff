@@ -359,6 +359,9 @@ If `NEW-STATUS' is set then change TODO state."
   :if (locate-library "ox-reveal"))
 
 ;; Org Babel configurations
+(let ((lob "~/org/library.org"))
+  (when (file-exists-p lob)
+    (org-babel-lob-ingest lob)))
 
 (when (assoc "melpa" package-archives)
   (use-package ob-async
