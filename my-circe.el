@@ -26,6 +26,18 @@
   (format "ajb-linaro/oftc:%s"
           (my-pass-password "znc")))
 
+(defun my-freenode-znc-nick-password (server)
+  "Return the password for the `SERVER'."
+  (my-pass-password "freenode-znc-nick"))
+
+(defun my-freenode-nick-password (server)
+  "Return the password for the `SERVER'."
+  (my-pass-password "freenode-nick"))
+
+(defun my-oftc-nick-password (server)
+  "Return the password for the `SERVER'."
+  (my-pass-password "oftc-nick"))
+
 ;; Logging
 (use-package lui-logging
   :commands enable-lui-logging)
@@ -83,15 +95,28 @@
   (when my-irc-login-timer
     (cancel-timer my-irc-login-timer)))
 
+;; Find and capture logins
+(defun my-ssh-to-server ()
+  "Login to a server mentioned in buffer."
+  (interactive)
+  (let ((host (my-capture-login)))
+    (when host
+      (shell-command-to-string
+       (format "tmux new-window -a -n %s 'ssh %s'" host host)))))
+
+
 (use-package circe
   :ensure t
   :commands (circe circe-set-display-handler)
+  :bind (:map circe-query-mode-map
+              ("C-c C-c" . my-ssh-to-server))
   ;; :diminish ((circe-channel-mode . "CirceChan")
   ;;            (circe-server-mode . "CirceServ"))
   :requires my-tracking
   :init (when (and I-am-at-work
                    (daemonp)
-                   (not I-am-root))
+                   (not I-am-root)
+                   (not my-irc-login-timer))
           (setq my-irc-login-timer (run-with-idle-timer 120 nil 'my-irc-login)))
   :config
   (progn
@@ -116,7 +141,9 @@
              :host "chat.freenode.net"
              :server-buffer-name "⇄ Freenode"
              :nick "stsquad"
-             :channels ("#emacs" "#emacs-circe")
+             :nickserv-password my-freenode-nick-password
+             :tls t
+             :channels (:after-auth "#emacs" "#emacs-circe")
              )
             ("OFTC"
              :host "irc.oftc.net"
@@ -131,7 +158,9 @@
              :server-buffer-name "⇄ Freenode (ZNC)"
              :port "6697"
              :pass my-znc-freenode-password
-             :channels ("#linaro" "#linaro-virtualization")
+             :nick "ajb-linaro"
+             :nickserv-password my-freenode-znc-nick-password
+             :channels (:after-auth "#linaro" "#linaro-virtualization")
              :tls 't
              )
             ("znc-oftc"
@@ -139,6 +168,7 @@
              :server-buffer-name "⇄ OFTC (ZNC)"
              :port "6697"
              :pass my-znc-oftc-password
+             :nickserv-password my-oftc-nick-password
              :channels ("#qemu" "#qemu-gsoc")
              :tls 't
              )
@@ -163,6 +193,9 @@
              :host "localhost"
              :service "6667"
              )))))
+
+(with-eval-after-load 'circe
+  (use-package circe-chanop))
 
 (provide 'my-circe)
 ;;; my-circe.el ends here
