@@ -36,8 +36,6 @@
   (eldoc-mode t)
   (when buffer-file-name
     (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer))
-  (when (boundp 'show-smartparens-global-mode)
-    (show-smartparens-global-mode))
   (turn-on-auto-fill))
 
 (use-package lisp-mode

@@ -23,15 +23,15 @@
 (when I-am-at-work
   (add-to-list
    'package-archives
-   '("melpa" . "http://melpa.org/packages/") t))
+   '("melpa" . "https://melpa.org/packages/") t))
 
 (add-to-list
  'package-archives
- '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+ '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
 (add-to-list
  'package-archives
- '("org" . "http://orgmode.org/elpa/") t)
+ '("org" . "https://orgmode.org/elpa/") t)
 
 ;; Pin use-package
 (when (boundp 'package-pinned-packages)
@@ -45,6 +45,11 @@
 ; This seems to be a case of something triggering a load from the
 ; original when we should be getting everything from the ELPA version.
 (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+
+; and force installation, as :ensure t will not
+(unless (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
+  (message "No org-mode installed, things will likey fail"))
+;  (package-install (elt (cdr (assoc 'org package-archive-contents)) 0)))
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)

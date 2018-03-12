@@ -5,6 +5,8 @@ addons:
   apt:
     packages:
       - aspell-en
+      - maildir-utils
+      - mu4e
 env:
   - EVM_EMACS=emacs-24.4-travis
   - EVM_EMACS=emacs-24.5-travis

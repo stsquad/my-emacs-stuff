@@ -2,11 +2,8 @@
 ;;
 ;;; Commentary:
 ;;
-;; Use lusty-explorer if I can, otherwise leave it to ido-mode which
-;; has been in emacs since version 22.
-;;
-;; Still have a bs-show "all" bound to C-x C-b for when I want to see
-;; everything
+;; I now only use lusty-explorer for file loading. C-x b buffer
+;; switching will be helm-mini.
 ;;
 ;;; Code:
 

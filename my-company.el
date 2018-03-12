@@ -20,31 +20,24 @@
 ;;; Code:
 
 ;; Require prerequisites
-(require 'use-package)
-
-(use-package company-irony
-  :ensure t
-  :commands company-irony-setup-begin-commands)
-
-(use-package company-statistics
-  :defer 60
-  :config (company-statistics-mode))
+(eval-when-compile (require 'use-package))
 
 (use-package company
   :ensure t
   :commands (global-company-mode company-complete-common)
   :init (add-hook 'prog-mode-hook 'global-company-mode)
-  :diminish "Com"
+  :diminish "Cpy"
   :config
   (progn
     ;; Variables
     (setq company-selection-wrap-around t
           tab-always-indent 'complete)
     ;; Remove backends I'll never use
-    (delete 'company-bbdb company-backends)
-    (delete 'company-eclim company-backends)
-    (delete 'company-xcode company-backends)
-    (delete 'company-semantic company-backends)
+    (setq company-backends
+          (delete 'company-bbdb
+                  (delete 'company-eclim
+                          (delete 'company-xcode
+                                  (delete 'company-semantic company-backends)))))
     ;; Keys
     ;; keys active while completing
     (define-key company-active-map (kbd "TAB") 'company-complete)
@@ -53,13 +46,21 @@
     ;; keys active in the global minor mode
     (define-key company-mode-map (kbd "M-/") 'company-complete-common)
     (define-key company-mode-map [remap indent-for-tab-command]
-      'company-indent-for-tab-command)
+      'company-indent-for-tab-command)))
 
-    ;; Any other extensions?
-    (when (require 'company-irony nil t)
-      (add-to-list 'company-backends 'company-irony t)
-      (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))))
 
+;; company-irony uses clang, but it should be before company-clang in
+;; the company-backends list or it will never get the chance to complete
+(use-package company-irony
+  :ensure t
+  :commands company-irony-setup-begin-commands
+  :config (progn
+            (add-to-list 'company-backends #'company-irony)
+            (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)))
+
+(use-package company-statistics
+  :defer 60
+  :config (company-statistics-mode))
 
 ;; company-yasnippet must be at the end of the list
 ;; (when (require 'company-yasnippet nil t)
