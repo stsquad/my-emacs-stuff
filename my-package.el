@@ -48,7 +48,8 @@
 
 ; and force installation, as :ensure t will not
 (unless (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
-  (package-install (elt (cdr (assoc 'org package-archive-contents)) 0)))
+  (message "No org-mode installed, things will likey fail"))
+;  (package-install (elt (cdr (assoc 'org package-archive-contents)) 0)))
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
