@@ -196,27 +196,20 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (use-package realgud
   :commands (realgud:gdb realgud:gdb-pid))
 
-;; Smart Parens
-(use-package smartparens
-  :ensure t
-  :commands (smartparens-mode
-             smartparens-global-mode
-             show-smartparens)
-  :init (smartparens-global-mode)
-  :config
-  (progn
-    (require 'smartparens-config)
-    ;; Filters
-    (sp-local-pair '(mail-mode magit-commit-mode) "'" "'" :actions '(wrap))
-    ;; Keymap Tweaks
-    (defvar my-sp-map nil
-      "My prefixed Smart Parens bindings.")
-    (define-prefix-command 'my-sp-map)
-    (define-key ctl-x-map "p" 'my-sp-map)
-    (define-key my-sp-map "n" 'sp-next-sexp)
-    (define-key my-sp-map "p" 'sp-previous-sexp)))
 
-;; maybe (show-paren-mode 1) if no smartparens?
+;; Pairs and parenthesis
+;;
+;; I used to use smart-parens but it was too much. electric-pair-mode
+;; and show-paren-mode seem to be enough for now.
+;;
+
+(use-package elec-pair
+  :ensure t
+  :config (electric-pair-mode))
+
+(use-package paren
+  :ensure t
+  :config (show-paren-mode))
 
 ;; Docker is useful
 
