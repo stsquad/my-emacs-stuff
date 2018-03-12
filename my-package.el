@@ -46,6 +46,10 @@
 ; original when we should be getting everything from the ELPA version.
 (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
 
+; and force installation, as :ensure t will not
+(unless (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
+  (package-install (elt (cdr (assoc 'org package-archive-contents)) 0)))
+
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
