@@ -23,15 +23,15 @@
 (when I-am-at-work
   (add-to-list
    'package-archives
-   '("melpa" . "http://melpa.org/packages/") t))
+   '("melpa" . "https://melpa.org/packages/") t))
 
 (add-to-list
  'package-archives
- '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+ '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
 (add-to-list
  'package-archives
- '("org" . "http://orgmode.org/elpa/") t)
+ '("org" . "https://orgmode.org/elpa/") t)
 
 ;; Pin use-package
 (when (boundp 'package-pinned-packages)
