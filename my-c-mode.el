@@ -283,6 +283,18 @@
       :commands etags-select-find-tag
       :init (define-key c-mode-map (kbd "C-c f") 'etags-select-find-tag))))
 
+;; Enhance C/C++ Development
+(use-package irony
+  :ensure t
+  :config (progn
+            (add-hook 'c-mode-hook 'irony-mode)
+            (add-hook 'c++-mode-hook 'irony-mode)
+            (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
+
+(use-package irony-eldoc
+  :ensure t
+  :config (add-hook 'irony-mode-hook #'irony-eldoc))
+
 (message "Done with cc-mode customisation")
 
 ;;
