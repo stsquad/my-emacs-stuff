@@ -47,11 +47,6 @@
 
 (require 'my-config)
 
-;; Load any hand-made customisation
-;; we do this early to prevent problems with theme safety and the like
-(when (file-exists-p custom-file)
-  (load custom-file))
-
 (require 'my-keybinds)
 
 (eval-when-compile
@@ -59,6 +54,12 @@
 
 (use-package my-libs)
 (use-package my-basic-modes)
+
+;; Load any hand-made customisation
+;; we do this early to prevent problems with theme safety and the like
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 (use-package my-display)
 (use-package my-modeline)
 
@@ -84,7 +85,7 @@
   :if (not I-am-root))
 
 ;; Development related stuff, including project root
-(load-library "my-devel")
+(use-package my-devel)
 
 (use-package my-flycheck
   :if (version<= "24.4" emacs-version))
@@ -105,7 +106,7 @@
 (load-library "my-windows")
 (load-library "my-buffer")
 (load-library "my-dired")
-(load-library "my-keyhelp")
+(use-package my-keyhelp)
 
 ;; Locally installed pkgs
 (load-library "my-local-pkgs")
