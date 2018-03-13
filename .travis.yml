@@ -8,6 +8,7 @@ addons:
       - maildir-utils
       - mu4e
 env:
+  - EVM_EMACS=
   - EVM_EMACS=emacs-24.4-travis
   - EVM_EMACS=emacs-24.5-travis
   - EVM_EMACS=emacs-25.1-travis
@@ -16,7 +17,7 @@ env:
   - EVM_EMACS=emacs-git-snapshot-travis
 install:
   - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
-  - evm install $EVM_EMACS --use --skip
+  - if [ -n "$EVM_EMACS" ]; then evm install $EVM_EMACS --use --skip ; fi
   - ./setup_emacs.sh
 script:
   - ./tests/check_daemon_starts.sh 0
