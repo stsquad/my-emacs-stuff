@@ -615,13 +615,13 @@ to `my-mu4e-patches' for later processing."
             (setq helm-mu-contacts-personal t)
             (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu)))
 
-(use-package mu4e-alert
-  :ensure t
-  :if (locate-library "mu4e")
-  :config (progn
-            (setq mu4e-alert-interesting-mail-query
-                  "recip:alex.bennee flag:unread date:7d..now AND NOT flag:trashed")
-            (mu4e-alert-enable-mode-line-display)))
+(when (locate-library "mu4e")
+  (use-package mu4e-alert
+    :ensure t
+    :config (progn
+              (setq mu4e-alert-interesting-mail-query
+                    "recip:alex.bennee flag:unread date:7d..now AND NOT flag:trashed")
+              (mu4e-alert-enable-mode-line-display))))
 
 ;; Magic handling for multiple email addrsses
 (defvar my-email-address-alist
