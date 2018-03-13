@@ -284,12 +284,22 @@
       :init (define-key c-mode-map (kbd "C-c f") 'etags-select-find-tag))))
 
 ;; Enhance C/C++ Development
+
+(defun my-irony-cdb-setup ()
+  "Wrapper around `irony-cdb-autosetup-compile-options'.
+
+This is simply to avoid trying to load when dealing with header files
+  as they are generally not in compilation databases."
+  (unless (s-suffix? ".h" (buffer-file-name))
+    (irony-cdb-autosetup-compile-options)))
+
 (use-package irony
   :ensure t
   :config (progn
+
             (add-hook 'c-mode-hook 'irony-mode)
             (add-hook 'c++-mode-hook 'irony-mode)
-            (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
+            (add-hook 'irony-mode-hook 'my-irony-cdb-setup)))
 
 (use-package irony-eldoc
   :ensure t
