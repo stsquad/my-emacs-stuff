@@ -21,13 +21,13 @@
                 helm-quick-update t
                 helm-M-x-requires-pattern nil
                 helm-ff-skip-boring-files t))
-  :bind (("C-x b" . helm-mini)
-         ("M-x" . helm-M-x)
+  :bind (("M-x" . helm-M-x)
          ("C-x 8 <RET>" . helm-ucs)))
 
 (use-package helm-buffers
   :ensure helm
-  :commands helm-buffers-list
+  :commands (helm-buffers-list helm-mini)
+  :bind ("C-x b" . helm-mini)
   :config (setq helm-buffers-fuzzy-matching t))
 
 (use-package helm-elisp

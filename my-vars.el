@@ -22,15 +22,12 @@
 
 (defvar I-am-at-work (string-match "zen" (system-name)))
 (defvar I-am-at-home (string-match "danny" (system-name)))
-(defvar I-am-on-netbook (string-match "trent" (system-name)))
-(defvar I-am-on-pixel (and (string-match "localhost" (system-name))
-                           (which-lookup "host-x11")))
 (defvar I-am-on-server (string-match "socrates" (system-name)))
 
 ;; I can probably disable a bunch of stuff for test machines
 (defun my-primary-machine-p ()
   "Return t if I'm on a primary machine."
-  (or I-am-at-home I-am-at-work I-am-on-pixel I-am-on-server))
+  (or I-am-at-home I-am-at-work I-am-on-server))
 
 ;; Lets set some parameters if we are running as a console or under X
 ;
