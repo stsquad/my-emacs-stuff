@@ -28,7 +28,7 @@
 ;; Magnar's string handling library
 (use-package s
   :ensure t
-  :commands s-contains? s-replace-all s-chop-suffix s-trim)
+  :commands s-suffix? s-contains? s-replace-all s-chop-suffix s-trim)
 
 (use-package fn
   :ensure t)
