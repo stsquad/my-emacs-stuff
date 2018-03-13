@@ -90,10 +90,8 @@
 (use-package my-flycheck
   :if (version<= "24.4" emacs-version))
 
-(load-library "my-elisp")
-(load-library "my-python")
-
-
+(use-package my-elisp)
+(use-package my-python)
 
 ;; Org configuration
 (use-package my-org
@@ -101,47 +99,43 @@
 ;; Helm
 (use-package my-helm)
 ;; More keybindings
-(load-library "my-toggles")
+(use-package my-toggles)
 ;; Window and buffer navigation
-(load-library "my-windows")
-(load-library "my-buffer")
-(load-library "my-dired")
+(use-package my-windows)
+(use-package my-buffer)
+(use-package my-dired)
 (use-package my-keyhelp)
 
 ;; Locally installed pkgs
-(load-library "my-local-pkgs")
+(use-package my-local-pkgs)
 
 ;; Useful modes
-(load-library "my-company")
-(load-library "my-yasnippet")
+(use-package my-company)
+(use-package my-yasnippet)
 
 ;; other customisations
-(load-library "my-tramp")
-(load-library "my-spell")
-(load-library "my-gpg")
+(use-package my-tramp)
+(use-package my-spell)
+(use-package my-gpg)
 
 (use-package my-git
   :if (version<= "24.4" emacs-version))
 
-(load-library "my-htmlize")
-(load-library "my-eshell")
+(use-package my-htmlize)
+(use-package my-eshell)
 
 (use-package my-circe
   :if (not I-am-root))
 
-(load-library "my-diff")
+(use-package my-diff)
 
 (use-package my-transmission
   :if (string-match "seed" (system-name)))
 
-(load "the-rest.el")
-
 ;; Finished loading
 
-(message "Done .emacs")
-
 (setq I-completed-loading-dotinit 't)
-(profiler-start 'cpu)
+(message "Done .emacs")
 
 (provide 'init)
 ;;; init.el ends here
