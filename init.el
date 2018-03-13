@@ -99,7 +99,7 @@
 (use-package my-org
   :if (not I-am-root))
 ;; Helm
-(load-library "my-helm")
+(use-package my-helm)
 ;; More keybindings
 (load-library "my-toggles")
 ;; Window and buffer navigation
