@@ -117,6 +117,58 @@
             (delete-other-windows))
         (mu4e)))))
 
+;; ivy powered switch function
+(defun my-ivy-switch-to-mu4e (&optional prefix)
+  "Ivy based switch to mu4e.
+
+Instead of the heuristics of `my-switch-to-mu4e' we build a list of
+all mu4e buffers and allow ivy selection of them.
+"
+  (interactive "P")
+  (my-rig-mu4e-for-active-running)
+  (if (or prefix (not (get-buffer " *mu4e-main*")))
+      (mu4e)
+    (let (collection)
+      ;; Go backwards in priority (as add to list prepends by default)
+      ;; The main menu
+      (add-to-list 'collection
+                   (propertize (format "mu4e menu")
+                               'buffer (get-buffer " *mu4e-main*")))
+      ;; What are we reading
+      (let ((view (get-buffer "*mu4e-view*")))
+        (when view
+          (let ((subject (with-current-buffer view
+                           (mu4e-message-field-at-point :subject))))
+            (add-to-list 'collection
+                         (propertize (format "reading:%s" subject)
+                                     'buffer view)))))
+      ;; What are we searching
+      (let ((headers (get-buffer "*mu4e-headers*")))
+        (when headers
+          (let ((search (with-current-buffer headers
+                          mu4e~headers-last-query)))
+            (add-to-list 'collection
+                         (propertize (format "mu4e headers:%s" search)
+                                     'buffer headers)))))
+      ;; What are we composing
+      (--each (buffer-list)
+        (with-current-buffer it
+          (when (and (eq major-mode 'mu4e-compose-mode)
+                     (not message-sent-message-via))
+            (add-to-list 'collection
+                         (propertize
+                          (format "composing:%s"
+                                  (or (message-fetch-field "subject")
+                                      "No subject"))
+                          'buffer it)))))
+      (switch-to-buffer
+       (get-text-property 0 'buffer
+                          (if (< 1 (length collection))
+                              (ivy-read "mu4e:"
+                                        collection)
+                            (car collection))))
+      (delete-other-windows))))
+
 ;; Jump to current thread
 (defun my-switch-to-thread ()
   "Switch to headers view of current thread."
@@ -301,7 +353,7 @@ Useful for replies and drafts")
 (use-package mu4e
   :commands mu4e
   ;; Bindings
-  :bind ("C-c m" . my-switch-to-mu4e)
+  :bind ("C-c m" . my-ivy-switch-to-mu4e)
   :config
   (progn
     (require 'mu4e-vars)
