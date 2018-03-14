@@ -28,14 +28,13 @@
 (eval-when-compile (require 'use-package))
 (use-package my-helm)
 
-;; Currently broken: https://github.com/ShingoFukuyama/helm-swoop/issues/123
-;; (use-package helm-swoop
-;;   :ensure t
-;;   :bind (("C-c o" . helm-swoop)
-;;          ("C-c O" . helm-multi-swoop)))
+(use-package helm-swoop
+  :ensure t
+  :bind (("C-c o" . helm-swoop)
+         ("C-c O" . helm-multi-swoop)))
 
-(use-package swoop
-  :bind (("C-c o" . swoop)))
+;; (use-package swoop
+;;   :bind (("C-c o" . swoop)))
 
 (use-package helm-git-grep
   :ensure t
