@@ -18,3 +18,6 @@
     (add-to-list 'backup-directory-alist
                  (cons tramp-file-name-regexp "~/.emacs.d/tramp-saves"))))
 
+
+(provide 'my-tramp)
+;;; my-tramp.el ends here

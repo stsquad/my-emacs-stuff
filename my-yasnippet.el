@@ -57,5 +57,5 @@
     (shell-command-to-string
      (format "git request-pull %s %s %s" base repo head))))
 
-(provide 'my-yasnippet.el)
+(provide 'my-yasnippet)
 ;;; my-yasnippet.el ends here
