@@ -301,9 +301,10 @@ This is simply to avoid trying to load when dealing with header files
             (add-hook 'c++-mode-hook 'irony-mode)
             (add-hook 'irony-mode-hook 'my-irony-cdb-setup)))
 
-(use-package irony-eldoc
-  :ensure t
-  :config (add-hook 'irony-mode-hook #'irony-eldoc))
+(when I-am-at-work
+  (use-package irony-eldoc
+    :ensure
+    :config (add-hook 'irony-mode-hook #'irony-eldoc)))
 
 (message "Done with cc-mode customisation")
 
