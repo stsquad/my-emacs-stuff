@@ -32,6 +32,17 @@
   :ensure t
   :config (dired-quick-sort-setup))
 
+(defun my-dired-frame (directory)
+  "Open up a dired frame which closes on exit."
+  (interactive)
+  (switch-to-buffer (dired directory))
+  (local-set-key
+   (kbd "C-x C-c")
+   (lambda ()
+     (interactive)
+     (kill-this-buffer)
+     (save-buffers-kill-terminal 't))))
+
 ;; Hydras
 (with-eval-after-load 'dired
   (progn
