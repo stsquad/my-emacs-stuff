@@ -32,6 +32,11 @@
   :ensure t
   :config (dired-quick-sort-setup))
 
+;; Enable dired-rsync
+(use-package dired-rsync
+  :config
+  (bind-key "C-c C-r" 'dired-rsync dired-mode-map))
+
 (defun my-dired-frame (directory)
   "Open up a dired frame which closes on exit."
   (interactive)
