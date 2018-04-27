@@ -43,10 +43,19 @@
   :init
   (add-hook 'emacs-lisp-mode-hook 'my-elisp-hook-functions))
 
+;; see https://github.com/joddie/macrostep/issues/11
+(defun my-macrostep-expand-wrapper ()
+  "Workaround `macrostep-expand' not liking white-space after a sexp."
+  (interactive)
+  (when (and (= ?\n (char-after))
+             (= (point) (cdr (bounds-of-thing-at-point 'sexp))))
+    (backward-char))
+  (macrostep-expand))
+
 (use-package macrostep
   :ensure t
   :commands macrostep-expand
-  :init (define-key emacs-lisp-mode-map (kbd "C-c e") 'macrostep-expand))
+  :bind (:map emacs-lisp-mode-map ("C-c e".  my-macrostep-expand-wrapper)))
 
 (provide 'my-elisp)
 ;;; my-elisp.el ends here
