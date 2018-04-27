@@ -34,6 +34,8 @@
   :defer 60
   :config (progn
             (keychain-refresh-environment)
+            (add-hook 'after-make-frame-functions
+                      #'(lambda(&optional frame) (keychain-refresh-environment)))
             (when (string-match "socrates" (system-name))
               (my-squash-gpg))))
 
@@ -43,8 +45,6 @@
 `FRAME'."
   (when (not frame)
     (setq frame (selected-frame)))
-  (when (fboundp 'keychain-refresh-environment)
-    (keychain-refresh-environment))
   (if (display-graphic-p frame)
       (setenv "DISPLAY" (terminal-name frame))
     (setenv "GPG_TTY" (terminal-name frame))
