@@ -50,10 +50,10 @@
         mode-line-misc-info
         "%[("
         mode-name
-        mode-line-process
         minor-mode-alist
+        mode-line-process
         "%n"
-        ")%]"
+        ")%] "
         mode-line-end-spaces
         )
      sml/theme 'dark)
