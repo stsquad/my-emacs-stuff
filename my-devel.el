@@ -20,7 +20,7 @@
 ;; EditorConfig
 (use-package editorconfig
   :ensure t
-  :diminish "EditConf"
+  :diminish "EdCf"
   :config
   (editorconfig-mode 1))
 

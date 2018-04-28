@@ -32,6 +32,11 @@
   :ensure t
   :config (dired-quick-sort-setup))
 
+;; Enable dired-rsync
+(use-package dired-rsync
+  :config
+  (bind-key "C-c C-r" 'dired-rsync dired-mode-map))
+
 (defvar my-last-dired-directory
   nil
   "Return the directory dired was last killed in.")
@@ -60,7 +65,8 @@
 Number of marked items: %(length (dired-get-marked-files))
 "
         ("m" dired-mark "mark")
-        ("x" wdired-change-to-wdired-mode "wdired" :exit t)))
+        ("x" wdired-change-to-wdired-mode "wdired" :exit t)
+        ("t" my-hydra-toggle/body "main toggles" :exit t)))
 
     ;; Global access to dired
     (global-set-key
