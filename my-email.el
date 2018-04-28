@@ -450,17 +450,18 @@ Useful for replies and drafts")
      (-difference my-mu4e-patches
                   my-mu4e-applied-patches)))
 
-    (defun my-mu4e-apply-marked-mbox-patches ()
-      "Apply patches in order."
-      (interactive)
+    (defun my-mu4e-apply-marked-mbox-patches (&optional arg)
+      "Apply patches in order. With PREFIX include signoff"
+      (interactive "P")
       (let ((applied-or-skipped
              (--take-while
               (let ((docid (plist-get it :docid)))
                 (if (mu4e-mark-docid-marked-p docid)
-                    (if (= 0 (mu4e-action-git-apply-mbox it))
+                    (if (= 0 (mu4e-action-git-apply-mbox it arg))
                         (when (mu4e~headers-goto-docid docid)
                           (mu4e-mark-set 'unmark) t)
                       ; failed to apply, stop
+                      (switch-to-buffer "*Shell Command Output*")
                       nil)
                   ; not marked, skip
                   t))
