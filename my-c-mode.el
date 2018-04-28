@@ -296,7 +296,6 @@ This is simply to avoid trying to load when dealing with header files
 (use-package irony
   :ensure t
   :config (progn
-
             (add-hook 'c-mode-hook 'irony-mode)
             (add-hook 'c++-mode-hook 'irony-mode)
             (add-hook 'irony-mode-hook 'my-irony-cdb-setup)))
