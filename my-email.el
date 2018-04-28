@@ -279,7 +279,7 @@ Useful for replies and drafts")
                  'message-cite-original-without-signature)
              (setq mu4e-compose-cite-function 'message-cite-original)
            (setq mu4e-compose-cite-function 'message-cite-original-without-signature))))
-  ("t" my-hydra-toggle-body "main toggles"))
+  ("t" my-hydra-toggle/body "main toggles"))
 
 (use-package mu4e-view
   :commands mu4e-view

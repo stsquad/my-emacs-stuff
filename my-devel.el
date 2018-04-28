@@ -57,7 +57,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (defhydra my-reb-hydra (:color teal)
   (concat "<TAB> Toggle syntax: %`reb-re-syntax ")
   ("TAB" reb-change-syntax nil)
-  ("t" my-hydra-toggle-body "main toggles")
+  ("t" my-hydra-toggle/body "main toggles")
   ("q" quit-window "quit"))
 
 (use-package re-builder

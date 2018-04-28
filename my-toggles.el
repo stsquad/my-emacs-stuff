@@ -162,9 +162,24 @@ of things where C-SPC can't be used."
 (defhydra my-debug-toggle
   (:hint nil :color blue :timeout 5)
   (concat
-   "Debug Toggles: d-o-_e_: %`debug-on-error d-o-_q_: %`debug-on-quit\n")
+   "Debug Toggles: d-o-_e_: %`debug-on-error d-o-_q_: %`debug-on-quit "
+   "d-o-_m_: %`debug-on-message _a_ll _r_eset debug e_x_it\n")
   ("e" toggle-debug-on-error :color red)
-  ("q" toggle-debug-on-quit :color red))
+  ("q" toggle-debug-on-quit :color red)
+  ("m" (lambda() ;; Xxx fix to return nil on empty string
+         (interactive)
+         (setq debug-on-message
+               (completing-read "debug-on-message: " nil nil nil nil
+  nil nil))))
+  ("x" nil :exit t)
+  ("a" (lambda ()
+         (interactive)
+         (setq debug-on-error t
+               debug-on-quit t)))
+  ("r" (lambda ()
+         (interactive)
+         (setq debug-on-error nil
+               debug-on-quit nil))))
 
 ;; Master toggle function
 (require 'whitespace)
