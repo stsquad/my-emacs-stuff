@@ -22,6 +22,11 @@
 ;; Require prerequisites
 (eval-when-compile (require 'use-package))
 
+(defvar my-disabled-company-modes
+  '(company-bbdb company-eclim company-xcode company-semantic
+                 company-clang)
+  "Backends I disable/blacklist.")
+
 (use-package company
   :ensure t
   :commands (global-company-mode company-complete-common)
@@ -34,10 +39,9 @@
           tab-always-indent 'complete)
     ;; Remove backends I'll never use
     (setq company-backends
-          (delete 'company-bbdb
-                  (delete 'company-eclim
-                          (delete 'company-xcode
-                                  (delete 'company-semantic company-backends)))))
+          (--remove
+           (-contains-p my-disabled-company-modes it)
+           company-backends))
     ;; Keys
     ;; keys active while completing
     (define-key company-active-map (kbd "TAB") 'company-complete)
@@ -53,10 +57,11 @@
 ;; the company-backends list or it will never get the chance to complete
 (use-package company-irony
   :ensure t
-  :commands company-irony-setup-begin-commands
+  :after irony
+  :commands (company-irony company-irony-setup-begin-commands)
   :config (progn
-            (add-to-list 'company-backends #'company-irony)
-            (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)))
+            (add-to-list 'company-backends #'company-irony))
+            (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
 
 (use-package company-statistics
   :defer 60
