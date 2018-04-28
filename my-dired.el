@@ -32,14 +32,19 @@
   :ensure t
   :config (dired-quick-sort-setup))
 
+(defvar my-last-dired-directory
+  nil
+  "Return the directory dired was last killed in.")
+
 (defun my-dired-frame (directory)
-  "Open up a dired frame which closes on exit."
+  "Open up a dired frame in `DIRECTORY' which closes on exit."
   (interactive)
   (switch-to-buffer (dired directory))
   (local-set-key
    (kbd "C-x C-c")
    (lambda ()
      (interactive)
+     (setq my-last-dired-directory (file-truename default-directory))
      (kill-this-buffer)
      (save-buffers-kill-terminal 't))))
 
