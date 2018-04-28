@@ -54,7 +54,8 @@
 ----------------------------------------------
 [_p_]   Next    [_n_]   Next    [_l_] Edit lines
 [_P_]   Skip    [_N_]   Skip    [_a_/_;_] Mark all, DWIM
-[_M-p_] Unmark  [_M-n_] Unmark  [_q_] Quit"
+[_M-p_] Unmark  [_M-n_] Unmark  [_h_]ide unmatched lines
+^ ^             ^ ^             ^  ^                      [_q_]uit"
   ("l" mc/edit-lines :exit t)
   ("a" mc/mark-all-like-this :exit t)
   (";" mc/mark-all-like-this-dwim :exit t)
@@ -64,24 +65,29 @@
   ("p" mc/mark-previous-like-this)
   ("P" mc/skip-to-previous-like-this)
   ("M-p" mc/unmark-previous-like-this)
+  ("h" mc-hide-unmatched-lines-mode)
   ("q" nil)))))
 
 ;; Expand region
+(defun my-mark-or-expand-dwim (&optional arg)
+  "Set the mark (with prefix `ARG') or if mark already set call expand-region."
+  (interactive "P")
+  (if arg
+      (let ((current-prefix-arg nil))
+        (setq transient-mark-mode t)
+        (call-interactively #'set-mark-command))
+    (if (or (use-region-p)
+            (and mark-active
+                 (eq (point) (mark))))
+        (call-interactively #'er/expand-region)
+      (call-interactively #'set-mark-command))))
+
 (use-package expand-region
 ; not stable :ensure t
   :commands (er/expand-region)
   :bind (("C-SPC" . my-mark-or-expand-dwim)
          ("C-@" . my-mark-or-expand-dwim)
          ("C-=" . er/expand-region)))
-
-(defun my-mark-or-expand-dwim (&optional arg)
-  "Set the mark (with prefix `ARG') or if mark already set call expand-region."
-  (interactive "P")
-  (if (or (use-region-p)
-          (and mark-active
-               (eq (point) (mark))))
-      (call-interactively #'er/expand-region)
-    (call-interactively #'set-mark-command)))
 
 (defun my-next-mc-or-line-dwim (&optional arg)
   "Do `next-line' or `mc/mark-next-like-this' intelligently (with prefix `ARG').
