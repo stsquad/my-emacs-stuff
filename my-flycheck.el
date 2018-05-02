@@ -8,7 +8,10 @@
 ;;; Code:
 ;;
 
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+
+(use-package my-eproject)
+(use-package my-hydra)
 
 (use-package flycheck
   :ensure t
@@ -17,16 +20,11 @@
   :init (add-hook 'prog-mode-hook 'global-flycheck-mode)
   :config
   (progn
-    ;; Other pkgs
-    (use-package flycheck-tip
-      :if (locate-library "flycheck-tip")
-      :commands 'flycheck-tip-cycle
-      :init (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
-    
     ;; Settings
     (setq-default flycheck-emacs-lisp-initialize-packages t
                   flycheck-highlighting-mode 'lines
-                  flycheck-check-syntax-automatically '(save))
+                  flycheck-check-syntax-automatically '(save)
+                  flycheck-disabled-checkers '(c/c++-clang c/c++-gcc))
     ;; Fixups
     (defun my-flycheck-elisp-dirs ()
       "Ensure flycheck has set search directories."
@@ -38,7 +36,14 @@
 
     (add-hook 'flycheck-mode-hook 'my-flycheck-elisp-dirs)))
 
+;; Other pkgs
+(use-package flycheck-tip
+  :ensure t
+  :after flycheck
+  :commands 'flycheck-tip-cycle
+  :init (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
 
+;; mostly obsoleted by flycheck-irony
 (use-package flycheck-clangcheck
   :if (locate-library "flycheck-clangcheck")
   :config
@@ -51,6 +56,28 @@
          (car (my-kernel-build-dirs (eproject-root))))))
     (add-hook 'kernel-project-file-visit-hook
               'my-set-kernel-clangcheck-build-path)))
+
+(use-package flycheck-package
+  :ensure t)
+
+(use-package flycheck-checkpatch
+  :config (flycheck-checkpatch-setup)
+  :config (setq flycheck-checkers (delete 'checkpatch flycheck-checkers))
+  :config (add-to-list 'flycheck-checkers 'checkpatch t))
+
+(use-package flycheck-irony
+  :ensure t
+  :after flycheck
+  :config (flycheck-irony-setup))
+
+(with-eval-after-load 'flycheck
+  (define-key flycheck-command-map
+   (kbd "t")
+   (defhydra my-flycheck-toggle (:hint nil :color blue :timeout 5)
+     "
+Flycheck options: clangcheck _a_nalyse mode: %`flycheck-clangcheck-analyze"
+     ;; Clangcheck
+     ("a" (fn (setq flycheck-clangcheck-analyze (not flycheck-clangcheck-analyze)))))))
 
 
 (provide 'my-flycheck)
