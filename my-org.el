@@ -355,18 +355,43 @@ If `NEW-STATUS' is set then change TODO state."
 
 ;; Org reveal
 (use-package ox-reveal
-  :disabled (not I-am-at-work)
+  :commands org-reveal-export-to-html
   :if (locate-library "ox-reveal"))
+
+;; Load optional MELPA packages
+;;
+;; not really optional at work, but I don't want getting in the way
+;; elsewhere.
+
+(when (assoc "melpa" package-archives)
+
+  ;; for JIRA export
+  (use-package ox-jira
+    :ensure t)
+
+  (use-package ob-restclient
+    :ensure t)
+
+  (use-package ob-async
+    :ensure t))
+
 
 ;; Org Babel configurations
 (let ((lob "~/org/library.org"))
   (when (file-exists-p lob)
     (org-babel-lob-ingest lob)))
 
-(when (assoc "melpa" package-archives)
-  (use-package ob-async
-    :ensure t
-    :config (add-to-list 'org-ctrl-c-ctrl-c-hook 'ob-async-org-babel-execute-src-block)))
+(defun org-src-debug ()
+  "Put a call to this function at the beginning of the org source block to debug it."
+  (save-excursion
+    (let ((pt (let ((case-fold-search t)) (org-babel-where-is-src-block-head))))
+      (unless pt (error "Not at source block"))
+      (goto-char pt)
+      (org-edit-src-code)
+      (let ((parse-sexp-ignore-comments t))
+        (goto-char (point-min))
+        (forward-sexp 2)
+        (edebug-defun)))))
 
 (use-package org-src
   :config
