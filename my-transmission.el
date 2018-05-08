@@ -13,12 +13,15 @@
 ;;
 ;;; Commentary:
 ;;
-;; 
+;; A couple of simple customisations to feed stuff into transmission.
+;; Either I select torrent files from dired or I can enque an
+;; enclosure directly from elfeed.
 ;;
 ;;; Code:
 
-;; Require prerequisites
+; Require prerequisites
 (require 'use-package)
+(require 's)
 
 ;; Variables
 
@@ -49,12 +52,34 @@ Returns the line as a string."
   (interactive)
   (local-set-key (kbd "C-c C-c") 'my-snarf-magnet))
 
+(defun my-dired-add-to-transmission ()
+  "Add all marked files to transmission."
+  (interactive)
+  (-map 'transmission-add (dired-get-marked-files)))
+
 (use-package transmission
   :ensure t
   :commands transmission-add
   :config
   (setq transmission-rpc-auth '(:username "transmission" :password "transmission")))
-  
+
+(defun my-add-first-elfeed-enclosure-to-transmission ()
+  "Queue the first enclosure (if it is a torrent)."
+  (interactive)
+  (let ((enclosures (elfeed-entry-enclosures elfeed-show-entry)))
+    (when (and enclosures
+               (string-match-p
+                "application/x-bittorrent"
+                (nth 1 (-first-item enclosures))))
+      (transmission-add (-first-item (-first-item enclosures))))))
+
+(use-package elfeed
+  :ensure t
+  :bind (:map elfeed-show-mode-map
+              ("C-c C-c" . my-add-first-elfeed-enclosure-to-transmission))
+  :config (setq elfeed-enclosure-default-dir "~/torrent/"
+                elfeed-log-level 'debug
+                elfeed-use-curl 't))
 
 (provide 'my-transmission)
 ;;; my-transmission.el ends here
