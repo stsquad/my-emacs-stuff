@@ -41,7 +41,7 @@
   :ensure t
   :after flycheck
   :commands 'flycheck-tip-cycle
-  :init (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
+  :config (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
 
 ;; mostly obsoleted by flycheck-irony
 (use-package flycheck-clangcheck
