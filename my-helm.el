@@ -28,7 +28,10 @@
   :ensure helm
   :commands (helm-buffers-list helm-mini)
   :bind ("C-x b" . helm-mini)
-  :config (setq helm-buffers-fuzzy-matching t))
+  :config (setq helm-buffers-fuzzy-matching t
+                helm-mini-default-sources '(helm-source-buffers-list
+                                            helm-source-recentf
+                                            helm-source-bookmarks)))
 
 (use-package helm-elisp
   :bind ("C-h a" . helm-apropos))
