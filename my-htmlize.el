@@ -15,7 +15,7 @@
 (require 'my-web)
 
 (use-package htmlize
-  :if (locate-library "htmlize")
+  :ensure t
   :commands (htmlize-faces-in-buffer htmlize-make-face-map htmlize-css-specs htmlize-region-for-paste)
   :config
   (setq htmlize-output-type 'inline-css))
