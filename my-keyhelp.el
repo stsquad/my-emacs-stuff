@@ -32,11 +32,11 @@
   (which-key-mode))
 
 ;; I currently loose completion
-(use-package helpful
-  :if (assoc-default "melpa" package-archives)
-  :ensure t
-  :bind (("C-h f" . helpful-function)
-         ("C-h v" . helpful-variable)))
+(when (assoc-default "melpa" package-archives)
+  (use-package helpful
+    :ensure t
+    :bind (("C-h f" . helpful-function)
+           ("C-h v" . helpful-variable))))
 
 (provide 'my-keyhelp)
 ;;; my-keyhelp.el ends here

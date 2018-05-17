@@ -17,8 +17,6 @@
 (use-package yasnippet
   :ensure t
   :commands (snippet-mode yas-global-mode)
-  :if (version-list-< '(0 9 0 1)
-                      (pkg-info-package-version 'yasnippet))
   :defer 60
   :config
   (progn

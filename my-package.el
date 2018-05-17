@@ -54,7 +54,8 @@
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
-    (package-install 'use-package))
+  (package-install 'use-package)
+  (package-install 'org))
 
 (when (version<= "24.4" emacs-version)
 
