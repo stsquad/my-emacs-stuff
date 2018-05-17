@@ -10,7 +10,6 @@
 
 (eval-when-compile (require 'use-package))
 
-(use-package my-eproject)
 (use-package my-hydra)
 
 (use-package flycheck
@@ -47,15 +46,16 @@
 (use-package flycheck-clangcheck
   :if (locate-library "flycheck-clangcheck")
   :config
-  (when (boundp 'kernel-project-file-visit-hook)
-    (defun my-set-kernel-clangcheck-build-path ()
-      "Set the build path to the latest kernel build tree."
-      (when (my-eproject-is-type-p 'kernel)
-        (setq
-         flycheck-clangcheck-build-path
-         (car (my-kernel-build-dirs (eproject-root))))))
-    (add-hook 'kernel-project-file-visit-hook
-              'my-set-kernel-clangcheck-build-path)))
+  (with-eval-after-load 'eproject
+    (when (boundp 'kernel-project-file-visit-hook)
+      (defun my-set-kernel-clangcheck-build-path ()
+        "Set the build path to the latest kernel build tree."
+        (when (my-eproject-is-type-p 'kernel)
+          (setq
+           flycheck-clangcheck-build-path
+           (car (my-kernel-build-dirs (eproject-root))))))
+      (add-hook 'kernel-project-file-visit-hook
+                'my-set-kernel-clangcheck-build-path))))
 
 (use-package flycheck-package
   :ensure t)
