@@ -40,22 +40,17 @@
 
 (package-initialize)
 
-;; Remove Org-mode that was shipped with Emacs
-;
+;; Remove Org-mode that was shipped with Emacs if we are using ELPA
 ; This seems to be a case of something triggering a load from the
 ; original when we should be getting everything from the ELPA version.
-(setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
-
-; and force installation, as :ensure t will not
-(unless (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
-  (message "No org-mode installed, things will likey fail"))
-;  (package-install (elt (cdr (assoc 'org package-archive-contents)) 0)))
+                                        ;
+(when (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
+  (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path)))
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
-  (package-install 'use-package)
-  (package-install 'org))
+  (package-install 'use-package))
 
 (when (version<= "24.4" emacs-version)
 
