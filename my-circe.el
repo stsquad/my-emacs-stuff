@@ -86,7 +86,8 @@
   (when I-am-at-work
     (circe "znc-freenode")
     (circe "znc-oftc")
-    (circe "bitlbee"))
+    (circe "bitlbee")
+    (circe "Gentoo"))
   (circe "Freenode")
   (circe "Pl0rt"))
 
@@ -179,6 +180,14 @@
              :service "6697"
              :tls 't
              :channels ("#blue")
+             )
+            ("Gentoo"
+             :host "irc.gentoo.org"
+             :server-buffer-name "⇄ Gentoo"
+             :nick "stsquad"
+             :service "6697"
+             :tls 't
+             :channels ("#gentoo-arm")
              )
             ("bitlbee"
              :nick "ajb"
