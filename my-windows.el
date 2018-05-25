@@ -8,13 +8,40 @@
 ;;; Code:
 
 ;; Require prerequisites
-(require 'my-vars)
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+(use-package my-vars)
 
 ;; Window navigation and size control
 (use-package windmove
   :commands windmove-default-keybindings
   :init (windmove-default-keybindings))
+
+;; select a winner
+(defun my-winner-ivy-select ()
+  "Select a winner configuration and switch to it."
+  (interactive)
+  (let (collection)
+    (setq collection
+          (--map
+           (cons (format "%d:%s" (length it)
+                         (-map 'cdr (cdr it)))
+                 it)
+           (ring-elements winner-pending-undo-ring)))
+    (ivy-read "winner:"
+              collection
+              :action (lambda (conf)
+                        (winner-set (cdr conf))))))
+
+(global-set-key
+ (kbd "C-x w")
+ (defhydra my-hydra-windows (:hint nil :color red :timeout 5)
+   (concat
+    "_p_revious: of %s(ring-length winner-pending-undo-ring) "
+    "_n_ext _f_ind <RET> when done\n")
+   ("p" winner-undo nil)
+   ("n" winner-redo nil)
+   ("f" my-winner-ivy-select nil :exit t)
+   ("<RET>" nil :exit t)))
 
 ;; winner-mode to remember window layouts
 (use-package winner
