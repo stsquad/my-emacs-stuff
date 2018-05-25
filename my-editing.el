@@ -83,7 +83,7 @@
       (call-interactively #'set-mark-command))))
 
 (use-package expand-region
-; not stable :ensure t
+  :ensure t
   :commands (er/expand-region)
   :bind (("C-SPC" . my-mark-or-expand-dwim)
          ("C-@" . my-mark-or-expand-dwim)
