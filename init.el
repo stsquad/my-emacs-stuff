@@ -67,9 +67,9 @@
 (use-package my-web)
 
 (when (and (getenv "DISPLAY") (daemonp) (not I-am-root))
-  (if (locate-library "atomic-chrome")
-      (use-package my-atomic-chrome))
-    (use-package my-edit-server))
+  (when (locate-library "atomic-chrome")
+    (use-package my-atomic-chrome))
+  (use-package my-edit-server))
 
 ;; Stuff I always want
 ;; general editing
