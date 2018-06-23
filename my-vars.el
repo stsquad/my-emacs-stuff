@@ -71,6 +71,21 @@
         (add-to-list 'tags (match-string-no-properties 0))))
     tags))
 
+;; This is used for grabbing logins
+(defvar my-ssh-login-re
+  (rx (: (one-or-more alnum)
+         "@"
+         (one-or-more (one-or-more alnum)
+                      (zero-or-one "."))))
+  "Regexp to match host")
+
+(defun my-capture-login ()
+  "Return a login string if one exists in the buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (when (re-search-forward my-ssh-login-re (point-max) t)
+      (match-string-no-properties 0))))
+
 
 (provide 'my-vars)
 ;;; my-vars.el ends here
