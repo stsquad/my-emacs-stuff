@@ -26,7 +26,7 @@
     (lusty-file-explorer)))
 
 (use-package lusty-explorer
-  :if (locate-library "lusty-explorer")
+  :ensure t
   :commands lusty-file-explorer
   :bind (("C-x C-f" . my-lusty-file-explorer)))
 
