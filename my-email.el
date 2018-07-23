@@ -260,14 +260,14 @@ Useful for replies and drafts")
 
 (use-package mu4e-headers
   :commands mu4e-headers-mode
-  :defines mu4e-headers-mode-map
+  :bind (:map mu4e-headers-mode-map
+              ("C-c C-l" . org-store-link)
+              ("C-c t" . my-switch-to-thread))
+  ;; :hook ((my-yas-local-disable my-set-view-directory) . mu4e-headers-mode)
   :config (progn
-            ;; My mode bindings
-            (define-key mu4e-headers-mode-map (kbd "C-c C-l") 'org-store-link)
-            (define-key mu4e-headers-mode-map (kbd "C-c t")
-              'my-switch-to-thread)
-            (add-hook 'mu4e-headers-mode-hook
-                      '(lambda () (yas-minor-mode -1)))
+            (setq mu4e-headers-time-format "%H:%M:%S"
+                  mu4e-headers-date-format "%a %d/%m/%y")
+            (add-hook 'mu4e-headers-mode-hook 'my-yas-local-disable)
             (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)))
 
 (defhydra my-mu4e-view-toggle (:hint nil :color blue :timeout 5)
