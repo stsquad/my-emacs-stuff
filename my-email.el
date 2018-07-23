@@ -330,7 +330,7 @@ Useful for replies and drafts")
 ;; Subject: [Qemu-devel] [PATCH 1/2] tcg: Allow constant pool entries in the prologue
 (defvar my-extract-patch-title
   (rx (:
-       "[PATCH" (one-or-more print) "]"
+       (or "[PATCH" "[RFC") (one-or-more print) "]"
        (zero-or-more space)
        (group (one-or-more print))
        eol))
