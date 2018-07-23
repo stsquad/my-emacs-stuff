@@ -374,9 +374,9 @@ Useful for replies and drafts")
      ;; mail fetch
      mu4e-get-mail-command
      (cond
-      (I-am-at-work "mbsync linaro-sync")
+      (I-am-at-work "mbsync  -V -Dm linaro-sync")
       (t "true"))
-     mu4e-update-interval 600
+     mu4e-update-interval 800
      mu4e-hide-index-messages t
      mu4e-change-filenames-when-moving t ; keep mbsync happy
      mu4e-index-lazy-check t             ; faster sync
@@ -400,7 +400,6 @@ Useful for replies and drafts")
      mu4e-view-show-images t
      mu4e-view-show-addresses t
      mu4e-view-fill-headers nil
-     mu4e-html2text-command "html2text -utf8 -width 72"
      mu4e-view-fields
      '(:from :to :cc :subject :flags :date :tags :attachments
              :signature)
@@ -553,24 +552,28 @@ to `my-mu4e-patches' for later processing."
               ("s:PULL \(b:Bennée OR b:Bennee\)" "Pull Reqs with my name" ?P)
               ("flag:flagged" "Flagged and starred posts" ?f)
               ("flag:flagged NOT flag:seen" "Unread flagged and starred posts" ?F)
-              ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
+              ("to:alex.bennee@linaro.org AND from:maxim.kuvyrkov@linaro.org"
                "From my boss" ?B)
               ("date:1h..now"
                "In the last hour" ?h)
               ("date:1h..now AND flag:unread"
                "In the last hour (unread)" ?H)
+              ("from:alex.bennee date:1w..now"
+               "My emails in the last week" ?w)
+              ;;
+              ("maildir:\"/linaro/Inbox\" f:travis OR f:lava OR f:shippable" "Notifications" ?n)
               ;; Virt related
-              ("list:qemu-devel.nongnu.org and flag:unread"
+              ("list:qemu-devel* and flag:unread"
                "Latest QEMU posts" ?q)
-              ("((list:qemu-devel.nongnu.org AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm.nongnu.org)"
+              ("((list:qemu-devel* AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm*)"
                "QEMU ARM posts" ?a)
               ("list:mttcg.listserver.greensocs.com OR maildir:/linaro/virtualization/qemu-multithread"
                "Multi-threaded QEMU posts" ?T)
-              ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
+              ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel* AND subject:android)"
                "Android related emails" ?A)
               ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
                "Latest ARM KVM posts" ?k)
-              ("list:virtualization.linaro.org and flag:unread"
+              ("list:virtualization.linaro.org or list:virt-team.linaro.org and flag:unread"
                "Linaro Virtualization List" ?v)
               ("maildir:\"/linaro/virtualization/*\" AND flag:list AND flag:unread"
                "All unread Virtualization email" ?V)
@@ -585,6 +588,7 @@ to `my-mu4e-patches' for later processing."
                "Unread work mailing lists (lists.linaro.org)" ?l)
               ("from:linaro.org and flag:unread"
                "Latest unread Linaro posts from Linaro emails" ?L)
+              ;; Distro and others
               ;; Emacs
               ("list:emacs-devel.gnu.org and flag:unread"
                "Latest unread Emacs developer posts" ?E)
