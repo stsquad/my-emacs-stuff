@@ -5,10 +5,9 @@
 /*
  * $1
  *
- * Copyright (c) 2014 
- * Written by Alex Bennée <${2:`(my-yas-expand-email)`}>
+ * Copyright (c) ${2:`(format-time-string "%Y")`}
+ * Written by Alex Bennée <${3:`(my-yas-expand-email)`}>
  *
- * This code is licensed under the GNU ${3:$$(yas/choose-value '("GPL v2" "GPL v2, or later" "GPL v3"))}.
+ * This code is licensed under the GNU ${4:$$(yas/choose-value '("GPL v2" "GPL v2, or later" "GPL v3"))}.
  */
  $0
-
