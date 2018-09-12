@@ -99,13 +99,13 @@ If the region is less than a line long assume I want to mark the next
       (call-interactively #'mc/mark-next-like-this)
     (call-interactively #'next-line)))
 
-(use-package region-bindings-mode
-; not in stable  :ensure t
-  :if (locate-library "region-bindings-mode")
-  :commands (region-bindings-mode-enable)
-  :bind (:map region-bindings-mode-map
-              ("C-n" . my-next-mc-or-line-dwim))
-  :init (region-bindings-mode-enable))
+(when (locate-library "region-bindings-mode")
+  (use-package region-bindings-mode
+    ; not in stable  :ensure t
+    :commands (region-bindings-mode-enable)
+    :bind (:map region-bindings-mode-map
+                ("C-n" . my-next-mc-or-line-dwim))
+    :init (region-bindings-mode-enable)))
 
 (use-package ws-butler
   :ensure t
