@@ -20,6 +20,10 @@
 
 (require 'use-package)
 
+;; GNUS Article Mode
+(use-package gnus-art
+  :config (define-key gnus-article-mode-map (kbd "q") 'delete-window))
+
 (use-package gnus
   :commands gnus
   :config
@@ -37,7 +41,12 @@
     gnus-sum-thread-tree-single-leaf "╰► "
     gnus-sum-thread-tree-vertical "│")
    (setq
-    gnus-select-method '(nntp "news.gmane.org")
+    gnus-select-method
+    '(nnimap "imap.gmail.com"
+             (nnimap-inbox "INBOX")
+             (nnimap-split-methods default)
+             (nnimap-expunge t)
+             (nnimap-stream ssl))
     gnus-thread-hide-subtree t
     ;; Thread sorting (primary function is the last)
     gnus-thread-sort-functions
