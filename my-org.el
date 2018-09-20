@@ -31,6 +31,9 @@
            org-babel-default-header-args:sh
            '((:prologue . "exec 2>&1") (:epilogue . ":"))))
 
+(use-package ob-async
+  :ensure t)
+
 (use-package ob-core
   :defer t)
 
