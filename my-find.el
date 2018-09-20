@@ -44,7 +44,8 @@
 (use-package helm-ag
   :ensure t
   :commands helm-ag
-  :init (global-set-key (kbd "<f6>") 'helm-do-ag))
+  :bind ("<f6>" . helm-do-ag)
+  :config (setq helm-ag-command-option "-U"))
 
 (use-package wgrep-helm
   :ensure t)
