@@ -21,6 +21,12 @@
               ("C-x v l" . magit-log-buffer-file)
               ("C-x v d" . magit-diff-buffer-file)))
 
+;; I only really use git, stamp on vc-mode....
+(with-eval-after-load 'vc
+  (remove-hook 'find-file-hook 'vc-find-file-hook)
+  (remove-hook 'find-file-hook 'vc-refresh-state)
+  (setq vc-handled-backends nil))
+
 (use-package magit-popup
   :ensure t
   :pin melpa-stable)
@@ -29,9 +35,6 @@
   :ensure t
   :pin melpa-stable
   :commands magit-status
-  :bind (("C-x g" . magit-status)
-         :magit-hunk-section-map
-         ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree))
   :init
   (progn
     (setq magit-last-seen-setup-instructions "1.4.0"))
@@ -40,8 +43,6 @@
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
     (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
     (setq
-     ;; really I never use anything but git
-     vc-handled-backends nil
      ;; tweak magit
      magit-patch-arguments '("--cover-letter")
      magit-auto-revert-immediately 't)
