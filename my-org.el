@@ -442,7 +442,9 @@ See `org-confirm-babel-evaluate'."
               (add-to-list 'my-org-babel-hashes check)
               'nil)
           ;; Return 't to prompt for evaluation
-          't))))
+          't)
+      (message "Valid hash auto-confirmed for %s @ %s" lang org-babel-current-src-block-location)
+      'nil)))
 
 (setq org-confirm-babel-evaluate 'my-babel-hashed-confirm)
 
