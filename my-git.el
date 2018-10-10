@@ -13,6 +13,14 @@
 (when I-am-at-work
   (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
 
+;; magit-file-mode is a minor mode for files that are under
+;; magit control (i.e. in git repos). It is a handy place to override
+;; global bindings - like the octopus like vc mode.
+(use-package magit-file-mode
+  :bind (:map magit-file-mode-map
+              ("C-x v l" . magit-log-buffer-file)
+              ("C-x v d" . magit-diff-buffer-file)))
+
 (use-package magit-popup
   :ensure t
   :pin melpa-stable)
