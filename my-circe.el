@@ -141,10 +141,10 @@
           `(("Freenode"
              :host "chat.freenode.net"
              :server-buffer-name "⇄ Freenode"
+             :tls t
              :nick "stsquad"
              :nickserv-password my-freenode-nick-password
-             :tls t
-             :channels (:after-auth "#emacs" "#emacs-circe")
+             :channels (:after-auth "#emacs" "#emacs-circe" "#gentoo-arm")
              )
             ("OFTC"
              :host "irc.oftc.net"
@@ -158,18 +158,17 @@
              :host "ircproxy.linaro.org"
              :server-buffer-name "⇄ Freenode (ZNC)"
              :port "6697"
+             :tls t
              :pass my-znc-freenode-password
-             :nick "ajb-linaro"
-             :nickserv-password my-freenode-znc-nick-password
-             :channels (:after-auth "#linaro" "#linaro-virtualization")
-             :tls 't
+             ;; NickServ is handled by ZNC and the SASL login
+             :channels ("#linaro" "#linaro-virtualization")
              )
             ("znc-oftc"
              :host "ircproxy.linaro.org"
              :server-buffer-name "⇄ OFTC (ZNC)"
              :port "6697"
              :pass my-znc-oftc-password
-             :nickserv-password my-oftc-nick-password
+             ;; :nickserv-password my-oftc-nick-password
              :channels ("#qemu" "#qemu-gsoc")
              :tls 't
              )
@@ -180,14 +179,6 @@
              :service "6697"
              :tls 't
              :channels ("#blue")
-             )
-            ("Gentoo"
-             :host "irc.gentoo.org"
-             :server-buffer-name "⇄ Gentoo"
-             :nick "stsquad"
-             :service "6697"
-             :tls 't
-             :channels ("#gentoo-arm")
              )
             ("bitlbee"
              :nick "ajb"
