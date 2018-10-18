@@ -486,6 +486,17 @@ See `org-confirm-babel-evaluate'."
 
 (setq org-confirm-babel-evaluate 'my-babel-hashed-confirm)
 
+;; via https://kitchingroup.cheme.cmu.edu/blog/2016/02/26/Adding-captions-and-attributes-to-figures-and-tables-from-code-blocks-in-org-mode/
+(defun my-org-src-decorate (&optional caption attributes)
+  "A wrap function for src blocks."
+  (concat
+   "ORG\n"
+   (when attributes
+     (concat (mapconcat 'identity attributes "\n") "\n"))
+   (when caption
+     (format "#+caption: %s" caption))))
+
+
 (defun my-invoke-babel-named (name)
   "Evaluate named babel block"
   (interactive)
