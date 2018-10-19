@@ -295,6 +295,9 @@ If `NEW-STATUS' is set then change TODO state."
   :ensure t
   :mode ("\\.org\\'" . org-mode)
   :commands (org-agenda org-capture)
+  :bind (:map org-mode-map
+              ("C-f" . counsel-org-agenda-headlines)
+              ("C-c C-j" . counsel-org-goto))
   :init
   (progn
     (setq
@@ -339,12 +342,6 @@ If `NEW-STATUS' is set then change TODO state."
       (when (file-exists-p ditta-path)
         (setq org-ditaa-jar-path ditta-path)))
     
-    ;; Mode keys
-    ;; (define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
-    ;; (define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
-    (when (fboundp 'helm-org-agenda-files-headings)
-      (define-key org-mode-map (kbd "C-f")
-        'helm-org-agenda-files-headings))
     (with-eval-after-load 'hydra
       (global-set-key
        (kbd "C-c C-o")
@@ -353,7 +350,7 @@ If `NEW-STATUS' is set then change TODO state."
                  "%(cdr (assoc 'filename (assoc \"org-pos-at-jump\" bookmark-alist))) ")
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
-         ("h" helm-org-agenda-files-headings "org-headings (helm)")
+         ("h" counsel-org-agenda-headlines "org-agenda-headlines")
          ("q" (org-capture nil "Q") "Queue for review")
          ("r" (org-capture nil "r") "Capture review comment")
          ("j" my-return-to-org nil))))
