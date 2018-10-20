@@ -293,6 +293,15 @@ This is simply to avoid trying to load when dealing with header files
   (unless (s-suffix? ".h" (buffer-file-name))
     (irony-cdb-autosetup-compile-options)))
 
+(defun sarcasm-irony-cdb-not-found (command &rest args)
+  (when (eq command 'get-compile-options)
+    (message "Irony: compile options not found!")
+    nil))
+
+(setq-default irony-cdb-compilation-databases '(irony-cdb-clang-complete
+                                                irony-cdb-libclang
+                                                sarcasm-irony-cdb-not-found))
+
 (use-package irony
   :ensure t
   :config (progn

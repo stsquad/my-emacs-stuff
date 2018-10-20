@@ -42,12 +42,47 @@
 This prevents org re-asking every time I restart.")
 (add-to-list 'savehist-additional-variables 'my-org-babel-hashes)
 
+(defvar my-org-default-action nil
+  "Default action for this document to run on `org-ctrl-c-ctrl-c'.
+\\<org-mode-map>
+This will run via `org-ctrl-c-ctrl-c-hook' and should return a
+non-nil result if it processed something. As such it can override
+default `org-mode' behaviour for \\[org-ctrl-c-ctrl-c]. If you
+want something to run at the end then you need to use
+`my-org-default-code-block'")
+(make-variable-buffer-local 'my-org-default-action)
+(put 'my-org-default-action 'permanent-local t)
+
 (defvar my-org-default-code-block nil
   "Default code block to run on `org-ctrl-c-ctrl-c'.
 
 This is used by my-org-run-default-block which is added to
 `org-ctrl-c-ctrl-c-final-hook'")
 (make-variable-buffer-local 'my-org-default-code-block)
+
+(defun my-org--do-action (func-or-string)
+  "Evaluate a code block or call a function `FUNC-OR-STRING' from org-file."
+  (let ((action-result))
+    (cond
+     ((stringp func-or-string)
+      (save-excursion
+        (org-babel-goto-named-src-block func-or-string)
+        (when (memq (org-element-type (org-element-context))
+	            '(inline-src-block src-block))
+          (org-babel-eval-wipe-error-buffer)
+          (setq action-result (org-babel-execute-src-block t)))))
+     ((functionp func-or-string)
+      (setq action-result (funcall func-or-string)))
+     (t (error "What to do with: %s" func-or-string)))
+    (if action-result
+        (message "%s: %s" func-or-string action-result)
+      nil)))
+
+(defun my-org-run-default-action ()
+  "Execute default action for this org file."
+  (interactive)
+  (when my-org-default-action
+    (my-org--do-action my-org-default-action)))
 
 (defun my-org-run-default-block ()
   "Evaluate the code block `my-org-default-code-block' if it exists."
@@ -293,6 +328,8 @@ If `NEW-STATUS' is set then change TODO state."
      org-export-allow-bind-keywords t)
 
     ;; Add my special handler.
+    (add-to-list 'org-ctrl-c-ctrl-c-hook
+                 'my-org-run-default-action)
     (add-to-list 'org-ctrl-c-ctrl-c-final-hook
                  'my-org-run-default-block)
 
@@ -407,7 +444,8 @@ If `NEW-STATUS' is set then change TODO state."
                (dot . t)
                (ditaa . t)
                (makefile . t)
-               (python . t))))
+               (python . t)
+               (R . t))))
   (when (locate-library "ob-restclient")
     (add-to-list 'langs '(restclient . t)))
   (when (locate-library "ob-gnuplot")
@@ -445,7 +483,9 @@ See `org-confirm-babel-evaluate'."
               (add-to-list 'my-org-babel-hashes check)
               'nil)
           ;; Return 't to prompt for evaluation
-          't))))
+          't)
+      (message "Valid hash auto-confirmed for %s @ %s" lang org-babel-current-src-block-location)
+      'nil)))
 
 (setq org-confirm-babel-evaluate 'my-babel-hashed-confirm)
 
