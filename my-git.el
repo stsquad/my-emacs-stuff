@@ -16,10 +16,11 @@
 ;; magit-file-mode is a minor mode for files that are under
 ;; magit control (i.e. in git repos). It is a handy place to override
 ;; global bindings - like the octopus like vc mode.
-(use-package magit-file-mode
+(use-package magit-files
   :bind (:map magit-file-mode-map
               ("C-x v l" . magit-log-buffer-file)
-              ("C-x v d" . magit-diff-buffer-file)))
+              ("C-x v d" . magit-diff-buffer-file))
+  :config (global-magit-file-mode))
 
 ;; I only really use git, stamp on vc-mode....
 (with-eval-after-load 'vc
