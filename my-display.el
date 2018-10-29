@@ -145,8 +145,13 @@
       next-line-add-newlines nil)
 
 ;; Make pound signs work
-(set-language-environment "UTF-8")
-(setq unibyte-display-via-language-environment t)
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-language-environment 'utf-8)
+
+;(setq unibyte-display-via-language-environment t)
 
 ;; Allow narrowing.
 (put 'narrow-to-region 'disabled nil)
