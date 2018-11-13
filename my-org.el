@@ -413,17 +413,15 @@ If `NEW-STATUS' is set then change TODO state."
 ;; elsewhere.
 
 (when (assoc "melpa" package-archives)
-
   ;; for JIRA export
   (use-package ox-jira
     :ensure t)
-
   (use-package ob-restclient
-    :ensure t)
-
-  (use-package ob-async
     :ensure t))
 
+;; org-babel packages in stable
+(use-package ob-async
+  :ensure t)
 
 ;; Org Babel configurations
 (let ((lob "~/org/library.org"))
@@ -454,8 +452,10 @@ If `NEW-STATUS' is set then change TODO state."
                (ditaa . t)
                (makefile . t)
                (python . t)
-               (perl . t)
+               (perl . t))))
                (R . t))))
+  (when (locate-library "ob-r")
+    (add-to-list 'langs '(R . t)))
   (when (locate-library "ob-restclient")
     (add-to-list 'langs '(restclient . t)))
   (when (locate-library "ob-gnuplot")
