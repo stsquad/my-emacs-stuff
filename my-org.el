@@ -120,6 +120,12 @@ This is used by my-org-run-default-block which is added to
             (define-key org-src-mode-map (kbd "C-c C-c") 'org-edit-src-exit)
             (setq org-src-window-setup 'reorganize-frame)))
 
+
+(defun my-org-choose-target ()
+  "Move cursor to insertion point for a given headline."
+  (counsel-org-goto)
+  (next-line))
+
 (use-package org-capture
   :commands org-capture org-capture-target-buffer
   :config
@@ -152,10 +158,15 @@ This is used by my-org-run-default-block which is added to
       entry
       (file+headline "team.org" "Tasks")
       "** TODO %i\nSee %a")
-     ("C" "Current activity as progress"
+     ("p" "Posted email to list"
+      item
+      (file+function "team.org" my-org-choose-target)
+      "  - posted %a")
+     ("C" "Completed Review"
       entry
-      (file+olp "~/org/team.org" "Meetings" "Current" "Progress")
-      "  - %a")
+      (file+regexp "team.org" "Completed Reviews")
+      "** DONE %a"
+      :immediate-finish t)
      ("Q" "Queue Review (email)"
       entry
       (file+regexp "team.org" "Review Queue")
@@ -322,6 +333,7 @@ If `NEW-STATUS' is set then change TODO state."
      org-checkbox-hierarchical-statistics nil
      org-hierarchical-todo-statistics t
      org-log-done 'note
+     org-enforce-todo-dependencies t
      org-todo-keywords '((sequence "TODO" "ACTIVE" "BLOCKED" "DONE"))
      org-todo-keyword-faces '(("TODO" . org-todo )
                               ("ACTIVE" . "blue")
@@ -442,6 +454,7 @@ If `NEW-STATUS' is set then change TODO state."
                (ditaa . t)
                (makefile . t)
                (python . t)
+               (perl . t)
                (R . t))))
   (when (locate-library "ob-restclient")
     (add-to-list 'langs '(restclient . t)))
@@ -465,6 +478,16 @@ If `NEW-STATUS' is set then change TODO state."
                 (my-add-world-to-env cust-install)))
             (add-to-list 'org-src-lang-modes
                          '("dot" . graphviz-dot))))
+
+;;
+;; Stats things
+;;
+(use-package ess
+  :ensure t
+  :config (setq
+           auto-mode-alist
+           ; don't override asm-mode
+           (delete '("\\.[qsS]\\'" . S-mode) auto-mode-alist)))
 
 ;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
 (defun my-babel-hashed-confirm (lang body)
