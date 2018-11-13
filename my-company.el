@@ -52,6 +52,11 @@
     (define-key company-mode-map [remap indent-for-tab-command]
       'company-indent-for-tab-command)))
 
+(use-package company-lsp
+  :ensure t
+  :after company
+  :config (push 'company-lsp company-backends))
+
 
 ;; company-irony uses clang, but it should be before company-clang in
 ;; the company-backends list or it will never get the chance to complete

@@ -139,6 +139,27 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
       (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
       (add-hook 'compilation-finish-functions 'my-report-compilation-finished))))
 
+;; LSP Support
+(use-package ccls
+  :commands lsp-ccls-enable
+  :init
+  (add-hook 'c-mode-hook #'lsp-ccls-enable)
+  (add-hook 'c++-mode-hook #'lsp-ccls-enable)
+  :config
+  (setq ccls-extra-args '("--log-file=/tmp/cq.log")))
+
+  ;; (add-hook 'objc-mode-hook #'lsp-ccls-enable)
+  ;; (add-hook 'cuda-mode-hook #'lsp-ccls-enable))
+
+
+;; Tags
+(use-package counsel-gtags
+  :ensure t
+  :commands counsel-gtags-mode
+  :config
+  (add-hook 'c-mode-hook 'counsel-gtags-mode)
+  (add-hook 'c++-mode-hook 'counsel-gtags-mode))
+
 ;; checkpatch
 (use-package checkpatch-mode)
 
