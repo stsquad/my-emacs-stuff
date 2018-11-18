@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: add-keyword
+# key: $key
+# --
+`(s-join "/"
+         (-take 2
+                (split-string
+                        (magit-git-string "diff" "--name-only" "--cached")
+                        "/")))`: add $2 keyword to $3
+
+$4
