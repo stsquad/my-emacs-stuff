@@ -70,6 +70,36 @@
     '((ivy-switch-buffer . ivy--regex-plus)
       (t . ivy--regex-plus))))
 
+(defun my-counsel-mini ()
+  "Emulate helm-mini with my own preferences."
+  (interactive)
+  (let (collection)
+    ;; Go backwards in priority (as add to list prepends by default)
+    (setq collection
+          (-concat
+           ;; the buffer list
+           (--map (propertize (format "buf: %s" (buffer-name it))
+                             'action 'switch-to-buffer
+                             'value it)
+                  (buffer-list))
+           ;; The recentf files
+           (--map (propertize (format "rf: %s" it)
+                             'action 'find-file
+                             'value it)
+                  recentf-list)
+           ;; The bookmarks
+           (--map
+            (propertize (format "bkm: %s" it)
+                        'action 'bookmark-jump
+                        'value it)
+            (bookmark-all-names))))
+    ;; Finally
+    (let ((result (ivy-read "counsel-mini:" collection)))
+      (apply
+       (get-text-property 0 'action result)
+       (list (get-text-property 0 'value result))))))
+
+
 (defun my-project-find (&optional directory)
   "Search within `DIRECTORY' using various search helpers.
 If no directory is passed try and infer from the `default-directory' or
