@@ -14,8 +14,8 @@
 ;;; Commentary:
 ;;
 ;; This is an attempt to reduce the mess that is my patch handling
-;;stuff. This includes my first derrived mode "my-diff-mode" which was
-;;useful (and may still be) for dealing with lots of patchs by hand.
+;; stuff. This includes my first derrived mode "my-diff-mode" which was
+;; useful (and may still be) for dealing with lots of patchs by hand.
 ;;
 ;;; Code:
 
@@ -39,6 +39,14 @@
       (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
       (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
       (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display))))
+
+;; override fancy completions when applying hunks as they make editing
+;; the path harder than in needs to be.
+
+(define-advice diff-apply-hunk
+    (:around (orig-fun &rest args) use-plain-completion)
+  (let ((completing-read-function 'magit-completing-read))
+    (apply orig-fun args)))
 
 ;; I'm just going to assume I have my-diff-mode
 ;; We want to find files like
