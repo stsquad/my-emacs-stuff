@@ -275,15 +275,9 @@
 
 (use-package cc-mode
   :commands c-mode
-  :config
-  (progn
-    (add-hook 'c-mode-hook 'my-c-mode-hook)
-    (define-key c-mode-map (kbd "C-c f") 'find-tag)
-    (use-package etags-select
-      :commands etags-select-find-tag
-      :init (define-key c-mode-map (kbd "C-c f") 'etags-select-find-tag))))
+  :config (add-hook 'c-mode-hook 'my-c-mode-hook))
 
-;; Enhance C/C++ Development
+;; enhance C/C++ Development
 
 (defun my-irony-cdb-setup ()
   "Wrapper around `irony-cdb-autosetup-compile-options'.

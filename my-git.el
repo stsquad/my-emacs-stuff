@@ -17,9 +17,11 @@
 ;; magit control (i.e. in git repos). It is a handy place to override
 ;; global bindings - like the octopus like vc mode.
 (use-package magit-files
+  :commands global-magit-file-mode
   :bind (:map magit-file-mode-map
               ("C-x v l" . magit-log-buffer-file)
               ("C-x v d" . magit-diff-buffer-file))
+  :defer 2
   :config (global-magit-file-mode))
 
 ;; I only really use git, stamp on vc-mode....
@@ -42,7 +44,8 @@
   :config
   (progn
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-    (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
+    (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode
+                                                     1)))
     (setq
      ;; tweak magit
      magit-patch-arguments '("--cover-letter")
