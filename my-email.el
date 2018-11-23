@@ -82,12 +82,15 @@
 (defun my-rig-mu4e-for-idle-running ()
   "Setup more comprehensive indexing when Emacs is idle."
   (setq mu4e-index-lazy-check nil   ; more comprehensive
-        mu4e-index-cleanup t))      ; check messages in store still there
+        mu4e-index-cleanup t        ; check msgs still in store
+        mu4e-get-mail-command "mbsync  -V -Dm linaro-slow-sync"))
+
 
 (defun my-rig-mu4e-for-active-running ()
   "Setup faster indexing for when I'm actively using Emacs mail."
   (setq mu4e-index-lazy-check t     ; faster sync
-        mu4e-index-cleanup nil)     ; skip checking the whole store
+        mu4e-index-cleanup nil     ; skip checking the whole store
+        mu4e-get-mail-command "mbsync  -V -Dm linaro-sync")
   (when (not (-contains? (--map (aref it 5) timer-idle-list) 'my-rig-mu4e-for-idle-running))
     (run-with-idle-timer 600 nil 'my-rig-mu4e-for-idle-running)))
 
@@ -269,6 +272,10 @@ Useful for replies and drafts")
                   mu4e-headers-date-format "%a %d/%m/%y")
             (add-hook 'mu4e-headers-mode-hook 'my-yas-local-disable)
             (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)))
+
+(defvar my-mu4e-line-without-quotes-regex
+  (rx (: bol (not (any ">"))))
+  "Match start of line without any quotes or whitespace.")
 
 (defhydra my-mu4e-view-toggle (:hint nil :color blue :timeout 5)
   (concat "_c_itation function:%`mu4e-compose-cite-function ")
@@ -567,23 +574,21 @@ to `my-mu4e-patches' for later processing."
                "Latest QEMU posts" ?q)
               ("((list:qemu-devel* AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm*)"
                "QEMU ARM posts" ?a)
-              ("list:mttcg.listserver.greensocs.com OR maildir:/linaro/virtualization/qemu-multithread"
-               "Multi-threaded QEMU posts" ?T)
               ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel* AND subject:android)"
                "Android related emails" ?A)
               ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
                "Latest ARM KVM posts" ?k)
-              ("list:virtualization.linaro.org or list:virt-team.linaro.org and flag:unread"
-               "Linaro Virtualization List" ?v)
-              ("maildir:\"/linaro/virtualization/*\" AND flag:list AND flag:unread"
-               "All unread Virtualization email" ?V)
               ;; Linaro Specific
+              ("list:linaro-toolchain.lists.linaro.org OR maildir:/linaro/linaro-list/linaro-tcwg"
+               "Linaro public TCWG posts" ?T)
+              ("to:tcwg@linaro.org"
+               "Linaro private TCWG posts" ?t)
               ("list:conf.lists.linaro.org AND flag:unread"
                "Latest Conf emails" ?c)
               ("list:linaro-dev.lists.linaro.org AND flag:unread"
                "Latest Linaro-Dev emails" ?d)
-              ("list:tech.lists.linaro.org AND flag:unread"
-               "Latest Linaro-Tech emails" ?t)
+              ;; ("list:tech.lists.linaro.org AND flag:unread"
+              ;;  "Latest Linaro-Tech emails" ?t)
               ("\(to:lists.linaro.org OR cc:lists.linaro.org\) AND flag:list AND flag:unread"
                "Unread work mailing lists (lists.linaro.org)" ?l)
               ("from:linaro.org and flag:unread"
@@ -611,14 +616,6 @@ to `my-mu4e-patches' for later processing."
                "From parents" ?P)
               ("to:bugzilla@bennee.com" "Bug Mail" ?B)))))))
 
-              
-(use-package helm-mu
-  :commands helm-mu
-  :if (and (string-match "zen" (system-name))
-           (locate-library "helm-mu"))
-  :config (progn
-            (setq helm-mu-contacts-personal t)
-            (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu)))
 
 (when (locate-library "mu4e")
   (use-package mu4e-alert
