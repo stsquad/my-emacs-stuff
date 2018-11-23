@@ -286,12 +286,13 @@ If `NEW-STATUS' is set then change TODO state."
          ("org" :components ("org-notes" "org-presentations"
                              "org-static"))))))
 ;; Mail integration
-(use-package org-mu4e
-  :if (locate-library "org-mu4e")
-  :config
-  (progn
-    (setq org-mu4e-link-query-in-headers-mode t)
-    (add-to-list 'org-modules 'org-mu4e t)))
+(when I-am-at-work
+  (use-package org-mu4e
+    :if (locate-library "org-mu4e")
+    :config
+    (progn
+      (setq org-mu4e-link-query-in-headers-mode t)
+      (add-to-list 'org-modules 'org-mu4e t))))
 
 (defun my-save-org-position-in-bookmark (&rest args)
   "Save position at jump."
@@ -482,12 +483,13 @@ If `NEW-STATUS' is set then change TODO state."
 ;;
 ;; Stats things
 ;;
-(use-package ess
-  :ensure t
-  :config (setq
-           auto-mode-alist
-           ; don't override asm-mode
-           (delete '("\\.[qsS]\\'" . S-mode) auto-mode-alist)))
+(when I-am-at-work
+  (use-package ess
+    :ensure t
+    :config (setq
+             auto-mode-alist
+                                        ; don't override asm-mode
+             (delete '("\\.[qsS]\\'" . S-mode) auto-mode-alist))))
 
 ;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
 (defun my-babel-hashed-confirm (lang body)
