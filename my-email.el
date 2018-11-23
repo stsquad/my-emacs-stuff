@@ -308,29 +308,42 @@ Useful for replies and drafts")
   "sa-learn --ham %s"
   "Command for invoking spam processor to register message as ham.")
 
+
+(defun my-mu4e-next-if-at-point (msgid)
+  "Simple helper for bulk tagging operations.
+
+Move next if the message at point is what we have just processed."
+  (let ((msgid-at-point (mu4e-message-field-at-point :message-id)))
+    (when (and msgid-at-point
+               (eq msgid-at-point msgid))
+    (mu4e-headers-next))))
+
 (defun my-mu4e-register-spam-action (msg)
   "Mark `MSG' as spam."
   (interactive)
-  (let* ((path (shell-quote-argument
-                (mu4e-message-field msg :path)))
-         (command (format my-mu4e-register-spam-cmd path)))
-    ;; (async-shell-command command nil))
-    (start-process "LSPAM" nil "sa-learn" "--spam" path))
-  (mu4e-mark-at-point 'delete nil)
-  (mu4e-headers-next))
-
+  (let ((path (mu4e-message-field msg :path))
+        (msgid (mu4e-message-field msg :message-id))
+        (tags (mu4e-message-field msg :tags)))
+    ;; only kick of if not already tagged
+    (unless (-contains? tags "spam")
+      (start-process "LSPAM" nil
+                     "ionice" "-c" "idle" "nice" "sa-learn" "--spam"
+                     (shell-quote-argument path))
+      (mu4e-action-retag-message msg "+spam"))
+  (my-mu4e-next-if-at-point msgid)))
 
 (defun my-mu4e-register-ham-action (msg)
   "Mark `MSG' as ham."
   (interactive)
-  (let* ((path (shell-quote-argument
-                (mu4e-message-field msg :path)))
-         (command (format my-mu4e-register-ham-cmd path)))
-    ;; (async-shell-command command))
-    (start-process "LHAM" nil "sa-learn" "--ham" path))
-  (mu4e-mark-at-point 'unmark nil)
-  (mu4e-headers-next))
-
+  (let ((path (mu4e-message-field msg :path))
+        (msgid (mu4e-message-field msg :message-id))
+        (tags (mu4e-message-field msg :tags)))
+    ;; only kick of if not already tagged
+    (unless (-contains? tags "ham")
+      (start-process "LHAM" nil "sa-learn" "--ham"
+                     (shell-quote-argument path))
+      (mu4e-action-retag-message msg "-spam +ham"))
+  (my-mu4e-next-if-at-point msgid)))
 
 ;; Check if patch merged into a given tree
 ;;
