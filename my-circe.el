@@ -38,6 +38,10 @@
   "Return the password for the `SERVER'."
   (my-pass-password "oftc-nick"))
 
+(defun my-gitter-password (server)
+  "Return the password for the `SERVER'."
+  (my-pass-password "gitter-irc"))
+
 ;; Logging
 (use-package lui-logging
   :commands enable-lui-logging)
@@ -172,12 +176,20 @@
              :channels ("#qemu" "#qemu-gsoc")
              :tls 't
              )
+            ("gitter"
+             :host "irc.gitter.im"
+             :server-buffer-name "⇄ Gitter (irc gateway)"
+             :port "6697"
+             :nick "stsquad"
+             :pass my-gitter-password
+             :tls t
+             )
             ("Pl0rt"
              :host "irc.pl0rt.org"
              :server-buffer-name "⇄ Pl0rt"
              :nick "ajb"
              :service "6697"
-             :tls 't
+             :tls t
              :channels ("#blue")
              )
             ("bitlbee"
