@@ -25,7 +25,10 @@
 
 ;; Code
 
-;; Magnar's string handling library
+;; Magnar's handy libs
+(use-package dash
+  :ensure t)
+
 (use-package s
   :ensure t
   :commands s-suffix? s-contains? s-replace-all s-chop-suffix s-trim)
