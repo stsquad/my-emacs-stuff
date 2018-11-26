@@ -12,7 +12,8 @@
 ;; midnight mode, clean-up unused buffers overnight
 (use-package midnight
   :defer 1000
-  :init (midnight-mode t))
+  :commands midnight-mode
+  :config (midnight-mode t))
 
 ;;
 ;; Lusty Explorer
