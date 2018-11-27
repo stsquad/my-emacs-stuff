@@ -43,10 +43,11 @@
 ;; override fancy completions when applying hunks as they make editing
 ;; the path harder than in needs to be.
 
-(define-advice diff-apply-hunk
-    (:around (orig-fun &rest args) use-plain-completion)
-  (let ((completing-read-function 'magit-completing-read))
-    (apply orig-fun args)))
+(when (macrop 'define-advice)
+  (define-advice diff-apply-hunk
+      (:around (orig-fun &rest args) use-plain-completion)
+    (let ((completing-read-function 'magit-completing-read))
+      (apply orig-fun args))))
 
 ;; I'm just going to assume I have my-diff-mode
 ;; We want to find files like
