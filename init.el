@@ -119,7 +119,7 @@
 (use-package my-gpg)
 
 (use-package my-git
-  :if (version<= "24.4" emacs-version))
+  :if (version<= "25.1" emacs-version))
 
 (use-package my-htmlize)
 (use-package my-eshell)
