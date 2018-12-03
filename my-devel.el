@@ -13,9 +13,8 @@
 (require 'my-hydra)
 
 ;; Currently I'm still unsettled about which project library to use
-(if (require 'eproject nil t)
-    (load-library "my-eproject")
-  (load-library "my-projectile"))
+(when (require 'eproject nil t)
+    (load-library "my-eproject"))
 
 ;; EditorConfig
 (use-package editorconfig
