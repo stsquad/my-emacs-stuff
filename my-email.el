@@ -309,14 +309,16 @@ Useful for replies and drafts")
   "Command for invoking spam processor to register message as ham.")
 
 
-(defun my-mu4e-next-if-at-point (msgid)
+(defun my-mu4e-next-if-at-point (msgid &optional delete)
   "Simple helper for bulk tagging operations.
 
 Move next if the message at point is what we have just processed."
   (let ((msgid-at-point (mu4e-message-field-at-point :message-id)))
     (when (and msgid-at-point
-               (eq msgid-at-point msgid))
-    (mu4e-headers-next))))
+               (string= msgid-at-point msgid))
+      (when delete
+        (mu4e-mark-at-point 'delete nil))
+      (mu4e-headers-next))))
 
 (defun my-mu4e-register-spam-action (msg)
   "Mark `MSG' as spam."
@@ -330,7 +332,7 @@ Move next if the message at point is what we have just processed."
                      "ionice" "-c" "idle" "nice" "sa-learn" "--spam"
                      (shell-quote-argument path))
       (mu4e-action-retag-message msg "+spam"))
-  (my-mu4e-next-if-at-point msgid)))
+  (my-mu4e-next-if-at-point msgid t)))
 
 (defun my-mu4e-register-ham-action (msg)
   "Mark `MSG' as ham."
