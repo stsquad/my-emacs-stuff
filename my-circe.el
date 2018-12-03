@@ -90,8 +90,7 @@
   (when I-am-at-work
     (circe "znc-freenode")
     (circe "znc-oftc")
-    (circe "bitlbee")
-    (circe "Gentoo"))
+    (circe "bitlbee"))
   (circe "Freenode")
   (circe "Pl0rt"))
 
