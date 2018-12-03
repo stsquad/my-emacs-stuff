@@ -305,7 +305,7 @@ This is simply to avoid trying to load when dealing with header files
 
 (when I-am-at-work
   (use-package irony-eldoc
-    :ensure
+    :ensure t
     :config (add-hook 'irony-mode-hook #'irony-eldoc)))
 
 (message "Done with cc-mode customisation")
