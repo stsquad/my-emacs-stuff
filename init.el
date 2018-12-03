@@ -66,7 +66,8 @@
 ;; We only need one edit-server at a time really
 (use-package my-web)
 
-(when (and (getenv "DISPLAY") (daemonp) (not I-am-root))
+(when (or (and (getenv "DISPLAY") (daemonp) (not I-am-root))
+          I-am-on-pixelbook)
   (when (locate-library "atomic-chrome")
     (use-package my-atomic-chrome))
   (use-package my-edit-server))

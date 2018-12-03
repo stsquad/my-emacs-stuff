@@ -14,10 +14,15 @@
 
 (use-package edit-server
   :commands edit-server-start
-  :init (if after-init-time
-            (edit-server-start)
-          (add-hook 'after-init-hook
-                  #'(lambda() (edit-server-start))))
+  :init (progn
+          (when I-am-on-pixelbook
+            (setq edit-server-host "0.0.0.0"
+                  edit-server-port 8000)
+            (global-set-key (kbd "C-x C-c") 'delete-frame))
+          (if after-init-time
+              (edit-server-start)
+            (add-hook 'after-init-hook
+                      #'(lambda() (edit-server-start)))))
   :config (setq edit-server-new-frame-alist
                 '((name . "Edit with Emacs FRAME")
                   (width . 80)
