@@ -89,6 +89,13 @@
     (when (re-search-forward my-ssh-login-re (point-max) t)
       (match-string-no-properties 0))))
 
+(defvar my-debug-var nil
+  "A general purpose buffer local debug variable, for debugging.")
+(make-variable-buffer-local 'my-debug-var)
+(put 'my-debug-var 'permanent-local t)
+
+(defvar my-global-debug-var nil
+  "A general purpose global debug variable, for debugging.")
 
 (provide 'my-vars)
 ;;; my-vars.el ends here
