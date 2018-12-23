@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: name-and-email
+# key: $em
+# --
+Alex Bennée <${1:`(my-yas-expand-email)`}>
