@@ -121,7 +121,6 @@ Save password if `CACHE' is non nil."
     (if (and cached-pass cache)
         cached-pass
       (when (selected-frame)
-        (my-fixup-gpg-agent (selected-frame))
         (let ((new-pass (chomp
                          (shell-command-to-string
                           (format "pass %s" pass-name)))))
