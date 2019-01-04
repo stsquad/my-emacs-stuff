@@ -52,9 +52,6 @@
   (interactive)
   (message "my-first-compile: start")
   (cond
-   ; Work
-   ((file-exists-p (concat current-project-root "/build-system"))
-    (load-library "cbnl"))
    ; Android
    ((file-exists-p (concat current-project-root
 			   "/AndroidManifest.xml"))
