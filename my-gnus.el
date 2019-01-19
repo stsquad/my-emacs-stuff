@@ -20,9 +20,19 @@
 
 (require 'use-package)
 
+;; new-mail searching
+(use-package nnir
+  :config (progn
+            (setq nnir-imap-default-search-key "gmail")
+            (add-to-list 'nnir-imap-search-arguments '("gmail" . "X-GM-RAW"))))
+
 ;; GNUS Article Mode
 (use-package gnus-art
   :config (define-key gnus-article-mode-map (kbd "q") 'delete-window))
+
+(use-package gnus-agent
+  :config (setq gnus-agent-synchronize-flags 'ask))
+
 
 (use-package gnus
   :commands gnus
@@ -48,14 +58,18 @@
              (nnimap-expunge t)
              (nnimap-stream ssl))
     gnus-thread-hide-subtree t
+    gnus-view-pseudo-asynchronously t
+
+    gnus-activate-level 3
     ;; Thread sorting (primary function is the last)
     gnus-thread-sort-functions
     '(gnus-thread-sort-by-most-recent-number
       gnus-thread-sort-by-total-score
-      gnus-thread-sort-by-most-recent-date))))
+      gnus-thread-sort-by-most-recent-date)
+    gnus-read-active-file nil)
 
+   ))
 
 
 (provide 'my-gnus)
 ;;; my-gnus.el ends here
-
