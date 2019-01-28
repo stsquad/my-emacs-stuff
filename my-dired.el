@@ -34,6 +34,7 @@
 
 ;; Enable dired-rsync
 (use-package dired-rsync
+  :ensure t
   :config
   (bind-key "C-c C-r" 'dired-rsync dired-mode-map))
 
@@ -82,8 +83,13 @@ _h_ome        _r_eset default-directory to: %(file-name-directory (or (buffer-fi
 "
        ;; Set
        ("s" my-set-default-directory)
-       ("l" (lambda () (interactive) (my-set-default-directory my-last-set-directory)))
-       ("r" (lambda () (interactive) (my-set-default-directory (file-name-directory (buffer-file-name)))))
+       ("l" (lambda ()
+              (interactive)
+              (my-set-default-directory my-last-set-directory)))
+       ("r" (lambda ()
+              (interactive)
+              (my-set-default-directory
+               (file-name-directory (or (buffer-file-name) default-directory)))))
        ;; Browse
        ("f" (lambda () (interactive) (dired default-directory)))
        ("c" (lambda () (interactive) (dired default-directory)))
