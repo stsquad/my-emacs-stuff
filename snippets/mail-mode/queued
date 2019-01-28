@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: queued
+# key: $q
+# --
+Queued to ${1:`(s-chomp (shell-command-to-string "git rev-parse --abbrev-ref HEAD"))`}, thanks.
