@@ -17,7 +17,7 @@ env:
   - EVM_EMACS=emacs-git-snapshot-travis
   - EVM_EMACS=remacs-git-snapshot-travis
 install:
-  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
+  - travis_retry curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
   - if [ -n "$EVM_EMACS" ]; then evm install $EVM_EMACS --use --skip ; fi
   - ./setup_emacs.sh
 script:
