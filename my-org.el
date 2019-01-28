@@ -124,7 +124,10 @@ This is used by my-org-run-default-block which is added to
 (defun my-org-choose-target ()
   "Move cursor to insertion point for a given headline."
   (counsel-org-goto)
-  (next-line))
+  (outline-show-entry)
+  (outline-next-visible-heading 1)
+  (previous-line)
+  (move-end-of-line 1))
 
 (use-package org-capture
   :commands org-capture org-capture-target-buffer
@@ -367,6 +370,7 @@ If `NEW-STATUS' is set then change TODO state."
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
          ("h" counsel-org-agenda-headlines "org-agenda-headlines")
+         ("p" (org-capture nil "p") "store posted patch/pull")
          ("q" (org-capture nil "Q") "Queue for review")
          ("r" (org-capture nil "r") "Capture review comment")
          ("j" my-return-to-org nil))))
