@@ -1,6 +1,7 @@
 #+TITLE: Alex's Emacs Configuration
 
-[![Build Status](https://travis-ci.org/stsquad/my-emacs-stuff.png?branch=master)](https://travis-ci.org/stsquad/my-emacs-stuff)
+
+[[https://travis-ci.org/stsquad/my-emacs-stuff][https://travis-ci.org/stsquad/my-emacs-stuff.png?branch=master]]
 
 * Introduction
 
