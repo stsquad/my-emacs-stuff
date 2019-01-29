@@ -16,9 +16,12 @@ env:
   - EVM_EMACS=emacs-26.1-travis
   - EVM_EMACS=emacs-git-snapshot-travis
   - EVM_EMACS=remacs-git-snapshot-travis
+before_install:
+  - export PATH="/home/travis/.cask/bin:/home/travis/.evm/bin:$PATH"
 install:
-  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
-  - if [ -n "$EVM_EMACS" ]; then evm install $EVM_EMACS --use --skip ; fi
+  - git clone https://github.com/rejeep/evm.git /home/travis/.evm
+  - evm config path /tmp
+  - evm install $EVM_EMACS --use --skip
   - ./setup_emacs.sh
 script:
   - ./tests/check_daemon_starts.sh 0
