@@ -83,6 +83,62 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
         (lwarn 'emacs :warning "Compilation process in %s seems stalled!"
                (buffer-name))))))
 
+(defun my-hide-compilation-buffer (proc)
+  "Hide the compile buffer `PROC' is ignored."
+  (delete-window (get-buffer-window "*compilation*")))
+
+(defun my-report-compilation-finished (buf exit-string)
+  "Report the compilation buffer `BUF' to tracker."
+  (tracking-add-buffer buf)
+  (when (fboundp 'global-flycheck-mode)
+    (global-flycheck-mode 0)))
+
+;; Smart compile commands
+
+(defvar my-core-count
+  (string-to-number
+   (shell-command-to-string
+    "cat /proc/cpuinfo | grep processor | wc -l"))
+  "Count of the CPU cores on this system.")
+
+(defun my-find-build-subdirs (&optional root)
+  "Return a list of build directories under `ROOT'.
+
+Return in order of most recently updated."
+  (unless root
+    (setq root
+          (locate-dominating-file
+           (or (buffer-file-name) default-directory)
+           ".git")))
+  (let ((builds (format "%s/builds" root)))
+    (when (file-directory-p builds)
+      (mapcar
+       #'car (sort
+              (directory-files-and-attributes builds t (rx (not (in "." ".."))))
+              #'(lambda (x y) (time-less-p (nth 6 y) (nth 6 x))))))))
+
+(defun my-potential-compile-commands ()
+  "Add potential compile targets to compile history."
+  (let ((j-field (format "-j%d" (1+ my-core-count)))
+        (build-dirs (my-find-build-subdirs))
+        (builds '()))
+    (--each build-dirs
+        (setq builds
+              (cons (format "cd %s && make %s" it j-field) builds)))
+    builds))
+
+(defun my-counsel-compile ()
+  "Call `compile' completing from compile history and additional suggestions."
+  (interactive)
+  (ivy-read "Compile command: "
+            (append compile-history (my-potential-compile-commands))
+            :require-match nil
+            :sort nil
+            :history 'compile-history
+            :action (lambda (x) (compile x))))
+
+;; compilation-mode error regexs
+
 (defvar my-tsan-compilation-mode-regex
   (rx
    (: bol (zero-or-more blank)      ; start-of-line
@@ -101,8 +157,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 
 (use-package compile
-  :bind (("C-c c" . compile)
-         ("C-c r" . recompile))
+  :bind (("C-c c" . my-counsel-compile)
+         ("C-c r" . recompile)
+         (:map compilation-mode-map
+               ("n" . compilation-next-error)
+               ("p" . compilation-previous-error)))
   :diminish ((compilation-in-progress . "*COM*"))
   :config
   (progn
@@ -110,31 +169,18 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
      compilation-auto-jump-to-first-error nil
      compilation-scroll-output t
      compilation-window-height 10)
-    (add-to-list 'compilation-error-regexp-alist-alist
-                 (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0 ))
-    ;; lets not overtax the regex matcher on our huge compilation buffers
+    (add-to-list
+     'compilation-error-regexp-alist-alist
+     (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0))
+    (add-to-list 'savehist-additional-variables 'compile-history)
+    ;; lets not overtax the regex match on our huge compilation buffers
     (when I-am-at-work
       (setq compilation-error-regexp-alist '(gcc-include gnu tsan)))
-    ;; shortcut keybindings
-    (define-key
-      compilation-mode-map (kbd "n") 'compilation-next-error)
-    (define-key
-      compilation-mode-map (kbd "p") 'compilation-previous-error)
     ;; Detect stalls
     (add-hook 'compilation-filter-hook
               #'my-compilation-mode-warn-about-prompt)
     ;; Add tracking to the compilation buffer
-    (when (fboundp 'tracking-add-buffer)
-      (defun my-hide-compilation-buffer (proc)
-      "Hide the compile buffer"
-      (delete-window (get-buffer-window "*compilation*")))
-
-      (defun my-report-compilation-finished (buf exit-string)
-        "Report the compilation buffer to tracker"
-        (tracking-add-buffer buf)
-        (when (fboundp 'global-flycheck-mode)
-          (global-flycheck-mode 0)))
-
+    (with-eval-after-load 'tracking
       (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
       (add-hook 'compilation-finish-functions 'my-report-compilation-finished))))
 
@@ -158,6 +204,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 ;; checkpatch
 (use-package checkpatch-mode)
+
+;; shell modes
+
+(use-package fish-mode
+  :ensure t)
 
 ;; asm-mode
 ;;                                       ;
