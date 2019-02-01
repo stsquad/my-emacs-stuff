@@ -54,11 +54,13 @@
 
 (use-package lisp-mode
   :commands emacs-lisp-mode
+  :hook (emacs-lisp-mode . my-elisp-hook-function)
   :bind (:map emacs-lisp-mode-map
               ("C-c e" . my-macrostep-expand-wrapper)
               ("C-c z" . ielm))
-  :init
-  (add-hook 'emacs-lisp-mode-hook 'my-elisp-hook-functions))
+  :config
+  (add-to-list 'safe-local-variable-values
+               '(lisp-indent-function . common-lisp-indent-function)))
 
 (provide 'my-elisp)
 ;;; my-elisp.el ends here
