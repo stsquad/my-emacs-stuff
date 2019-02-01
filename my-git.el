@@ -30,6 +30,8 @@
   (remove-hook 'find-file-hook 'vc-refresh-state)
   (setq vc-handled-backends nil))
 
+(use-package magit-status)
+
 (use-package magit-popup
   :ensure t
   :pin melpa-stable)
@@ -38,6 +40,9 @@
   :ensure t
   :pin melpa-stable
   :commands magit-status
+  :bind (("C-x g" . magit-status)
+         :map magit-hunk-section-map
+         ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree))
   :init
   (progn
     (setq magit-last-seen-setup-instructions "1.4.0"))
@@ -179,7 +184,8 @@
     (require 'git-timemachine))
   (git-timemachine--start #'my-git-timemachine-show-selected-revision))
 
-(use-package git-timemachine)
+(use-package git-timemachine
+  :ensure t)
 
 (provide 'my-git)
 ;;; my-git.el ends here

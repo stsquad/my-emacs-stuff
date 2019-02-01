@@ -1,0 +1,60 @@
+#+TITLE: Alex's Emacs Configuration
+
+
+[[https://travis-ci.org/stsquad/my-emacs-stuff][https://travis-ci.org/stsquad/my-emacs-stuff.png?branch=master]]
+
+* Introduction
+
+This is my Emacs, there are many like it but this is my own. My emacs
+configuration is my best friend. It is my digital life. I must master
+it as I master my life. Without me this configuration is probably
+useless. Without my configuration I am certainly less effective.[fn:1]
+
+* Usage
+
+*I* bootstrap this together with my dotfiles via a script [[https://github.com/stsquad/dotfiles/blob/master/bootstrap.sh][sourced from
+the internet]]. *You* probably shouldn't do that. This is mainly an
+amalgem of different hacks acquired over time crafted to my specific
+workflow. It is not intended to be a framework and it tends to break a
+lot as I am an inveterate tinkerer. However I have put it up on the
+internet because I find reading other people configurations useful and
+hopefully others will find this useful. I certainly don't expect
+anyone else to use this *as is*.
+
+** Notes on dependencies
+
+In the dark before times I had all sorts of conditional logic and
+spaghetti like dependencies. However the world of emacs has improved
+over the years and we now have things like [[https://github.com/jwiegley/use-package][use-package]] which make
+keeping configurations coherent a lot easier. Most individual packages
+are now configured in their own /use-package/ stanzas. Some of the
+other libraries I use:
+
+ - Mangnar Sven's excellent [[https://github.com/magnars/dash.el][dash]] list library
+ - Jonas Bernoulli's superlative [[https://magit.vc/][git porcelien Magit]]
+ - Jorgen Schäfer's [[https://github.com/jorgenschaefer/elpy][elpy]] Python environment
+ - Justin Burkett's super handy [[https://github.com/justbur/emacs-which-key][which-key]] prompt
+
+And countless other dedicated hackers who have written and published
+numerous excellent packages available with the official Emacs and the
+wonderful [[https://melpa.org/][Melpa]] package repository.
+
+** My extensions
+
+I have written a few packages myself - some more actively maintained
+than others. These include:
+
+  - [[https://github.com/stsquad/emacs_chrome][Edit with Emacs]], for editing textareas in your browser with Emacs
+  - [[https://github.com/stsquad/dired-rsync][dired-rsync]], trigger asynchronous rsync from /dired-mode/, useful
+    for copying large files without hanging emacs
+
+* Copying
+
+It has a cobbled heritage from various sites and wikis and it is
+probably safest to assume the code is all either GPL or Public Domain.
+Feel free to use whatever bits may be of use to you in these files
+that it is my right to license ;-)
+
+* Footnotes
+
+[fn:1] apologies to [[https://en.wikipedia.org/wiki/Full_Metal_Jacket][Stanley Kubrick]]

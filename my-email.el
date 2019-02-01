@@ -186,25 +186,25 @@ all mu4e buffers and allow ivy selection of them.
 
 ;; Set default directory when viewing messages
 (defvar my-mailing-list-dir-mapping
-  '( ("qemu-devel.gnu.org" . "~/lsrc/qemu/qemu.git/")
-     ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
-     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/")
-     ("kvm.vger.kernel.org" . "~/lsrc/kvm/linux.git/")
-     ("virtualization.lists.linux-foundation.org" . "~/lsrc/kvm/linux.git/") )
+  '( ("qemu-devel.gnu.org" . "~/lsrc/qemu.git/")
+     ("qemu-devel.nongnu.org" . "~/lsrc/qemu.git/")
+     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/linux.git/")
+     ("kvm.vger.kernel.org" . "~/lsrc/linux.git/")
+     ("virtualization.lists.linux-foundation.org" . "~/lsrc/linux.git/") )
   "Mapping from mailing lists to source tree.")
 
 (defvar my-maildir-mapping
-  '( ("linaro/virtualization/qemu" . "~/lsrc/qemu/qemu.git/")
-     ("linaro/virtualization/qemu-arm" . "~/lsrc/qemu/qemu.git/")
-     ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu/qemu.git/")
+  '( ("linaro/virtualization/qemu" . "~/lsrc/qemu.git/")
+     ("linaro/virtualization/qemu-arm" . "~/lsrc/qemu.git/")
+     ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu.git/")
      ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
   "Mapping from maildirs to source tree.")
 
 (defvar my-mail-address-mapping
   ' (
-     ("qemu-devel@gnu.org" . "~/lsrc/qemu/qemu.git/")
-     ("qemu-devel@nongnu.org" . "~/lsrc/qemu/qemu.git/")
-      ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+     ("qemu-devel@gnu.org" . "~/lsrc/qemu.git/")
+     ("qemu-devel@nongnu.org" . "~/lsrc/qemu.git/")
+      ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/linux.git/") )
     "Mapping from target address to source tree.
 Useful for replies and drafts")
 
@@ -470,6 +470,37 @@ Move next if the message at point is what we have just processed."
        (my-mu4e-get-patch-number other))
      (-difference my-mu4e-patches
                   my-mu4e-applied-patches)))
+
+    ;; from latest mu4e
+    (defvar mu4e~patch-directory-history nil
+      "History of directories we have applied patches to.")
+
+    ;; This essentially works around the fact that read-directory-name
+    ;; can't have custom history.
+    (defun mu4e~read-patch-directory (&optional prompt)
+      "Read a `PROMPT'ed directory name via `completing-read' with history."
+      (unless prompt
+        (setq prompt "Target directory:"))
+      (file-truename
+       (completing-read prompt 'read-file-name-internal #'file-directory-p
+                        nil nil 'mu4e~patch-directory-history)))
+
+    (defun mu4e-action-git-apply-mbox (msg &optional signoff)
+      "Apply `MSG' a git patch with optional `SIGNOFF'.
+
+If the `default-directory' matches the most recent history entry don't
+bother asking for the git tree again (useful for bulk actions)."
+
+      (let ((cwd (substring-no-properties
+                  (or (car mu4e~patch-directory-history)
+                      "not-a-dir"))))
+        (unless (and (stringp cwd) (string= default-directory cwd))
+          (setq cwd (mu4e~read-patch-directory "Target directory: ")))
+        (let ((default-directory cwd))
+          (shell-command
+           (format "git am %s %s"
+                   (if signoff "--signoff" "")
+                   (shell-quote-argument (mu4e-message-field msg :path)))))))
 
     (defun my-mu4e-apply-marked-mbox-patches (&optional arg)
       "Apply patches in order. With PREFIX include signoff"
