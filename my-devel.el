@@ -127,11 +127,30 @@ Return in order of most recently updated."
               (cons (format "cd %s && make %s" it j-field) builds)))
     builds))
 
+(defun my-return-filtered-compile-commands ()
+  "Return the combined compile commands made up from potential
+commands and our compile history. Filter the compile history to remove
+  commands that don't make sense in the current directory."
+  (let ((root (expand-file-name
+               (locate-dominating-file
+                (or (buffer-file-name) default-directory) ".git"))))
+    (append
+     (-filter
+      (lambda (it)
+        (if (string-match
+             (rx "cd " (group (one-or-more (not blank))) blank) it)
+            (string-match-p root (match-string-no-properties 1 it))
+          nil))
+      compile-history)
+     (my-potential-compile-commands))))
+
+
+
 (defun my-counsel-compile ()
   "Call `compile' completing from compile history and additional suggestions."
   (interactive)
   (ivy-read "Compile command: "
-            (append compile-history (my-potential-compile-commands))
+            (my-return-filtered-compile-commands)
             :require-match nil
             :sort nil
             :history 'compile-history
