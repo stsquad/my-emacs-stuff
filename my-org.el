@@ -295,7 +295,58 @@ If `NEW-STATUS' is set then change TODO state."
     :config
     (progn
       (setq org-mu4e-link-query-in-headers-mode t)
-      (add-to-list 'org-modules 'org-mu4e t))))
+      (add-to-list 'org-modules 'org-mu4e t)
+
+      ;; my version, upstream not accepted
+      (defun org-mu4e-store-link ()
+        "Store a link to a mu4e query or message."
+        (when (member major-mode '(mu4e-headers-mode mu4e-view-mode))
+          (if (and (eq major-mode 'mu4e-headers-mode)
+	           org-mu4e-link-query-in-headers-mode)
+              ;; storing links to queries
+              (let* ((query (mu4e-last-query))
+	             desc link)
+	        (org-store-link-props :type "mu4e" :query query)
+	        (setq
+                 desc (mu4e-message-field-at-point :subject)
+                 link (concat "mu4e:query:" query))
+	        (org-add-link-props :link link :description desc)
+	        link)
+            ;; storing links to messages
+            (let* ((msg  (mu4e-message-at-point))
+                   (msgid   (or (plist-get msg :message-id) "<none>"))
+                   (from  (or (plist-get msg :from) '(("none" . "none"))))
+                   (fromname (car (car from)))
+                   (fromaddress (cdr (car from)))
+                   (to  (or (plist-get msg :to) '(("none" . "none"))))
+                   (toname (car (car to)))
+                   (toaddress (cdr (car to)))
+                   (fromto (if (mu4e-user-mail-address-p fromaddress)
+                               (format "to %s <%s>" toname toaddress)
+                             (format "from %s <%s>" fromname fromaddress)))
+                   (date (plist-get msg :date))
+                   (date-ts (format-time-string (org-time-stamp-format t) date))
+                   (date-ts-ia (format-time-string (org-time-stamp-format t t) date))
+                   (subject  (or (plist-get msg :subject) "<none>"))
+                   link)
+              (org-store-link-props :type "mu4e" :link link
+                                    :message-id msgid)
+              (setq link (concat "mu4e:msgid:" msgid))
+              (org-add-link-props :link link
+                                  :to (format "%s <%s>" toname toaddress)
+                                  :toname toname
+                                  :toaddress toaddress
+                                  :from (format "%s <%s>" fromname fromaddress)
+                                  :fromname fromname
+                                  :fromaddress fromaddress
+                                  :fromto fromto
+                                  :date date-ts-ia
+                                  :date-timestamp date-ts
+                                  :date-timestamp-inactive date-ts-ia
+                                  :subject subject
+                                  :description (funcall org-mu4e-link-desc-func msg))
+              link)))))
+
 
 (defun my-save-org-position-in-bookmark (&rest args)
   "Save position at jump."
