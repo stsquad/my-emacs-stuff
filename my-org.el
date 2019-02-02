@@ -345,7 +345,7 @@ If `NEW-STATUS' is set then change TODO state."
                                   :date-timestamp-inactive date-ts-ia
                                   :subject subject
                                   :description (funcall org-mu4e-link-desc-func msg))
-              link)))))
+              link)))))))
 
 
 (defun my-save-org-position-in-bookmark (&rest args)

@@ -51,10 +51,9 @@
     (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer))
   (turn-on-auto-fill))
 
-
 (use-package lisp-mode
   :commands emacs-lisp-mode
-  :hook (emacs-lisp-mode . my-elisp-hook-function)
+  :hook (emacs-lisp-mode . my-elisp-hook-functions)
   :bind (:map emacs-lisp-mode-map
               ("C-c e" . my-macrostep-expand-wrapper)
               ("C-c z" . ielm))
