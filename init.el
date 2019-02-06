@@ -68,8 +68,8 @@
 
 (when (or (and (getenv "DISPLAY") (daemonp) (not I-am-root))
           I-am-on-pixelbook)
-  (when (locate-library "atomic-chrome")
-    (use-package my-atomic-chrome))
+  (message "Setting up edit-servers")
+  (use-package my-atomic-chrome)
   (use-package my-edit-server))
 
 ;; Stuff I always want

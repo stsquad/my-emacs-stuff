@@ -13,6 +13,7 @@
 (use-package my-web)
 
 (use-package edit-server
+  :if (locate-library "edit-server")
   :commands edit-server-start
   :init (progn
           (when I-am-on-pixelbook
