@@ -20,6 +20,7 @@
         smtpmail-queue-dir   "~/Maildir/queue/cur"
         smtpmail-default-smtp-server "localhost"
         smtpmail-smtp-server "localhost"
+        smtpmail-stream-type  'plain
         smtpmail-smtp-service 25))
 
 
