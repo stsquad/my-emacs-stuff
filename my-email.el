@@ -233,6 +233,20 @@ Useful for replies and drafts")
   (when (mu4e-message-at-point t)
     (setq default-directory (my-get-code-dir-from-email))))
 
+;; We don't have the benefit of mu4e-message-at-point here so we do
+;; things by hand using message-fetch-field.
+(defun my-set-compose-directory ()
+  "Switch the `default-directory' when composing an email."
+  (interactive)
+  (let ((dir (cdr
+              (assoc
+               (--first
+                (assoc-default it my-mail-address-mapping)
+                (s-split ", " (concat (message-fetch-field "cc")
+                                      (message-fetch-field "to"))))
+               my-mail-address-mapping))))
+    (when dir (setq default-directory dir))))
+
 (defun my-search-code-from-email ()
   "Search code depending on email."
   (interactive)
@@ -258,7 +272,7 @@ Useful for replies and drafts")
                 'my-snip-region)
               (define-key mu4e-compose-mode-map (kbd "<f5>")
                 'my-search-code-from-email))
-              (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
+              (add-hook 'mu4e-compose-mode-hook 'my-set-compose-directory)
             (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)))
 
 (use-package mu4e-headers
