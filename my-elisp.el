@@ -61,6 +61,11 @@
   (add-to-list 'safe-local-variable-values
                '(lisp-indent-function . common-lisp-indent-function)))
 
+(use-package ert-async
+  :config (remove-hook 'emacs-lisp-mode-hook 'ert--activate-font-lock-keywords)
+  :hook (emacs-lisp-mode-hook . ert-async-activate-font-lock-keywords))
+
+
 (provide 'my-elisp)
 ;;; my-elisp.el ends here
 
