@@ -51,6 +51,22 @@
 (setq auto-mode-alist (delq (rassoc 'log4j-mode auto-mode-alist)
                             auto-mode-alist))
 
+;; Re-implement https://www.codesections.com/blog/vim-timestamped/
+(defun my-insert-timestamp-or-ret (&optional arg)
+  "Insert a simple timestamp if at bol, else call org-return."
+  (interactive "P")
+  (if (bolp)
+      (let ((current-prefix-arg '(16)))
+        (call-interactively 'org-time-stamp))
+    (org-return arg)))
+
+(define-minor-mode org-simple-timestamps-mode
+  "Don's require prefixed timestamps, useful for meetings."
+  :lighter " SimpleTS"
+  :keymap (let ((map (make-sparse-keymap)))
+            (define-key map (kbd "RET") 'my-insert-timestamp-or-ret)
+            map))
+
 (provide 'the-rest)
 ;;; the-rest.el ends here
 
