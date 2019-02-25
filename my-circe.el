@@ -154,8 +154,8 @@
              :server-buffer-name "⇄ OFTC"
              :port "6697"
              :tls t
-             :nick "stsquad"
-             :channels ("#qemu" "#qemu-gsoc")
+             :nick "stsquad-not-via-znc"
+             :channels ("#debian-devel" "#debian-cross")
              )
             ("znc-freenode"
              :host "ircproxy.linaro.org"
