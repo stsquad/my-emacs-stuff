@@ -66,14 +66,6 @@
   :commands message-mode
   :config (add-hook 'message-mode-hook 'my-common-mail-tweaks))
 
-;; BBDB
-(use-package bbdb
-  :config (progn
-            (setq bbdb-add-aka t
-                  bbdb-layout 'one-line
-                  bbdb-mua-auto-update-p 'query)
-            (bbdb-initialize 'mu4e 'rmail 'gnus 'message)))
-
 ;;
 ;; Finally the mu4e configuration
 ;;
