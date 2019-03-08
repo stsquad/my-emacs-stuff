@@ -80,6 +80,12 @@
 ;; This is my main work horse for day to day email.
 ;;
 
+(let ((local-mu4e (my-return-path-if-ok
+                   "~/src/emacs/mu/install/share/emacs/site-lisp/mu4e/")))
+  (setq mu4e-mu-binary (my-return-path-if-ok "~/bin/mu"))
+  (add-to-list 'load-path local-mu4e))
+
+
 (defun my-rig-mu4e-for-idle-running ()
   "Setup more comprehensive indexing when Emacs is idle."
   (setq mu4e-index-lazy-check nil   ; more comprehensive
@@ -628,7 +634,8 @@ to `my-mu4e-patches' for later processing."
                "In the last hour (unread)" ?H)
               ("from:alex.bennee date:1w..now"
                "My emails in the last week" ?w)
-              ;;
+              ;; Bugs and Notifications
+              ("recip:alex.bennee AND (f:bugs.debian.org OR f:bugs.launchpad.net)" "Bugs" ?b)
               ("maildir:\"/linaro/Inbox\" f:travis OR f:lava OR f:shippable" "Notifications" ?n)
               ;; Virt related
               ("list:qemu-devel* and flag:unread"
