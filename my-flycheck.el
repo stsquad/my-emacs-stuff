@@ -62,6 +62,7 @@
   :ensure t)
 
 (use-package flycheck-checkpatch
+  :ensure t
   :config (flycheck-checkpatch-setup)
   :config (setq flycheck-checkers (delete 'checkpatch flycheck-checkers))
   :config (add-to-list 'flycheck-checkers 'checkpatch t))
