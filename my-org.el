@@ -20,6 +20,7 @@
 (require 'my-email)
 (require 'my-basic-modes)
 (require 'my-hydra)
+(require 'bookmark)
 
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
@@ -157,6 +158,10 @@ This is used by my-org-run-default-block which is added to
       entry
       (file+regexp "team.org" "\* Tasks ")
       "** TODO %i%?\n%T")
+     ("m" "Add a maintainer TODO mail reference"
+      checkitem
+      (file+headline "qemu.org" "Maintainer Tasks")
+      "  - [ ] %a")
      ("T" "Add TODO task with mail reference"
       entry
       (file+headline "team.org" "Tasks")
