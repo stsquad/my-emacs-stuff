@@ -85,7 +85,10 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 (defun my-hide-compilation-buffer (proc)
   "Hide the compile buffer `PROC' is ignored."
-  (delete-window (get-buffer-window "*compilation*")))
+  (let* ((window (get-buffer-window "*compilation*"))
+         (frame (window-frame window)))
+    (ignore-errors
+      (delete-window window))))
 
 (defun my-report-compilation-finished (buf exit-string)
   "Report the compilation buffer `BUF' to tracker."
