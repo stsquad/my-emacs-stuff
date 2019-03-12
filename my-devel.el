@@ -85,7 +85,10 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 (defun my-hide-compilation-buffer (proc)
   "Hide the compile buffer `PROC' is ignored."
-  (delete-window (get-buffer-window "*compilation*")))
+  (let* ((window (get-buffer-window "*compilation*"))
+         (frame (window-frame window)))
+    (ignore-errors
+      (delete-window window))))
 
 (defun my-report-compilation-finished (buf exit-string)
   "Report the compilation buffer `BUF' to tracker."
@@ -100,61 +103,6 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
    (shell-command-to-string
     "cat /proc/cpuinfo | grep processor | wc -l"))
   "Count of the CPU cores on this system.")
-
-(defun my-find-build-subdirs (&optional root)
-  "Return a list of build directories under `ROOT'.
-
-Return in order of most recently updated."
-  (unless root
-    (setq root
-          (locate-dominating-file
-           (or (buffer-file-name) default-directory)
-           ".git")))
-  (let ((builds (format "%s/builds" root)))
-    (when (file-directory-p builds)
-      (mapcar
-       #'car (sort
-              (directory-files-and-attributes builds t (rx (not (in "." ".."))))
-              #'(lambda (x y) (time-less-p (nth 6 y) (nth 6 x))))))))
-
-(defun my-potential-compile-commands ()
-  "Add potential compile targets to compile history."
-  (let ((j-field (format "-j%d" (1+ my-core-count)))
-        (build-dirs (my-find-build-subdirs))
-        (builds '()))
-    (--each build-dirs
-        (setq builds
-              (cons (format "cd %s && make %s" it j-field) builds)))
-    builds))
-
-(defun my-return-filtered-compile-commands ()
-  "Return the combined compile commands made up from potential
-commands and our compile history. Filter the compile history to remove
-  commands that don't make sense in the current directory."
-  (let ((root (expand-file-name
-               (locate-dominating-file
-                (or (buffer-file-name) default-directory) ".git"))))
-    (append
-     (-filter
-      (lambda (it)
-        (if (string-match
-             (rx "cd " (group (one-or-more (not blank))) blank) it)
-            (string-match-p root (match-string-no-properties 1 it))
-          nil))
-      compile-history)
-     (my-potential-compile-commands))))
-
-
-
-(defun my-counsel-compile ()
-  "Call `compile' completing from compile history and additional suggestions."
-  (interactive)
-  (ivy-read "Compile command: "
-            (my-return-filtered-compile-commands)
-            :require-match nil
-            :sort nil
-            :history 'compile-history
-            :action (lambda (x) (compile x))))
 
 ;; compilation-mode error regexs
 
@@ -176,7 +124,7 @@ commands and our compile history. Filter the compile history to remove
 
 
 (use-package compile
-  :bind (("C-c c" . my-counsel-compile)
+  :bind (("C-c c" . counsel-compile)
          ("C-c r" . recompile)
          (:map compilation-mode-map
                ("n" . compilation-next-error)
@@ -187,11 +135,13 @@ commands and our compile history. Filter the compile history to remove
     (setq
      compilation-auto-jump-to-first-error nil
      compilation-scroll-output t
-     compilation-window-height 10)
+     compilation-window-height 10
+     counsel-compile-make-args (format "-j%d" (+ 1 my-core-count)))
     (add-to-list
      'compilation-error-regexp-alist-alist
      (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0))
     (add-to-list 'savehist-additional-variables 'compile-history)
+    (add-to-list 'savehist-additional-variables 'counsel-compile-history)
     ;; lets not overtax the regex match on our huge compilation buffers
     (when I-am-at-work
       (setq compilation-error-regexp-alist '(gcc-include gnu tsan)))
@@ -227,6 +177,9 @@ commands and our compile history. Filter the compile history to remove
 ;; shell modes
 
 (use-package fish-mode
+  :ensure t)
+
+(use-package fish-completion
   :ensure t)
 
 ;; asm-mode

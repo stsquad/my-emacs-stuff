@@ -13,7 +13,8 @@
 (use-package my-web)
 
 (use-package edit-server
-  :if (locate-library "edit-server")
+  :load-path (lambda () (my-return-path-if-ok "~/mysrc/edit-with-emacs.git/servers"))
+  :ensure t
   :commands edit-server-start
   :init (progn
           (when I-am-on-pixelbook
