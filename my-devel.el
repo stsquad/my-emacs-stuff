@@ -179,6 +179,9 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (use-package fish-mode
   :ensure t)
 
+(use-package fish-completion
+  :ensure t)
+
 ;; asm-mode
 ;;                                       ;
 ;; We define some additional regexs to match ARM and TCG style assembler
