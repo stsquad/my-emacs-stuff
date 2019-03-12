@@ -15,7 +15,6 @@
 (eval-when-compile (require 'use-package))
 
 (require 'my-libs)
-
 (require 'my-vars)
 (require 'my-email)
 (require 'my-basic-modes)
