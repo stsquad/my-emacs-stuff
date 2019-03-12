@@ -75,7 +75,8 @@
 (let ((local-mu4e (my-return-path-if-ok
                    "~/src/emacs/mu/install/share/emacs/site-lisp/mu4e/")))
   (setq mu4e-mu-binary (my-return-path-if-ok "~/bin/mu"))
-  (add-to-list 'load-path local-mu4e))
+  (when local-mu4e
+    (add-to-list 'load-path local-mu4e)))
 
 
 (defun my-rig-mu4e-for-idle-running ()
