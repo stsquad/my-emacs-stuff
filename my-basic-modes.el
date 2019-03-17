@@ -64,9 +64,12 @@
     (when (file-exists-p ep)
       ep)))
 
-;; Counsel/Ivy/Swipper
+;; Counsel/Ivy/Swiper
+;; :load-path (lambda () (my-return-path-if-ok "~/src/emacs/swiper.git"))
 (use-package counsel
-  :load-path (lambda () (my-return-path-if-ok "~/src/emacs/swiper.git"))
+  :map (:map counsel-mode-map
+        ("M-y" . counsel-yank-pop))
+  :commands counsel-yank-pop
   :ensure t
   :init (counsel-mode))
 
