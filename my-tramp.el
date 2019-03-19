@@ -1,8 +1,14 @@
+;;; my-tramp --- Tramp Customisation
 ;;
-;; Tramp Customisations/Tweaks
+;;; Commentary:
 ;;
+;; Not much here apart from stopping vc getting happy.
+;;
+;;; Code:
 
 (require 'use-package)
+
+;; (setq tramp-verbose 10)
 
 (use-package tramp
   :defer
