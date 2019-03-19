@@ -59,16 +59,11 @@
 (use-package help-fns+
   :commands describe-keymap)
 
-(defun my-return-path-if-ok (path)
-  (let ((ep (expand-file-name path)))
-    (when (file-exists-p ep)
-      ep)))
-
 ;; Counsel/Ivy/Swiper
 ;; :load-path (lambda () (my-return-path-if-ok "~/src/emacs/swiper.git"))
 (use-package counsel
-  :map (:map counsel-mode-map
-        ("M-y" . counsel-yank-pop))
+  :bind (:map counsel-mode-map
+              ("M-y" . counsel-yank-pop))
   :commands counsel-yank-pop
   :ensure t
   :init (counsel-mode))
