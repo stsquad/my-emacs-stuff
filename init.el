@@ -85,7 +85,7 @@
 (use-package my-gnus
   :if (not I-am-root))
 
-;; Development related stuff, including project root
+;; Development related stuff
 (use-package my-devel)
 
 (use-package my-flycheck
