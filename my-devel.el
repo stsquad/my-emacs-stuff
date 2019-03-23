@@ -12,10 +12,6 @@
 (require 'my-tracking)
 (require 'my-hydra)
 
-;; Currently I'm still unsettled about which project library to use
-(when (require 'eproject nil t)
-    (load-library "my-eproject"))
-
 ;; EditorConfig
 (use-package editorconfig
   :ensure t
@@ -72,6 +68,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;; Compile Mode
 ;;
 
+(use-package my-c-mode)
 
 ;; See: http://emacs.stackexchange.com/questions/3802/how-can-i-detect-compilation-mode-is-waiting-for-input/3807?noredirect=1#comment5796_3807
 (defun my-compilation-mode-warn-about-prompt ()
@@ -172,7 +169,9 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 
 ;; checkpatch
-(use-package checkpatch-mode)
+;; currently disabled, there is also checkpatch for flycheck
+(use-package checkpatch-mode
+  :disabled t)
 
 ;; shell modes
 

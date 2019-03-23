@@ -197,7 +197,7 @@ all mu4e buffers and allow ivy selection of them.
   '( ("linaro/virtualization/qemu" . "~/lsrc/qemu.git/")
      ("linaro/virtualization/qemu-arm" . "~/lsrc/qemu.git/")
      ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu.git/")
-     ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
+     ("linaro/kernel" . "~/lsrc/linux.git/") )
   "Mapping from maildirs to source tree.")
 
 (defvar my-mail-address-mapping
@@ -616,6 +616,9 @@ to `my-mu4e-patches' for later processing."
                "Mail sent by me (unread replied)" ?S)
               ("\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
                "My patches" ?p)
+              ("\
+(from:alex.bennee OR from:bennee.com\) AND \
+\(b:\"Reviewed\" OR b:\"Tested\"\)" "My tags" ?r)
               ("s:PULL \(b:Bennée OR b:Bennee\)" "Pull Reqs with my name" ?P)
               ("flag:flagged" "Flagged and starred posts" ?f)
               ("flag:flagged NOT flag:seen" "Unread flagged and starred posts" ?F)

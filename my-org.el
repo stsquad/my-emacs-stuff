@@ -463,9 +463,9 @@ If `NEW-STATUS' is set then change TODO state."
   (org-link-set-parameters "mu4e" :export 'my-org-mu4e-export))
 
 ;; Org reveal
-(use-package ox-reveal
-  :commands org-reveal-export-to-html
-  :if (locate-library "ox-reveal"))
+(use-package org-re-reveal
+  :ensure t
+  :after org)
 
 ;; Load optional MELPA packages
 ;;

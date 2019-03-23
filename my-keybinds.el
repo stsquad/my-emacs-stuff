@@ -89,9 +89,6 @@
 (global-set-key (kbd "<f7>") 'previous-error)
 (global-set-key (kbd "<f8>") 'next-error)
 
-;; yank-pop
-(global-set-key (kbd "M-y") 'counsel-yank-pop)
-
 (provide 'my-keybinds)
 ;;; my-keybinds.el ends here
 

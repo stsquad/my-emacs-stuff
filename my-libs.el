@@ -46,6 +46,12 @@
 (use-package async
   :ensure t)
 
+;; Other helpers
+(defun my-return-path-if-ok (path)
+  "Return an expanded file-path if it exists."
+  (let ((ep (expand-file-name path)))
+    (when (file-exists-p ep)
+      ep)))
+
 (provide 'my-libs)
 ;;; my-libs.el ends here
-
