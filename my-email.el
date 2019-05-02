@@ -1,4 +1,4 @@
-;;; my-email.el --- Email set-up
+;;; my-email.el --- Email set-up -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
@@ -230,8 +230,14 @@ Useful for replies and drafts")
 (defun my-set-view-directory ()
   "Switch the `default-directory' depending mail contents."
   (interactive)
-  (when (mu4e-message-at-point t)
-    (setq default-directory (my-get-code-dir-from-email))))
+  (let ((this-buffer (current-buffer)))
+    (if (mu4e-message-at-point t)
+        (setq default-directory (my-get-code-dir-from-email))
+      ;; *hack* if mu4e-message-at-point isn't ready yet
+      (run-with-idle-timer
+       0 nil (lambda()
+               (with-current-buffer this-buffer
+                 (setq default-directory (my-get-code-dir-from-email))))))))
 
 ;; We don't have the benefit of mu4e-message-at-point here so we do
 ;; things by hand using message-fetch-field.
@@ -285,7 +291,7 @@ Useful for replies and drafts")
             (setq mu4e-headers-time-format "%H:%M:%S"
                   mu4e-headers-date-format "%a %d/%m/%y")
             (add-hook 'mu4e-headers-mode-hook 'my-yas-local-disable)
-            (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)))
+            (add-hook 'mu4e-headers-found-hook 'my-set-view-directory)))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
