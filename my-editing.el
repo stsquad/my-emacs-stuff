@@ -38,35 +38,9 @@
 ;; Multiple cursors
 (use-package multiple-cursors
   :ensure t
-  :commands (mc/edit-lines
-             mc/mark-all-like-this mc/mark-all-like-this-dwim
-             mc/mark-next-like-this mc/mark-previous-like-this
-             mc/skip-to-next-like-this mc/skip-to-previous-like-this
-             mc/unmark-next-like-this mc/unmark-previous-like-this)
-  :init
-  (with-eval-after-load 'hydra
-    (global-set-key
-     (kbd "C-x ;")
-     (defhydra my-hydra-mc
-       (:hint nil)
-       "
-     ^Up^            ^Down^        ^Miscellaneous^
-----------------------------------------------
-[_p_]   Next    [_n_]   Next    [_l_] Edit lines
-[_P_]   Skip    [_N_]   Skip    [_a_/_;_] Mark all, DWIM
-[_M-p_] Unmark  [_M-n_] Unmark  [_h_]ide unmatched lines
-^ ^             ^ ^             ^  ^                      [_q_]uit"
-  ("l" mc/edit-lines :exit t)
-  ("a" mc/mark-all-like-this :exit t)
-  (";" mc/mark-all-like-this-dwim :exit t)
-  ("n" mc/mark-next-like-this)
-  ("N" mc/skip-to-next-like-this)
-  ("M-n" mc/unmark-next-like-this)
-  ("p" mc/mark-previous-like-this)
-  ("P" mc/skip-to-previous-like-this)
-  ("M-p" mc/unmark-previous-like-this)
-  ("h" mc-hide-unmatched-lines-mode)
-  ("q" nil)))))
+  :commands mc/mark-next-like-this
+  :bind (:map mc/keymap
+              ("C-n" . mc/mark-next-like-this)))
 
 ;; Expand region
 (defun my-mark-or-expand-dwim (&optional arg)
@@ -96,7 +70,8 @@ If the region is less than a line long assume I want to mark the next
   (interactive "P")
   (if (= (line-number-at-pos (region-beginning))
          (line-number-at-pos (region-end)))
-      (call-interactively #'mc/mark-next-like-this)
+      (unless multiple-cursors-mode
+        (call-interactively #'mc/mark-next-like-this))
     (call-interactively #'next-line)))
 
 (when (locate-library "region-bindings-mode")
