@@ -555,13 +555,13 @@ to `my-mu4e-patches' for later processing."
           (and (string-match parent-id
                              (or
                               (mu4e-message-field-raw msg :in-reply-to)
-                              ""))
+                              (mu4e-message-field-raw msg :message-id)))
                (string-match
                 (rx
                  (: bol "["
                     (minimal-match (zero-or-more (not (any "/"))))
-                    (or (: (any "0-9") (zero-or-one (any "1-9")))
-                        (: (any "1-9") (zero-or-one (any "0-9"))))
+                    (or (in "1-9")
+                        (: (any "1-9") (one-or-more (any "0-9"))))
                     "/"))
                 (mu4e-message-field-raw msg :subject)))
         (add-to-list 'my-mu4e-patches msg)))
@@ -639,6 +639,7 @@ to `my-mu4e-patches' for later processing."
               ;; Bugs and Notifications
               ("recip:alex.bennee AND (f:bugs.debian.org OR f:bugs.launchpad.net)" "Bugs" ?b)
               ("maildir:\"/linaro/Inbox\" f:travis OR f:lava OR f:shippable" "Notifications" ?n)
+              ("f:f:vandersonmr2@gmail.com" "GSoC" ?G)
               ;; Virt related
               ("list:qemu-devel* and flag:unread"
                "Latest QEMU posts" ?q)
