@@ -445,6 +445,7 @@ Move next if the message at point is what we have just processed."
      mu4e-view-fields
      '(:from :to :cc :subject :flags :date :tags :attachments
              :signature)
+     mu4e-view-use-gnus t
      mu4e-maildir-shortcuts
      (cond
       (I-am-at-work
