@@ -57,13 +57,10 @@
 (defvar my-dco-tag-re
   (rx (: bol (zero-or-more (in blank))                        ;; fresh line
          (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
-         (one-or-more (in alpha blank "-" "."))               ;;name
+         (one-or-more (in alpha blank "-."))                  ;;name
          blank
-         "<" (one-or-more (in alpha num ".@")) ">"           ;; email
-         eol))
+         "<" (one-or-more (not (in ">"))) ">"))               ;; email
   "Regexp to match DCO style tag.")
-
-;;"\\(?:[-[:blank:][:alpha:]]+[[:blank:]]<[.@[:digit:][:alpha:]]+>\\)"
 
 (defun my-capture-review-tags ()
   "Return a list of DCO style tags for current buffer."
