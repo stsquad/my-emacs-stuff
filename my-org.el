@@ -15,11 +15,11 @@
 (eval-when-compile (require 'use-package))
 
 (require 'my-libs)
-
 (require 'my-vars)
 (require 'my-email)
 (require 'my-basic-modes)
 (require 'my-hydra)
+(require 'bookmark)
 
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
@@ -31,6 +31,9 @@
            org-babel-default-header-args:sh
            '((:prologue . "exec 2>&1") (:epilogue . ":"))))
 
+(use-package ob-async
+  :ensure t)
+
 (use-package ob-core
   :defer t)
 
@@ -39,12 +42,47 @@
 This prevents org re-asking every time I restart.")
 (add-to-list 'savehist-additional-variables 'my-org-babel-hashes)
 
+(defvar my-org-default-action nil
+  "Default action for this document to run on `org-ctrl-c-ctrl-c'.
+\\<org-mode-map>
+This will run via `org-ctrl-c-ctrl-c-hook' and should return a
+non-nil result if it processed something. As such it can override
+default `org-mode' behaviour for \\[org-ctrl-c-ctrl-c]. If you
+want something to run at the end then you need to use
+`my-org-default-code-block'")
+(make-variable-buffer-local 'my-org-default-action)
+(put 'my-org-default-action 'permanent-local t)
+
 (defvar my-org-default-code-block nil
   "Default code block to run on `org-ctrl-c-ctrl-c'.
 
 This is used by my-org-run-default-block which is added to
 `org-ctrl-c-ctrl-c-final-hook'")
 (make-variable-buffer-local 'my-org-default-code-block)
+
+(defun my-org--do-action (func-or-string)
+  "Evaluate a code block or call a function `FUNC-OR-STRING' from org-file."
+  (let ((action-result))
+    (cond
+     ((stringp func-or-string)
+      (save-excursion
+        (org-babel-goto-named-src-block func-or-string)
+        (when (memq (org-element-type (org-element-context))
+	            '(inline-src-block src-block))
+          (org-babel-eval-wipe-error-buffer)
+          (setq action-result (org-babel-execute-src-block t)))))
+     ((functionp func-or-string)
+      (setq action-result (funcall func-or-string)))
+     (t (error "What to do with: %s" func-or-string)))
+    (if action-result
+        (message "%s: %s" func-or-string action-result)
+      nil)))
+
+(defun my-org-run-default-action ()
+  "Execute default action for this org file."
+  (interactive)
+  (when my-org-default-action
+    (my-org--do-action my-org-default-action)))
 
 (defun my-org-run-default-block ()
   "Evaluate the code block `my-org-default-code-block' if it exists."
@@ -82,6 +120,15 @@ This is used by my-org-run-default-block which is added to
             (define-key org-src-mode-map (kbd "C-c C-c") 'org-edit-src-exit)
             (setq org-src-window-setup 'reorganize-frame)))
 
+
+(defun my-org-choose-target ()
+  "Move cursor to insertion point for a given headline."
+  (counsel-org-goto)
+  (outline-show-entry)
+  (outline-next-visible-heading 1)
+  (previous-line)
+  (move-end-of-line 1))
+
 (use-package org-capture
   :commands org-capture org-capture-target-buffer
   :config
@@ -110,14 +157,23 @@ This is used by my-org-run-default-block which is added to
       entry
       (file+regexp "team.org" "\* Tasks ")
       "** TODO %i%?\n%T")
+     ("m" "Add a maintainer TODO mail reference"
+      checkitem
+      (file+headline "qemu.org" "Maintainer Tasks")
+      "  - [ ] %a")
      ("T" "Add TODO task with mail reference"
       entry
       (file+headline "team.org" "Tasks")
       "** TODO %i\nSee %a")
-     ("C" "Current activity as progress"
+     ("p" "Posted email to list"
+      item
+      (file+function "team.org" my-org-choose-target)
+      "  - posted %a")
+     ("C" "Completed Review"
       entry
-      (file+olp "~/org/team.org" "Meetings" "Current" "Progress")
-      "  - %a")
+      (file+regexp "team.org" "Completed Reviews")
+      "** DONE %a"
+      :immediate-finish t)
      ("Q" "Queue Review (email)"
       entry
       (file+regexp "team.org" "Review Queue")
@@ -237,12 +293,64 @@ If `NEW-STATUS' is set then change TODO state."
          ("org" :components ("org-notes" "org-presentations"
                              "org-static"))))))
 ;; Mail integration
-(use-package org-mu4e
-  :if (locate-library "org-mu4e")
-  :config
-  (progn
-    (setq org-mu4e-link-query-in-headers-mode t)
-    (add-to-list 'org-modules 'org-mu4e t)))
+(when I-am-at-work
+  (use-package org-mu4e
+    :if (locate-library "org-mu4e")
+    :config
+    (progn
+      (setq org-mu4e-link-query-in-headers-mode t)
+      (add-to-list 'org-modules 'org-mu4e t)
+
+      ;; my version, upstream not accepted
+      (defun org-mu4e-store-link ()
+        "Store a link to a mu4e query or message."
+        (when (member major-mode '(mu4e-headers-mode mu4e-view-mode))
+          (if (and (eq major-mode 'mu4e-headers-mode)
+	           org-mu4e-link-query-in-headers-mode)
+              ;; storing links to queries
+              (let* ((query (mu4e-last-query))
+	             desc link)
+	        (org-store-link-props :type "mu4e" :query query)
+	        (setq
+                 desc (mu4e-message-field-at-point :subject)
+                 link (concat "mu4e:query:" query))
+	        (org-add-link-props :link link :description desc)
+	        link)
+            ;; storing links to messages
+            (let* ((msg  (mu4e-message-at-point))
+                   (msgid   (or (plist-get msg :message-id) "<none>"))
+                   (from  (or (plist-get msg :from) '(("none" . "none"))))
+                   (fromname (car (car from)))
+                   (fromaddress (cdr (car from)))
+                   (to  (or (plist-get msg :to) '(("none" . "none"))))
+                   (toname (car (car to)))
+                   (toaddress (cdr (car to)))
+                   (fromto (if (mu4e-user-mail-address-p fromaddress)
+                               (format "to %s <%s>" toname toaddress)
+                             (format "from %s <%s>" fromname fromaddress)))
+                   (date (plist-get msg :date))
+                   (date-ts (format-time-string (org-time-stamp-format t) date))
+                   (date-ts-ia (format-time-string (org-time-stamp-format t t) date))
+                   (subject  (or (plist-get msg :subject) "<none>"))
+                   link)
+              (org-store-link-props :type "mu4e" :link link
+                                    :message-id msgid)
+              (setq link (concat "mu4e:msgid:" msgid))
+              (org-add-link-props :link link
+                                  :to (format "%s <%s>" toname toaddress)
+                                  :toname toname
+                                  :toaddress toaddress
+                                  :from (format "%s <%s>" fromname fromaddress)
+                                  :fromname fromname
+                                  :fromaddress fromaddress
+                                  :fromto fromto
+                                  :date date-ts-ia
+                                  :date-timestamp date-ts
+                                  :date-timestamp-inactive date-ts-ia
+                                  :subject subject
+                                  :description (funcall org-mu4e-link-desc-func msg))
+              link)))))))
+
 
 (defun my-save-org-position-in-bookmark (&rest args)
   "Save position at jump."
@@ -260,6 +368,9 @@ If `NEW-STATUS' is set then change TODO state."
   :ensure t
   :mode ("\\.org\\'" . org-mode)
   :commands (org-agenda org-capture)
+  :bind (:map org-mode-map
+              ("C-f" . counsel-org-agenda-headlines)
+              ("C-c C-j" . counsel-org-goto))
   :init
   (progn
     (setq
@@ -281,6 +392,7 @@ If `NEW-STATUS' is set then change TODO state."
      org-checkbox-hierarchical-statistics nil
      org-hierarchical-todo-statistics t
      org-log-done 'note
+     org-enforce-todo-dependencies t
      org-todo-keywords '((sequence "TODO" "ACTIVE" "BLOCKED" "DONE"))
      org-todo-keyword-faces '(("TODO" . org-todo )
                               ("ACTIVE" . "blue")
@@ -290,6 +402,8 @@ If `NEW-STATUS' is set then change TODO state."
      org-export-allow-bind-keywords t)
 
     ;; Add my special handler.
+    (add-to-list 'org-ctrl-c-ctrl-c-hook
+                 'my-org-run-default-action)
     (add-to-list 'org-ctrl-c-ctrl-c-final-hook
                  'my-org-run-default-block)
 
@@ -302,12 +416,6 @@ If `NEW-STATUS' is set then change TODO state."
       (when (file-exists-p ditta-path)
         (setq org-ditaa-jar-path ditta-path)))
     
-    ;; Mode keys
-    ;; (define-key org-mode-map (kbd "M-[ c") 'org-demote-subtree)
-    ;; (define-key org-mode-map (kbd "M-[ d") 'org-promote-subtree)
-    (when (fboundp 'helm-org-agenda-files-headings)
-      (define-key org-mode-map (kbd "C-f")
-        'helm-org-agenda-files-headings))
     (with-eval-after-load 'hydra
       (global-set-key
        (kbd "C-c C-o")
@@ -316,7 +424,8 @@ If `NEW-STATUS' is set then change TODO state."
                  "%(cdr (assoc 'filename (assoc \"org-pos-at-jump\" bookmark-alist))) ")
          ("a" org-agenda "org-agenda")
          ("c" org-capture "org-capture")
-         ("h" helm-org-agenda-files-headings "org-headings (helm)")
+         ("h" counsel-org-agenda-headlines "org-agenda-headlines")
+         ("p" (org-capture nil "p") "store posted patch/pull")
          ("q" (org-capture nil "Q") "Queue for review")
          ("r" (org-capture nil "r") "Capture review comment")
          ("j" my-return-to-org nil))))
@@ -354,9 +463,9 @@ If `NEW-STATUS' is set then change TODO state."
   (org-link-set-parameters "mu4e" :export 'my-org-mu4e-export))
 
 ;; Org reveal
-(use-package ox-reveal
-  :commands org-reveal-export-to-html
-  :if (locate-library "ox-reveal"))
+(use-package org-re-reveal
+  :ensure t
+  :after org)
 
 ;; Load optional MELPA packages
 ;;
@@ -364,17 +473,15 @@ If `NEW-STATUS' is set then change TODO state."
 ;; elsewhere.
 
 (when (assoc "melpa" package-archives)
-
   ;; for JIRA export
   (use-package ox-jira
     :ensure t)
-
   (use-package ob-restclient
-    :ensure t)
-
-  (use-package ob-async
     :ensure t))
 
+;; org-babel packages in stable
+(use-package ob-async
+  :ensure t)
 
 ;; Org Babel configurations
 (let ((lob "~/org/library.org"))
@@ -405,6 +512,10 @@ If `NEW-STATUS' is set then change TODO state."
                (ditaa . t)
                (makefile . t)
                (python . t))))
+  (when (locate-library "ob-perl")
+    (add-to-list 'langs '(perl . t)))
+  (when (locate-library "ob-r")
+    (add-to-list 'langs '(R . t)))
   (when (locate-library "ob-restclient")
     (add-to-list 'langs '(restclient . t)))
   (when (locate-library "ob-gnuplot")
@@ -428,6 +539,17 @@ If `NEW-STATUS' is set then change TODO state."
             (add-to-list 'org-src-lang-modes
                          '("dot" . graphviz-dot))))
 
+;;
+;; Stats things
+;;
+(when I-am-at-work
+  (use-package ess
+    :ensure t
+    :config (setq
+             auto-mode-alist
+                                        ; don't override asm-mode
+             (delete '("\\.[qsS]\\'" . S-mode) auto-mode-alist))))
+
 ;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
 (defun my-babel-hashed-confirm (lang body)
   "Check against known hashes before prompting for confirmation.
@@ -442,9 +564,22 @@ See `org-confirm-babel-evaluate'."
               (add-to-list 'my-org-babel-hashes check)
               'nil)
           ;; Return 't to prompt for evaluation
-          't))))
+          't)
+      (message "Valid hash auto-confirmed for %s @ %s" lang org-babel-current-src-block-location)
+      'nil)))
 
 (setq org-confirm-babel-evaluate 'my-babel-hashed-confirm)
+
+;; via https://kitchingroup.cheme.cmu.edu/blog/2016/02/26/Adding-captions-and-attributes-to-figures-and-tables-from-code-blocks-in-org-mode/
+(defun my-org-src-decorate (&optional caption attributes)
+  "A wrap function for src blocks."
+  (concat
+   "ORG\n"
+   (when attributes
+     (concat (mapconcat 'identity attributes "\n") "\n"))
+   (when caption
+     (format "#+caption: %s" caption))))
+
 
 (defun my-invoke-babel-named (name)
   "Evaluate named babel block"

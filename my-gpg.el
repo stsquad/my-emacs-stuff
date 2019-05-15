@@ -26,18 +26,14 @@
   (setenv "GPG_AGENT_INFO" nil))
 
 ;; Keychain access
-(use-package keychain-environment
-  :disabled (not (string-match "socrates" (system-name)))
-  :ensure t
-  :if (or I-am-at-work I-am-at-home)
-  :commands keychain-refresh-environment
-  :defer 60
-  :config (progn
-            (keychain-refresh-environment)
-            (add-hook 'after-make-frame-functions
-                      #'(lambda(&optional frame) (keychain-refresh-environment)))
-            (when (string-match "socrates" (system-name))
-              (my-squash-gpg))))
+(when (file-exists-p "~/src/emacs/keychain-environment.git")
+  (use-package keychain-environment
+    :load-path "~/src/emacs/keychain-environment.git"
+    :if (or I-am-at-work I-am-at-home)
+    :commands keychain-refresh-environment
+    :defer 60
+    :config (setq keychain-should-inherit t
+                  keychain-be-quick t)))
 
 ;; Fix up the frame so we don't send pinentry to the wrong place
 (defun my-fixup-gpg-agent (&optional frame)
@@ -71,6 +67,10 @@
     (add-hook 'after-make-frame-functions 'my-squash-gpg t)
     (my-squash-gpg)
     (epa-file-enable)))
+
+(use-package auth-source-pass
+  :ensure t
+  :config (auth-source-pass-enable))
 
 (provide 'my-gpg)
 ;;; my-gpg.el ends here

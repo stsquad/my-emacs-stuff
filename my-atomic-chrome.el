@@ -15,6 +15,7 @@
   (delete-frame))
 
 (use-package atomic-chrome
+  :ensure t
   :commands atomic-chrome-start-server
   :init (if after-init-time
             (atomic-chrome-start-server)

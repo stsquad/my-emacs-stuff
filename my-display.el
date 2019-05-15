@@ -49,16 +49,11 @@
   :commands imagemagick-register-types
   :init (imagemagick-register-types))
 
+;; fonts....
 (use-package unicode-fonts
+  :ensure t
   :if (and (getenv "DISPLAY") (locate-library "unicode-fonts"))
   :config (unicode-fonts-setup))
-
-; default-frame-alist
-(setq default-frame-alist '((fullscreen . 'fullboth)
-                            (vertical-scroll-bars)))
-
-; Re-use existing frames if buffer already exists in one
-(setq-default display-buffer-reuse-frames t)
 
 ; messing about - what about dynamic-font stuff?
 (set-face-attribute 'default nil
@@ -69,7 +64,13 @@
                     :weight 'normal
                     :width 'normal)
 
-(message "Display Done")
+
+; default-frame-alist
+(setq default-frame-alist '((fullscreen . 'fullboth)
+                            (vertical-scroll-bars)))
+
+; Re-use existing frames if buffer already exists in one
+(setq-default display-buffer-reuse-frames t)
 
 ;; Prettier unique buffer names.
 (use-package uniquify
@@ -79,8 +80,8 @@
 ;; Mouse set-up
 ;
 ; I don't use the mouse for a lot of things and on my netbook it
-; positively gets in the way. Really it's only used for links and
-; the occasional scroll of the buffer.
+; positively gets in the way. Really it is only used for links and the
+; occasional scroll of the buffer.
 
 ;; Stop the mouse cursor getting in the way. This is great.
 (use-package avoid
@@ -145,8 +146,13 @@
       next-line-add-newlines nil)
 
 ;; Make pound signs work
-(set-language-environment "UTF-8")
-(setq unibyte-display-via-language-environment t)
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-language-environment 'utf-8)
+
+;(setq unibyte-display-via-language-environment t)
 
 ;; Allow narrowing.
 (put 'narrow-to-region 'disabled nil)
@@ -179,7 +185,7 @@
 ;; Manual colour themes
 
 (use-package moe-theme
-  :if (locate-library "moe-theme")
+  :ensure t
   :commands moe-dark
   :init (moe-dark))
 

@@ -13,14 +13,28 @@
 (use-package my-web)
 
 (use-package edit-server
+  :load-path (lambda () (my-return-path-if-ok "~/mysrc/edit-with-emacs.git/servers"))
+  :ensure t
   :commands edit-server-start
-  :init (if after-init-time
-            (edit-server-start)
-          (add-hook 'after-init-hook
-                  #'(lambda() (edit-server-start))))
-  :config (setq edit-server-url-major-mode-alist
-                (list '("stackexchange" . markdown-mode)
-                      '("github.com" . markdown-mode))))
+  :init (progn
+          (when I-am-on-pixelbook
+            (setq edit-server-host "0.0.0.0"
+                  edit-server-port 8000)
+            (global-set-key (kbd "C-x C-c") 'delete-frame))
+          (if after-init-time
+              (edit-server-start)
+            (add-hook 'after-init-hook
+                      #'(lambda() (edit-server-start)))))
+  :config (setq edit-server-new-frame-alist
+                '((name . "Edit with Emacs FRAME")
+                  (width . 80)
+                  (height . 25)
+                  (minibuffer . t)
+                  (menu-bar-lines . t)
+                  (window-system . x))
+                edit-server-url-major-mode-alist
+                  (list '("stackexchange" . markdown-mode)
+                        '("github.com" . markdown-mode))))
 
 (with-eval-after-load 'edit-server
   ;; Mediawiki
@@ -33,6 +47,10 @@
   ;; Moin-moin
   (add-to-list 'edit-server-url-major-mode-alist
                '("wiki.linaro.org" . moinmoin-mode))
+  ;; Diapora
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("diasp.eu" . markdown-mode))
+
   ;; Web-mode
   (add-to-list 'edit-server-url-major-mode-alist
                '("www.bennee.com/~alex/blog" . web-mode))

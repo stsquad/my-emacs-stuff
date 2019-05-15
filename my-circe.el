@@ -38,6 +38,10 @@
   "Return the password for the `SERVER'."
   (my-pass-password "oftc-nick"))
 
+(defun my-gitter-password (server)
+  "Return the password for the `SERVER'."
+  (my-pass-password "gitter-irc"))
+
 ;; Logging
 (use-package lui-logging
   :commands enable-lui-logging)
@@ -140,44 +144,51 @@
           `(("Freenode"
              :host "chat.freenode.net"
              :server-buffer-name "⇄ Freenode"
+             :tls t
              :nick "stsquad"
              :nickserv-password my-freenode-nick-password
-             :tls t
-             :channels (:after-auth "#emacs" "#emacs-circe")
+             :channels (:after-auth "#emacs" "#emacs-circe" "#gentoo-arm")
              )
             ("OFTC"
              :host "irc.oftc.net"
              :server-buffer-name "⇄ OFTC"
              :port "6697"
              :tls t
-             :nick "stsquad"
-             :channels ("#qemu" "#qemu-gsoc")
+             :nick "stsquad-not-via-znc"
+             :channels ("#debian-devel" "#debian-cross")
              )
             ("znc-freenode"
              :host "ircproxy.linaro.org"
              :server-buffer-name "⇄ Freenode (ZNC)"
              :port "6697"
+             :tls t
              :pass my-znc-freenode-password
-             :nick "ajb-linaro"
-             :nickserv-password my-freenode-znc-nick-password
-             :channels (:after-auth "#linaro" "#linaro-virtualization")
-             :tls 't
+             ;; NickServ is handled by ZNC and the SASL login
+             :channels ("#linaro" "#linaro-virtualization")
              )
             ("znc-oftc"
              :host "ircproxy.linaro.org"
              :server-buffer-name "⇄ OFTC (ZNC)"
              :port "6697"
              :pass my-znc-oftc-password
-             :nickserv-password my-oftc-nick-password
+             ;; :nickserv-password my-oftc-nick-password
              :channels ("#qemu" "#qemu-gsoc")
              :tls 't
+             )
+            ("gitter"
+             :host "irc.gitter.im"
+             :server-buffer-name "⇄ Gitter (irc gateway)"
+             :port "6697"
+             :nick "stsquad"
+             :pass my-gitter-password
+             :tls t
              )
             ("Pl0rt"
              :host "irc.pl0rt.org"
              :server-buffer-name "⇄ Pl0rt"
              :nick "ajb"
              :service "6697"
-             :tls 't
+             :tls t
              :channels ("#blue")
              )
             ("bitlbee"

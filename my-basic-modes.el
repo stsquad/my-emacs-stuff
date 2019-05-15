@@ -19,6 +19,7 @@
 ;;; Code:
 
 (require 'use-package)
+(require 'my-libs)
 
 ;; Automagically decompress files
 (auto-compression-mode t)
@@ -58,10 +59,16 @@
 (use-package help-fns+
   :commands describe-keymap)
 
-;; Counsel
+;; Counsel/Ivy/Swiper
+;; 
 (use-package counsel
+  :load-path (lambda () (and (not I-am-at-work)
+                             (my-return-path-if-ok "~/src/emacs/swiper.git")))
+  :bind (:map counsel-mode-map
+              ("M-y" . counsel-yank-pop))
+  :commands counsel-yank-pop
   :ensure t
-  :commands counsel-yank-pop)
+  :init (counsel-mode))
 
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here

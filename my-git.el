@@ -13,6 +13,25 @@
 (when I-am-at-work
   (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
 
+;; magit-file-mode is a minor mode for files that are under
+;; magit control (i.e. in git repos). It is a handy place to override
+;; global bindings - like the octopus like vc mode.
+(use-package magit-files
+  :commands global-magit-file-mode
+  :bind (:map magit-file-mode-map
+              ("C-x v l" . magit-log-buffer-file)
+              ("C-x v d" . magit-diff-buffer-file))
+  :defer 2
+  :config (global-magit-file-mode))
+
+;; I only really use git, stamp on vc-mode....
+(with-eval-after-load 'vc
+  (remove-hook 'find-file-hook 'vc-find-file-hook)
+  (remove-hook 'find-file-hook 'vc-refresh-state)
+  (setq vc-handled-backends nil))
+
+(use-package magit-status)
+
 (use-package magit-popup
   :ensure t
   :pin melpa-stable)
@@ -22,7 +41,7 @@
   :pin melpa-stable
   :commands magit-status
   :bind (("C-x g" . magit-status)
-         :magit-hunk-section-map
+         :map magit-hunk-section-map
          ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree))
   :init
   (progn
@@ -30,10 +49,9 @@
   :config
   (progn
     (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-    (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode 1)))
+    (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode
+                                                     1)))
     (setq
-     ;; really I never use anything but git
-     vc-handled-backends nil
      ;; tweak magit
      magit-patch-arguments '("--cover-letter")
      magit-auto-revert-immediately 't)
@@ -166,7 +184,8 @@
     (require 'git-timemachine))
   (git-timemachine--start #'my-git-timemachine-show-selected-revision))
 
-(use-package git-timemachine)
+(use-package git-timemachine
+  :ensure t)
 
 (provide 'my-git)
 ;;; my-git.el ends here

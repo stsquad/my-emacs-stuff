@@ -54,6 +54,7 @@
 ;; Handy for wiki editing
 (use-package mediawiki
   :ensure t
+  :mode ("\\.mw$" . mediawiki-mode)
   :commands mediawiki-mode)
 
 (use-package moinmoin-mode

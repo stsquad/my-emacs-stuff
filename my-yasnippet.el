@@ -9,9 +9,10 @@
 (require 'use-package)
 (require 'my-libs)
 
-(use-package pkg-info
-  :ensure t
-  :commands pkg-info-package-version)
+
+(defun my-add-fundamental-mode-to-yas ()
+  "Include `fundamental-mode' snippets for global catch-all."
+  (yas-activate-extra-mode 'fundamental-mode))
 
 ;; YASnippet itself
 (use-package yasnippet
@@ -24,7 +25,9 @@
           (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
     (yas-global-mode)
     (setq yas-prompt-functions
-          '(yas-ido-prompt yas-completing-prompt yas-no-prompt))))
+          '(yas-ido-prompt yas-completing-prompt yas-no-prompt))
+    (add-hook 'yas-minor-mode-hook 'my-add-fundamental-mode-to-yas)))
+
 
 ;; Helper functions
 (defvar my-yas-emails
@@ -54,6 +57,10 @@
         (head (shell-command-to-string "git describe")))
     (shell-command-to-string
      (format "git request-pull %s %s %s" base repo head))))
+
+(defun my-yas-local-disable ()
+  "Disable yas-snippet-mode in this local buffer"
+  (yas-minor-mode -1))
 
 (provide 'my-yasnippet)
 ;;; my-yasnippet.el ends here

@@ -121,7 +121,6 @@ Save password if `CACHE' is non nil."
     (if (and cached-pass cache)
         cached-pass
       (when (selected-frame)
-        (my-fixup-gpg-agent (selected-frame))
         (let ((new-pass (chomp
                          (shell-command-to-string
                           (format "pass %s" pass-name)))))
@@ -194,7 +193,7 @@ Save password if `CACHE' is non nil."
 (defun my-set-default-directory (&optional dir)
   "Set new `default-directory' to DIR."
   (interactive)
-  (let ((dir (or dir (ido-read-directory-name "Default Directory: "))))
+  (let ((dir (or dir (read-directory-name "New Default Directory: "))))
     (setq default-directory dir
           my-last-set-directory dir)))
 

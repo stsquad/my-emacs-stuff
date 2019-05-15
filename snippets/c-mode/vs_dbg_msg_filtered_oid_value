@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: vs_dbg_msg_filtered_oid_value
-# key: vdov
-# --
-vs_dbg_msg_filtered_oid_value(${1:$$(yas/choose-value '("EMS_SNMP" "EMS_WARNING|EMS_SNMP" "LIBGROK_SNMP"))}, " = ", $0);

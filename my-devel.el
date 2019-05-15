@@ -12,11 +12,6 @@
 (require 'my-tracking)
 (require 'my-hydra)
 
-;; Currently I'm still unsettled about which project library to use
-(if (require 'eproject nil t)
-    (load-library "my-eproject")
-  (load-library "my-projectile"))
-
 ;; EditorConfig
 (use-package editorconfig
   :ensure t
@@ -73,6 +68,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;; Compile Mode
 ;;
 
+(use-package my-c-mode)
 
 ;; See: http://emacs.stackexchange.com/questions/3802/how-can-i-detect-compilation-mode-is-waiting-for-input/3807?noredirect=1#comment5796_3807
 (defun my-compilation-mode-warn-about-prompt ()
@@ -83,6 +79,29 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
       (when (re-search-backward re nil 'no-error)
         (lwarn 'emacs :warning "Compilation process in %s seems stalled!"
                (buffer-name))))))
+
+(defun my-hide-compilation-buffer (proc)
+  "Hide the compile buffer `PROC' is ignored."
+  (let* ((window (get-buffer-window "*compilation*"))
+         (frame (window-frame window)))
+    (ignore-errors
+      (delete-window window))))
+
+(defun my-report-compilation-finished (buf exit-string)
+  "Report the compilation buffer `BUF' to tracker."
+  (tracking-add-buffer buf)
+  (when (fboundp 'global-flycheck-mode)
+    (global-flycheck-mode 0)))
+
+;; Smart compile commands
+
+(defvar my-core-count
+  (string-to-number
+   (shell-command-to-string
+    "cat /proc/cpuinfo | grep processor | wc -l"))
+  "Count of the CPU cores on this system.")
+
+;; compilation-mode error regexs
 
 (defvar my-tsan-compilation-mode-regex
   (rx
@@ -102,45 +121,65 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 
 (use-package compile
-  :bind (("C-c c" . compile)
-         ("C-c r" . recompile))
+  :bind (("C-c c" . counsel-compile)
+         ("C-c r" . recompile)
+         (:map compilation-mode-map
+               ("n" . compilation-next-error)
+               ("p" . compilation-previous-error)))
   :diminish ((compilation-in-progress . "*COM*"))
   :config
   (progn
     (setq
      compilation-auto-jump-to-first-error nil
      compilation-scroll-output t
-     compilation-window-height 10)
-    (add-to-list 'compilation-error-regexp-alist-alist
-                 (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0 ))
-    ;; lets not overtax the regex matcher on our huge compilation buffers
+     compilation-window-height 10
+     counsel-compile-make-args (format "-j%d" (+ 1 my-core-count)))
+    (add-to-list
+     'compilation-error-regexp-alist-alist
+     (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0))
+    (add-to-list 'savehist-additional-variables 'compile-history)
+    (add-to-list 'savehist-additional-variables 'counsel-compile-history)
+    ;; lets not overtax the regex match on our huge compilation buffers
     (when I-am-at-work
       (setq compilation-error-regexp-alist '(gcc-include gnu tsan)))
-    ;; shortcut keybindings
-    (define-key
-      compilation-mode-map (kbd "n") 'compilation-next-error)
-    (define-key
-      compilation-mode-map (kbd "p") 'compilation-previous-error)
     ;; Detect stalls
     (add-hook 'compilation-filter-hook
               #'my-compilation-mode-warn-about-prompt)
     ;; Add tracking to the compilation buffer
-    (when (fboundp 'tracking-add-buffer)
-      (defun my-hide-compilation-buffer (proc)
-      "Hide the compile buffer"
-      (delete-window (get-buffer-window "*compilation*")))
-
-      (defun my-report-compilation-finished (buf exit-string)
-        "Report the compilation buffer to tracker"
-        (tracking-add-buffer buf)
-        (when (fboundp 'global-flycheck-mode)
-          (global-flycheck-mode 0)))
-
+    (with-eval-after-load 'tracking
       (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
       (add-hook 'compilation-finish-functions 'my-report-compilation-finished))))
 
+;; Tags
+;;
+;; Favour the common xref interface on newer Emacsen
+;;
+
+(if (version<= "25.1" emacs-version)
+    (use-package gxref
+      :ensure t
+      :config (add-to-list 'xref-backend-functions
+                           'gxref-xref-backend))
+  (use-package counsel-gtags
+    :ensure t
+    :commands counsel-gtags-mode
+    :config
+    (add-hook 'c-mode-hook 'counsel-gtags-mode)
+    (add-hook 'c++-mode-hook 'counsel-gtags-mode)))
+
+
 ;; checkpatch
-(use-package checkpatch-mode)
+;; currently disabled, there is also checkpatch for flycheck
+(use-package checkpatch-mode
+  :disabled t)
+
+;; shell modes
+
+(use-package fish-mode
+  :ensure t)
+
+(use-package fish-completion
+  :ensure t)
 
 ;; asm-mode
 ;;                                       ;
@@ -195,7 +234,6 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;;
 (use-package realgud
   :commands (realgud:gdb realgud:gdb-pid realgud:ipdb))
-
 
 ;; Pairs and parenthesis
 ;;

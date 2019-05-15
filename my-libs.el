@@ -25,7 +25,10 @@
 
 ;; Code
 
-;; Magnar's string handling library
+;; Magnar's handy libs
+(use-package dash
+  :ensure t)
+
 (use-package s
   :ensure t
   :commands s-suffix? s-contains? s-replace-all s-chop-suffix s-trim)
@@ -43,6 +46,12 @@
 (use-package async
   :ensure t)
 
+;; Other helpers
+(defun my-return-path-if-ok (path)
+  "Return an expanded file-path if it exists."
+  (let ((ep (expand-file-name path)))
+    (when (file-exists-p ep)
+      ep)))
+
 (provide 'my-libs)
 ;;; my-libs.el ends here
-

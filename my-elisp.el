@@ -30,19 +30,6 @@
   :commands eldoc-mode
   :diminish "")
 
-(defun my-elisp-hook-functions ()
-  "A few quick elisp hook customisation."
-  (setq mode-name "elisp")
-  (eldoc-mode t)
-  (when buffer-file-name
-    (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer))
-  (turn-on-auto-fill))
-
-(use-package lisp-mode
-  :commands emacs-lisp-mode
-  :init
-  (add-hook 'emacs-lisp-mode-hook 'my-elisp-hook-functions))
-
 ;; see https://github.com/joddie/macrostep/issues/11
 (defun my-macrostep-expand-wrapper ()
   "Workaround `macrostep-expand' not liking white-space after a sexp."
@@ -54,8 +41,30 @@
 
 (use-package macrostep
   :ensure t
-  :commands macrostep-expand
-  :bind (:map emacs-lisp-mode-map ("C-c e".  my-macrostep-expand-wrapper)))
+  :commands macrostep-expand)
+
+(defun my-elisp-hook-functions ()
+  "A few quick elisp hook customisation."
+  (setq mode-name "elisp")
+  (eldoc-mode t)
+  (when buffer-file-name
+    (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer))
+  (turn-on-auto-fill))
+
+(use-package lisp-mode
+  :commands emacs-lisp-mode
+  :hook (emacs-lisp-mode . my-elisp-hook-functions)
+  :bind (:map emacs-lisp-mode-map
+              ("C-c e" . my-macrostep-expand-wrapper)
+              ("C-c z" . ielm))
+  :config
+  (add-to-list 'safe-local-variable-values
+               '(lisp-indent-function . common-lisp-indent-function)))
+
+(use-package ert-async
+  :config (remove-hook 'emacs-lisp-mode-hook 'ert--activate-font-lock-keywords)
+  :hook (emacs-lisp-mode-hook . ert-async-activate-font-lock-keywords))
+
 
 (provide 'my-elisp)
 ;;; my-elisp.el ends here

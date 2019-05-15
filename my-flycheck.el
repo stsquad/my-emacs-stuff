@@ -38,9 +38,10 @@
 ;; Other pkgs
 (use-package flycheck-tip
   :ensure t
-  :after flycheck
   :commands 'flycheck-tip-cycle
-  :config (define-key flycheck-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
+  :after flycheck
+  :bind (:map flycheck-mode-map
+              ("C-c C-n" . flycheck-tip-cycle)))
 
 ;; mostly obsoleted by flycheck-irony
 (use-package flycheck-clangcheck
@@ -61,6 +62,7 @@
   :ensure t)
 
 (use-package flycheck-checkpatch
+  :ensure t
   :config (flycheck-checkpatch-setup)
   :config (setq flycheck-checkers (delete 'checkpatch flycheck-checkers))
   :config (add-to-list 'flycheck-checkers 'checkpatch t))

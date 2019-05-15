@@ -4,6 +4,7 @@
 # key: $s
 # --
 #+name: ${1:name of block}
+#+header: :results output
 #+begin_src ${2:$$(yas/choose-value (mapcar #'(lambda (s) (symbol-name (car s))) org-babel-load-languages))} $3
 ${N:some source code here}
 #+end_src

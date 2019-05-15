@@ -36,26 +36,6 @@
 (use-package helm-elisp
   :bind ("C-h a" . helm-apropos))
 
-(use-package helm-gtags
-  :ensure t
-  :commands (helm-gtags-mode helm-gtags-dwim)
-  :diminish "HGt"
-  :config
-  (progn
-    ;; keys
-    (define-key helm-gtags-mode-map (kbd "C-c f") 'helm-gtags-dwim)
-    (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
-    (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
-    (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
-    (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-    (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
-    (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)))
-
-;; Enable helm-gtags-mode in code
-(add-hook 'c-mode-hook 'helm-gtags-mode)
-(add-hook 'c++-mode-hook 'helm-gtags-mode)
-(add-hook 'asm-mode-hook 'helm-gtags-mode)
-
 (use-package helm-descbinds
   :ensure t
   :bind (("C-h b" . helm-descbinds)

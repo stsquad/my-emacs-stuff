@@ -10,10 +10,10 @@
 (require 'my-vars)
 (require 'cl)
 
-(defun my-package-recompile()
+(defun my-package-recompile(&optional dir)
   "Recompile all packages"
-  (interactive)
-  (byte-recompile-directory "~/.emacs.d/elpa" 0 t))
+  (interactive "D")
+  (byte-recompile-directory (or dir "~/.emacs.d/elpa") 0 t))
 
 ;;
 ;; Always run on loading
@@ -47,13 +47,7 @@
 (when (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
   (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path)))
 
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
 (when (version<= "24.4" emacs-version)
-
   ;; Advise installs to refresh
   ;; see: https://github.com/jwiegley/use-package/issues/256
   (defun my-package-install-refresh-contents (&rest args)
@@ -64,6 +58,10 @@ package is installed programatically."
     (advice-remove 'package-install 'my-package-install-refresh-contents))
 
   (advice-add 'package-install :before 'my-package-install-refresh-contents))
+
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
 
 (require 'use-package)
 

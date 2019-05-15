@@ -31,7 +31,6 @@
 (use-package smart-mode-line
   :ensure t
   :commands (sml/setup sml/apply-theme)
-  :defer 10
   :config
   (progn
     (setq-default

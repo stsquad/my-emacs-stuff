@@ -1,4 +1,4 @@
-;;; my-email.el --- Email set-up
+;;; my-email.el --- Email set-up -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
@@ -20,6 +20,7 @@
         smtpmail-queue-dir   "~/Maildir/queue/cur"
         smtpmail-default-smtp-server "localhost"
         smtpmail-smtp-server "localhost"
+        smtpmail-stream-type  'plain
         smtpmail-smtp-service 25))
 
 
@@ -65,29 +66,31 @@
   :commands message-mode
   :config (add-hook 'message-mode-hook 'my-common-mail-tweaks))
 
-;; BBDB
-(use-package bbdb
-  :config (progn
-            (setq bbdb-add-aka t
-                  bbdb-layout 'one-line
-                  bbdb-mua-auto-update-p 'query)
-            (bbdb-initialize 'mu4e 'rmail 'gnus 'message)))
-
 ;;
 ;; Finally the mu4e configuration
 ;;
 ;; This is my main work horse for day to day email.
 ;;
 
+(let ((local-mu4e (my-return-path-if-ok
+                   "~/src/emacs/mu/install/share/emacs/site-lisp/mu4e/")))
+  (setq mu4e-mu-binary (my-return-path-if-ok "~/bin/mu"))
+  (when local-mu4e
+    (add-to-list 'load-path local-mu4e)))
+
+
 (defun my-rig-mu4e-for-idle-running ()
   "Setup more comprehensive indexing when Emacs is idle."
   (setq mu4e-index-lazy-check nil   ; more comprehensive
-        mu4e-index-cleanup t))      ; check messages in store still there
+        mu4e-index-cleanup t        ; check msgs still in store
+        mu4e-get-mail-command "mbsync  -V -Dm linaro-slow-sync"))
+
 
 (defun my-rig-mu4e-for-active-running ()
   "Setup faster indexing for when I'm actively using Emacs mail."
   (setq mu4e-index-lazy-check t     ; faster sync
-        mu4e-index-cleanup nil)     ; skip checking the whole store
+        mu4e-index-cleanup nil     ; skip checking the whole store
+        mu4e-get-mail-command "mbsync  -V -Dm linaro-sync")
   (when (not (-contains? (--map (aref it 5) timer-idle-list) 'my-rig-mu4e-for-idle-running))
     (run-with-idle-timer 600 nil 'my-rig-mu4e-for-idle-running)))
 
@@ -183,25 +186,25 @@ all mu4e buffers and allow ivy selection of them.
 
 ;; Set default directory when viewing messages
 (defvar my-mailing-list-dir-mapping
-  '( ("qemu-devel.gnu.org" . "~/lsrc/qemu/qemu.git/")
-     ("qemu-devel.nongnu.org" . "~/lsrc/qemu/qemu.git/")
-     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/")
-     ("kvm.vger.kernel.org" . "~/lsrc/kvm/linux.git/")
-     ("virtualization.lists.linux-foundation.org" . "~/lsrc/kvm/linux.git/") )
+  '( ("qemu-devel.gnu.org" . "~/lsrc/qemu.git/")
+     ("qemu-devel.nongnu.org" . "~/lsrc/qemu.git/")
+     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/linux.git/")
+     ("kvm.vger.kernel.org" . "~/lsrc/linux.git/")
+     ("virtualization.lists.linux-foundation.org" . "~/lsrc/linux.git/") )
   "Mapping from mailing lists to source tree.")
 
 (defvar my-maildir-mapping
-  '( ("linaro/virtualization/qemu" . "~/lsrc/qemu/qemu.git/")
-     ("linaro/virtualization/qemu-arm" . "~/lsrc/qemu/qemu.git/")
-     ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu/qemu.git/")
-     ("linaro/kernel" . "~/lsrc/kvm/linux.git/") )
+  '( ("linaro/virtualization/qemu" . "~/lsrc/qemu.git/")
+     ("linaro/virtualization/qemu-arm" . "~/lsrc/qemu.git/")
+     ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu.git/")
+     ("linaro/kernel" . "~/lsrc/linux.git/") )
   "Mapping from maildirs to source tree.")
 
 (defvar my-mail-address-mapping
   ' (
-     ("qemu-devel@gnu.org" . "~/lsrc/qemu/qemu.git/")
-     ("qemu-devel@nongnu.org" . "~/lsrc/qemu/qemu.git/")
-      ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/kvm/linux.git/") )
+     ("qemu-devel@gnu.org" . "~/lsrc/qemu.git/")
+     ("qemu-devel@nongnu.org" . "~/lsrc/qemu.git/")
+      ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/linux.git/") )
     "Mapping from target address to source tree.
 Useful for replies and drafts")
 
@@ -227,8 +230,28 @@ Useful for replies and drafts")
 (defun my-set-view-directory ()
   "Switch the `default-directory' depending mail contents."
   (interactive)
-  (when (mu4e-message-at-point t)
-    (setq default-directory (my-get-code-dir-from-email))))
+  (let ((this-buffer (current-buffer)))
+    (if (mu4e-message-at-point t)
+        (setq default-directory (my-get-code-dir-from-email))
+      ;; *hack* if mu4e-message-at-point isn't ready yet
+      (run-with-idle-timer
+       0 nil (lambda()
+               (with-current-buffer this-buffer
+                 (setq default-directory (my-get-code-dir-from-email))))))))
+
+;; We don't have the benefit of mu4e-message-at-point here so we do
+;; things by hand using message-fetch-field.
+(defun my-set-compose-directory ()
+  "Switch the `default-directory' when composing an email."
+  (interactive)
+  (let ((dir (cdr
+              (assoc
+               (--first
+                (assoc-default it my-mail-address-mapping)
+                (s-split ", " (concat (message-fetch-field "cc")
+                                      (message-fetch-field "to"))))
+               my-mail-address-mapping))))
+    (when dir (setq default-directory dir))))
 
 (defun my-search-code-from-email ()
   "Search code depending on email."
@@ -255,20 +278,24 @@ Useful for replies and drafts")
                 'my-snip-region)
               (define-key mu4e-compose-mode-map (kbd "<f5>")
                 'my-search-code-from-email))
-              (add-hook 'mu4e-compose-mode-hook 'my-set-view-directory)
+              (add-hook 'mu4e-compose-mode-hook 'my-set-compose-directory)
             (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)))
 
 (use-package mu4e-headers
   :commands mu4e-headers-mode
-  :defines mu4e-headers-mode-map
+  :bind (:map mu4e-headers-mode-map
+              ("C-c C-l" . org-store-link)
+              ("C-c t" . my-switch-to-thread))
+  ;; :hook ((my-yas-local-disable my-set-view-directory) . mu4e-headers-mode)
   :config (progn
-            ;; My mode bindings
-            (define-key mu4e-headers-mode-map (kbd "C-c C-l") 'org-store-link)
-            (define-key mu4e-headers-mode-map (kbd "C-c t")
-              'my-switch-to-thread)
-            (add-hook 'mu4e-headers-mode-hook
-                      '(lambda () (yas-minor-mode -1)))
-            (add-hook 'mu4e-headers-mode-hook 'my-set-view-directory)))
+            (setq mu4e-headers-time-format "%H:%M:%S"
+                  mu4e-headers-date-format "%a %d/%m/%y")
+            (add-hook 'mu4e-headers-mode-hook 'my-yas-local-disable)
+            (add-hook 'mu4e-headers-found-hook 'my-set-view-directory)))
+
+(defvar my-mu4e-line-without-quotes-regex
+  (rx (: bol (not (any ">"))))
+  "Match start of line without any quotes or whitespace.")
 
 (defhydra my-mu4e-view-toggle (:hint nil :color blue :timeout 5)
   (concat "_c_itation function:%`mu4e-compose-cite-function ")
@@ -301,36 +328,51 @@ Useful for replies and drafts")
   "sa-learn --ham %s"
   "Command for invoking spam processor to register message as ham.")
 
+
+(defun my-mu4e-next-if-at-point (msgid &optional delete)
+  "Simple helper for bulk tagging operations.
+
+Move next if the message at point is what we have just processed."
+  (let ((msgid-at-point (mu4e-message-field-at-point :message-id)))
+    (when (and msgid-at-point
+               (string= msgid-at-point msgid))
+      (when delete
+        (mu4e-mark-at-point 'delete nil))
+      (mu4e-headers-next))))
+
 (defun my-mu4e-register-spam-action (msg)
   "Mark `MSG' as spam."
   (interactive)
-  (let* ((path (shell-quote-argument
-                (mu4e-message-field msg :path)))
-         (command (format my-mu4e-register-spam-cmd path)))
-    ;; (async-shell-command command nil))
-    (start-process "LSPAM" nil "sa-learn" "--spam" path))
-  (mu4e-mark-at-point 'delete nil)
-  (mu4e-headers-next))
-
+  (let ((path (mu4e-message-field msg :path))
+        (msgid (mu4e-message-field msg :message-id))
+        (tags (mu4e-message-field msg :tags)))
+    ;; only kick of if not already tagged
+    (unless (-contains? tags "spam")
+      (start-process "LSPAM" nil
+                     "ionice" "-c" "idle" "nice" "sa-learn" "--spam"
+                     (shell-quote-argument path))
+      (mu4e-action-retag-message msg "+spam"))
+  (my-mu4e-next-if-at-point msgid t)))
 
 (defun my-mu4e-register-ham-action (msg)
   "Mark `MSG' as ham."
   (interactive)
-  (let* ((path (shell-quote-argument
-                (mu4e-message-field msg :path)))
-         (command (format my-mu4e-register-ham-cmd path)))
-    ;; (async-shell-command command))
-    (start-process "LHAM" nil "sa-learn" "--ham" path))
-  (mu4e-mark-at-point 'unmark nil)
-  (mu4e-headers-next))
-
+  (let ((path (mu4e-message-field msg :path))
+        (msgid (mu4e-message-field msg :message-id))
+        (tags (mu4e-message-field msg :tags)))
+    ;; only kick of if not already tagged
+    (unless (-contains? tags "ham")
+      (start-process "LHAM" nil "sa-learn" "--ham"
+                     (shell-quote-argument path))
+      (mu4e-action-retag-message msg "-spam +ham"))
+  (my-mu4e-next-if-at-point msgid)))
 
 ;; Check if patch merged into a given tree
 ;;
 ;; Subject: [Qemu-devel] [PATCH 1/2] tcg: Allow constant pool entries in the prologue
 (defvar my-extract-patch-title
   (rx (:
-       "[PATCH" (one-or-more print) "]"
+       (or "[PATCH" "[RFC") (one-or-more print) "]"
        (zero-or-more space)
        (group (one-or-more print))
        eol))
@@ -374,9 +416,9 @@ Useful for replies and drafts")
      ;; mail fetch
      mu4e-get-mail-command
      (cond
-      (I-am-at-work "mbsync linaro-sync")
+      (I-am-at-work "mbsync  -V -Dm linaro-sync")
       (t "true"))
-     mu4e-update-interval 600
+     mu4e-update-interval 800
      mu4e-hide-index-messages t
      mu4e-change-filenames-when-moving t ; keep mbsync happy
      mu4e-index-lazy-check t             ; faster sync
@@ -400,10 +442,10 @@ Useful for replies and drafts")
      mu4e-view-show-images t
      mu4e-view-show-addresses t
      mu4e-view-fill-headers nil
-     mu4e-html2text-command "html2text -utf8 -width 72"
      mu4e-view-fields
      '(:from :to :cc :subject :flags :date :tags :attachments
              :signature)
+     mu4e-view-use-gnus t
      mu4e-maildir-shortcuts
      (cond
       (I-am-at-work
@@ -450,6 +492,37 @@ Useful for replies and drafts")
      (-difference my-mu4e-patches
                   my-mu4e-applied-patches)))
 
+    ;; from latest mu4e
+    (defvar mu4e~patch-directory-history nil
+      "History of directories we have applied patches to.")
+
+    ;; This essentially works around the fact that read-directory-name
+    ;; can't have custom history.
+    (defun mu4e~read-patch-directory (&optional prompt)
+      "Read a `PROMPT'ed directory name via `completing-read' with history."
+      (unless prompt
+        (setq prompt "Target directory:"))
+      (file-truename
+       (completing-read prompt 'read-file-name-internal #'file-directory-p
+                        nil nil 'mu4e~patch-directory-history)))
+
+    (defun mu4e-action-git-apply-mbox (msg &optional signoff)
+      "Apply `MSG' a git patch with optional `SIGNOFF'.
+
+If the `default-directory' matches the most recent history entry don't
+bother asking for the git tree again (useful for bulk actions)."
+
+      (let ((cwd (substring-no-properties
+                  (or (car mu4e~patch-directory-history)
+                      "not-a-dir"))))
+        (unless (and (stringp cwd) (string= default-directory cwd))
+          (setq cwd (mu4e~read-patch-directory "Target directory: ")))
+        (let ((default-directory cwd))
+          (shell-command
+           (format "git am %s %s"
+                   (if signoff "--signoff" "")
+                   (shell-quote-argument (mu4e-message-field msg :path)))))))
+
     (defun my-mu4e-apply-marked-mbox-patches (&optional arg)
       "Apply patches in order. With PREFIX include signoff"
       (interactive "P")
@@ -483,13 +556,13 @@ to `my-mu4e-patches' for later processing."
           (and (string-match parent-id
                              (or
                               (mu4e-message-field-raw msg :in-reply-to)
-                              ""))
+                              (mu4e-message-field-raw msg :message-id)))
                (string-match
                 (rx
                  (: bol "["
                     (minimal-match (zero-or-more (not (any "/"))))
-                    (or (: (any "0-9") (zero-or-one (any "1-9")))
-                        (: (any "1-9") (zero-or-one (any "0-9"))))
+                    (or (in "1-9")
+                        (: (any "1-9") (one-or-more (any "0-9"))))
                     "/"))
                 (mu4e-message-field-raw msg :subject)))
         (add-to-list 'my-mu4e-patches msg)))
@@ -550,41 +623,49 @@ to `my-mu4e-patches' for later processing."
                "Mail sent by me (unread replied)" ?S)
               ("\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
                "My patches" ?p)
+              ("\
+(from:alex.bennee OR from:bennee.com\) AND \
+\(b:\"Reviewed\" OR b:\"Tested\"\)" "My tags" ?r)
               ("s:PULL \(b:Bennée OR b:Bennee\)" "Pull Reqs with my name" ?P)
               ("flag:flagged" "Flagged and starred posts" ?f)
               ("flag:flagged NOT flag:seen" "Unread flagged and starred posts" ?F)
-              ("to:alex.bennee@linaro.org AND from:christoffer.dall@linaro.org"
+              ("to:alex.bennee@linaro.org AND from:maxim.kuvyrkov@linaro.org"
                "From my boss" ?B)
               ("date:1h..now"
                "In the last hour" ?h)
               ("date:1h..now AND flag:unread"
                "In the last hour (unread)" ?H)
+              ("from:alex.bennee date:1w..now"
+               "My emails in the last week" ?w)
+              ;; Bugs and Notifications
+              ("recip:alex.bennee AND (f:bugs.debian.org OR f:bugs.launchpad.net)" "Bugs" ?b)
+              ("maildir:\"/linaro/Inbox\" f:travis OR f:lava OR f:shippable" "Notifications" ?n)
+              ("f:f:vandersonmr2@gmail.com" "GSoC" ?G)
               ;; Virt related
-              ("list:qemu-devel.nongnu.org and flag:unread"
+              ("list:qemu-devel* and flag:unread"
                "Latest QEMU posts" ?q)
-              ("((list:qemu-devel.nongnu.org AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm.nongnu.org)"
+              ("((list:qemu-devel* AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm*)"
                "QEMU ARM posts" ?a)
-              ("list:mttcg.listserver.greensocs.com OR maildir:/linaro/virtualization/qemu-multithread"
-               "Multi-threaded QEMU posts" ?T)
-              ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel.nongnu.org AND subject:android)"
+              ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel* AND subject:android)"
                "Android related emails" ?A)
               ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
                "Latest ARM KVM posts" ?k)
-              ("list:virtualization.linaro.org and flag:unread"
-               "Linaro Virtualization List" ?v)
-              ("maildir:\"/linaro/virtualization/*\" AND flag:list AND flag:unread"
-               "All unread Virtualization email" ?V)
               ;; Linaro Specific
+              ("list:linaro-toolchain.lists.linaro.org OR maildir:/linaro/linaro-list/linaro-tcwg"
+               "Linaro public TCWG posts" ?T)
+              ("to:tcwg@linaro.org"
+               "Linaro private TCWG posts" ?t)
               ("list:conf.lists.linaro.org AND flag:unread"
                "Latest Conf emails" ?c)
               ("list:linaro-dev.lists.linaro.org AND flag:unread"
                "Latest Linaro-Dev emails" ?d)
-              ("list:tech.lists.linaro.org AND flag:unread"
-               "Latest Linaro-Tech emails" ?t)
+              ;; ("list:tech.lists.linaro.org AND flag:unread"
+              ;;  "Latest Linaro-Tech emails" ?t)
               ("\(to:lists.linaro.org OR cc:lists.linaro.org\) AND flag:list AND flag:unread"
                "Unread work mailing lists (lists.linaro.org)" ?l)
               ("from:linaro.org and flag:unread"
                "Latest unread Linaro posts from Linaro emails" ?L)
+              ;; Distro and others
               ;; Emacs
               ("list:emacs-devel.gnu.org and flag:unread"
                "Latest unread Emacs developer posts" ?E)
@@ -607,14 +688,6 @@ to `my-mu4e-patches' for later processing."
                "From parents" ?P)
               ("to:bugzilla@bennee.com" "Bug Mail" ?B)))))))
 
-              
-(use-package helm-mu
-  :commands helm-mu
-  :if (and (string-match "zen" (system-name))
-           (locate-library "helm-mu"))
-  :config (progn
-            (setq helm-mu-contacts-personal t)
-            (define-key mu4e-headers-mode-map (kbd "C-s") 'helm-mu)))
 
 (when (locate-library "mu4e")
   (use-package mu4e-alert

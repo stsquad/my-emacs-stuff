@@ -13,6 +13,8 @@
 
 ;; currently in my branch of RISU
 (use-package risu
+  :if (file-exists-p "~/lsrc/qemu/risu.git/risu.el")
+  :load-path "~/lsrc/qemu/risu.git"
   :mode ("\\.risu\\'" . risu-mode))
   
 ;; QEMU system mode comint mode (https://github.com/stsquad/qemu-mode)
@@ -20,17 +22,17 @@
   :commands run-qemu
   :config
   (setq qemu-executable-path
-        "/home/alex/lsrc/qemu/qemu.git/aarch64-softmmu/qemu-system-aarch64"
+        "/home/alex/lsrc/qemu.git/builds/all/aarch64-softmmu/qemu-system-aarch64"
         qemu-kernel-image
-        "/home/alex/lsrc/qemu/linux.git/arch/arm64/boot/Image"
+        "/home/alex/lsrc/linux.git/builds/arm64/arch/arm64/boot/Image"
         qemu-kernel-params
         "console=ttyAMA0 debug init=/bin/init"
         qemu-machine-params
         "-cpu cortex-a57 -machine type=virt -nographic -smp 1 -m 512"
         qemu-net-device-params
-        nil
+        "-netdev user,id=unet,hostfwd=tcp::2222-:22 -device virtio-net-pci,netdev=unet"
         qemu-drive-device-params
-        nil))
+        "-device virtio-net-pci,netdev=unet -device virtio-scsi-pci -blockdev driver=raw,node-name=hd,discard=unmap,file.driver=host_device,file.filename=/dev/zen-disk/model-disk -device scsi-hd,drive=hd"))
 
 ;; LAVA mode
 (use-package xml-rpc
@@ -45,8 +47,10 @@
 (use-package lava-rpc
   :commands lava-xml-rpc-call
   :config
-  (setq lava-user-name "alex.bennee"
-        lava-api-token #'(lambda () (my-pass-password "lava" t))))
+  (setq-default
+   lava-host "validation.linaro.org"
+   lava-user-name "alex.bennee"
+   lava-api-token #'(lambda () (my-pass-password "lava" t))))
 
 (use-package lava-job-list-mode
   :bind ("C-c l" . lava-list-jobs)

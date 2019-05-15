@@ -66,10 +66,11 @@
 ;; We only need one edit-server at a time really
 (use-package my-web)
 
-(when (and (getenv "DISPLAY") (daemonp) (not I-am-root))
-  (if (locate-library "atomic-chrome")
-      (use-package my-atomic-chrome))
-    (use-package my-edit-server))
+(when (or (and (getenv "DISPLAY") (daemonp) (not I-am-root))
+          I-am-on-pixelbook)
+  (message "Setting up edit-servers")
+  (use-package my-atomic-chrome)
+  (use-package my-edit-server))
 
 ;; Stuff I always want
 ;; general editing
@@ -84,7 +85,7 @@
 (use-package my-gnus
   :if (not I-am-root))
 
-;; Development related stuff, including project root
+;; Development related stuff
 (use-package my-devel)
 
 (use-package my-flycheck
@@ -119,7 +120,7 @@
 (use-package my-gpg)
 
 (use-package my-git
-  :if (version<= "24.4" emacs-version))
+  :if (version<= "25.1" emacs-version))
 
 (use-package my-htmlize)
 (use-package my-eshell)

@@ -1,24 +1,27 @@
-sudo: false
-dist: trusty
+dist: xenial
 language: emacs-lisp
 addons:
   apt:
     packages:
+      - gnutls-bin
       - aspell-en
       - maildir-utils
       - mu4e
 env:
-  - EVM_EMACS=
   - EVM_EMACS=emacs-24.4-travis
   - EVM_EMACS=emacs-24.5-travis
   - EVM_EMACS=emacs-25.1-travis
   - EVM_EMACS=emacs-25.2-travis
   - EVM_EMACS=emacs-25.3-travis
-  - EVM_EMACS=emacs-26-pretest
+  - EVM_EMACS=emacs-26.1-travis
   - EVM_EMACS=emacs-git-snapshot-travis
+  - EVM_EMACS=remacs-git-snapshot-travis
+before_install:
+  - export PATH="/home/travis/.cask/bin:/home/travis/.evm/bin:$PATH"
 install:
-  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
-  - if [ -n "$EVM_EMACS" ]; then evm install $EVM_EMACS --use --skip ; fi
+  - git clone https://github.com/rejeep/evm.git /home/travis/.evm
+  - evm config path /tmp
+  - evm install $EVM_EMACS --use --skip
   - ./setup_emacs.sh
 script:
   - ./tests/check_daemon_starts.sh 0

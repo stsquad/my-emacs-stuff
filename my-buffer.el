@@ -12,7 +12,8 @@
 ;; midnight mode, clean-up unused buffers overnight
 (use-package midnight
   :defer 1000
-  :init (midnight-mode t))
+  :commands midnight-mode
+  :config (midnight-mode t))
 
 ;;
 ;; Lusty Explorer
@@ -26,7 +27,7 @@
     (lusty-file-explorer)))
 
 (use-package lusty-explorer
-  :if (locate-library "lusty-explorer")
+  :ensure t
   :commands lusty-file-explorer
   :bind (("C-x C-f" . my-lusty-file-explorer)))
 
