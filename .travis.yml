@@ -7,15 +7,19 @@ addons:
       - aspell-en
       - maildir-utils
       - mu4e
+matrix:
+  fast_finish: true
+  allow_failures:
+  - env: EVM_EMACS=emacs-git-snapshot-travis
 env:
-  - EVM_EMACS=emacs-24.4-travis
-  - EVM_EMACS=emacs-24.5-travis
-  - EVM_EMACS=emacs-25.1-travis
-  - EVM_EMACS=emacs-25.2-travis
-  - EVM_EMACS=emacs-25.3-travis
-  - EVM_EMACS=emacs-26.1-travis
-  - EVM_EMACS=emacs-git-snapshot-travis
-  - EVM_EMACS=remacs-git-snapshot-travis
+  matrix:
+    - EVM_EMACS=emacs-24.4-travis
+    - EVM_EMACS=emacs-24.5-travis
+    - EVM_EMACS=emacs-25.1-travis
+    - EVM_EMACS=emacs-25.2-travis
+    - EVM_EMACS=emacs-25.3-travis
+    - EVM_EMACS=emacs-26.1-travis
+    - EVM_EMACS=remacs-git-snapshot-travis
 before_install:
   - export PATH="/home/travis/.cask/bin:/home/travis/.evm/bin:$PATH"
 install:
