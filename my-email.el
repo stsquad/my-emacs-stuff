@@ -138,7 +138,7 @@ all mu4e buffers and allow ivy selection of them.
                    (propertize (format "mu4e menu")
                                'buffer (get-buffer " *mu4e-main*")))
       ;; What are we reading
-      (let ((view (get-buffer "*mu4e-view*")))
+      (let ((view (or (get-buffer "*mu4e-view*") (get-buffer "*Article*"))))
         (when view
           (let ((subject (with-current-buffer view
                            (mu4e-message-field-at-point :subject))))
@@ -269,29 +269,27 @@ Useful for replies and drafts")
         (kill-region start (- (match-beginning 0) 1))))))
 
 (use-package mu4e-compose
-  :commands mu4e-compose-mode
-  :defines mu4e-compose-mode-map
-  :config (progn
-            ;; key-bindings
-            (when (keymapp mu4e-compose-mode-map)
-              (define-key mu4e-compose-mode-map (kbd "C-w")
-                'my-snip-region)
-              (define-key mu4e-compose-mode-map (kbd "<f5>")
-                'my-search-code-from-email))
-              (add-hook 'mu4e-compose-mode-hook 'my-set-compose-directory)
-            (add-hook 'mu4e-compose-pre-hook 'my-choose-mail-address)))
+  :hook ((mu4e-compose-mode . my-set-compose-directory)
+          (mu4e-compose-pre . my-choose-mail-address))
+  :bind (:map mu4e-compose-mode-map
+              ("C-w" . my-snip-region)
+              ("<f5>". my-search-code-from-email))
+  :config (setq mu4e-compose-signature 'my-sig-function
+                mu4e-compose-complete-addresses t
+                mu4e-compose-complete-only-personal nil
+                mu4e-compose-complete-only-after "2013-11-01"))
 
 (use-package mu4e-headers
   :commands mu4e-headers-mode
   :bind (:map mu4e-headers-mode-map
               ("C-c C-l" . org-store-link)
               ("C-c t" . my-switch-to-thread))
-  ;; :hook ((my-yas-local-disable my-set-view-directory) . mu4e-headers-mode)
-  :config (progn
-            (setq mu4e-headers-time-format "%H:%M:%S"
-                  mu4e-headers-date-format "%a %d/%m/%y")
-            (add-hook 'mu4e-headers-mode-hook 'my-yas-local-disable)
-            (add-hook 'mu4e-headers-found-hook 'my-set-view-directory)))
+  :hook ((mu4e-headers-mode . my-yas-local-disable)
+         (mu4e-headers-found . my-set-view-directory))
+  :config (setq mu4e-headers-time-format "%H:%M:%S"
+                mu4e-headers-date-format "%a %d/%m/%y"
+                mu4e-headers-skip-duplicates t
+                mu4e-headers-include-related t))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
@@ -314,8 +312,15 @@ Useful for replies and drafts")
          ("C-c C-l". org-store-link)
          ("C-c t" . my-switch-to-thread)
          ("C-x t" . my-mu4e-view-toggle/body))
-  :defines mu4e-view-mode-map
-  :config (add-hook 'mu4e-view-mode-hook 'my-set-view-directory))
+  :hook (mu4e-view-mode . my-set-view-directory)
+  :config (setq mu4e-view-show-images t
+                mu4e-view-show-addresses t
+                mu4e-view-fill-headers nil
+                mu4e-view-fields
+                '(:from :to :cc
+                        :subject :flags
+                        :date :tags :attachments :signature)
+                mu4e-view-use-gnus t))
 
 ;; spam learning: ionice -c 3 sa-learn --progress --spam ~/Maildir/.Spam/cur/*
 
@@ -425,27 +430,10 @@ Move next if the message at point is what we have just processed."
      mu4e-index-cleanup nil              ; should toggle this
      ;; navigate options
      mu4e-use-fancy-chars t
-     mu4e-headers-skip-duplicates t
-     mu4e-headers-include-related t
-     ;; compose options
-     mu4e-compose-signature 'my-sig-function
-     ;; this ensures completion-at-point functionality is setup
-     ;; which eventually percolates to company-capf.
-     mu4e-compose-complete-addresses t
-     mu4e-compose-complete-only-personal t
      mu4e-user-mail-address-list
      (cond
       (I-am-at-work  '("alex.bennee@linaro.org"))
       (t '("alex@bennee.com")))
-     mu4e-compose-complete-only-after "2013-11-01"
-     ;; view options
-     mu4e-view-show-images t
-     mu4e-view-show-addresses t
-     mu4e-view-fill-headers nil
-     mu4e-view-fields
-     '(:from :to :cc :subject :flags :date :tags :attachments
-             :signature)
-     mu4e-view-use-gnus t
      mu4e-maildir-shortcuts
      (cond
       (I-am-at-work
