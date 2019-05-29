@@ -306,6 +306,26 @@ Useful for replies and drafts")
            (setq mu4e-compose-cite-function 'message-cite-original-without-signature))))
   ("t" my-hydra-toggle/body "main toggles"))
 
+(defvar my-gnus-cc-hiding-overlay nil
+  "Overlay used to hide over long CC lines")
+
+(defun my-gnus-article-hide-long-cc ()
+  "Fold message headers."
+  (interactive)
+  (save-restriction
+    (gnus-article-goto-header "Cc")
+    (mail-header-narrow-to-field)
+    (let ((cclen (- (point-max) (point-min)))
+          (winlen (window-width)))
+      (when (> cclen winlen)
+        (let ((ostart (+ (point-min) (- winlen 8)))
+              (oend (- (point-max) 4)))
+          (if (overlayp my-gnus-cc-hiding-overlay)
+              (move-overlay my-gnus-cc-hiding-overlay ostart oend)
+            (setq my-gnus-cc-hiding-overlay (make-overlay ostart
+                                                          oend)))
+          (overlay-put my-gnus-cc-hiding-overlay 'display "..."))))))
+
 (use-package mu4e-view
   :commands mu4e-view
   :bind (:map mu4e-view-mode-map
