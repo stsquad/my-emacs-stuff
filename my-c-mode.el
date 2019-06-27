@@ -31,6 +31,18 @@ We must have reached the end of irony-cdb-compilation-databases."
     (message "Irony: compile options not found!")
     nil))
 
+;;
+;; The finding of compile commands is a little magic. We have an
+;; alist:
+;;   irony-cdb-json--project-alist
+;;
+;; which we can manipulate if we want different compile_commands.json
+;; (("/home/alex/lsrc/qemu.git/" .
+;; "/home/alex/lsrc/qemu.git/builds/all/compile_commands.json"))
+;; which btw is in:
+;; ~/.emacs.d/irony/cdb-json-projects
+
+
 (setq-default irony-cdb-compilation-databases '(irony-cdb-clang-complete
                                                 irony-cdb-libclang
                                                 my-warn-irony-cdb-not-found))
