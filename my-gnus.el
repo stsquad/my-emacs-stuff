@@ -33,7 +33,6 @@
 (use-package gnus-agent
   :config (setq gnus-agent-synchronize-flags 'ask))
 
-
 (use-package gnus
   :commands gnus
   :config
@@ -51,12 +50,7 @@
     gnus-sum-thread-tree-single-leaf "╰► "
     gnus-sum-thread-tree-vertical "│")
    (setq
-    gnus-select-method
-    '(nnimap "imap.gmail.com"
-             (nnimap-inbox "INBOX")
-             (nnimap-split-methods default)
-             (nnimap-expunge t)
-             (nnimap-stream ssl))
+    gnus-select-method '(nntp "nntp.lore.kernel.org")
     gnus-thread-hide-subtree t
     gnus-view-pseudo-asynchronously t
 
@@ -66,9 +60,7 @@
     '(gnus-thread-sort-by-most-recent-number
       gnus-thread-sort-by-total-score
       gnus-thread-sort-by-most-recent-date)
-    gnus-read-active-file nil)
-
-   ))
+    gnus-read-active-file nil)))
 
 
 (provide 'my-gnus)
