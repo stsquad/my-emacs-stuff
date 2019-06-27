@@ -20,44 +20,15 @@
 (require 'use-package)
 (require 'my-tracking)
 
-;; want to reduce the amount of white space in the mode-line
-;; (setq global-mode-string
-;;       '("" org-mode-line-string))
-
-(use-package powerline
+(use-package smart-mode-line-powerline-theme
   :ensure t)
 
 ;; Smart Mode line
 (use-package smart-mode-line
   :ensure t
-  :commands (sml/setup sml/apply-theme)
   :config
-  (progn
-    (setq-default
-     ;; format
-     mode-line-format
-     '( "%e"
-        mode-line-front-space
-        mode-line-mule-info
-        mode-line-modified
-        mode-line-remote
-        mode-line-frame-identification
-        " "
-        mode-line-buffer-identification
-        " "
-        "%l/%c "
-        mode-line-misc-info
-        "%[("
-        mode-name
-        minor-mode-alist
-        mode-line-process
-        "%n"
-        ")%] "
-        mode-line-end-spaces
-        )
-     sml/theme 'dark)
-    (sml/setup)
-    (sml/apply-theme 'respectful)))
+  (setq sml/theme 'powerline)
+  (add-hook 'after-init-hook 'sml/setup))
 
 (use-package diminish
   :commands diminish
