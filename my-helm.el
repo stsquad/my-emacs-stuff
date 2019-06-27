@@ -20,14 +20,11 @@
                 helm-input-idle-delay 0.01
                 helm-quick-update t
                 helm-M-x-requires-pattern nil
-                helm-ff-skip-boring-files t))
-  :bind (("M-x" . helm-M-x)
-         ("C-x 8 <RET>" . helm-ucs)))
+                helm-ff-skip-boring-files t)))
 
 (use-package helm-buffers
   :ensure helm
   :commands (helm-buffers-list helm-mini)
-  :bind ("C-x b" . helm-mini)
   :config (setq helm-buffers-fuzzy-matching t
                 helm-mini-default-sources '(helm-source-buffers-list
                                             helm-source-recentf

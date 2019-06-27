@@ -60,12 +60,17 @@
   :commands describe-keymap)
 
 ;; Counsel/Ivy/Swiper
-;; 
+;;
+(use-package ivy-hydra
+  :load-path (lambda () (my-return-path-if-ok "~/src/emacs/swiper.git"))
+  :ensure t)
+
 (use-package counsel
-  :load-path (lambda () (and (not I-am-at-work)
-                             (my-return-path-if-ok "~/src/emacs/swiper.git")))
+  :load-path (lambda () (my-return-path-if-ok "~/src/emacs/swiper.git"))
   :bind (:map counsel-mode-map
-              ("M-y" . counsel-yank-pop))
+              ("M-x" . counsel-M-x)
+              ("M-y" . counsel-yank-pop)
+              ("C-x m" . counsel-mark-ring))
   :commands counsel-yank-pop
   :ensure t
   :init (counsel-mode))
