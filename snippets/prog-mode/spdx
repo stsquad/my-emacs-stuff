@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: spdx
+# key: $spdx
+# --
+SPDX-License-Identifier: ${1:$$(yas/choose-value '("GPL-2.0-or-later" "GPL-3.0-or-later"))}

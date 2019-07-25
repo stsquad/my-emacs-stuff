@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: debbug severity
+# group: debbug
+# key: $sev
+# --
+severity ${1:bug-id} ${2:$$(yas-choose-value '("critical" "grave" "serious" "important" "normal" "minor" "wishlist"))}
+$0

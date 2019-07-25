@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: debbug tag control
+# key: $tag
+# --
+tag $1 ${2:$$(yas/choose-value '("+" "-" "="))} ${3:$$(yas/choose-value '("patch" "wontfix" "wishlist"))}
