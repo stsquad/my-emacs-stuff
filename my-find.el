@@ -28,24 +28,19 @@
 (eval-when-compile (require 'use-package))
 (use-package my-helm)
 
-(use-package helm-swoop
-  :ensure t
-  :bind (("C-c o" . helm-swoop)
-         ("C-c O" . helm-multi-swoop)))
-
-;; (use-package swoop
-;;   :bind (("C-c o" . swoop)))
-
 (use-package helm-git-grep
   :ensure t
   :commands helm-git-grep
   :config (setq helm-git-grep-candidate-number-limit nil))
 
-(use-package helm-ag
-  :ensure t
-  :commands helm-ag
-  :bind ("<f6>" . helm-do-ag)
-  :config (setq helm-ag-command-option "-U"))
+(defun my-counsel-ag-from-here ()
+  "Start ag but from the directory the file is in (otherwise I would
+be using git-grep)."
+  (interactive)
+  (counsel-ag (thing-at-point 'symbol)
+              (file-name-directory (buffer-file-name))))
+
+(global-set-key (kbd "<f6>") 'my-counsel-ag-from-here)
 
 (use-package wgrep-helm
   :ensure t)
@@ -54,14 +49,21 @@
   :ensure t)
 
 ;; See swiper-map for extra keys
+(defun my-swoop-with-swiper ()
+  "Replicate helm-swoop but with ivy. C-c C-o into occur C-c C-p into wgrep."
+  (interactive)
+  (swiper (thing-at-point 'symbol)))
+
 (use-package swiper
   :ensure t
-  :bind ("C-s" . swiper))
+  :bind (("C-s" . swiper)
+         ("C-c o" . my-swoop-with-swiper)))
 
 ;; ivy is a general completion framework
 ;; C-o enters options via ivy-hydra
 (use-package ivy
   :init (ivy-mode)
+  :bind (("C-x b" . ivy-switch-buffer))
   :config
   (setq
     ivy-use-virtual-buffers t
@@ -69,6 +71,29 @@
     ivy-re-builders-alist
     '((ivy-switch-buffer . ivy--regex-plus)
       (t . ivy--regex-plus))))
+
+
+(defun my-ivy-rich-switch-buffer-project (candidate)
+  "Find the project compile root of a CANDIDATE."
+  (with-current-buffer (get-buffer candidate)
+    default-directory))
+
+;; additional transformers for ivy mode (e.g. make ivy-switch-buffer
+;; more like helm-mini)
+(use-package ivy-rich
+  :ensure t
+  :init
+  (setq ivy-rich-display-transformers-list
+        '(ivy-switch-buffer
+          (:columns
+           ((ivy-rich-candidate (:width 30))
+            (ivy-rich-switch-buffer-size (:width 7))
+            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
+            (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))
+            (my-ivy-rich-switch-buffer-project (:width 50 :face success)))
+           :predicate
+           (lambda (cand) (get-buffer cand)))))
+  (ivy-rich-mode))
 
 (defun my-counsel-mini ()
   "Emulate helm-mini with my own preferences."
