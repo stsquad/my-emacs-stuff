@@ -67,7 +67,8 @@
 
 ; default-frame-alist
 (setq default-frame-alist '((fullscreen . 'fullboth)
-                            (vertical-scroll-bars)))
+                            (vertical-scroll-bars))
+      frame-background-mode 'dark)
 
 ; Re-use existing frames if buffer already exists in one
 (setq-default display-buffer-reuse-frames t)
@@ -157,6 +158,13 @@
 ;; Allow narrowing.
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
+
+(defun my-persist-theme (&optional frame)
+  "Persist the current theme"
+  (when custom-enabled-themes
+    (load-theme (car custom-enabled-themes) t)))
+
+(add-hook 'after-make-frame-functions 'my-persist-theme)
 
 (message "Done Display Hacks")
 
