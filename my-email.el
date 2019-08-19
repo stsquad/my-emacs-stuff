@@ -471,6 +471,8 @@ Move next if the message at point is what we have just processed."
      mu4e-change-filenames-when-moving t ; keep mbsync happy
      mu4e-index-lazy-check t             ; faster sync
      mu4e-index-cleanup nil              ; should toggle this
+     ;; completion
+     mu4e-completing-read-function 'completing-read
      ;; navigate options
      mu4e-use-fancy-chars t
      mu4e-user-mail-address-list
