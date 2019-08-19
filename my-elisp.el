@@ -48,8 +48,7 @@
   (setq mode-name "elisp")
   (eldoc-mode t)
   (when buffer-file-name
-    (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer))
-  (turn-on-auto-fill))
+    (local-set-key (kbd "C-c C-c") 'my-elisp-compile-buffer)))
 
 (use-package lisp-mode
   :commands emacs-lisp-mode

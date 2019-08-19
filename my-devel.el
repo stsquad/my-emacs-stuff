@@ -42,6 +42,8 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
    ("F" fill-column)
    ("x" nil :color blue))))))
 
+(use-package prog-mode
+  :hook (turn-on-auto-fill))
 ;; Regex's
 
 (use-package rx

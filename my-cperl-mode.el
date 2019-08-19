@@ -52,7 +52,6 @@
                        cperl-extra-newline-before-brace            t
                        cperl-extra-newline-before-brace-multiline  t
                        cperl-max-help-size                         50)
-                 (turn-on-auto-fill)
                  (if (not cperl-lazy-installed)	; Only toggle if it's
                      (cperl-toggle-autohelp))	; not already set
                  (if (locate-library "mode-compile")
