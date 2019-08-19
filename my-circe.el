@@ -47,7 +47,7 @@
   :commands enable-lui-logging)
 
 (defvar my-logged-chans
-  '("#qemu" "#linaro-virtualization")
+  '("#qemu" "#qemu-gsoc" "#linaro-virtualization" "#linaro-tcwg")
   "List of channels which I log")
 
 (defun my-maybe-log-channel ()
