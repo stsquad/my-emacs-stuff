@@ -8,6 +8,7 @@
 
 (require 'my-vars)
 (require 'use-package)
+(require 'my-find)
 
 ; work-around stale shells
 (when I-am-at-work
@@ -19,6 +20,7 @@
 (use-package magit-files
   :commands global-magit-file-mode
   :bind (:map magit-file-mode-map
+              ("<f5>" . my-counsel-git-grep)
               ("C-x v l" . magit-log-buffer-file)
               ("C-x v d" . magit-diff-buffer-file))
   :defer 2

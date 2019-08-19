@@ -29,16 +29,32 @@
 (use-package my-helm)
 
 (use-package helm-git-grep
-  :ensure t
+  :disabled t
   :commands helm-git-grep
   :config (setq helm-git-grep-candidate-number-limit nil))
 
-(defun my-counsel-ag-from-here ()
+;; from https://github.com/abo-abo/swiper/issues/1068
+(defun my-ivy-with-thing-at-point (cmd &optional dir)
+  "Wrap a call to CMD with setting "
+  (let ((ivy-initial-inputs-alist
+         (list
+          (cons cmd (thing-at-point 'symbol)))))
+    (if dir
+        (funcall cmd dir)
+      (funcall cmd))))
+
+(defun my-counsel-ag-from-here (&optional dir)
   "Start ag but from the directory the file is in (otherwise I would
 be using git-grep)."
   (interactive)
-  (counsel-ag (thing-at-point 'symbol)
-              (file-name-directory (buffer-file-name))))
+  (my-ivy-with-thing-at-point
+   'counsel-ag
+   (or dir (file-name-directory (buffer-file-name)))))
+
+(defun my-counsel-git-grep ()
+  (interactive)
+  (my-ivy-with-thing-at-point
+   'counsel-git-grep))
 
 (global-set-key (kbd "<f6>") 'my-counsel-ag-from-here)
 
@@ -139,10 +155,10 @@ variable `buffer-file-name'."
     (if (and
          is-git-dir
          (file-directory-p is-git-dir)
-         (functionp 'helm-git-grep))
+         (functionp 'counsel-git-grep))
         (let ((default-directory directory))
-          (call-interactively #'helm-git-grep))
-    (call-interactively #'helm-do-ag directory))))
+          (call-interactively #'counsel-git-grep t (vector (thing-at-point 'symbol))))
+    (call-interactively #'my-counsel-ag-from-here directory))))
 
 (global-set-key (kbd "<f5>") 'my-project-find)
 
