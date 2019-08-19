@@ -228,6 +228,23 @@ If `NEW-STATUS' is set then change TODO state."
        (fn done))
       tags)))
 
+(defun my-org-locate-review-comments (subject)
+  "Locate review comments in review buffer pertaining to `SUBJECT'."
+  (interactive)
+  (let ((ast (my-org-get-elements "review.org" "Review Comments"))
+        (buffer (org-capture-target-buffer "review.org")))
+    (org-element-map ast 'item
+      (lambda (item)
+        (let ((check (org-element-property :checkbox item))
+              (beg (org-element-property :contents-begin item))
+              (end (org-element-property :contents-end item))
+              (link))
+          (setq link (with-current-buffer buffer
+                       (buffer-substring-no-properties beg end)))
+          (when (and (eq check 'off)
+                     (stringp subject)
+                     (string-match-p subject link))
+            (cons buffer beg)))))))
 
 (defun my-org-find-review-comments (subject)
   "Return links to comments pertaining to `SUBJECT'."
@@ -354,7 +371,8 @@ If `NEW-STATUS' is set then change TODO state."
 
 (defun my-save-org-position-in-bookmark (&rest args)
   "Save position at jump."
-  (bookmark-set "org-pos-at-jump" nil))
+  (and (org-mark-ring-push)
+       (bookmark-set "org-pos-at-jump" nil)))
 
 (defun my-return-to-org ()
   "Return to position at jump (if set)."
@@ -362,7 +380,28 @@ If `NEW-STATUS' is set then change TODO state."
   (ignore-errors
     (bookmark-jump "org-pos-at-jump")))
 
+(defun my-return-to-org-file ()
+  "Return current return jump file."
+  (cdr (assoc
+        'filename
+        (assoc "org-pos-at-jump" bookmark-alist))))
 
+(defun my-jump-to-org-file (&optional nojump)
+  "Jump to the relevant section of the org-file unless NOJUMP is t.
+Return the filespec of the jump."
+  (interactive)
+  (let* ((head (magit-git-str "log" "--pretty=%s" "HEAD^.."))
+         (link (my-org-locate-review-comments head)))
+    (when link
+      (let ((buf (car (first link)))
+            (pos (cdr (first link))))
+      (if nojump
+          (format "%s:%d" buf pos)
+        (switch-to-buffer buf)
+        (goto-char pos))))))
+
+
+(defun my-org-mark-ring-info ())
 
 (use-package org
   :ensure t
@@ -420,15 +459,18 @@ If `NEW-STATUS' is set then change TODO state."
       (global-set-key
        (kbd "C-c C-o")
        (defhydra my-hydra-org (:color blue)
-         (concat "Org: _j_ump to:"
-                 "%(cdr (assoc 'filename (assoc \"org-pos-at-jump\" bookmark-alist))) ")
-         ("a" org-agenda "org-agenda")
-         ("c" org-capture "org-capture")
-         ("h" counsel-org-agenda-headlines "org-agenda-headlines")
-         ("p" (org-capture nil "p") "store posted patch/pull")
-         ("q" (org-capture nil "Q") "Queue for review")
-         ("r" (org-capture nil "r") "Capture review comment")
-         ("j" my-return-to-org nil))))
+         "
+Org: _c_apture  _h_eadlines _j_ump to: %(my-jump-to-org-file t) _g_oto: %(my-return-to-org-file) save _p_osted work
+Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment"
+         ("c" org-capture nil)
+         ("h" counsel-org-agenda-headlines nil)
+         ("j" my-jump-to-org-file nil)
+         ("g" my-return-to-org nil)
+         ("h" counsel-org-agenda-headlines nil)
+         ("p" (org-capture nil "p") nil)
+         ("C" (org-capture nil "C") nil)
+         ("q" (org-capture nil "Q") nil)
+         ("r" (org-capture nil "r") nil))))
     (org-clock-persistence-insinuate)))
 
 ;; Exporting
