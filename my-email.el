@@ -319,30 +319,43 @@ Useful for replies and drafts")
 
 (defvar my-gnus-cc-hiding-overlay nil
   "Overlay used to hide over long CC lines")
+(make-variable-buffer-local 'my-gnus-cc-hiding-overlay)
 
-(defun my-gnus-article-hide-long-cc ()
+(defun my-gnus-article-toggle-long-cc ()
   "Fold message headers."
   (interactive)
-  (save-restriction
-    (gnus-article-goto-header "Cc")
-    (mail-header-narrow-to-field)
-    (let ((cclen (- (point-max) (point-min)))
-          (winlen (window-width)))
-      (when (> cclen winlen)
-        (let ((ostart (+ (point-min) (- winlen 8)))
-              (oend (- (point-max) 4)))
-          (if (overlayp my-gnus-cc-hiding-overlay)
-              (move-overlay my-gnus-cc-hiding-overlay ostart oend)
-            (setq my-gnus-cc-hiding-overlay (make-overlay ostart
-                                                          oend)))
-          (overlay-put my-gnus-cc-hiding-overlay 'display "..."))))))
+  (if (overlayp my-gnus-cc-hiding-overlay)
+      (progn
+        (delete-overlay my-gnus-cc-hiding-overlay)
+        (setq my-gnus-cc-hiding-overlay nil))
+    (save-restriction
+      (goto-char (point-min))
+      (gnus-article-goto-header (rx (or "CC" "Cc" "cc")))
+      (mail-header-narrow-to-field)
+      (let ((nlpos nil)
+            (cclen (- (point-max) (point-min)))
+            (winlen (window-width)))
+        (save-excursion
+          (setq nlpos (re-search-forward (rx eol) (point-max) t)))
+        (setq my-gnus-cc-hiding-overlay
+              (cond
+               ((< nlpos (point-max))
+                (make-overlay (1- nlpos) (point-max)))
+               ((> cclen winlen)
+                (make-overlay (+ (point-min) (- winlen 8))
+                              (- (point-max) 4)))
+               (t nil)))
+        (when my-gnus-cc-hiding-overlay
+          (overlay-put my-gnus-cc-hiding-overlay 'display "...")
+          (overlay-put my-gnus-cc-hiding-overlay 'evaporate t))))))
 
 (use-package mu4e-view
   :commands mu4e-view
   :bind (:map mu4e-view-mode-map
-         ("C-c C-l". org-store-link)
-         ("C-c t" . my-switch-to-thread)
-         ("C-x t" . my-mu4e-view-toggle/body))
+              ("C-c C-l". org-store-link)
+              ("C-c t" . my-switch-to-thread)
+              ("C-x t" . my-mu4e-view-toggle/body)
+              ("h"     . my-gnus-article-toggle-long-cc))
   :hook (mu4e-view-mode . my-set-view-directory)
   :config (setq mu4e-view-show-images t
                 mu4e-view-show-addresses t
