@@ -660,12 +660,14 @@ to `my-mu4e-patches' for later processing."
               ;; Bugs and Notifications
               ("recip:alex.bennee AND (f:bugs.debian.org OR f:bugs.launchpad.net)" "Bugs" ?b)
               ("maildir:\"/linaro/Inbox\" f:travis OR f:lava OR f:shippable" "Notifications" ?n)
-              ("f:f:vandersonmr2@gmail.com" "GSoC" ?G)
+              ("f:vandersonmr2@gmail.com" "GSoC" ?G)
               ;; Virt related
               ("list:qemu-devel* and flag:unread"
                "Latest QEMU posts" ?q)
               ("((list:qemu-devel* AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm*)"
                "QEMU ARM posts" ?a)
+              ("((list:qemu-devel* OR list:qemu-arm*) AND (s:fpu OR s:softfloat OR s:float))"
+               "QEMU Softfloat Posts" ?o)
               ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel* AND subject:android)"
                "Android related emails" ?A)
               ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
@@ -692,7 +694,7 @@ to `my-mu4e-patches' for later processing."
               ("list:help-gnu-emacs.gnu.org and flag:unread"
                "Latest unread Emacs user posts" ?e)
               ("list:emacs-orgmode.gnu.org and flag:unread"
-               "Latest unread org-mode posts" ?o)))
+               "Latest unread org-mode posts" ?O)))
            (I-am-on-server
             '(
               ;; Personal bookmarks
