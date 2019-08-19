@@ -421,10 +421,9 @@ Move next if the message at point is what we have just processed."
 ;; Subject: [Qemu-devel] [PATCH 1/2] tcg: Allow constant pool entries in the prologue
 (defvar my-extract-patch-title
   (rx (:
-       (or "[PATCH" "[RFC") (one-or-more print) "]"
+       (or "[PATCH" "[RFC") (zero-or-more print) "]"
        (zero-or-more space)
-       (group (one-or-more print))
-       eol))
+       (group (one-or-more print))))
   "Regex to extract patch title from email subject.")
 
 (defun my-mu4e-action-check-if-merged (msg)
@@ -436,10 +435,10 @@ Move next if the message at point is what we have just processed."
         (let ((result (magit-git-string
                        "log" "origin/master" "--no-merges" "--oneline"
                        "--grep" title)))
-          (when (and result
+          (if (and result
                      (yes-or-no-p (format "Visit:%s?" result)))
-            (magit-show-commit (car (split-string result)))))))))
-
+              (magit-show-commit (car (split-string result)))
+            (message "no commit found :-(")))))))
 
 (use-package mu4e
   :commands mu4e
