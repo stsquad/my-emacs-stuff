@@ -289,7 +289,18 @@ Useful for replies and drafts")
   :config (setq mu4e-headers-time-format "%H:%M:%S"
                 mu4e-headers-date-format "%a %d/%m/%y"
                 mu4e-headers-skip-duplicates t
-                mu4e-headers-include-related t))
+                mu4e-headers-include-related t
+                ;; mu4e-headers-hide-predicate 'my-mu4e-headers-hide-muted-p
+                mu4e-headers-actions (delete-dups
+                                      (append
+                                       mu4e-headers-actions
+                                       '(("gapply git patches" . mu4e-action-git-apply-patch)
+                                         ("mgit am patch" . mu4e-action-git-apply-mbox)
+                                         ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
+                                         ("sMark SPAM" . my-mu4e-register-spam-action)
+                                         ("hMark HAM" . my-mu4e-register-ham-action)
+                                         ("MMute Thread" . my-mu4e-headers-hide-muted-p)
+                                         ("GCheck if merged" . my-mu4e-action-check-if-merged))))))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
@@ -594,17 +605,6 @@ to `my-mu4e-patches' for later processing."
     (add-to-list
      'mu4e-headers-custom-markers
      '("Patches" my-mu4e-patch-match my-mu4e-patch-setup))
-    ;; Header actions
-    (setq mu4e-headers-actions
-          (delete-dups
-           (append
-            mu4e-headers-actions
-            '(("gapply git patches" . mu4e-action-git-apply-patch)
-              ("mgit am patch" . mu4e-action-git-apply-mbox)
-              ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
-              ("sMark SPAM" . my-mu4e-register-spam-action)
-              ("hMark HAM" . my-mu4e-register-ham-action)
-              ("MCheck if merged" . my-mu4e-action-check-if-merged)))))
     ;; Message actions
     (setq mu4e-view-actions
           (delete-dups
