@@ -699,11 +699,17 @@ to `my-mu4e-patches' for later processing."
 
 (when (locate-library "mu4e")
   (use-package mu4e-alert
-    :ensure t
+    :disabled t
     :config (progn
               (setq mu4e-alert-interesting-mail-query
                     "recip:alex.bennee flag:unread date:7d..now AND NOT flag:trashed")
               (mu4e-alert-enable-mode-line-display))))
+
+(use-package mu4e-patch
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/mu4e-patch.git"))
+  :config (add-hook 'mu4e-view-mode-hook #'mu4e-patch-highlight))
+
 
 ;; Magic handling for multiple email addrsses
 (defvar my-email-address-alist
