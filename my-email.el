@@ -134,36 +134,36 @@ all mu4e buffers and allow ivy selection of them.
     (let (collection)
       ;; Go backwards in priority (as add to list prepends by default)
       ;; The main menu
-      (add-to-list 'collection
-                   (propertize (format "mu4e menu")
-                               'buffer (get-buffer " *mu4e-main*")))
+      (push (propertize (format "mu4e menu")
+                        'buffer (get-buffer " *mu4e-main*")) collection)
       ;; What are we reading
       (let ((view (or (get-buffer "*mu4e-view*") (get-buffer "*Article*"))))
         (when view
-          (let ((subject (with-current-buffer view
-                           (mu4e-message-field-at-point :subject))))
-            (add-to-list 'collection
-                         (propertize (format "reading:%s" subject)
-                                     'buffer view)))))
+          (push (propertize
+                 (format "reading:%s"
+                         (with-current-buffer view
+                           (mu4e-message-field-at-point :subject)))
+                 'buffer view) collection)))
       ;; What are we searching
       (let ((headers (get-buffer "*mu4e-headers*")))
         (when headers
-          (let ((search (with-current-buffer headers
-                          mu4e~headers-last-query)))
-            (add-to-list 'collection
-                         (propertize (format "mu4e headers:%s" search)
-                                     'buffer headers)))))
+          (push (propertize
+                 (format "mu4e headers:%s"
+                         (with-current-buffer headers
+                           mu4e~headers-last-query))
+                 'buffer headers) collection)))
+
       ;; What are we composing
       (--each (buffer-list)
         (with-current-buffer it
           (when (and (eq major-mode 'mu4e-compose-mode)
                      (not message-sent-message-via))
-            (add-to-list 'collection
-                         (propertize
-                          (format "composing:%s"
-                                  (or (message-fetch-field "subject")
-                                      "No subject"))
-                          'buffer it)))))
+            (push (propertize
+                   (format "composing:%s"
+                           (or (message-fetch-field "subject")
+                               "No subject"))
+                   'buffer it) collection))))
+      ;;
       (switch-to-buffer
        (get-text-property 0 'buffer
                           (if (< 1 (length collection))
