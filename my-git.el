@@ -140,6 +140,12 @@
         (when (my-org-find-review-comments msg)
           (git-rebase-edit))))))
 
+(use-package git-rebase
+  :commands git-rebase-mode
+  :bind (:map git-rebase-mode-map
+              ("C-x t" . my-mark-rebase-commits-for-tagging)
+              ("C-x e" . my-mark-rebase-commits-for-editing)))
+
 ;;;
 ;;; Additional GIT bits
 ;;;
