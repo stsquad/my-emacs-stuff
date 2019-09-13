@@ -32,11 +32,13 @@
 (defun my-gnus-apply-article-patch ()
   "Take the current article and apply it as a patch."
   (interactive)
-  (let ((tmp-patch (make-temp-file "gnus-article" nil ".patch"))
-        (art-buffer (current-buffer)))
-    (with-temp-file tmp-patch
-      (insert-buffer art-buffer))
-    (my-git-apply-mbox tmp-patch)))
+  (let ((buffer-file-name
+         (make-temp-file "gnus-article" nil ".patch")))
+    (set-buffer-modified-p t)
+    (save-buffer)
+    (my-git-apply-mbox buffer-file-name)
+    (delete-file buffer-file-name)))
+
 
 (use-package gnus-art
   :bind (:map gnus-article-mode-map
