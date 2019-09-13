@@ -70,6 +70,7 @@
 
 (use-package auth-source-pass
   :ensure t
+  :if (file-exists-p "~/.password-store")
   :config (auth-source-pass-enable))
 
 (provide 'my-gpg)
