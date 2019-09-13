@@ -177,7 +177,8 @@ This is used by my-org-run-default-block which is added to
      ("Q" "Queue Review (email)"
       entry
       (file+regexp "team.org" "Review Queue")
-      "** TODO %a"
+      "** TODO %a
+Added: %t"
       :immediate-finish t :prepend t))))
 
 ;; ORG Based review automation
