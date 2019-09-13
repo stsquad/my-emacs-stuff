@@ -19,6 +19,7 @@
 ;;; Code:
 
 (require 'use-package)
+(use-package my-git)
 
 ;; new-mail searching
 (use-package nnir
@@ -27,8 +28,22 @@
             (add-to-list 'nnir-imap-search-arguments '("gmail" . "X-GM-RAW"))))
 
 ;; GNUS Article Mode
+
+(defun my-gnus-apply-article-patch ()
+  "Take the current article and apply it as a patch."
+  (interactive)
+  (let ((buffer-file-name
+         (make-temp-file "gnus-article" nil ".patch")))
+    (set-buffer-modified-p t)
+    (save-buffer)
+    (my-git-apply-mbox buffer-file-name)
+    (delete-file buffer-file-name)))
+
+
 (use-package gnus-art
-  :config (define-key gnus-article-mode-map (kbd "q") 'delete-window))
+  :bind (:map gnus-article-mode-map
+              ("q" . delete-window)
+              ("C-c a" . my-gnus-apply-article-patch)))
 
 (use-package gnus-agent
   :config (setq gnus-agent-synchronize-flags 'ask))

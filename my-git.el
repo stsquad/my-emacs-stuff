@@ -105,6 +105,41 @@
 
 ;(add-hook 'git-commit-mode 'my-commit-mode-check-for-tags)
 
+;; Applying Patches Workflow
+;;
+;; Now we can apply patches from many places. Lets keep the common
+;; stuff here and then GNUS and mu4e can munge things as needed.
+;;
+
+(defvar my-patch-directory-history nil
+  "History of directories we have applied patches to.")
+
+(defun my-read-patch-directory (&optional prompt)
+  "Read a `PROMPT'ed directory name via `completing-read' with history."
+  (unless prompt
+    (setq prompt "Target directory:"))
+  (file-truename
+    (completing-read prompt 'read-file-name-internal #'file-directory-p
+      nil nil 'my-patch-directory-history)))
+
+(defun my-git-apply-mbox (file &optional signoff)
+  "Apply `FILE' a git patch with optional `SIGNOFF'.
+
+If the `default-directory' matches the most recent history entry don't
+bother asking for the git tree again (useful for bulk actions)."
+
+  (let ((cwd (substring-no-properties
+              (or (car my-patch-directory-history)
+                  "not-a-dir"))))
+        (unless (and (stringp cwd) (string= default-directory cwd))
+          (setq cwd (my-read-patch-directory "Target directory: ")))
+        (let ((default-directory cwd))
+          (shell-command
+           (format
+            "git am %s %s"
+            (if signoff "--signoff" "")
+            (shell-quote-argument file))))))
+
 ;; Re-base workflow
 ;;
 ;; When re-basing I want to tag for re-wording anything that needs
