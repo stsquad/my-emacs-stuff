@@ -34,7 +34,7 @@
 ;; Multiple cursors
 (use-package multiple-cursors
   :ensure t
-  :commands mc/mark-next-like-this
+  :commands mc/mark-next-like-this multiple-cursors-mode
   :bind (:map mc/keymap
               ("C-n" . mc/mark-next-like-this)))
 
