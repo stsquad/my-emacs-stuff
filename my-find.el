@@ -40,13 +40,14 @@
          (list
           (cons cmd (thing-at-point 'symbol)))))
     (if dir
-        (funcall cmd dir)
+        (let ((default-directory dir))
+          (funcall cmd))
       (funcall cmd))))
 
 (defun my-counsel-ag-from-here (&optional dir)
   "Start ag but from the directory the file is in (otherwise I would
 be using git-grep)."
-  (interactive)
+  (interactive "D")
   (my-ivy-with-thing-at-point
    'counsel-ag
    (or dir (file-name-directory (buffer-file-name)))))
@@ -74,20 +75,6 @@ be using git-grep)."
   :ensure t
   :bind (("C-s" . swiper)
          ("C-c o" . my-swoop-with-swiper)))
-
-;; ivy is a general completion framework
-;; C-o enters options via ivy-hydra
-(use-package ivy
-  :init (ivy-mode)
-  :bind (("C-x b" . ivy-switch-buffer))
-  :config
-  (setq
-    ivy-use-virtual-buffers t
-    ivy-count-format "%d/%d "
-    ivy-re-builders-alist
-    '((ivy-switch-buffer . ivy--regex-plus)
-      (t . ivy--regex-plus))))
-
 
 (defun my-ivy-rich-switch-buffer-project (candidate)
   "Find the project compile root of a CANDIDATE."
