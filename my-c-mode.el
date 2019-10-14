@@ -36,9 +36,9 @@ We must have reached the end of irony-cdb-compilation-databases."
 ;; alist:
 ;;   irony-cdb-json--project-alist
 ;;
-;; which we can manipulate if we want different compile_commands.json
-;; (("/home/alex/lsrc/qemu.git/" .
-;; "/home/alex/lsrc/qemu.git/builds/all/compile_commands.json"))
+;; which you can add to with:
+;;   irony-cdb-json-add-compile-commands-path
+;;
 ;; which btw is in:
 ;; ~/.emacs.d/irony/cdb-json-projects
 
