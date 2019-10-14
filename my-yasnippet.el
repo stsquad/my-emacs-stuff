@@ -49,6 +49,13 @@
     (assoc-default (buffer-file-name) my-yas-emails 'string-match))
    (t "alex@....")))
 
+(defun my-yas-expand-copyright ()
+  "Like `my-yas-expand-email' except just return the company name if
+I'm in a work for hire directory."
+  (if (s-contains-p "lsrc" (buffer-file-name))
+      "Linaro Ltd"
+    (my-yas-expand-email)))
+
 (defun my-yas-pull-req-helper ()
   "Return a pull request string from a given directory."
   (interactive)

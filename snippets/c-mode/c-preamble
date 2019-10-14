@@ -5,9 +5,8 @@
 /*
  * $1
  *
- * Copyright (c) ${2:`(format-time-string "%Y")`}
- * Written by Alex Bennée <${3:`(my-yas-expand-email)`}>
+ * Copyright (c) ${2:`(format-time-string "%Y")`} ${3:`(my-yas-expand-copyright)`}
  *
- * This code is licensed under the GNU ${4:$$(yas/choose-value '("GPL v2" "GPL v2, or later" "GPL v3"))}.
+ * SPDX-License-Identifier: ${4:$$(yas/choose-value '("GPL-2.0-or-later" "GPL-3.0-or-later"))}
  */
  $0
