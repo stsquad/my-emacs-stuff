@@ -136,9 +136,18 @@ bother asking for the git tree again (useful for bulk actions)."
         (let ((default-directory cwd))
           (shell-command
            (format
-            "git am %s %s"
+            "git am --reject %s %s"
             (if signoff "--signoff" "")
             (shell-quote-argument file))))))
+
+(defun my-git-apply-region (beg end)
+  "Apply region as a patch."
+  (interactive "r")
+  (let ((patch (buffer-substring-no-properties beg end))
+        (file (make-temp-file "region-as-patch")))
+    (with-temp-file file
+      (insert patch))
+    (my-git-apply-mbox file)))
 
 ;; Re-base workflow
 ;;

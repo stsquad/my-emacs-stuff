@@ -544,17 +544,7 @@ Move next if the message at point is what we have just processed."
 
 If the `default-directory' matches the most recent history entry don't
 bother asking for the git tree again (useful for bulk actions)."
-
-      (let ((cwd (substring-no-properties
-                  (or (car mu4e~patch-directory-history)
-                      "not-a-dir"))))
-        (unless (and (stringp cwd) (string= default-directory cwd))
-          (setq cwd (mu4e~read-patch-directory "Target directory: ")))
-        (let ((default-directory cwd))
-          (shell-command
-           (format "git am %s %s"
-                   (if signoff "--signoff" "")
-                   (shell-quote-argument (mu4e-message-field msg :path)))))))
+      (my-git-apply-mbox (mu4e-message-field msg :path) signoff))
 
     (defun my-mu4e-apply-marked-mbox-patches (&optional arg)
       "Apply patches in order. With PREFIX include signoff"
