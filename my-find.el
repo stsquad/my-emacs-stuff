@@ -144,8 +144,8 @@ variable `buffer-file-name'."
          (file-directory-p is-git-dir)
          (functionp 'counsel-git-grep))
         (let ((default-directory directory))
-          (call-interactively #'counsel-git-grep t (vector (thing-at-point 'symbol))))
-    (call-interactively #'my-counsel-ag-from-here directory))))
+          (call-interactively #'my-counsel-git-grep t (vector (thing-at-point 'symbol))))
+    (call-interactively #'my-counsel-ag-from-here t (vector directory)))))
 
 (global-set-key (kbd "<f5>") 'my-project-find)
 
