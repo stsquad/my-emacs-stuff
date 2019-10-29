@@ -5,6 +5,6 @@
 # --
 #+ATTR_HTML: :alt $2 :style border: none;
 [[${1:./`(file-relative-name
-                (ido-read-file-name "image file:")
+                (read-file-name "image file:")
                 default-directory)`}]]
 $0

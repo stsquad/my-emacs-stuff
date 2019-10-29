@@ -6,7 +6,7 @@
 #+name: resize-${1:$(file-name-sans-extension (file-name-nondirectory yas-text))}
 #+begin_src sh :file generated/${1:$(file-name-nondirectory yas-text)} :exports results
 convert -resize 640x480 ${1:./`(file-relative-name
-                                (ido-read-file-name "image file:")
+                                (read-file-name "image file:")
                                 default-directory)`} jpg:-
 #+end_src
 
