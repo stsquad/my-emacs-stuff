@@ -458,7 +458,7 @@ Return the filespec of the jump."
     
     (with-eval-after-load 'hydra
       (global-set-key
-       (kbd "C-c C-o")
+       (kbd "C-x O")
        (defhydra my-hydra-org (:color blue)
          "
 Org: _c_apture  _h_eadlines _j_ump to: %(my-jump-to-org-file t) _g_oto: %(my-return-to-org-file) save _p_osted work
