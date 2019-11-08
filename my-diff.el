@@ -33,12 +33,15 @@
           ediff-custom-diff-options   "-U3"
           ediff-split-window-function 'split-window-horizontally
           ediff-window-setup-function 'ediff-setup-windows-plain)
-    (when (display-graphic-p)
-      (add-hook 'ediff-before-setup-hook 'new-frame)
-      (add-hook 'ediff-quit-hook 'delete-frame)
-      (add-hook 'ediff-startup-hook 'ediff-toggle-wide-display)
-      (add-hook 'ediff-cleanup-hook 'ediff-toggle-wide-display)
-      (add-hook 'ediff-suspend-hook 'ediff-toggle-wide-display))))
+    (add-hook 'ediff-before-setup-hook
+              (lambda ()
+                (setq ediff-saved-window-configuration
+                      (current-window-configuration))))
+    (let ((restore-window-configuration
+           (lambda ()
+             (set-window-configuration ediff-saved-window-configuration))))
+      (add-hook 'ediff-quit-hook restore-window-configuration 'append)
+      (add-hook 'ediff-suspend-hook restore-window-configuration 'append))))
 
 ;; override fancy completions when applying hunks as they make editing
 ;; the path harder than in needs to be.
