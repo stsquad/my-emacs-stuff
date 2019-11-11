@@ -10,12 +10,6 @@
 (require 'my-utils)
 
 (defvar I-am-emacs-21+ (>= emacs-major-version 21))
-(defvar I-am-emacs-22+ (>= emacs-major-version 22))
-(defvar I-am-emacs-23+ (>= emacs-major-version 23))
-(defvar I-am-emacs-24+ (>= emacs-major-version 24))
-
-(defvar I-am-gnuemacs (string-match "GNU Emacs" (emacs-version)))
-(defvar I-am-xemacs (string-match "XEmacs" (emacs-version)))
 
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
