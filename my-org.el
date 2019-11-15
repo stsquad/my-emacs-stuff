@@ -110,7 +110,7 @@ This is used by my-org-run-default-block which is added to
      ("n" "Agenda and top level tasks"
       ((agenda "")
        (tags "+LEVEL=2+tasks-TODO=\"DONE\"")))
-     ("r" "Review tasks and comments" tags-todo "reviews/TODO"))
+     ("r" "Outstanding Reviews" tags-todo "reviews/TODO"))
    org-refile-targets '((nil :maxlevel . 2)
                         (org-agenda-files :maxlevel . 2))))
 
