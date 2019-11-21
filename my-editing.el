@@ -80,8 +80,7 @@ If the region is less than a line long assume I want to mark the next
 
 (use-package ws-butler
   :ensure t
-  :defer 120
-  :config (ws-butler-global-mode))
+  :hook (prog-mode . ws-butler-mode))
 
 (provide 'my-editing)
 ;;; my-editing.el ends here
