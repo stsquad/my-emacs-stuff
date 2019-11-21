@@ -92,7 +92,8 @@
     (circe "znc-oftc")
     (circe "bitlbee"))
   (circe "Freenode")
-  (circe "Pl0rt"))
+  (circe "Pl0rt")
+  (circe-lagmon-mode))
 
 (defun my-disable-irc-login ()
   "Disable an idle login."
