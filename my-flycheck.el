@@ -15,8 +15,8 @@
 (use-package flycheck
   :ensure t
   :if (version<= "24.4" emacs-version)
-  :commands global-flycheck-mode
-  :init (add-hook 'prog-mode-hook 'global-flycheck-mode)
+  :commands flycheck-mode
+  :init (add-hook 'prog-mode-hook 'flycheck-mode)
   :config
   (progn
     ;; Settings

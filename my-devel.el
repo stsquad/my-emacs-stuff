@@ -92,9 +92,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 (defun my-report-compilation-finished (buf exit-string)
   "Report the compilation buffer `BUF' to tracker."
-  (tracking-add-buffer buf)
-  (when (fboundp 'global-flycheck-mode)
-    (global-flycheck-mode 0)))
+  (tracking-add-buffer buf))
 
 ;; Smart compile commands
 
