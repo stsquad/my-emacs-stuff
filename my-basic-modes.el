@@ -62,6 +62,7 @@
 ;; Counsel/Ivy/Swiper
 ;;
 (use-package ivy
+  :ensure t
   :init (ivy-mode)
   :bind (("C-x b" . ivy-switch-buffer))
          ;; :map ivy-minibuffer-map
@@ -75,17 +76,16 @@
       (t . ivy--regex-plus))))
 
 (use-package ivy-hydra
-  :load-path (lambda () (my-return-path-if-ok "~/src/emacs/swiper.git"))
+  :after ivy
   :ensure t)
 
 (use-package counsel
-  :load-path (lambda () (my-return-path-if-ok "~/src/emacs/swiper.git"))
+  :ensure t
   :bind (:map counsel-mode-map
               ("M-x" . counsel-M-x)
               ("M-y" . counsel-yank-pop)
               ("C-x m" . counsel-mark-ring)
               ("C-h ?" . counsel-search))
-  :ensure t
   :init (counsel-mode))
 
 (provide 'my-basic-modes)

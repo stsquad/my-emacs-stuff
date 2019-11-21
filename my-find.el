@@ -72,6 +72,7 @@ be using git-grep)."
   (swiper (thing-at-point 'symbol)))
 
 (use-package swiper
+  :after ivy
   :ensure t
   :bind (("C-s" . swiper)
          ("C-c o" . my-swoop-with-swiper)))
@@ -85,17 +86,17 @@ be using git-grep)."
 ;; more like helm-mini)
 (use-package ivy-rich
   :ensure t
-  :init
-  (setq ivy-rich-display-transformers-list
-        '(ivy-switch-buffer
-          (:columns
-           ((ivy-rich-candidate (:width 30))
-            (ivy-rich-switch-buffer-size (:width 7))
-            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
-            (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))
-            (my-ivy-rich-switch-buffer-project (:width 50 :face success)))
-           :predicate
-           (lambda (cand) (get-buffer cand)))))
+  :after ivy
+  :config (setq ivy-rich-display-transformers-list
+                '(ivy-switch-buffer
+                  (:columns
+                   ((ivy-rich-candidate (:width 30))
+                    (ivy-rich-switch-buffer-size (:width 7))
+                    (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
+                    (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))
+                    (my-ivy-rich-switch-buffer-project (:width 50 :face success)))
+                   :predicate
+                   (lambda (cand) (get-buffer cand)))))
   (ivy-rich-mode))
 
 (defun my-counsel-mini ()
