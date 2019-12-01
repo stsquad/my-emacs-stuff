@@ -11,6 +11,7 @@
 (require 'my-vars)
 (require 'my-utils)
 (require 'my-spell)
+(require 'tls)
 
 (defun my-bitlbee-password (server)
   "Return the password for the `SERVER'."
@@ -42,6 +43,10 @@
   "Return the password for the `SERVER'."
   (my-pass-password "gitter-irc"))
 
+;; Lui
+(use-package lui
+  :config (setq lui-flyspell-p t))
+
 ;; Logging
 (use-package lui-logging
   :commands enable-lui-logging)
@@ -57,7 +62,6 @@
 
 ;; Auto pasting
 (use-package lui-autopaste
-  :ensure circe
   :commands enable-lui-autopaste)
 
 (defun lui-autopaste-service-linaro (text)
@@ -97,6 +101,7 @@
 
 (defun my-disable-irc-login ()
   "Disable an idle login."
+  (interactive)
   (when my-irc-login-timer
     (cancel-timer my-irc-login-timer)))
 
@@ -115,8 +120,8 @@
   :commands (circe circe-set-display-handler)
   :bind (:map circe-query-mode-map
               ("C-c C-c" . my-ssh-to-server))
-  ;; :diminish ((circe-channel-mode . "CirceChan")
-  ;;            (circe-server-mode . "CirceServ"))
+  :hook ((circe-channel-mode-hook . enable-lui-autopaste)
+         (circe-channel-mode-hook . my-maybe-log-channel))
   :requires my-tracking
   :init (when (and I-am-at-work
                    (daemonp)
@@ -125,17 +130,8 @@
           (setq my-irc-login-timer (run-with-idle-timer 120 nil 'my-irc-login)))
   :config
   (progn
-    (require 'tls)
-    ;; Paste Support
-    (add-hook 'circe-channel-mode-hook 'enable-lui-autopaste)
-    ;; spell checking
-    (add-hook 'circe-channel-mode-hook 'turn-on-flyspell)
-    ;; logging
-    (add-hook 'circe-channel-mode-hook 'my-maybe-log-channel)
     ;; Colour nicks
     (enable-circe-color-nicks)
-    ;; Mode line tweaks
-    ;; Channel configurations
     (when I-am-on-server
       (setq circe-default-nick "stsquad"
             circe-default-user "stsquad"
@@ -202,9 +198,10 @@
              :nickserv-identify-command "PRIVMSG &bitlbee :identify {password}"
              :nickserv-identify-confirmation "Password accepted, settings and accounts loaded"
              :channels ("&bitlbee")
+             :lagmon-disbaled t
              :host "localhost"
-             :service "6667"
-             )))))
+             :service "6667")))
+    (add-to-list 'clean-buffer-list-kill-never-regexps (rx bol (or "#" "⇄")))))
 
 (with-eval-after-load 'circe
   (use-package circe-chanop))
