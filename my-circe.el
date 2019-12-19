@@ -120,8 +120,8 @@
   :commands (circe circe-set-display-handler)
   :bind (:map circe-query-mode-map
               ("C-c C-c" . my-ssh-to-server))
-  :hook ((circe-channel-mode-hook . enable-lui-autopaste)
-         (circe-channel-mode-hook . my-maybe-log-channel))
+  :hook ((circe-channel-mode . enable-lui-autopaste)
+         (circe-channel-mode . my-maybe-log-channel))
   :requires my-tracking
   :init (when (and I-am-at-work
                    (daemonp)

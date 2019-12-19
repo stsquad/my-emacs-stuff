@@ -19,8 +19,8 @@
   :commands (flyspell-mode flyspell-prog-mode)
   :after ispell
   :diminish "fs"
-  :hook ((text-mode-hook . turn-on-flyspell)
-         (prog-mode-hook . flyspell-prog-mode)))
+  :hook ((text-mode . turn-on-flyspell)
+         (prog-mode . flyspell-prog-mode)))
 
 (defun turn-on-flyspell ()
   "Force 'flyspell-mode' on using a positive arg.  For use in hooks."
