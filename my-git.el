@@ -96,6 +96,7 @@
             (while (re-search-forward my-dco-tag-re (point-max) t))
             (beginning-of-line 2)
             (insert (mapconcat 'identity tags "\n"))
+            (insert "\n")
             (message "Added %d tags to buffer" (length tags))))))))
 
 (use-package git-commit
