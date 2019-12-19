@@ -399,8 +399,10 @@ Return the filespec of the jump."
       (if nojump
           (format "%s:%d" buf pos)
         (switch-to-buffer buf)
-        (goto-char pos))))))
-
+        (goto-char pos)
+        (save-excursion
+          (org-up-heading-safe)
+          (org-show-entry)))))))
 
 (defun my-org-mark-ring-info ())
 
