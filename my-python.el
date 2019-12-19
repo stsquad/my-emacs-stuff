@@ -23,18 +23,23 @@
 (require 'use-package)
 (require 'my-flycheck)
 
+(use-package python
+  :config
+  (setq python-shell-interpreter "python3"
+        python-shell-interpreter-args "-i"))
+
 (use-package elpy
   :ensure t
   :commands elpy-enable
   :init (with-eval-after-load 'python (elpy-enable))
   :config
-  (progn
-    (setq elpy-rpc-backend "jedi"
-          elpy-rpc-project-specific 't)
-    (when (fboundp 'flycheck-mode)
-      (when (fboundp 'flycheck-tip-cycle)
-        (define-key elpy-mode-map (kbd "C-c C-n") 'flycheck-tip-cycle))
-      (setq elpy-modules (delete 'elpy-module-flymake elpy-modules)))))
+  (setq elpy-rpc-backend "jedi"
+        elpy-rpc-project-specific 't
+        elpy-rpc-python-command "python3")
+  (eval-after-load 'flycheck-mode
+    (when (fboundp 'flycheck-tip-cycle)
+      (define-key elpy-mode-map (kbd "C-c C-n")
+        'flycheck-tip-cycle))))
 
 ;; elpy can be enabled better on demand surely?
 ;; TODO - automode alist
