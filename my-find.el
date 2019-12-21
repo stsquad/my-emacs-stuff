@@ -39,10 +39,7 @@
   (let ((ivy-initial-inputs-alist
          (list
           (cons cmd (thing-at-point 'symbol)))))
-    (if dir
-        (let ((default-directory dir))
-          (funcall cmd))
-      (funcall cmd))))
+    (funcall cmd nil dir)))
 
 (defun my-counsel-ag-from-here (&optional dir)
   "Start ag but from the directory the file is in (otherwise I would
