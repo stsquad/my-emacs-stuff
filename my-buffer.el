@@ -11,7 +11,6 @@
 
 ;; midnight mode, clean-up unused buffers overnight
 (use-package midnight
-  :defer 1000
   :commands midnight-mode
   :config (midnight-mode t))
 
