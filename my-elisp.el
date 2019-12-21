@@ -54,8 +54,8 @@
   :commands emacs-lisp-mode
   :hook (emacs-lisp-mode . my-elisp-hook-functions)
   :bind (:map emacs-lisp-mode-map
-              ("C-c e" . my-macrostep-expand-wrapper)
-              ("C-c z" . ielm))
+              ("C-x e" . my-macrostep-expand-wrapper)
+              ("C-x i" . ielm))
   :config
   (add-to-list 'safe-local-variable-values
                '(lisp-indent-function . common-lisp-indent-function)))
