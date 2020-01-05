@@ -53,7 +53,8 @@
   :config
   (progn
    (setq-default
-    gnus-summary-line-format "%U%R%d %5i %B%-80,80S %-20,20n (%k, %I/%t)\n"
+    gnus-summary-line-format
+      "%0{%U%R%z%} %3t %3{│%} %1{%d%} %5k %-20,20n%3{│%} %B%S\n"
     gnus-user-date-format-alist '((t . "%d-%m-%Y %H:%M"))
     ;; use references to gather (so patch series are correct)
     gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
@@ -68,6 +69,7 @@
     gnus-select-method '(nntp "nntp.lore.kernel.org")
     gnus-thread-hide-subtree t
     gnus-view-pseudo-asynchronously t
+    gnus-build-sparse-threads 'some
 
     gnus-activate-level 3
     ;; Thread sorting (primary function is the last)
