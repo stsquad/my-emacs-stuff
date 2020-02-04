@@ -32,15 +32,17 @@
   (remove-hook 'find-file-hook 'vc-refresh-state)
   (setq vc-handled-backends nil))
 
-(use-package magit-status)
+(use-package magit-section
+  :ensure t)
+
+;; (use-package magit-status
+;;   :ensure t)
 
 (use-package magit-popup
-  :ensure t
-  :pin melpa-stable)
+  :ensure t)
 
 (use-package magit
   :ensure t
-  :pin melpa-stable
   :commands magit-status
   :bind (("C-x g" . magit-status)
          :map magit-hunk-section-map
