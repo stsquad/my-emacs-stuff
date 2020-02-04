@@ -162,10 +162,30 @@ bother asking for the git tree again (useful for bulk actions)."
   (rx (: bol
          (one-or-more letter) ; rebase action
          " "
-         (>= 7 hex)            ; commitish
+         (group (>= 7 hex))            ; commitish
          " "
          (group (one-or-more nonl)))) ; summary
   "Regexp to match summary lines in rebase summary.")
+
+(defvar my-rebase-reword-commits
+  nil
+  "List of commits that need re-wording in the current re-base.")
+
+(defvar my-rebase-edit-commits
+  nil
+  "List of commits that need re-wording in the current re-base.")
+
+(defun my-rebase-auto-tag-commits ()
+  "Mark commits as needing reword/edit depending on the appropriate
+variables."
+  (when my-rebase-reword-commits
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward my-rebase-match-re (point-max) t)
+        (let ((msg (match-string-no-properties 1)))
+          (when (--any? (s-contains-p msg it) my-rebase-reword-commits)
+            (git-rebase-reword)))))
+    (setq my-rebase-reword-commits nil)))
 
 (defun my-mark-rebase-commits-for-tagging ()
   "Set any commits in a re-base buffer to if tagging required."
@@ -173,7 +193,7 @@ bother asking for the git tree again (useful for bulk actions)."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward my-rebase-match-re (point-max) t)
-      (let ((msg (match-string-no-properties 1)))
+      (let ((msg (match-string-no-properties 2)))
         (when (my-org-find-review-tags msg "TODO")
           (git-rebase-reword))))))
 
@@ -183,12 +203,13 @@ bother asking for the git tree again (useful for bulk actions)."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward my-rebase-match-re (point-max) t)
-      (let ((msg (match-string-no-properties 1)))
+      (let ((msg (match-string-no-properties 2)))
         (when (my-org-find-review-comments msg)
           (git-rebase-edit))))))
 
 (use-package git-rebase
   :commands git-rebase-mode
+  :hook (git-rebase-mode . my-rebase-auto-tag-commits)
   :bind (:map git-rebase-mode-map
               ("C-x t" . my-mark-rebase-commits-for-tagging)
               ("C-x e" . my-mark-rebase-commits-for-editing)))
