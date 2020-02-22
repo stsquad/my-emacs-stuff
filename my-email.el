@@ -98,7 +98,8 @@
 (defun my-switch-to-mu4e (&optional prefix)
   "Smart dwim switch to mu4e."
   (interactive "P")
-  (my-rig-mu4e-for-active-running)
+  (when I-am-at-work
+    (my-rig-mu4e-for-active-running))
   (if prefix
       (mu4e)
     (let ((candidate
@@ -128,7 +129,8 @@ Instead of the heuristics of `my-switch-to-mu4e' we build a list of
 all mu4e buffers and allow ivy selection of them.
 "
   (interactive "P")
-  (my-rig-mu4e-for-active-running)
+  (when I-am-at-work
+    (my-rig-mu4e-for-active-running))
   (if (or prefix (not (get-buffer " *mu4e-main*")))
       (mu4e)
     (let (collection)
