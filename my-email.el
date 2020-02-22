@@ -370,15 +370,20 @@ Useful for replies and drafts")
                         :date :tags :attachments :signature)
                 mu4e-view-use-gnus t))
 
-;; spam learning: ionice -c 3 sa-learn --progress --spam ~/Maildir/.Spam/cur/*
+;; spam learning: ionice -c 3 sa-learn --progress --spam
+;; ~/Maildir/.Spam/cur/*
+
+(use-package shell-command-queue
+  :if (file-exists-p "~/.emacs.d/shell-command-queue.el")
+  :load-path "~/.emacs.d/")
 
 ;; loosely hacked from mu4e-control.el HEAD
 (defvar my-mu4e-register-spam-cmd
-  "sa-learn --spam %s"
+  "sa-learn --spam --sync "
   "Command for invoking spam processor to register message as spam.")
 
 (defvar my-mu4e-register-ham-cmd
-  "sa-learn --ham %s"
+  "sa-learn --ham --sync "
   "Command for invoking spam processor to register message as ham.")
 
 
@@ -393,32 +398,28 @@ Move next if the message at point is what we have just processed."
         (mu4e-mark-at-point 'delete nil))
       (mu4e-headers-next))))
 
+(defun my-mu4e-register-action (msg tag cmd)
+  "Mark `MSG' as with `TAG' and `CMD'."
+  (unless (-contains?
+           (mu4e-message-field msg :tags) tag)
+    (mu4e-action-retag-message msg (concat "+" tag))
+    (shell-command-queue-add
+       (concat "Learn " tag)
+       (concat cmd
+               (shell-quote-argument (mu4e-message-field msg :path))))))
+
 (defun my-mu4e-register-spam-action (msg)
   "Mark `MSG' as spam."
   (interactive)
-  (let ((path (mu4e-message-field msg :path))
-        (msgid (mu4e-message-field msg :message-id))
-        (tags (mu4e-message-field msg :tags)))
-    ;; only kick of if not already tagged
-    (unless (-contains? tags "spam")
-      (start-process "LSPAM" nil
-                     "ionice" "-c" "idle" "nice" "sa-learn" "--spam"
-                     (shell-quote-argument path))
-      (mu4e-action-retag-message msg "+spam"))
-  (my-mu4e-next-if-at-point msgid t)))
+  (my-mu4e-register-action msg "spam" my-mu4e-register-spam-cmd)
+  (my-mu4e-next-if-at-point (mu4e-message-field msg :message-id) t))
 
 (defun my-mu4e-register-ham-action (msg)
   "Mark `MSG' as ham."
   (interactive)
-  (let ((path (mu4e-message-field msg :path))
-        (msgid (mu4e-message-field msg :message-id))
-        (tags (mu4e-message-field msg :tags)))
-    ;; only kick of if not already tagged
-    (unless (-contains? tags "ham")
-      (start-process "LHAM" nil "sa-learn" "--ham"
-                     (shell-quote-argument path))
-      (mu4e-action-retag-message msg "-spam +ham"))
-  (my-mu4e-next-if-at-point msgid)))
+  (my-mu4e-register-action msg "ham" my-mu4e-register-ham-cmd)
+  (mu4e-action-retag-message msg "-spam")
+  (my-mu4e-next-if-at-point (mu4e-message-field msg :message-id) t))
 
 ;; Check if patch merged into a given tree
 ;;
@@ -704,6 +705,7 @@ to `my-mu4e-patches' for later processing."
                "Mail sent by me" ?s)
               ("from:eileen OR from:nigel"
                "From parents" ?P)
+              ("tag:spam" "Tagged Spam" ?t)
               ("to:bugzilla@bennee.com" "Bug Mail" ?B)))))))
 
 
