@@ -19,7 +19,7 @@
 ;; Always run on loading
 ;;
 
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages")))
+;;(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages")))
 
 ;; Setup packages
 (when I-am-at-work
