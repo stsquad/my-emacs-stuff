@@ -289,22 +289,20 @@ Useful for replies and drafts")
               ("C-c C-l" . org-store-link)
               ("C-c t" . my-switch-to-thread))
   :hook ((mu4e-headers-mode . my-yas-local-disable)
-         (mu4e-headers-found . my-set-view-directory))
+         (mu4e-headers-found . my-set-view-directory)
+         (mu4e-headers-search . my-update-async-jobs))
   :config (setq mu4e-headers-time-format "%H:%M:%S"
                 mu4e-headers-date-format "%a %d/%m/%y"
                 mu4e-headers-skip-duplicates t
                 mu4e-headers-include-related t
                 ;; mu4e-headers-hide-predicate 'my-mu4e-headers-hide-muted-p
-                mu4e-headers-actions (delete-dups
-                                      (append
-                                       mu4e-headers-actions
-                                       '(("gapply git patches" . mu4e-action-git-apply-patch)
-                                         ("mgit am patch" . mu4e-action-git-apply-mbox)
-                                         ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
-                                         ("sMark SPAM" . my-mu4e-register-spam-action)
-                                         ("hMark HAM" . my-mu4e-register-ham-action)
-                                         ("MMute Thread" . my-mu4e-headers-hide-muted-p)
-                                         ("GCheck if merged" . my-mu4e-action-check-if-merged))))))
+                mu4e-headers-actions '(("gapply git patches" . mu4e-action-git-apply-patch)
+                                       ("mgit am patch" . mu4e-action-git-apply-mbox)
+                                       ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
+                                       ("sMark SPAM" . my-mu4e-register-spam-action)
+                                       ("hMark HAM" . my-mu4e-register-ham-action)
+                                       ("MMute Thread" . my-mu4e-headers-hide-muted-p)
+                                       ("GCheck if merged" . my-mu4e-action-check-if-merged))))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
@@ -420,6 +418,11 @@ Move next if the message at point is what we have just processed."
   (my-mu4e-register-action msg "ham" my-mu4e-register-ham-cmd)
   (mu4e-action-retag-message msg "-spam")
   (my-mu4e-next-if-at-point (mu4e-message-field msg :message-id) t))
+
+(defun my-update-async-jobs ()
+  "Flush the command queue."
+  (when (fboundp 'shell-command-queue-run)
+    (shell-command-queue-run)))
 
 ;; Check if patch merged into a given tree
 ;;
