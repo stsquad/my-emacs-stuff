@@ -7,6 +7,11 @@ addons:
       - aspell-en
       - maildir-utils
       - mu4e
+cache:
+  timeout: 1200
+  directories:
+  - $HOME/.emacs.d/elpa
+
 matrix:
   fast_finish: true
   allow_failures:
@@ -27,6 +32,7 @@ install:
   - evm config path /tmp
   - evm install $EVM_EMACS --use --skip
   - ./setup_emacs.sh
+  - emacs -q --batch -l "tests/update-keys.el"
 script:
   - ./tests/check_daemon_starts.sh 0
   - ./tests/check_daemon_starts.sh 1

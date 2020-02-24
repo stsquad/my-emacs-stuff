@@ -74,7 +74,9 @@
 
 (let ((local-mu4e (my-return-path-if-ok
                    "~/src/emacs/mu/install/share/emacs/site-lisp/mu4e/")))
-  (setq mu4e-mu-binary (my-return-path-if-ok "~/bin/mu"))
+  (setq mu4e-mu-binary (or
+                        (my-return-path-if-ok "/usr/bin/mu")
+                        (my-return-path-if-ok "~/bin/mu")))
   (when local-mu4e
     (add-to-list 'load-path local-mu4e)))
 
@@ -98,7 +100,8 @@
 (defun my-switch-to-mu4e (&optional prefix)
   "Smart dwim switch to mu4e."
   (interactive "P")
-  (my-rig-mu4e-for-active-running)
+  (when I-am-at-work
+    (my-rig-mu4e-for-active-running))
   (if prefix
       (mu4e)
     (let ((candidate
@@ -128,7 +131,8 @@ Instead of the heuristics of `my-switch-to-mu4e' we build a list of
 all mu4e buffers and allow ivy selection of them.
 "
   (interactive "P")
-  (my-rig-mu4e-for-active-running)
+  (when I-am-at-work
+    (my-rig-mu4e-for-active-running))
   (if (or prefix (not (get-buffer " *mu4e-main*")))
       (mu4e)
     (let (collection)
@@ -285,22 +289,20 @@ Useful for replies and drafts")
               ("C-c C-l" . org-store-link)
               ("C-c t" . my-switch-to-thread))
   :hook ((mu4e-headers-mode . my-yas-local-disable)
-         (mu4e-headers-found . my-set-view-directory))
+         (mu4e-headers-found . my-set-view-directory)
+         (mu4e-headers-search . my-update-async-jobs))
   :config (setq mu4e-headers-time-format "%H:%M:%S"
                 mu4e-headers-date-format "%a %d/%m/%y"
                 mu4e-headers-skip-duplicates t
                 mu4e-headers-include-related t
                 ;; mu4e-headers-hide-predicate 'my-mu4e-headers-hide-muted-p
-                mu4e-headers-actions (delete-dups
-                                      (append
-                                       mu4e-headers-actions
-                                       '(("gapply git patches" . mu4e-action-git-apply-patch)
-                                         ("mgit am patch" . mu4e-action-git-apply-mbox)
-                                         ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
-                                         ("sMark SPAM" . my-mu4e-register-spam-action)
-                                         ("hMark HAM" . my-mu4e-register-ham-action)
-                                         ("MMute Thread" . my-mu4e-headers-hide-muted-p)
-                                         ("GCheck if merged" . my-mu4e-action-check-if-merged))))))
+                mu4e-headers-actions '(("gapply git patches" . mu4e-action-git-apply-patch)
+                                       ("mgit am patch" . mu4e-action-git-apply-mbox)
+                                       ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
+                                       ("sMark SPAM" . my-mu4e-register-spam-action)
+                                       ("hMark HAM" . my-mu4e-register-ham-action)
+                                       ("MMute Thread" . my-mu4e-headers-hide-muted-p)
+                                       ("GCheck if merged" . my-mu4e-action-check-if-merged))))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
@@ -366,15 +368,20 @@ Useful for replies and drafts")
                         :date :tags :attachments :signature)
                 mu4e-view-use-gnus t))
 
-;; spam learning: ionice -c 3 sa-learn --progress --spam ~/Maildir/.Spam/cur/*
+;; spam learning: ionice -c 3 sa-learn --progress --spam
+;; ~/Maildir/.Spam/cur/*
+
+(use-package shell-command-queue
+  :if (file-exists-p "~/.emacs.d/shell-command-queue.el")
+  :load-path "~/.emacs.d/")
 
 ;; loosely hacked from mu4e-control.el HEAD
 (defvar my-mu4e-register-spam-cmd
-  "sa-learn --spam %s"
+  "sa-learn --spam --sync "
   "Command for invoking spam processor to register message as spam.")
 
 (defvar my-mu4e-register-ham-cmd
-  "sa-learn --ham %s"
+  "sa-learn --ham --sync "
   "Command for invoking spam processor to register message as ham.")
 
 
@@ -389,32 +396,33 @@ Move next if the message at point is what we have just processed."
         (mu4e-mark-at-point 'delete nil))
       (mu4e-headers-next))))
 
+(defun my-mu4e-register-action (msg tag cmd)
+  "Mark `MSG' as with `TAG' and `CMD'."
+  (unless (-contains?
+           (mu4e-message-field msg :tags) tag)
+    (mu4e-action-retag-message msg (concat "+" tag))
+    (shell-command-queue-add
+       (concat "Learn " tag)
+       (concat cmd
+               (shell-quote-argument (mu4e-message-field msg :path))))))
+
 (defun my-mu4e-register-spam-action (msg)
   "Mark `MSG' as spam."
   (interactive)
-  (let ((path (mu4e-message-field msg :path))
-        (msgid (mu4e-message-field msg :message-id))
-        (tags (mu4e-message-field msg :tags)))
-    ;; only kick of if not already tagged
-    (unless (-contains? tags "spam")
-      (start-process "LSPAM" nil
-                     "ionice" "-c" "idle" "nice" "sa-learn" "--spam"
-                     (shell-quote-argument path))
-      (mu4e-action-retag-message msg "+spam"))
-  (my-mu4e-next-if-at-point msgid t)))
+  (my-mu4e-register-action msg "spam" my-mu4e-register-spam-cmd)
+  (my-mu4e-next-if-at-point (mu4e-message-field msg :message-id) t))
 
 (defun my-mu4e-register-ham-action (msg)
   "Mark `MSG' as ham."
   (interactive)
-  (let ((path (mu4e-message-field msg :path))
-        (msgid (mu4e-message-field msg :message-id))
-        (tags (mu4e-message-field msg :tags)))
-    ;; only kick of if not already tagged
-    (unless (-contains? tags "ham")
-      (start-process "LHAM" nil "sa-learn" "--ham"
-                     (shell-quote-argument path))
-      (mu4e-action-retag-message msg "-spam +ham"))
-  (my-mu4e-next-if-at-point msgid)))
+  (my-mu4e-register-action msg "ham" my-mu4e-register-ham-cmd)
+  (mu4e-action-retag-message msg "-spam")
+  (my-mu4e-next-if-at-point (mu4e-message-field msg :message-id) t))
+
+(defun my-update-async-jobs ()
+  "Flush the command queue."
+  (when (fboundp 'shell-command-queue-run)
+    (shell-command-queue-run)))
 
 ;; Check if patch merged into a given tree
 ;;
@@ -700,6 +708,7 @@ to `my-mu4e-patches' for later processing."
                "Mail sent by me" ?s)
               ("from:eileen OR from:nigel"
                "From parents" ?P)
+              ("tag:spam" "Tagged Spam" ?t)
               ("to:bugzilla@bennee.com" "Bug Mail" ?B)))))))
 
 
