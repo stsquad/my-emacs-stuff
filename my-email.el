@@ -283,6 +283,13 @@ Useful for replies and drafts")
                 mu4e-compose-complete-only-personal nil
                 mu4e-compose-complete-only-after "2013-11-01"))
 
+
+(defun my-update-async-jobs (ignored)
+  "Flush the command queue."
+  (when (and (fboundp 'shell-command-queue-run)
+             shell-command-queue)
+    (shell-command-queue-run)))
+
 (use-package mu4e-headers
   :commands mu4e-headers-mode
   :bind (:map mu4e-headers-mode-map
@@ -418,11 +425,6 @@ Move next if the message at point is what we have just processed."
   (my-mu4e-register-action msg "ham" my-mu4e-register-ham-cmd)
   (mu4e-action-retag-message msg "-spam")
   (my-mu4e-next-if-at-point (mu4e-message-field msg :message-id) t))
-
-(defun my-update-async-jobs ()
-  "Flush the command queue."
-  (when (fboundp 'shell-command-queue-run)
-    (shell-command-queue-run)))
 
 ;; Check if patch merged into a given tree
 ;;
