@@ -94,7 +94,11 @@ be using git-grep)."
                     (my-ivy-rich-switch-buffer-project (:width 50 :face success)))
                    :predicate
                    (lambda (cand) (get-buffer cand)))))
-  (ivy-rich-mode))
+  (ivy-rich-mode)
+  (run-with-idle-timer 10 nil
+                       (lambda ()
+                         (ivy-rich-mode -1)
+                         (ivy-rich-mode nil))))
 
 (defun my-counsel-mini ()
   "Emulate helm-mini with my own preferences."
