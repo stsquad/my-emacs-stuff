@@ -87,6 +87,7 @@
 
 ;; Development related stuff
 (use-package my-devel)
+(use-package my-text)
 
 (use-package my-flycheck
   :if (version<= "24.4" emacs-version))
