@@ -35,7 +35,8 @@
 (defvar I-completed-loading-dotinit 'nil
   "Flag indicating succesful start-up.")
 
-;; Packaging
+;; Load the initial packaging setup.
+;; This will bring in use-package for us.
 ;; (package-initialize) is called in here.
 (load-library "my-package.el")
 
@@ -45,13 +46,8 @@
 (when (fboundp 'my-add-git-project-paths)
   (my-add-git-project-paths))
 
-(require 'my-config)
-
-(require 'my-keybinds)
-
-(eval-when-compile
-  (require 'use-package))
-
+(use-package my-config)
+(use-package my-keybinds)
 (use-package my-libs)
 (use-package my-basic-modes)
 
