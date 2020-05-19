@@ -343,8 +343,8 @@ Return the filespec of the jump."
   (let* ((head (magit-git-str "log" "--pretty=%s" "HEAD^.."))
          (link (my-org-locate-review-comments head)))
     (when link
-      (let ((buf (car (first link)))
-            (pos (cdr (first link))))
+      (let ((buf (car (car link)))
+            (pos (cdr (car link))))
       (if nojump
           (format "%s:%d" buf pos)
         (switch-to-buffer buf)
