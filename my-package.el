@@ -8,10 +8,10 @@
 
 (require 'package)
 (require 'my-vars)
-(require 'cl)
+(require 'cl-lib)
 
 (defun my-package-recompile(&optional dir)
-  "Recompile all packages"
+  "Recompile all packages."
   (interactive "D")
   (byte-recompile-directory (or dir "~/.emacs.d/elpa") 0 t))
 
@@ -66,6 +66,16 @@ package is installed programatically."
   (package-install 'use-package))
 
 (require 'use-package)
+
+(use-package async-bytecomp
+  :ensure t
+  :init (async-bytecomp-package-mode))
+
+;; native-compile support
+(use-package comp
+  :if (featurep 'comp)
+  :init (setq comp-deferred-compilation t))
+
 
 (when (version<= "24.4" emacs-version)
   (use-package paradox
