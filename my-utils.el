@@ -6,30 +6,11 @@
 ;;
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-
-;; String munging functions
-;
-; Extract the first group in a regex
-
-(defun extract-string(regex string)
-  "Extract a string in a regex (the bit in ()'s)."
-  (interactive)
-  (let ((s string)) (if (string-match regex s) (match-string 1 s) s)))
-
-; And building on that
-(defun extract-value-from-pair(key string)
-  "Extract the value from AAAA=value pairs"
-  (let ((regex (concat key "=\\(.*\\)$")))
-    (extract-string regex string)))
-
-; examples:
-;  (extract-string "name is \\(\.*\\) " "my name is Alex ok") = Alex
-;  (extract-value-from-pair "AAA" "AAA=xxx") = xxx
+(eval-when-compile (require 'cl-lib))
 
 ; chomp
 (defun chomp(string)
-  "Perform a perl-like chomp"
+  "Perform a perl-like chomp of STRING."
   (let ((s string)) (if (string-match "\\(.*\\)\n" s) (match-string 1 s) s)))
 
 ;; which-lookup
@@ -38,12 +19,12 @@
 ; it can't find anything
 
 (defun which-lookup(name-or-list)
-  "Perform a `which` like file look-up, returning the first hit or
-'nil if no match found"
-  (loop for x in (if (listp name-or-list) name-or-list (list name-or-list))
+  "Perform a `which` like file look-up of NAME-OR-LIST.
+Returning the first hit or 'nil if no match found"
+  (cl-loop for x in (if (listp name-or-list) name-or-list (list name-or-list))
         do (let ((path (chomp (shell-command-to-string (concat "which " x)))))
              (if (and (file-exists-p path) (> (length path) 0))
-                 (return path)))))
+                 (cl-return path)))))
 
 ; uses common lisp
 (defun find-valid-file (list-of-files)
