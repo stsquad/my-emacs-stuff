@@ -248,14 +248,20 @@ Useful for replies and drafts")
 (defun my-set-compose-directory ()
   "Switch the `default-directory' when composing an email."
   (interactive)
-  (let ((dir (cdr
-              (assoc
-               (--first
-                (assoc-default it my-mail-address-mapping)
-                (s-split ", " (concat (message-fetch-field "cc")
-                                      (message-fetch-field "to"))))
-               my-mail-address-mapping))))
-    (when dir (setq default-directory dir))))
+  (let ((cc (message-fetch-field "cc"))
+        (to (message-fetch-field "to"))
+        (all))
+    (when (stringp cc)
+      (nconc all (s-split ", " cc)))
+    (when (stringp to)
+      (nconc all (s-split ", " to)))
+    (let ((dir (cdr
+                (assoc
+                 (--first
+                  (assoc-default it my-mail-address-mapping)
+                  all)
+                 my-mail-address-mapping))))
+    (when dir (setq default-directory dir)))))
 
 (defun my-search-code-from-email ()
   "Search code depending on email."
