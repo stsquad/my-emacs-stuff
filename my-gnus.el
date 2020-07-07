@@ -40,10 +40,50 @@
     (delete-file buffer-file-name)))
 
 
+(defvar my-gnus-group-dir-mapping
+  '( ("org.nongnu.qemu-devel" . "~/lsrc/qemu.git/")
+     ("qemu-devel.nongnu.org" . "~/lsrc/qemu.git/")
+     ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/linux.git/")
+     ("kvm.vger.kernel.org" . "~/lsrc/linux.git/")
+     ("virtualization.lists.linux-foundation.org" . "~/lsrc/linux.git/") )
+  "Mapping from newgroups to source tree.")
+
+(defun my-gnus-article-set-dir ()
+  "Set the default-directory of the new article buffer."
+  (with-current-buffer gnus-article-buffer
+    (setq default-directory
+          (or (assoc-default gnus-newsgroup-name
+                             my-gnus-group-dir-mapping)
+              (default-directory)))))
+
 (use-package gnus-art
+  :hook (gnus-article-prepare . my-gnus-article-set-dir)
   :bind (:map gnus-article-mode-map
               ("q" . delete-window)
               ("C-c a" . my-gnus-apply-article-patch)))
+
+(defvar my-gnus-group-email-mapping
+  '( ("org.nongnu.qemu-devel" . "qemu-devel@nongnu.org")
+     ("qemu-devel.nongnu.org" . "qemu-devel@nongnu.org")
+     ("virtualization.lists.linux-foundation.org" . "~/lsrc/linux.git/") )
+  "Mapping from newgroups to reply address.")
+
+(defvar my-gnus-current-group-list-address "foo@bar.com"
+  "Current group address, set by query helper")
+
+(defun my-gnus-reply-find-group ()
+  "Set `my-current-group-list-address' and reply true if we know it"
+  (let ((email
+         (assoc-default gnus-newsgroup-name
+                        my-gnus-group-email-mapping)))
+    (if email
+        (setq my-gnus-current-group-list-address email)
+      (setq my-gnus-current-group-list-address nil))))
+
+(use-package gnus-msg
+  :config (setq gnus-posting-styles
+                '((my-gnus-reply-find-group
+                   ("Cc" my-gnus-reply-find-group)))))
 
 (use-package gnus-agent
   :config (setq gnus-agent-synchronize-flags 'ask))
