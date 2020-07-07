@@ -46,15 +46,23 @@ We must have reached the end of irony-cdb-compilation-databases."
 (setq-default irony-cdb-compilation-databases '(irony-cdb-clang-complete
                                                 irony-cdb-libclang
                                                 my-warn-irony-cdb-not-found))
-
 (use-package irony
-  :ensure t
+  :disabled t
   :hook ((c-mode . irony-mode)))
 
 (when I-am-at-work
   (use-package irony-eldoc
-    :ensure t
+    :disabled t
     :config (add-hook 'irony-mode-hook #'irony-eldoc)))
+
+(use-package lsp-mode
+  :hook (c-mode . lsp-mode)
+  :commands lsp
+  :config
+  (setq
+   lsp-prefer-flymake nil
+   lsp-clients-clangd-executable
+   (which-lookup '("clangd-7" "clangd"))))
 
 ;;
 ;; End of c-mode customisations
