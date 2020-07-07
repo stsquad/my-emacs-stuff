@@ -45,9 +45,7 @@
   (cond
    ((derived-mode-p 'mail-mode 'mu4e-compose-mode)
     user-mail-address)
-   ((buffer-file-name)
-    (assoc-default (buffer-file-name) my-yas-emails 'string-match))
-   (t "alex@....")))
+   (t user-mail-address)))
 
 (defun my-yas-expand-copyright ()
   "Like `my-yas-expand-email' except just return the company name if
