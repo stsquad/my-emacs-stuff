@@ -91,13 +91,13 @@
 (defun my-irc-login ()
   "Login into my usual IRCs."
   (interactive)
+  (circe-lagmon-mode)
   (when I-am-at-work
     (circe "znc-freenode")
     (circe "znc-oftc")
     (circe "bitlbee"))
   (circe "Freenode")
-  (circe "Pl0rt")
-  (circe-lagmon-mode))
+  (circe "Pl0rt"))
 
 (defun my-disable-irc-login ()
   "Disable an idle login."
@@ -130,8 +130,6 @@
           (setq my-irc-login-timer (run-with-idle-timer 120 nil 'my-irc-login)))
   :config
   (progn
-    ;; Colour nicks
-    (enable-circe-color-nicks)
     (when I-am-on-server
       (setq circe-default-nick "stsquad"
             circe-default-user "stsquad"
@@ -141,6 +139,7 @@
           `(("Freenode"
              :host "chat.freenode.net"
              :server-buffer-name "⇄ Freenode"
+             :port "6697"
              :tls t
              :nick "stsquad"
              :nickserv-password my-freenode-nick-password
@@ -183,8 +182,8 @@
             ("Pl0rt"
              :host "irc.pl0rt.org"
              :server-buffer-name "⇄ Pl0rt"
+             :port "6697"
              :nick "ajb"
-             :service "6697"
              :tls t
              :channels ("#blue")
              )
@@ -198,13 +197,18 @@
              :nickserv-identify-command "PRIVMSG &bitlbee :identify {password}"
              :nickserv-identify-confirmation "Password accepted, settings and accounts loaded"
              :channels ("&bitlbee")
-             :lagmon-disbaled t
+             ; does this set circe-lagmon-disabled in the server buffer?
+             :lagmon-disabled t
              :host "localhost"
              :service "6667")))
     (add-to-list 'clean-buffer-list-kill-never-regexps (rx bol (or "#" "⇄")))))
 
-(with-eval-after-load 'circe
-  (use-package circe-chanop))
+(use-package circe-chanop
+  :after circe)
+
+(use-package circe-color-nicks
+  :after circe
+  :init (enable-circe-color-nicks))
 
 (provide 'my-circe)
 ;;; my-circe.el ends here
