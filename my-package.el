@@ -72,9 +72,9 @@ package is installed programatically."
   :init (async-bytecomp-package-mode))
 
 ;; native-compile support
-(use-package comp
-  :if (featurep 'comp)
-  :init (setq comp-deferred-compilation t))
+(when (version<= "28.0.50" emacs-version)
+  (use-package comp
+    :init (setq comp-deferred-compilation t)))
 
 
 (when (version<= "24.4" emacs-version)
