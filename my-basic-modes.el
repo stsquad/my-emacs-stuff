@@ -63,6 +63,7 @@
 ;;
 (use-package ivy
   :ensure t
+  :commands ivy-mode
   :init (ivy-mode)
   :bind (("C-x b" . ivy-switch-buffer))
          ;; :map ivy-minibuffer-map
@@ -81,6 +82,7 @@
 
 (use-package counsel
   :ensure t
+  :commands counsel-mode
   :bind (:map counsel-mode-map
               ("M-x" . counsel-M-x)
               ("M-y" . counsel-yank-pop)
