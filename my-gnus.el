@@ -80,31 +80,48 @@
         (setq my-gnus-current-group-list-address email)
       (setq my-gnus-current-group-list-address nil))))
 
+;;
+;; Package configuration, split into sections
+;;
+;; Gnus is like really big man, let try and keep config together in
+;; one place.
+;;
+
+(use-package gnus-agent
+  :config (setq gnus-agent-synchronize-flags 'ask))
+
+(use-package gnus-article
+  :bind (:map gnus-article-mode-map
+              ("R" . gnus-article-wide-reply-with-original)))
+
 (use-package gnus-msg
   :config (setq gnus-posting-styles
                 '((my-gnus-reply-find-group
                    ("Cc" my-gnus-reply-find-group)))))
 
-(use-package gnus-agent
-  :config (setq gnus-agent-synchronize-flags 'ask))
+(use-package gnus-summary
+  :bind (:map gnus-summary-mode-map
+              ("R" . gnus-article-wide-reply-with-original))
+  :config
+  (setq-default
+   gnus-summary-line-format "%0{%U%R%z%} %3t %3{│%} %1{%d%} %5k %-20,20n%3{│%} %B%S\n"
+   gnus-user-date-format-alist '((t . "%d-%m-%Y %H:%M"))
+   ;; use references to gather (so patch series are correct)
+   gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
+   ;; fancy formatting for the thread view
+   gnus-sum-thread-tree-root ""
+   gnus-sum-thread-tree-false-root ""
+   gnus-sum-thread-tree-indent " "
+   gnus-sum-thread-tree-leaf-with-other "├► "
+   gnus-sum-thread-tree-single-leaf "╰► "
+   gnus-sum-thread-tree-vertical "│"))
+
+;; Everything else
 
 (use-package gnus
   :commands gnus
   :config
   (progn
-   (setq-default
-    gnus-summary-line-format
-      "%0{%U%R%z%} %3t %3{│%} %1{%d%} %5k %-20,20n%3{│%} %B%S\n"
-    gnus-user-date-format-alist '((t . "%d-%m-%Y %H:%M"))
-    ;; use references to gather (so patch series are correct)
-    gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
-    ;; fancy formatting for the thread view
-    gnus-sum-thread-tree-root ""
-    gnus-sum-thread-tree-false-root ""
-    gnus-sum-thread-tree-indent " "
-    gnus-sum-thread-tree-leaf-with-other "├► "
-    gnus-sum-thread-tree-single-leaf "╰► "
-    gnus-sum-thread-tree-vertical "│")
    (setq
     gnus-select-method '(nntp "nntp.lore.kernel.org")
     gnus-thread-hide-subtree t
