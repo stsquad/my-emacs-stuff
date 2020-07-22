@@ -32,15 +32,6 @@
   (remove-hook 'find-file-hook 'vc-refresh-state)
   (setq vc-handled-backends nil))
 
-(use-package magit-section
-  :ensure t)
-
-;; (use-package magit-status
-;;   :ensure t)
-
-(use-package magit-popup
-  :ensure t)
-
 (use-package magit
   :ensure t
   :commands magit-status
@@ -101,12 +92,18 @@
             (insert "\n")
             (message "Added %d tags to buffer" (length tags))))))))
 
-(use-package git-commit
-  :config
-  (define-key git-commit-mode-map
-    (kbd "C-x C-x") 'my-commit-mode-check-and-apply-tags))
+;; requires the showfix alias in .gitconfig
+(defun my-commit-mode-add-fixes (commit)
+  "Insert a Fixes line, selecting a COMMIT."
+  (interactive (list (magit-read-range-or-commit "Fixes commit:")))
+  (insert (magit-git-str "showfix" commit)))
 
-;(add-hook 'git-commit-mode 'my-commit-mode-check-for-tags)
+(use-package git-commit
+  :bind (:map git-commit-mode-map
+              ("C-c x" . my-commit-mode-check-and-apply-tags)
+              ("C-c f" . my-commit-mode-add-fixes)))
+
+;;
 
 ;; Applying Patches Workflow
 ;;
