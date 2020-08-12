@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: quote
+# key: $"
+# --
+#+ATTR_TEXINFO: :author $1
+#+BEGIN_QUOTE
+$2
+#+END_QUOTE
+$0
