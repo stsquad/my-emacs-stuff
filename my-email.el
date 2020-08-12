@@ -688,71 +688,117 @@ to `my-mu4e-patches' for later processing."
           (cond
            (I-am-at-work
             '(
-              ;; Personal bookmarks
-              ("recip:alex.bennee flag:unread "
-               "Unread posts addressed to me" ?M)
-              ("recip:alex.bennee flag:list flag:unread "
-               "Unread list email addressed to me" ?m)
-              ("recip:alex.bennee AND \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
-               "Mail addressed to me with git tags" ?g)
-              ("\(from:alex.bennee OR from:bennee.com\)"
-               "Mail sent by me" ?s)
-              ("recip:alex.bennee s:Re NOT flag:seen"
-               "Mail sent by me (unread replied)" ?S)
-              ("\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
-               "My patches" ?p)
-              ("\
-(from:alex.bennee OR from:bennee.com\) AND \
-\(b:\"Reviewed\" OR b:\"Tested\"\)" "My tags" ?r)
-              ("s:PULL \(b:Bennée OR b:Bennee\)" "Pull Reqs with my name" ?P)
-              ("flag:flagged" "Flagged and starred posts" ?f)
-              ("flag:flagged NOT flag:seen" "Unread flagged and starred posts" ?F)
-              ("to:alex.bennee@linaro.org AND from:maxim.kuvyrkov@linaro.org"
-               "From my boss" ?B)
-              ("date:1h..now"
-               "In the last hour" ?h)
-              ("date:1h..now AND flag:unread"
-               "In the last hour (unread)" ?H)
-              ("from:alex.bennee date:1w..now"
-               "My emails in the last week" ?w)
-              ;; Bugs and Notifications
-              ("recip:alex.bennee AND (f:bugs.debian.org OR f:bugs.launchpad.net)" "Bugs" ?b)
-              ("maildir:\"/linaro/Inbox\" f:travis OR f:lava OR f:shippable" "Notifications" ?n)
-              ("f:vandersonmr2@gmail.com" "GSoC" ?G)
+              ;; Work bookmarks
+              (:name "Unread posts addressed to me"
+               :query "recip:alex.bennee flag:unread"
+               :key ?M)
+              (:name "Unread list email addressed to me"
+               :query "recip:alex.bennee flag:list flag:unread"
+               :key ?m)
+              (:name "Mail addressed to me with git tags"
+               :query "recip:alex.bennee AND \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
+               :hide-unread t
+               :key ?g)
+              (:name "Mail sent by me (unread replied)"
+               :query "recip:alex.bennee s:Re NOT flag:seen"
+               :key ?S)
+              (:name "Mail sent by me"
+               :query "\(from:alex.bennee OR from:bennee.com\)"
+               :key ?s)
+              (:name "My Patches"
+               :query "\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
+               :hide-unread t
+               :key ?p)
+              (:name "My tags"
+               :query "\(from:alex.bennee OR from:bennee.com\) AND \ \(b:\"Reviewed\" OR b:\"Tested\"\)"
+               :hide-unread t
+               :key ?r)
+              (:name "Pull Reqs with my name"
+               :query "s:PULL \(b:Bennée OR b:Bennee\)"
+               :hide-unread t
+               :key ?P)
+              (:name "Flagged and starred posts"
+               :query "flag:flagged"
+               :key ?f)
+              (:name "Unread flagged and starred posts"
+               :query "flag:flagged NOT flag:seen"
+               :key ?F)
+              (:name "From my boss"
+               :query "to:alex.bennee@linaro.org AND from:maxim.kuvyrkov@linaro.org"
+               :key ?B)
+              (:name "In the last hour"
+               :query "date:1h..now"
+               :hide-unread t
+               :key ?h)
+              (:name "In the last hour (unread)"
+               :query "date:1h..now AND flag:unread"
+               :hide-unread t
+               :key ?H)
+              (:name "My emails in the last week"
+               :query "from:alex.bennee date:1w..now"
+               :key ?w)
+              ;;:name "Bugs" and CI stuff
+              (:name "Bugs and Notifications"
+               :query "recip:alex.bennee AND (f:bugs.debian.org OR f:bugs.launchpad.net)"
+               :key ?b)
+              (:name "CI Notifications"
+               :query "f:noreply@shippable.com OR f:builds@travis-ci.org"
+               :key ?C)
               ;; Virt related
-              ("list:qemu-devel* and flag:unread"
-               "Latest QEMU posts" ?q)
-              ("((list:qemu-devel* AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm*)"
-               "QEMU ARM posts" ?a)
-              ("((list:qemu-devel* OR list:qemu-arm*) AND (s:fpu OR s:softfloat OR s:float))"
-               "QEMU Softfloat Posts" ?o)
-              ("list:android-emulator-dev.googlegroups.com OR (list:qemu-devel* AND subject:android)"
-               "Android related emails" ?A)
-              ("list:kvmarm.lists.cs.columbia.edu and flag:unread"
-               "Latest ARM KVM posts" ?k)
+              (:name "Latest QEMU posts (unread)"
+               :query "list:qemu-devel* and flag:unread"
+               :hide-unread t
+               :key ?q)
+              (:name "QEMU ARM posts"
+               :query "(list:qemu-devel* AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm*)"
+               :hide-unread t
+               :key ?a)
+              (:name "virtio-dev posts"
+               :query "recip:virtio-dev"
+               :key ?V)
+              (:name "QEMU Softfloat Posts"
+               :query "((list:qemu-devel* OR list:qemu-arm*) AND (s:fpu OR s:softfloat OR s:float))"
+               :hide-unread t
+               :key ?o)
+              (:name "Valgrind"
+               :query "list:valgrind*"
+               :hide-unread t
+               :key ?v)
               ;; Linaro Specific
-              ("list:linaro-toolchain.lists.linaro.org OR maildir:/linaro/linaro-list/linaro-tcwg"
-               "Linaro public TCWG posts" ?T)
-              ("to:tcwg@linaro.org"
-               "Linaro private TCWG posts" ?t)
-              ("list:conf.lists.linaro.org AND flag:unread"
-               "Latest Conf emails" ?c)
-              ("list:linaro-dev.lists.linaro.org AND flag:unread"
-               "Latest Linaro-Dev emails" ?d)
-              ;; ("list:tech.lists.linaro.org AND flag:unread"
-              ;;  "Latest Linaro-Tech emails" ?t)
-              ("\(to:lists.linaro.org OR cc:lists.linaro.org\) AND flag:list AND flag:unread"
-               "Unread work mailing lists (lists.linaro.org)" ?l)
-              ("from:linaro.org and flag:unread"
-               "Latest unread Linaro posts from Linaro emails" ?L)
+              (:name "Linaro public TCWG posts"
+               :query "list:linaro-toolchain.lists.linaro.org OR maildir:/linaro/linaro-list/linaro-tcwg"
+               :hide-unread t
+               :key ?T)
+              (:name "Linaro private TCWG posts"
+               :query "to:tcwg@linaro.org"
+               :hide-unread t
+               :key ?t)
+              (:name "Latest Conf emails"
+               :query "list:conf.lists.linaro.org AND flag:unread"
+               :hide-unread t
+               :key ?c)
+              (:name "Latest Linaro-Dev emails"
+               :query "list:linaro-dev.lists.linaro.org AND flag:unread"
+               :hide-unread t
+               :key ?d)
+              (:name "Unread work mailing lists (lists.linaro.org)"
+               :query "from:linaro.org and flag:unread"
+               :hide-unread t
+               :key ?l)
               ;; Distro and others
               ;; Emacs
-              ("list:emacs-devel.gnu.org and flag:unread"
-               "Latest unread Emacs developer posts" ?E)
-              ("list:help-gnu-emacs.gnu.org and flag:unread"
-               "Latest unread Emacs user posts" ?e)
-              ("list:emacs-orgmode.gnu.org and flag:unread"
-               "Latest unread org-mode posts" ?O)))
+              (:name "Latest unread Emacs developer posts"
+               :query "list:emacs-devel.gnu.org and flag:unread"
+               :hide-unread t
+               :key ?E)
+              (:name "Latest unread Emacs user posts"
+               :query "list:help-gnu-emacs.gnu.org and flag:unread"
+               :hide-unread t
+               :key ?e)
+              (:name "Latest unread org-mode posts"
+               :query "list:emacs-orgmode.gnu.org and flag:unread"
+               :hide-unread t
+               :key ?O)))
            (I-am-on-server
             '(
               ;; Personal bookmarks
