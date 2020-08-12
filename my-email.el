@@ -278,6 +278,23 @@ Useful for replies and drafts")
       (when (re-search-backward "--")
         (kill-region start (- (match-beginning 0) 1))))))
 
+
+(defvar my-bad-addresses
+  '( "docs.google.com"
+     "\\(?:confirm.*@\\)"
+     "\\(?:\\(?:not?\\)-?reply\\)"
+     "\\(?:@bugs\\.launchpad\\.net\\)"
+     "\\(?:bounces[^@]*@\\)"
+     "\\(?:(via[^)]+)\\)"
+     "richard.hendreson@linaro.org")
+     "List of regexs to clean contact list.")
+
+(defun my-mu4e-contact-cleaner (addr)
+  "Clean out junk emails from contacts"
+  (if (--any (string-match-p it addr) my-bad-addresses)
+      nil
+    addr))
+
 (use-package mu4e-compose
   :hook ((mu4e-compose-mode . my-set-compose-directory)
           (mu4e-compose-pre . my-choose-mail-address))
@@ -286,8 +303,10 @@ Useful for replies and drafts")
               ("<f5>". my-search-code-from-email))
   :config (setq mu4e-compose-signature 'my-sig-function
                 mu4e-compose-complete-addresses t
-                mu4e-compose-complete-only-personal nil
-                mu4e-compose-complete-only-after "2013-11-01"))
+                mu4e-compose-complete-only-personal nil ;; personal seems to miss things
+
+                mu4e-compose-complete-only-after "2013-11-01"
+                mu4e-contact-process-function #'my-mu4e-contact-cleaner))
 
 
 (defun my-update-async-jobs (ignored)
