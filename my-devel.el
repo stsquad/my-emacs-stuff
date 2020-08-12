@@ -52,6 +52,9 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :ensure t
   :commands rx)
 
+;; xr allows
+(use-package xr
+  :ensure t)
 
 (defhydra my-reb-hydra (:color teal)
   (concat "<TAB> Toggle syntax: %`reb-re-syntax ")
