@@ -319,7 +319,10 @@ Useful for replies and drafts")
   :commands mu4e-headers-mode
   :bind (:map mu4e-headers-mode-map
               ("C-c C-l" . org-store-link)
-              ("C-c t" . my-switch-to-thread))
+              ("C-c t" . my-switch-to-thread)
+              ("C-c d" . my-set-view-directory)
+              ("C-x n l" . my-narrow-to-list)
+              ("C-c A" . my-mu4e-apply-marked-mbox-patches))
   :hook ((mu4e-headers-mode . my-yas-local-disable)
          (mu4e-headers-found . my-set-view-directory)
          (mu4e-headers-search . my-update-async-jobs))
@@ -348,7 +351,10 @@ Useful for replies and drafts")
          (if (eq mu4e-compose-cite-function
                  'message-cite-original-without-signature)
              (setq mu4e-compose-cite-function 'message-cite-original)
-           (setq mu4e-compose-cite-function 'message-cite-original-without-signature))))
+           (setq mu4e-compose-cite-function
+                 'message-cite-original-without-signature))))
+  ("g" (lambda() (interactive)
+         (setq mu4e-view-use-gnus (not mu4e-view-use-gnus))) "toggle GNUs viewer")
   ("t" my-hydra-toggle/body "main toggles"))
 
 (defvar my-gnus-cc-hiding-overlay nil
@@ -383,11 +389,19 @@ Useful for replies and drafts")
           (overlay-put my-gnus-cc-hiding-overlay 'display "...")
           (overlay-put my-gnus-cc-hiding-overlay 'evaporate t))))))
 
+(defun my-mu4e-kill-message-id ()
+  "Snarf the message-id into the kill ring."
+  (interactive)
+  (kill-new (mu4e-message-field-at-point :message-id)))
+
 (use-package mu4e-view
   :commands mu4e-view
   :bind (:map mu4e-view-mode-map
               ("C-c C-l". org-store-link)
+              ("C-c f" . my-mu4e-search-from)
               ("C-c t" . my-switch-to-thread)
+              ("C-c i" . my-mu4e-kill-message-id)
+              ("C-x n l" . my-narrow-to-list)
               ("C-x t" . my-mu4e-view-toggle/body)
               ("h"     . my-gnus-article-toggle-long-cc))
   :hook (mu4e-view-mode . my-set-view-directory)
@@ -474,6 +488,23 @@ Move next if the message at point is what we have just processed."
               (when (yes-or-no-p (format "Visit:%s?" result))
                 (magit-show-commit (car (split-string result))))
             (message "no commit found :-(")))))))
+
+(defun my-mu4e-search-for-id ()
+  "Find the Message-Id in the buffer and search for it."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (when (re-search-forward my-capture-msgid-re)
+      (mu4e-headers-search (format "i:%s" (match-string-no-properties 1))))))
+
+
+(defun my-mu4e-search-from (&optional edit)
+  "Find msgs from author of the message, optionally EDIT the search."
+  (interactive "P")
+  (let ((from (mu4e-message-field-at-point ':from)))
+    (when from
+      (mu4e-headers-search
+       (format "f:%s" (cdr (car from))) nil edit))))
 
 (use-package mu4e
   :commands mu4e
