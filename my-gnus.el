@@ -34,8 +34,8 @@
   (interactive)
   (let ((buffer-file-name
          (make-temp-file "gnus-article" nil ".patch")))
-    (set-buffer-modified-p t)
-    (save-buffer)
+    ;; (set-buffer-modified-p t)
+    (save-buffer 0)
     (my-git-apply-mbox buffer-file-name)
     (delete-file buffer-file-name)))
 
@@ -97,7 +97,7 @@
 (use-package gnus-msg
   :config (setq gnus-posting-styles
                 '((my-gnus-reply-find-group
-                   ("Cc" my-gnus-reply-find-group)))))
+                   ("Bcc" my-gnus-reply-find-group)))))
 
 (use-package gnus-summary
   :bind (:map gnus-summary-mode-map
