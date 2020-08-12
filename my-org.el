@@ -183,11 +183,11 @@ Added: %t"
 
 ;; ORG Based review automation
 
-(defun my-org-maybe-capture-review-tag-or-comment ()
+(defun my-org-maybe-capture-review-tag-or-comment (&optional prefix)
   "Check buffer for DCO tags and save, if not queue a review comment."
-  (interactive)
+  (interactive "P")
   (let ((tags (my-capture-review-tags)))
-    (if (not tags)
+    (if (or prefix (not tags))
         (org-capture nil "r")
       (kill-new (mapconcat 'identity tags "\n"))
       (org-capture nil "g"))))
