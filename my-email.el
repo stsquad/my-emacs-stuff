@@ -470,9 +470,9 @@ Move next if the message at point is what we have just processed."
         (let ((result (magit-git-string
                        "log" "origin/master" "--no-merges" "--oneline"
                        "--grep" title)))
-          (if (and result
-                     (yes-or-no-p (format "Visit:%s?" result)))
-              (magit-show-commit (car (split-string result)))
+          (if result
+              (when (yes-or-no-p (format "Visit:%s?" result))
+                (magit-show-commit (car (split-string result))))
             (message "no commit found :-(")))))))
 
 (use-package mu4e
