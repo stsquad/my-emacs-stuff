@@ -516,6 +516,10 @@ Move next if the message at point is what we have just processed."
   (interactive)
   (mu4e-headers-search (format "i:%s" (my-mu4e-kill-message-id 't))))
 
+(defun mu4e-action-git-apply-b4 (msg)
+  "Find the Message-Id in the buffer and pass to b4"
+  (interactive)
+  (my-git-fetch-and-apply-via-b4 (my-mu4e-kill-message-id 't)))
 
 (defun my-mu4e-search-from (&optional edit)
   "Find msgs from author of the message, optionally EDIT the search."
@@ -700,6 +704,7 @@ to `my-mu4e-patches' for later processing."
            (append
             '(("gapply git patches" . mu4e-action-git-apply-patch)
               ("mgit am patch" . mu4e-action-git-apply-mbox)
+              ("bb4 am patch" . mu4e-action-git-apply-b4)
               ("crun checkpatch script" . my-mu4e-action-run-check-patch)
               ("MCheck if merged" . my-mu4e-action-check-if-merged)))))
     ;; Bookmarks

@@ -140,6 +140,20 @@ bother asking for the git tree again (useful for bulk actions)."
             (if signoff "--signoff" "")
             (shell-quote-argument file))))))
 
+(defun my-git-fetch-and-apply-via-b4 (id)
+  "Fetch `id' via the b4 tool and apply it."
+  (interactive "sMessage-id:")
+  (with-temp-buffer
+    (call-process "b4" nil t t "am" id)
+    (goto-char 0)
+    (when (re-search-forward
+           (rx (: "git am "
+                  (group (one-or-more (not space)) ".mbx"))))
+      (let ((mbox (match-string-no-properties 1)))
+        (my-git-apply-mbox mbox t)
+        (message "applied %s" mbox)
+        (delete-file mbox)))))
+
 (defun my-git-apply-region (beg end)
   "Apply region as a patch."
   (interactive "r")
