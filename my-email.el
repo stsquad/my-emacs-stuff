@@ -389,9 +389,9 @@ Useful for replies and drafts")
           (overlay-put my-gnus-cc-hiding-overlay 'display "...")
           (overlay-put my-gnus-cc-hiding-overlay 'evaporate t))))))
 
-(defun my-mu4e-kill-message-id ()
-  "Snarf the message-id into the kill ring."
-  (interactive)
+(defun my-mu4e-kill-message-id (&optional no-kill)
+  "Snarf the message-id into the kill ring unless NO-KILL prefix."
+  (interactive "P")
   (let ((refs))
     ;; References
     (save-excursion
@@ -406,11 +406,15 @@ Useful for replies and drafts")
                         'id id) refs))
 
     ;; do it
-    (kill-new
-     (get-text-property 0 'id
-                        (if (< 1 (length refs))
-                              (ivy-read "select reference:" refs)
-                          (car refs))))))
+    (let ((final
+           (get-text-property 0 'id
+                              (if (< 1 (length refs))
+                                  (ivy-read "select reference:" refs)
+                                (car refs)))))
+      (message "message-id: %s" final)
+      (unless no-kill
+        (kill-new final))
+      final)))
 
 (use-package mu4e-view
   :commands mu4e-view
@@ -510,10 +514,7 @@ Move next if the message at point is what we have just processed."
 (defun my-mu4e-search-for-id ()
   "Find the Message-Id in the buffer and search for it."
   (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (when (re-search-forward my-capture-msgid-re)
-      (mu4e-headers-search (format "i:%s" (match-string-no-properties 1))))))
+  (mu4e-headers-search (format "i:%s" (my-mu4e-kill-message-id 't))))
 
 
 (defun my-mu4e-search-from (&optional edit)
