@@ -392,7 +392,25 @@ Useful for replies and drafts")
 (defun my-mu4e-kill-message-id ()
   "Snarf the message-id into the kill ring."
   (interactive)
-  (kill-new (mu4e-message-field-at-point :message-id)))
+  (let ((refs))
+    ;; References
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward my-capture-msgid-re nil t)
+        (let ((id (match-string-no-properties 1)))
+          (push (propertize (format "reference: %s" id)
+                            'id id) refs))))
+    ;; Headers
+    (let ((id (mu4e-message-field-at-point :message-id)))
+      (push (propertize (format "header: %s" id)
+                        'id id) refs))
+
+    ;; do it
+    (kill-new
+     (get-text-property 0 'id
+                        (if (< 1 (length refs))
+                              (ivy-read "select reference:" refs)
+                          (car refs))))))
 
 (use-package mu4e-view
   :commands mu4e-view
