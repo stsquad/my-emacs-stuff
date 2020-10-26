@@ -286,6 +286,9 @@ Useful for replies and drafts")
      "\\(?:@bugs\\.launchpad\\.net\\)"
      "\\(?:bounces[^@]*@\\)"
      "\\(?:(via[^)]+)\\)"
+     "\\(?:via [^<]+<[^>]+>\\)"
+     "qemu-devel@nongun.org"
+     "qemu-devel@nonngnu.org"
      "richard.hendreson@linaro.org")
      "List of regexs to clean contact list.")
 
