@@ -54,7 +54,7 @@
     (setq default-directory
           (or (assoc-default gnus-newsgroup-name
                              my-gnus-group-dir-mapping)
-              (default-directory)))))
+              default-directory))))
 
 (use-package gnus-art
   :hook (gnus-article-prepare . my-gnus-article-set-dir)
@@ -131,9 +131,8 @@
     gnus-activate-level 3
     ;; Thread sorting (primary function is the last)
     gnus-thread-sort-functions
-    '(gnus-thread-sort-by-most-recent-number
-      gnus-thread-sort-by-total-score
-      gnus-thread-sort-by-most-recent-date)
+    '(gnus-thread-sort-by-total-score
+      gnus-thread-sort-by-number)
     gnus-read-active-file nil)))
 
 
