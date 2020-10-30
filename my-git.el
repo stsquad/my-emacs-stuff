@@ -32,6 +32,19 @@
   (remove-hook 'find-file-hook 'vc-refresh-state)
   (setq vc-handled-backends nil))
 
+;; As the built-in project.el support expects to use vc-mode hooks to
+;; find the root of projects we need to provide something equivalent
+;; for it.
+(defun my-git-project-finder (dir)
+  "Integrate .git project roots."
+  (let ((dotgit (and (setq dir (locate-dominating-file dir ".git"))
+                     (expand-file-name dir))))
+    (and dotgit
+         (cons 'transient (file-name-directory dotgit)))))
+
+(add-hook 'project-find-functions 'my-git-project-finder)
+
+
 (use-package magit
   :ensure t
   :commands magit-status
@@ -67,7 +80,6 @@
           ;; Main toggles
           ("t" my-hydra-toggle/body nil)
           )))))
-
 
 ;; Tweaks to git-commit-mode
 ;;

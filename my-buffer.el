@@ -37,8 +37,30 @@
   (ibuffer nil "*Ibuffer-my-bs*" '((filename . ".*")) nil t)
   (define-key (current-local-map) "a" 'ibuffer-bs-toggle-all))
 
+(use-package bufler
+  :ensure t
+  :bind ("C-x C-b" . bufler)
+  :config (bufler-defgroups
+            (group
+              ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
+              (group-or "*Help/Info*"
+                        (mode-match "*Help*" (rx bos "help-"))
+                        (mode-match "*Info*" (rx bos "info-"))))
+            (group
+             ;; Subgroup collecting these "special special" buffers
+             ;; separately for convenience.
+             (name-match "**Special**"
+                         (rx bos "*" (or "Messages" "Warnings"
+                                         "scratch" "Backtrace") "*")))
+            (group
+             (auto-project))
+            (auto-directory)
+            (auto-mode)))
+
+
 (use-package ibuffer
   :commands ibuffer
+  :disabled t
   :bind ("C-x C-b" . my-ibuffer-bs-show)
   :config
   (progn
