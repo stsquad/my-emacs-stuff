@@ -116,6 +116,19 @@
               ("C-c f" . my-commit-mode-add-fixes)))
 
 ;;
+;;
+;; Checking if merged workflow
+;;
+(defun my-magit-check-if-subject-merged (subj branch &optional dir)
+  "Check if `SUBJ' is in your `BRANCH' under `DIR'."
+  (interactive)
+  (unless branch
+    (setq branch "origin/master"))
+  (unless dir
+    (setq dir (read-directory-name "Project:")))
+  (let ((default-directory dir))
+    (magit-git-string
+     "log" branch "--no-merges" "--oneline" "--grep" subj)))
 
 ;; Applying Patches Workflow
 ;;
