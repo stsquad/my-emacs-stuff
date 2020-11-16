@@ -493,12 +493,33 @@ Move next if the message at point is what we have just processed."
 ;; Check if patch merged into a given tree
 ;;
 ;; Subject: [Qemu-devel] [PATCH 1/2] tcg: Allow constant pool entries in the prologue
+;; [PATCH v3 0/7] silence the compiler warnings
+;; [PATCH v3 1/7] target/i386: silence the compiler warnings in gen_shiftd_rm_T1
+;; [PATCH v3 for 5.2 3/7] more stuff for a patch
+;; [PATCH v12 for 5.1-rc1 5/7] even more
+;; [PATCH for 5.2] random patch
+;; [RFC PATCH] fix thing
+;; TODO: move to my-vars, add ert tests
+
 (defvar my-extract-patch-title
   (rx (:
        (or "[PATCH" "[RFC") (zero-or-more print) "]"
        (zero-or-more space)
-       (group (one-or-more print))))
-  "Regex to extract patch title from email subject.")
+       (group-n 1 (one-or-more print))))
+  "Regex to extract patch title. Simple version that doesn't take into
+  account series and re-roll formats.")
+
+(defvar my-extract-patch-title-from-series
+  (rx (: (or "[PATCH" "[RFC")
+         (zero-or-more space)
+         (group-n 2 (zero-or-one (: (in "vV") (one-or-more digit))))
+         (minimal-match (zero-or-more print))
+         (group-n 3 (: (in "1-9") (zero-or-more digit)))
+         "/" (zero-or-more print) "]"
+         (zero-or-more space)
+         (group-n 1 (one-or-more print))))
+  "Regex to extract patch title (and other bits) from email subject.
+Groups: 1:subject, 2:revision, 3: patch number. ")
 
 (defun my-mu4e-action-check-if-merged (msg)
   "Check if `MSG' is in your tree."
@@ -672,16 +693,24 @@ to `my-mu4e-patches' for later processing."
                              (or
                               (mu4e-message-field-raw msg :in-reply-to)
                               (mu4e-message-field-raw msg :message-id)))
-               (string-match
-                (rx
-                 (: bol "["
-                    (minimal-match (zero-or-more (not (any "/"))))
-                    (or (in "1-9")
-                        (: (any "1-9") (one-or-more (any "0-9"))))
-                    "/"))
-                (mu4e-message-field-raw msg :subject)))
+               (string-match my-extract-patch-title-from-series (mu4e-message-field-raw msg :subject)))
         (add-to-list 'my-mu4e-patches msg)))
 
+    (defun my-mu4e-unapplied-patch-match (msg parent-id)
+      "Same at `my-mu4e-patch-match' but only selecting un-applied
+patches."
+      (let ((subj (mu4e-message-field-raw msg :subject)))
+        (when (and (string-match parent-id
+                                 (or
+                                  (mu4e-message-field-raw msg :in-reply-to)
+                                  (mu4e-message-field-raw msg :message-id)))
+                 (string-match my-extract-patch-title-from-series
+                               subj))
+          (message "Checking: %s" subj)
+          (unless (my-magit-check-if-subject-merged
+                   (match-string-no-properties 1 subj) "HEAD"
+                   default-directory)
+            (add-to-list 'my-mu4e-patches msg)))))
 
     ;; Param function
     (defun my-mu4e-patch-setup ()
@@ -698,9 +727,11 @@ to `my-mu4e-patches' for later processing."
          :char ("#" . "#")
          :prompt "Patch")))
 
-    (add-to-list
-     'mu4e-headers-custom-markers
-     '("Patches" my-mu4e-patch-match my-mu4e-patch-setup))
+    (setq mu4e-headers-custom-markers
+          (delete-dups
+           (append mu4e-headers-custom-markers
+                   '(("Patches" my-mu4e-patch-match my-mu4e-patch-setup)
+                     ("Unapplied patches" my-mu4e-unapplied-patch-match my-mu4e-patch-setup)))))
     ;; Message actions
     (setq mu4e-view-actions
           (delete-dups
