@@ -37,45 +37,43 @@
   (ibuffer nil "*Ibuffer-my-bs*" '((filename . ".*")) nil t)
   (define-key (current-local-map) "a" 'ibuffer-bs-toggle-all))
 
-(use-package bufler
-  :ensure t
-  :bind ("C-x C-b" . bufler)
-  :config (bufler-defgroups
-            (group
-              ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
-              (group-or "*Help/Info*"
-                        (mode-match "*Help*" (rx bos "help-"))
-                        (mode-match "*Info*" (rx bos "info-"))))
-            (group
-             ;; Subgroup collecting these "special special" buffers
-             ;; separately for convenience.
-             (name-match "**Special**"
-                         (rx bos "*" (or "Messages" "Warnings"
-                                         "scratch" "Backtrace") "*")))
-            (group
-             (auto-project))
-            (auto-directory)
-            (auto-mode)))
-
-
-(use-package ibuffer
-  :commands ibuffer
-  :disabled t
-  :bind ("C-x C-b" . my-ibuffer-bs-show)
-  :config
-  (progn
-    (require 'ibuf-ext)
-    (setq ibuffer-saved-filters
-          (quote (("mysrc" ((filename . "~/mysrc/*")))
-                  ("tramp" ((filename . "\\/ssh:")))
-                  ("irc" ((mode . circe-mode)))
-                  ("magit" ((mode . magit-status-mode)))
-                  ("programming" ((or (mode . emacs-lisp-mode)
-                                      (mode . cperl-mode)
-                                      (mode . c-mode)
-                                      (mode . java-mode)
-                                      (mode . idl-mode)
-                                      (mode . lisp-mode)))))))))
+(if (version<= "26.3" emacs-version)
+    (use-package bufler
+      :ensure t
+      :bind ("C-x C-b" . bufler)
+      :config (bufler-defgroups
+               (group
+                ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
+                (group-or "*Help/Info*"
+                          (mode-match "*Help*" (rx bos "help-"))
+                          (mode-match "*Info*" (rx bos "info-"))))
+               (group
+                ;; Subgroup collecting these "special special" buffers
+                ;; separately for convenience.
+                (name-match "**Special**"
+                            (rx bos "*" (or "Messages" "Warnings"
+                                            "scratch" "Backtrace") "*")))
+               (group
+                (auto-project))
+               (auto-directory)
+               (auto-mode)))
+  (use-package ibuffer
+    :commands ibuffer
+    :bind ("C-x C-b" . my-ibuffer-bs-show)
+    :config
+    (progn
+      (require 'ibuf-ext)
+      (setq ibuffer-saved-filters
+            (quote (("mysrc" ((filename . "~/mysrc/*")))
+                    ("tramp" ((filename . "\\/ssh:")))
+                    ("irc" ((mode . circe-mode)))
+                    ("magit" ((mode . magit-status-mode)))
+                    ("programming" ((or (mode . emacs-lisp-mode)
+                                        (mode . cperl-mode)
+                                        (mode . c-mode)
+                                        (mode . java-mode)
+                                        (mode . idl-mode)
+                                        (mode . lisp-mode))))))))))
 
 (provide 'my-buffer)
 ;;; my-buffer.el ends here
