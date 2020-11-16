@@ -401,9 +401,12 @@ Useful for replies and drafts")
           (push (propertize (format "reference: %s" id)
                             'id id) refs))))
     ;; Headers
-    (let ((id (mu4e-message-field-at-point :message-id)))
-      (push (propertize (format "header: %s" id)
-                        'id id) refs))
+    (when (mu4e-message-at-point)
+      (let ((id (mu4e-message-field-at-point :message-id)))
+        (push (propertize (format "header: %s" id)
+                          'id id) refs)))
+    ;; Gnus
+
 
     ;; do it
     (let ((final
