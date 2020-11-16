@@ -249,17 +249,14 @@ Useful for replies and drafts")
   "Switch the `default-directory' when composing an email."
   (interactive)
   (let ((cc (message-fetch-field "cc"))
-        (to (message-fetch-field "to"))
-        (all))
-    (when (stringp cc)
-      (nconc all (s-split ", " cc)))
-    (when (stringp to)
-      (nconc all (s-split ", " to)))
+        (to (message-fetch-field "to")))
     (let ((dir (cdr
                 (assoc
                  (--first
                   (assoc-default it my-mail-address-mapping)
-                  all)
+                  (nconc
+                   (when (stringp cc) (s-split ", " cc))
+                   (when (stringp to) (s-split ", " to))))
                  my-mail-address-mapping))))
     (when dir (setq default-directory dir)))))
 
