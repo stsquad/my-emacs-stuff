@@ -442,9 +442,9 @@ Useful for replies and drafts")
 ;; spam learning: ionice -c 3 sa-learn --progress --spam
 ;; ~/Maildir/.Spam/cur/*
 
-(use-package shell-command-queue
-  :if (file-exists-p "~/.emacs.d/shell-command-queue.el")
-  :load-path "~/.emacs.d/")
+;;(use-package shell-command-queue
+;;  :if (file-exists-p "~/.emacs.d/shell-command-queue.el")
+;;  :load-path "~/.emacs.d/")
 
 ;; loosely hacked from mu4e-control.el HEAD
 (defvar my-mu4e-register-spam-cmd
