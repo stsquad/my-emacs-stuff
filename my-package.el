@@ -49,6 +49,10 @@
 (when (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
   (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path)))
 
+;; Workaround https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341
+(when (and (version<= "26.0" emacs-version) (version<= emacs-version "26.3"))
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
+
 (when (version<= "24.4" emacs-version)
   ;; Advise installs to refresh
   ;; see: https://github.com/jwiegley/use-package/issues/256
@@ -67,7 +71,7 @@ package is installed programatically."
 
 (require 'use-package)
 
-(use-package async-bytecomp
+(use-package async
   :ensure t
   :init (async-bytecomp-package-mode))
 
