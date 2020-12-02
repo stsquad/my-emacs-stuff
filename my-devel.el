@@ -183,6 +183,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 ;; shell modes
 
+(use-package sh-mode
+  :mode ((".*\.sh" . sh-mode)
+         (".*\.bbclass" . sh-mode)
+         (".*\.bb" . sh-mode)))
+
 (use-package fish-mode
   :ensure t)
 
