@@ -696,13 +696,13 @@ bother asking for the git tree again (useful for bulk actions)."
     (defun my-mu4e-patch-match (msg parent-id)
       "Match any patches related to the parent-id. Add them
 to `my-mu4e-patches' for later processing."
-      (when
-          (and (string-match parent-id
-                             (or
-                              (mu4e-message-field-raw msg :in-reply-to)
-                              (mu4e-message-field-raw msg :message-id)))
-               (string-match my-extract-patch-title-from-series (mu4e-message-field-raw msg :subject)))
-        (add-to-list 'my-mu4e-patches msg)))
+      (let ((pid (or (mu4e-message-field-raw msg :in-reply-to)
+                     (mu4e-message-field-raw msg :message-id)))
+            (subj (mu4e-message-field-raw msg :subject)))
+        (when (and (string-match parent-id pid)
+                   subj
+                   (string-match my-extract-patch-title-from-series subj))
+          (add-to-list 'my-mu4e-patches msg))))
 
     (defun my-mu4e-unapplied-patch-match (msg parent-id)
       "Same at `my-mu4e-patch-match' but only selecting un-applied
