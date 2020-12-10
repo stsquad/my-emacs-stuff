@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: suggested-by
+# key: $sb
+# --
+Suggested-by: ${1:`(yas-completing-prompt "by:" (my-return-most-recent-mu4e-contacts))`}

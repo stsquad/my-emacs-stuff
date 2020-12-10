@@ -80,6 +80,14 @@
   (when local-mu4e
     (add-to-list 'load-path local-mu4e)))
 
+(defun my-return-most-recent-mu4e-contacts ()
+  "Return the most recent contacts for completion"
+  (split-string (shell-command-to-string
+                 (concat mu4e-mu-binary
+                         " find -n 100 "
+                         "--sortfield=date --reverse --fields f "
+                         "recip:alex.bennee | sort | uniq"))
+                "\n"))
 
 (defun my-rig-mu4e-for-idle-running ()
   "Setup more comprehensive indexing when Emacs is idle."
