@@ -202,7 +202,7 @@ all mu4e buffers and allow ivy selection of them.
      ("qemu-devel.nongnu.org" . "~/lsrc/qemu.git/")
      ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/linux.git/")
      ("kvm.vger.kernel.org" . "~/lsrc/linux.git/")
-     ("virtualization.lists.linux-foundation.org" . "~/lsrc/linux.git/") )
+     ("virtualization.lists.linux-foundation.org" ."~/lsrc/linux.git/"))
   "Mapping from mailing lists to source tree.")
 
 (defvar my-maildir-mapping
@@ -216,7 +216,8 @@ all mu4e buffers and allow ivy selection of them.
   ' (
      ("qemu-devel@gnu.org" . "~/lsrc/qemu.git/")
      ("qemu-devel@nongnu.org" . "~/lsrc/qemu.git/")
-      ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/linux.git/") )
+     ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/linux.git/")
+     ("xen-devel@lists.xenproject.org" . "~/lsrc/xen/xen.git"))
     "Mapping from target address to source tree.
 Useful for replies and drafts")
 
