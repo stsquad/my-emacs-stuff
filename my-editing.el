@@ -55,6 +55,7 @@
 (use-package expand-region
   :ensure t
   :commands (er/expand-region)
+  :hook ((gnus-article-mode-hook . er/add-text-mode-expansions))
   :bind (("C-SPC" . my-mark-or-expand-dwim)
          ("C-@" . my-mark-or-expand-dwim)
          ("C-=" . er/expand-region)))
