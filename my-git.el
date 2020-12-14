@@ -14,17 +14,11 @@
 (when I-am-at-work
   (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
 
-;; magit-file-mode is a minor mode for files that are under
-;; magit control (i.e. in git repos). It is a handy place to override
-;; global bindings - like the octopus like vc mode.
-(use-package magit-files
-  :commands global-magit-file-mode
-  :bind (:map magit-file-mode-map
-              ("<f5>" . my-counsel-git-grep)
-              ("C-x v l" . magit-log-buffer-file)
-              ("C-x v d" . magit-diff-buffer-file))
-  :defer 2
-  :config (global-magit-file-mode))
+(with-eval-after-load 'magit
+  (defun my-magit-file-bindings ()
+    "Setup my file bindings"
+    (local-set-key (kbd "<f5>") 'my-counsel-git-grep))
+  (add-hook 'magit-find-file-hook 'my-magit-file-bindings))
 
 ;; I only really use git, stamp on vc-mode....
 (with-eval-after-load 'vc
@@ -44,11 +38,20 @@
 
 (add-hook 'project-find-functions 'my-git-project-finder)
 
+(defun my-magit-dispatch (&optional prefix)
+  "My personal preference for magit-dispatch.
+While magit-file-dispatch is cool, falling back to magit-dispatch is
+not, I'd rather just go to magit-status. Lets make it so."
+  (interactive "P")
+  (if (or prefix (not (buffer-file-name)))
+      (magit-status)
+    (magit-file-dispatch)))
+
 
 (use-package magit
   :ensure t
   :commands magit-status
-  :bind (("C-x g" . magit-status)
+  :bind (("C-x g" . my-magit-dispatch)
          :map magit-hunk-section-map
          ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree))
   :init
