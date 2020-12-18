@@ -43,7 +43,9 @@
 While magit-file-dispatch is cool, falling back to magit-dispatch is
 not, I'd rather just go to magit-status. Lets make it so."
   (interactive "P")
-  (if (or prefix (not (buffer-file-name)))
+  (if (or prefix
+          (not (buffer-file-name))
+          (not (functionp 'magit-file-dispatch)))
       (magit-status)
     (magit-file-dispatch)))
 
