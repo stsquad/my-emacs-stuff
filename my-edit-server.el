@@ -12,6 +12,9 @@
 (use-package my-vars)
 (use-package my-web)
 
+(use-package jira-markup-mode
+  :ensure t)
+
 (use-package edit-server
   :load-path (lambda () (my-return-path-if-ok "~/mysrc/edit-with-emacs.git/servers"))
   :ensure t
@@ -47,6 +50,8 @@
   ;; Moin-moin
   (add-to-list 'edit-server-url-major-mode-alist
                '("wiki.linaro.org" . moinmoin-mode))
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("projects.linaro.org" . jira-markup-mode))
   ;; Diapora
   (add-to-list 'edit-server-url-major-mode-alist
                '("diasp.eu" . markdown-mode))
