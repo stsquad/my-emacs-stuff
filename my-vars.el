@@ -65,6 +65,13 @@
         (add-to-list 'tags (match-string-no-properties 0))))
     tags))
 
+
+(defvar my-capture-msgid-re
+  (rx (: (or "Based-on" "Message-Id" "patchew.org/QEMU")
+         (or "/" ": ") (zero-or-one "<")
+         (group (one-or-more (not (in ">" "/" blank cntrl))))))
+  "Regexp to extract Message-Id from git tags.")
+
 ;; This is used for grabbing logins
 (defvar my-ssh-login-re
   (rx (: (one-or-more alnum)
