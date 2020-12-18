@@ -132,7 +132,8 @@
     ;; Thread sorting (primary function is the last)
     gnus-thread-sort-functions
     '(gnus-thread-sort-by-total-score
-      gnus-thread-sort-by-number)
+      gnus-thread-sort-by-number
+      gnus-thread-sort-by-most-recent-date)
     gnus-read-active-file nil)))
 
 
