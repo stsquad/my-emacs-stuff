@@ -63,6 +63,8 @@
 ;;
 (use-package ivy
   :ensure t
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/swiper.git"))
   :commands ivy-mode
   :init (ivy-mode)
   :bind (("C-x b" . ivy-switch-buffer))
