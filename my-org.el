@@ -56,7 +56,7 @@ want something to run at the end then you need to use
 (defvar my-org-default-code-block nil
   "Default code block to run on `org-ctrl-c-ctrl-c'.
 
-This is used by my-org-run-default-block which is added to
+This is used by `my-org-run-default-block' which is added to
 `org-ctrl-c-ctrl-c-final-hook'")
 (make-variable-buffer-local 'my-org-default-code-block)
 
