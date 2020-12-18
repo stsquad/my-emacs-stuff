@@ -76,7 +76,7 @@
                    "~/src/emacs/mu/install/share/emacs/site-lisp/mu4e/")))
   (setq mu4e-mu-binary (or
                         (my-return-path-if-ok "/usr/bin/mu")
-                        (my-return-path-if-ok "~/bin/mu")))
+                        (my-return-path-if-ok "~/src/emacs/mu/install/bin/mu")))
   (when local-mu4e
     (add-to-list 'load-path local-mu4e)))
 
