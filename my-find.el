@@ -41,6 +41,9 @@
           (cons cmd (thing-at-point 'symbol)))))
     (funcall cmd nil dir)))
 
+(use-package counsel
+  :config (setq counsel-ag-base-command "ag --vimgrep -a %s"))
+
 (defun my-counsel-ag-from-here (&optional dir)
   "Start ag but from the directory the file is in (otherwise I would
 be using git-grep)."
