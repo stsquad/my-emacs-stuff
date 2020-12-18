@@ -179,7 +179,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;; checkpatch
 ;; currently disabled, there is also checkpatch for flycheck
 (use-package checkpatch-mode
-  :disabled t)
+  :after magit
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/mysrc/checkpatch-mode.git"))
+  :bind (:map magit-commit-section-map
+              ("C-x c" . checkpatch-run-from-magit)))
 
 ;; shell modes
 
