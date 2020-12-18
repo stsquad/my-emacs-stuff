@@ -793,6 +793,19 @@ patches."
               (:name "From my boss"
                :query "to:alex.bennee@linaro.org AND from:maxim.kuvyrkov@linaro.org"
                :key ?B)
+              (:name "From my Engineers"
+                     :query (concat "recip:alex.bennee@linaro.org"
+                                    " AND ("
+                                    "f:masami.hiramatsu@linaro.org OR "
+                                    "f:takahiro.akashi@linaro.org OR "
+                                    "f:arnd@linaro.org OR "
+                                    "f:jean-philippe@linaro.org OR "
+                                    "f:peter.maydell@linaro.org OR "
+                                    "f:haibo.xu@linaro.org OR "
+                                    "f:richard.henderson@linaro.org"
+                                    ") "
+                                    "AND NOT (flag:list OR recip:nongnu.org)")
+               :key ?e)
               (:name "In the last hour"
                :query "date:1h..now"
                :hide-unread t
@@ -813,20 +826,30 @@ patches."
                :key ?C)
               ;; Virt related
               (:name "Latest QEMU posts (unread)"
-               :query "list:qemu-devel* and flag:unread"
+               :query "(list:qemu-devel* OR recip:qemu-devel@nongnu.org) and flag:unread"
                :hide-unread t
                :key ?q)
+              (:name "Latest QEMU Maintainer Posts"
+               :query "recip:alex.bennee AND recip:qemu-devel AND (b:/fpu/ OR b:\"tests/fp\" OR b:\"tests/tcg/multiarch\" OR b:gdbstub OR b:plugin OR b:semihosting OR b:travis OR b:shippable OR b:docker OR b:\"tests/vm\" OR b:gitlab OR b:\"tests/tcg/Makefile\" OR b:gitdm)"
+               :hide-unread t
+               :key ?Q)
               (:name "QEMU ARM posts"
-               :query "(list:qemu-devel* AND (s:aarch64 OR s:arm OR s:A64)) OR list:qemu-arm*)"
+               :query "((list:qemu-devel* OR recip:qemu-devel@nongnu.org) AND (s:aarch64 OR s:arm OR s:A64)) OR (list:qemu-arm* OR recip:qemu-arm@nongnu.org)"
                :hide-unread t
                :key ?a)
               (:name "virtio-dev posts"
                :query "recip:virtio-dev"
                :key ?V)
               (:name "QEMU Softfloat Posts"
-               :query "((list:qemu-devel* OR list:qemu-arm*) AND (s:fpu OR s:softfloat OR s:float))"
+               :query "((list:qemu-devel* OR list:qemu-arm* OR recip:qemu-*) AND (s:fpu OR s:softfloat OR s:float))"
                :hide-unread t
                :key ?o)
+              (:name "Project Stratos"
+               :query "maildir:/linaro/linaro-list/stratos-dev OR recip:stratos-dev@op-lists.linaro.org"
+               :key ?R)
+              (:name "Xen Devel (unread)"
+               :query "(list:xen-devel* OR recip:xen-devel@lists.xenproject.org) and flag:unread"
+               :key ?x)
               (:name "Valgrind"
                :query "list:valgrind*"
                :hide-unread t
@@ -848,6 +871,10 @@ patches."
                :query "list:linaro-dev.lists.linaro.org AND flag:unread"
                :hide-unread t
                :key ?d)
+              (:name "Latest Linaro List emails"
+               :query "(list:linaro* OR recip:op-lists.linaro.org) AND flag:unread"
+               :hide-unread t
+               :key ?L)
               (:name "Unread work mailing lists (lists.linaro.org)"
                :query "from:linaro.org and flag:unread"
                :hide-unread t
