@@ -62,7 +62,7 @@
 
 (use-package ert-async
   :config (remove-hook 'emacs-lisp-mode-hook 'ert--activate-font-lock-keywords)
-  :hook (emacs-lisp-mode-hook . ert-async-activate-font-lock-keywords))
+  :hook (emacs-lisp-mode . ert-async-activate-font-lock-keywords))
 
 
 (provide 'my-elisp)
