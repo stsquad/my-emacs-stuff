@@ -25,8 +25,8 @@
   (require 'my-utils)
   (should (eql (which-lookup "foo") nil))
   (should (string-match "emacs" (which-lookup "emacs")))
-  (should (string-equal (which-lookup '("true" "false")) "/bin/true"))
-  (should (string-equal (which-lookup '("not-there" "true")) "/bin/true")))
+  (should (string-match "bin/true" (which-lookup '("true" "false"))))
+  (should (string-match "bin/true" (which-lookup '("not-there" "true")))))
 
 (provide 'my-ert)
 ;;; my-ert.el ends here
