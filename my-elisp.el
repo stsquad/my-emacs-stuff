@@ -60,7 +60,9 @@
   (add-to-list 'safe-local-variable-values
                '(lisp-indent-function . common-lisp-indent-function)))
 
+;; This seems to cause problems for booting up emacs daemon
 (use-package ert-async
+  :after ert
   :config (remove-hook 'emacs-lisp-mode-hook 'ert--activate-font-lock-keywords)
   :hook (emacs-lisp-mode . ert-async-activate-font-lock-keywords))
 
