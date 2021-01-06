@@ -179,8 +179,16 @@ bother asking for the git tree again (useful for bulk actions)."
     (when (re-search-forward
            (rx (: "git am "
                   (group (one-or-more (not space)) ".mbx"))))
-      (let ((mbox (match-string-no-properties 1)))
-        (my-git-apply-mbox mbox t)
+      (let ((mbox (match-string-no-properties 1))
+            (need-sob nil))
+        (with-temp-buffer
+          (insert-file-contents mbox)
+          (goto-char 0)
+          (unless (re-search-forward
+                   (format "Signed-of-by: Alex Bennée <%s>"
+                           user-mail-address) nil t)
+                   (setq need-sob 't)))
+        (my-git-apply-mbox mbox need-sob)
         (message "applied %s" mbox)
         (delete-file mbox)))))
 
