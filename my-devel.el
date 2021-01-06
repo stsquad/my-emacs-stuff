@@ -235,6 +235,9 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :mode ((".*\.mak" . makefile-gmake-mode)
          ("Makefile\..*" . makefile-gmake-mode)))
 
+(use-package meson-mode
+  :ensure t)
+
 ;; Handle expect files
 (use-package tcl
   :mode ("\\.expect\\'" . tcl-mode))
