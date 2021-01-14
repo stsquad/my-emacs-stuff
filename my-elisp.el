@@ -53,6 +53,7 @@
 (use-package lisp-mode
   :commands emacs-lisp-mode
   :hook (emacs-lisp-mode . my-elisp-hook-functions)
+  :mode ((".*\.el.gz" . emacs-lisp-mode))
   :bind (:map emacs-lisp-mode-map
               ("C-x e" . my-macrostep-expand-wrapper)
               ("C-x i" . ielm))
