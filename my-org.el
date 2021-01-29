@@ -347,7 +347,7 @@ Return the filespec of the jump."
             (pos (cdr (car link))))
       (if nojump
           (format "%s:%d" buf pos)
-        (switch-to-buffer buf)
+        (switch-to-buffer-other-window buf)
         (goto-char pos)
         (save-excursion
           (org-up-heading-safe)
