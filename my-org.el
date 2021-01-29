@@ -403,10 +403,10 @@ Return the filespec of the jump."
                  'my-save-org-position-in-bookmark)
 
     ;; Ditta
-    (let ((ditta-path "/usr/share/ditaa/ditaa.jar"))
-      (when (file-exists-p ditta-path)
-        (setq org-ditaa-jar-path ditta-path)))
-    
+    (setq org-ditaa-jar-path
+          (find-valid-file (list (concat (getenv "HOME") "/bin/ditaa.jar")
+                                  "/usr/share/ditaa/ditaa.jar")))
+
     (with-eval-after-load 'hydra
       (global-set-key
        (kbd "C-x O")
