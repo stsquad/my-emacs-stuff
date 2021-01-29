@@ -86,6 +86,21 @@ not, I'd rather just go to magit-status. Lets make it so."
           ("t" my-hydra-toggle/body nil)
           )))))
 
+;; DCO helpers
+;;
+
+(defun my-dco-address ()
+  "Return my DCO address."
+  (format "Alex Bennée <%s>" user-mail-address))
+
+(defun my-check-for-my-signoff ()
+  "Return t if my signoff is found in the current buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward
+     (format "Signed-off-by: %s" (my-dco-address))
+     nil t)))
+
 ;; Tweaks to git-commit-mode
 ;;
 ;; Mainly hooks for automation
@@ -183,11 +198,7 @@ bother asking for the git tree again (useful for bulk actions)."
             (need-sob nil))
         (with-temp-buffer
           (insert-file-contents mbox)
-          (goto-char 0)
-          (unless (re-search-forward
-                   (format "Signed-of-by: Alex Bennée <%s>"
-                           user-mail-address) nil t)
-                   (setq need-sob 't)))
+          (setq need-sob (my-check-for-my-signoff)))
         (my-git-apply-mbox mbox need-sob)
         (message "applied %s" mbox)
         (delete-file mbox)))))
