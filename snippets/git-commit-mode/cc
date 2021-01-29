@@ -2,4 +2,4 @@
 # name: cc
 # key: Cc:
 # --
-Cc: ${1:`(yas-completing-prompt (my-return-most-recent-mu4e-contacts))`}
+Cc: ${1:`(yas-completing-prompt "cc:" (my-return-most-recent-mu4e-contacts))`}
