@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: cc
+# key: Cc:
+# --
+Cc: ${1:`(yas-completing-prompt (my-return-most-recent-mu4e-contacts))`}

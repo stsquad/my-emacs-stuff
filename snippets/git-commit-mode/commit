@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: commit
+# key: $commit
+# --
+${1:`(magit-git-str "showref" (magit-read-range-or-commit "Reference:"))`}
