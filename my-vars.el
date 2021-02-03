@@ -48,12 +48,16 @@
 ;; This is used for grabbing Reviewed-by and other such tags from a
 ;; mailing list.
 ;;
-(defvar my-dco-tag-re
-  (rx (: bol (zero-or-more (in blank))                        ;; fresh line
-         (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
+(defvar my-bare-dco-tag-re
+ (rx (: (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
          (one-or-more (in alpha blank "-."))                  ;;name
          blank
          "<" (one-or-more (not (in ">"))) ">"))               ;; email
+  "Regexp to match plain DCO tag")
+
+(defvar my-dco-tag-re
+  (rx (: bol (zero-or-more (in blank))
+         (eval `(: ,@my-bare-dco-tag-rx))))
   "Regexp to match DCO style tag.")
 
 (defun my-capture-review-tags ()

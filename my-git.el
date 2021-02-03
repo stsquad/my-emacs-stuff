@@ -124,6 +124,43 @@ not, I'd rather just go to magit-status. Lets make it so."
             (insert "\n")
             (message "Added %d tags to buffer" (length tags))))))))
 
+(defun my-git-check-for-updates-with-b4 (id subject)
+  "Fetch `id' via the b4 tool and check for new tags."
+  (let ((tags)
+        (add-dco (rx (: "+ " (group (regexp my-bare-dco-tag-re))))))
+    (with-temp-buffer
+      (call-process "b4" nil t t "am" id "-o" "-")
+      (goto-char 0)
+      (when (re-search-forward subject nil t)
+        (forward-line)
+        (beginning-of-line)
+        (while (string-match add-dco (thing-at-point 'line))
+          (push (match-string-no-properties 1 (thing-at-point 'line)) tags)
+          (forward-line))))
+    tags))
+
+(defun my-commit-update-with-b4 ()
+  "Check if the current commit has tags from it's last posting.
+
+This only works if there is a message id in the buffer to search for."
+  (interactive)
+  (let ((subj) (id))
+    (save-excursion
+      (goto-char 0)
+      (setq subj (substring-no-properties (thing-at-point 'line)))
+      (if (re-search-forward my-capture-msgid-re nil t)
+          (setq id (match-string-no-properties 1))))
+    (when (and subj id)
+      (let ((tags (my-git-check-for-updates-with-b4 id subj)))
+        (--map
+         (save-excursion
+           (goto-char 0)
+           (when (not (re-search-forward it nil t))
+             (re-search-forward my-capture-msgid-re nil t)
+             (beginning-of-line)
+             (insert it ?\n))) tags)))))
+
+
 ;; requires the showfix alias in .gitconfig
 (defun my-commit-mode-add-fixes (commit)
   "Insert a Fixes line, selecting a COMMIT."
@@ -132,6 +169,7 @@ not, I'd rather just go to magit-status. Lets make it so."
 
 (use-package git-commit
   :bind (:map git-commit-mode-map
+              ("C-c b" . my-commit-update-with-b4)
               ("C-c x" . my-commit-mode-check-and-apply-tags)
               ("C-c f" . my-commit-mode-add-fixes)))
 
