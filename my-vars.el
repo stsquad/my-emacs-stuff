@@ -57,7 +57,7 @@
 
 (defvar my-dco-tag-re
   (rx (: bol (zero-or-more (in blank))
-         (eval `(: ,@my-bare-dco-tag-rx))))
+         (eval `(: ,@my-bare-dco-tag-re))))
   "Regexp to match DCO style tag.")
 
 (defun my-capture-review-tags ()
