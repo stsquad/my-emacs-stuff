@@ -428,10 +428,36 @@ Useful for replies and drafts")
         (kill-new final))
       final)))
 
+(defun my-mu4e-jump-to-commit ()
+  "Jump to a referenced commit in the message."
+  (interactive)
+  (let ((refs))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward
+              (rx (group (>= 7 hex))
+                  (one-or-more space)
+                  (zero-or-one "(" (group (one-or-more (not ")"))) ")"))
+              nil t)
+        (let ((id (match-string-no-properties 1))
+              (extra (match-string-no-properties 2)))
+          (push (propertize (if extra
+                                (format "commit: %s - %s" id extra)
+                              (format "commit: %s" id)) 'id id)
+                refs))))
+    ;; do it
+    (let ((final
+           (get-text-property 0 'id
+                              (if (< 1 (length refs))
+                                  (ivy-read "select commit:" (nreverse refs))
+                                (car refs)))))
+      (magit-show-commit final))))
+
 (use-package mu4e-view
   :commands mu4e-view
   :bind (:map mu4e-view-mode-map
               ("C-c C-l". org-store-link)
+              ("C-c c" . my-mu4e-jump-to-commit)
               ("C-c f" . my-mu4e-search-from)
               ("C-c t" . my-switch-to-thread)
               ("C-c i" . my-mu4e-kill-message-id)
