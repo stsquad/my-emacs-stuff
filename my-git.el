@@ -236,7 +236,7 @@ bother asking for the git tree again (useful for bulk actions)."
             (need-sob nil))
         (with-temp-buffer
           (insert-file-contents mbox)
-          (setq need-sob (my-check-for-my-signoff)))
+          (setq need-sob (not (my-check-for-my-signoff))))
         (my-git-apply-mbox mbox need-sob)
         (message "applied %s" mbox)
         (delete-file mbox)))))
