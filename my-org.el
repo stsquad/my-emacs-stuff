@@ -109,7 +109,7 @@ This is used by `my-org-run-default-block' which is added to
    '(
      ("n" "Agenda and top level tasks"
       ((agenda "")
-       (tags "+LEVEL=2+tasks-TODO=\"DONE\"")))
+       (tags "+tasks-TODO=\"DONE\"")))
      ("r" "Outstanding Reviews" tags-todo "reviews/TODO"))
    org-refile-targets '((nil :maxlevel . 2)
                         (org-agenda-files :maxlevel . 2))))
@@ -412,10 +412,10 @@ Return the filespec of the jump."
        (kbd "C-x O")
        (defhydra my-hydra-org (:color blue)
          "
-Org: _c_apture  _h_eadlines _j_ump to: %(my-jump-to-org-file t) _g_oto: %(my-return-to-org-file) save _p_osted work
-Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment"
+Org: _c_apture task, view _a_genda, _g_oto: %(my-return-to-org-file) save _p_osted work
+Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment _j_ump to: %(my-jump-to-org-file t)"
          ("c" org-capture nil)
-         ("h" counsel-org-agenda-headlines nil)
+         ("a" (org-agenda nil "n") nil)
          ("j" my-jump-to-org-file nil)
          ("g" my-return-to-org nil)
          ("h" counsel-org-agenda-headlines nil)
