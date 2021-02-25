@@ -82,27 +82,6 @@ be using git-grep)."
   (with-current-buffer (get-buffer candidate)
     default-directory))
 
-;; additional transformers for ivy mode (e.g. make ivy-switch-buffer
-;; more like helm-mini)
-(use-package ivy-rich
-  :ensure t
-  :after ivy
-  :config (setq ivy-rich-display-transformers-list
-                '(ivy-switch-buffer
-                  (:columns
-                   ((ivy-rich-candidate (:width 30))
-                    (ivy-rich-switch-buffer-size (:width 7))
-                    (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
-                    (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))
-                    (my-ivy-rich-switch-buffer-project (:width 50 :face success)))
-                   :predicate
-                   (lambda (cand) (get-buffer cand)))))
-  (ivy-rich-mode)
-  (run-with-idle-timer 10 nil
-                       (lambda ()
-                         (ivy-rich-mode -1)
-                         (ivy-rich-mode nil))))
-
 (defun my-counsel-mini ()
   "Emulate helm-mini with my own preferences."
   (interactive)

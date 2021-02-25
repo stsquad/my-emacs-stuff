@@ -67,9 +67,6 @@
                          "~/src/emacs/swiper.git"))
   :commands ivy-mode
   :init (ivy-mode)
-  :bind (("C-x b" . ivy-switch-buffer))
-         ;; :map ivy-minibuffer-map
-         ;; ("C-w" . ivy-yank-word))
   :config
   (setq
     ivy-use-virtual-buffers t
@@ -88,6 +85,7 @@
   :bind (:map counsel-mode-map
               ("M-x" . counsel-M-x)
               ("M-y" . counsel-yank-pop)
+              ("C-x b" . counsel-switch-buffer)
               ("C-x m" . counsel-mark-ring)
               ("C-h ?" . counsel-search))
   :init (counsel-mode))
