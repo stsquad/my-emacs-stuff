@@ -36,7 +36,7 @@
 (use-package dired-rsync
   :load-path (lambda () (my-return-path-if-ok
                          "~/mysrc/dired-rsync.git"))
-  :hook (dired-hook . (lambda () (setq-local mode-line-process
+  :hook (dired-mode . (lambda () (setq-local mode-line-process
                                              'dired-rsync-modeline-status)))
   :config
   (bind-key "C-c C-r" 'dired-rsync dired-mode-map))
