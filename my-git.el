@@ -276,34 +276,44 @@ bother asking for the git tree again (useful for bulk actions)."
 (defun my-rebase-auto-tag-commits ()
   "Mark commits as needing reword/edit depending on the appropriate
 variables."
-  (when my-rebase-reword-commits
+  (when (or my-rebase-reword-commits my-rebase-edit-commits)
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward my-rebase-match-re (point-max) t)
         (let ((msg (match-string-no-properties 1)))
           (when (--any? (s-contains-p msg it) my-rebase-reword-commits)
-            (git-rebase-reword)))))
-    (setq my-rebase-reword-commits nil)))
+            (git-rebase-reword))
+          (when (--any? (s-contains-p msg it) my-rebase-edit-commits)
+            (git-rebase-edit)))))
+    (setq my-rebase-reword-commits nil)
+    (setq my-rebase-edit-commits nil)))
 
 (defun my-mark-rebase-commits-for-tagging ()
   "Set any commits in a re-base buffer to if tagging required."
   (interactive)
   (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward my-rebase-match-re (point-max) t)
-      (let ((msg (match-string-no-properties 2)))
-        (when (my-org-find-review-tags msg "TODO")
-          (git-rebase-reword))))))
+    (let ((count 0))
+      (goto-char (point-min))
+      (while (re-search-forward my-rebase-match-re (point-max) t)
+        (let ((msg (match-string-no-properties 2)))
+          (when (my-org-find-review-tags msg "TODO")
+            (git-rebase-reword)
+            (setq count (+ 1 count)))))
+      (message "%d commits marked for tagging" count))))
+
 
 (defun my-mark-rebase-commits-for-editing ()
   "Set any commits in the re-base buffer to edit if comments."
   (interactive)
   (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward my-rebase-match-re (point-max) t)
-      (let ((msg (match-string-no-properties 2)))
-        (when (my-org-find-review-comments msg)
-          (git-rebase-edit))))))
+    (let ((count 0))
+      (goto-char (point-min))
+      (while (re-search-forward my-rebase-match-re (point-max) t)
+        (let ((msg (match-string-no-properties 2)))
+          (when (my-org-find-review-comments msg)
+            (git-rebase-edit)
+            (setq count (+ 1 count)))))
+      (message "%d commits marked for editing" count))))
 
 (use-package git-rebase
   :commands git-rebase-mode
