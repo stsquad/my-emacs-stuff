@@ -40,7 +40,8 @@
 (if (version<= "26.3" emacs-version)
     (use-package bufler
       :ensure t
-      :bind ("C-x C-b" . bufler)
+      :bind (("C-x C-b" . bufler)
+             ("C-x b" . bufler-switch-buffer))
       :config (bufler-defgroups
                (group
                 ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
@@ -48,11 +49,29 @@
                           (mode-match "*Help*" (rx bos "help-"))
                           (mode-match "*Info*" (rx bos "info-"))))
                (group
-                ;; Subgroup collecting these "special special" buffers
-                ;; separately for convenience.
-                (name-match "**Special**"
-                            (rx bos "*" (or "Messages" "Warnings"
-                                            "scratch" "Backtrace") "*")))
+                ;; Subgroup collecting all special buffers (i.e. ones that are not
+                ;; file-backed), except `magit-status-mode' buffers (which are allowed to fall
+                ;; through to other groups, so they end up grouped with their project buffers).
+                (group-and "*Special*"
+                           (lambda (buffer)
+                             (unless (or (funcall
+                                          (mode-match "Magit" (rx bos "magit-" (or "status" "log")))
+                                                  buffer)
+                                         (funcall (mode-match "Dired" (rx bos "dired"))
+                                                  buffer)
+                                         (funcall (auto-file) buffer))
+                               "*Special*")))
+                (group
+                 ;; Subgroup collecting these "special special" buffers
+                 ;; separately for convenience.
+                 (name-match "**Special**"
+                             (rx bos "*" (or "Messages" "Warnings"
+                                             "scratch" "Backtrace")
+                                 "*"))))
+               (group
+                (group-or "IRC"
+                          (mode-match "Channels" (rx "circe-channel-mode"))
+                          (mode-match "DMs" (rx "circe-query-mode")))
                (group
                 (auto-project))
                (auto-directory)
