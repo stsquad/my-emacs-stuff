@@ -18,6 +18,8 @@
   :diminish "EdCf"
   :config
   (add-to-list 'editorconfig-file-type-emacs-whitelist 'makefile-mode)
+  ;; see https://github.com/editorconfig/editorconfig-emacs/issue/246
+  (add-to-list 'editorconfig-exclude-modes 'git-rebase-mode)
   (editorconfig-mode 1))
 
 ;; Origami code folding
