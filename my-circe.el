@@ -184,7 +184,7 @@
              :server-buffer-name "⇄ Pl0rt"
              :port "6697"
              :nick "ajb"
-             :tls t
+             :use-tls t
              :channels ("#blue")
              )
             ("bitlbee"
