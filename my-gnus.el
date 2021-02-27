@@ -21,12 +21,6 @@
 (require 'use-package)
 (use-package my-git)
 
-;; new-mail searching
-(use-package nnir
-  :config (progn
-            (setq nnir-imap-default-search-key "gmail")
-            (add-to-list 'nnir-imap-search-arguments '("gmail" . "X-GM-RAW"))))
-
 ;; GNUS Article Mode
 
 (defun my-gnus-apply-article-patch ()
