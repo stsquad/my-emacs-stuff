@@ -92,7 +92,7 @@
                                         (mode . c-mode)
                                         (mode . java-mode)
                                         (mode . idl-mode)
-                                        (mode . lisp-mode))))))))))
+                                        (mode . lisp-mode)))))))))))
 
 (provide 'my-buffer)
 ;;; my-buffer.el ends here
