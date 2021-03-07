@@ -171,7 +171,8 @@ This only works if there is a message id in the buffer to search for."
   :bind (:map git-commit-mode-map
               ("C-c b" . my-commit-update-with-b4)
               ("C-c x" . my-commit-mode-check-and-apply-tags)
-              ("C-c f" . my-commit-mode-add-fixes)))
+              ("C-c f" . my-commit-mode-add-fixes)
+              ("C-c s" . my-mu4e-search-for-id)))
 
 ;;
 ;;
