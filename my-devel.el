@@ -22,6 +22,10 @@
   (add-to-list 'editorconfig-exclude-modes 'git-rebase-mode)
   (editorconfig-mode 1))
 
+(use-package editorconfig-custom-majormode
+  :ensure t
+  :config (add-hook 'editorconfig-custom-hooks 'editorconfig-custom-majormode))
+
 ;; Origami code folding
 (use-package origami
   :if (locate-library "origami")
