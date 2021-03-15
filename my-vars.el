@@ -48,6 +48,13 @@
 ;; This is used for grabbing Reviewed-by and other such tags from a
 ;; mailing list.
 ;;
+(defvar my-bare-dco-tag-rx
+ '((any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
+         (one-or-more (in alpha blank "-."))                  ;;name
+         blank
+         "<" (one-or-more (not (in ">"))) ">")               ;; email
+  "Regexp to match plain DCO tag")
+
 (defvar my-bare-dco-tag-re
  (rx (: (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
          (one-or-more (in alpha blank "-."))                  ;;name
