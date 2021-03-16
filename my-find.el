@@ -38,7 +38,7 @@
   "Wrap a call to CMD with setting "
   (let ((ivy-initial-inputs-alist
          (list
-          (cons cmd (thing-at-point 'symbol)))))
+          (cons cmd (substring-no-properties (thing-at-point 'symbol))))))
     (funcall cmd nil dir)))
 
 (use-package counsel
