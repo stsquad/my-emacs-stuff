@@ -57,12 +57,6 @@ Returns the line as a string."
   (interactive)
   (-map 'transmission-add (dired-get-marked-files)))
 
-(use-package transmission
-  :ensure t
-  :commands transmission-add
-  :config
-  (setq transmission-rpc-auth '(:username "transmission" :password "transmission")))
-
 (defun my-add-first-elfeed-enclosure-to-transmission ()
   "Queue the first enclosure (if it is a torrent)."
   (interactive)
@@ -73,13 +67,14 @@ Returns the line as a string."
                 (nth 1 (-first-item enclosures))))
       (transmission-add (-first-item (-first-item enclosures))))))
 
-(use-package elfeed
+(use-package transmission
   :ensure t
+  :commands transmission-add
   :bind (:map elfeed-show-mode-map
               ("C-c C-c" . my-add-first-elfeed-enclosure-to-transmission))
-  :config (setq elfeed-enclosure-default-dir "~/torrent/"
-                elfeed-log-level 'debug
-                elfeed-use-curl 't))
+  :config (setq transmission-rpc-auth
+                '(:username "transmission" :password "transmission")
+                elfeed-enclosure-default-dir "~/torrent/"))
 
 (provide 'my-transmission)
 ;;; my-transmission.el ends here

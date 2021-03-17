@@ -127,6 +127,8 @@
 
 (use-package my-diff)
 
+(use-package my-elfeed)
+
 (use-package my-transmission
   :if (string-match "seed" (system-name)))
 
