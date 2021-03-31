@@ -45,7 +45,7 @@
   (cond
    ((derived-mode-p 'mail-mode 'mu4e-compose-mode)
     user-mail-address)
-   (t user-mail-address)))
+   (t "alex.bennee@linaro.org")))
 
 (defun my-yas-expand-copyright ()
   "Like `my-yas-expand-email' except just return the company name if
