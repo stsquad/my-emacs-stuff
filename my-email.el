@@ -93,13 +93,13 @@
   "Setup more comprehensive indexing when Emacs is idle."
   (setq mu4e-index-lazy-check nil   ; more comprehensive
         mu4e-index-cleanup t        ; check msgs still in store
-        mu4e-get-mail-command "mbsync  -V -Dm linaro-slow-sync"))
+        mu4e-get-mail-command "mbsync  -V -Dm linaro-sync"))
 
 
 (defun my-rig-mu4e-for-active-running ()
   "Setup faster indexing for when I'm actively using Emacs mail."
-  (setq mu4e-index-lazy-check t     ; faster sync
-        mu4e-index-cleanup nil     ; skip checking the whole store
+  (setq mu4e-index-lazy-check nil     ; faster sync
+        mu4e-index-cleanup t     ; skip checking the whole store
         mu4e-get-mail-command "mbsync  -V -Dm linaro-sync")
   (when (not (-contains? (--map (aref it 5) timer-idle-list) 'my-rig-mu4e-for-idle-running))
     (run-with-idle-timer 600 nil 'my-rig-mu4e-for-idle-running)))
