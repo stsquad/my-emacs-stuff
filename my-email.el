@@ -206,10 +206,10 @@ all mu4e buffers and allow ivy selection of them.
   "Mapping from mailing lists to source tree.")
 
 (defvar my-maildir-mapping
-  '( ("linaro/virtualization/qemu" . "~/lsrc/qemu.git/")
-     ("linaro/virtualization/qemu-arm" . "~/lsrc/qemu.git/")
-     ("linaro/virtualization/qemu-multithread" . "~/lsrc/qemu.git/")
-     ("linaro/kernel" . "~/lsrc/linux.git/") )
+  '( ("virtualization/qemu" . "~/lsrc/qemu.git/")
+     ("virtualization/qemu-arm" . "~/lsrc/qemu.git/")
+     ("virtualization/qemu-multithread" . "~/lsrc/qemu.git/")
+     ("kernel" . "~/lsrc/linux.git/") )
   "Mapping from maildirs to source tree.")
 
 (defvar my-mail-address-mapping
@@ -630,15 +630,17 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
      mu4e-maildir-shortcuts
      (cond
       (I-am-at-work
-       '( ("/linaro/Inbox"     . ?i)
-          ("/linaro/mythreads" . ?m)
-          ("/linaro/archived" . ?A)
-          ("/linaro/team"      . ?t)
-          ("/linaro/kernel/lkml"      . ?l)
-          ("/linaro/virtualization/qemu" . ?q)
-          ("/linaro/virtualization/qemu-arm" . ?a)
-          ("/linaro/virtualization/qemu-multithread" . ?M)
-          ("/linaro/virtualization/kvm-arm" . ?k)
+       '( ("/Inbox"     . ?i)
+          ("/mythreads" . ?m)
+          ("/team"      . ?t)
+          ("/linaro-list/stratos-dev"      . ?S)
+          ("/linaro-list/linaro-team-toolchain"  . ?T)
+          ("/linaro-list/linaro-tcwg"  . ?c)
+          ("/kernel/lkml"      . ?l)
+          ("/virtualization/qemu" . ?q)
+          ("/virtualization/qemu-arm" . ?a)
+          ("/virtualization/qemu-multithread" . ?M)
+          ("/virtualization/kvm-arm" . ?k)
           ("/sent"             . ?s) ))
       (t
        '( ("/"     . ?i)
@@ -871,7 +873,7 @@ patches."
                :hide-unread t
                :key ?o)
               (:name "Project Stratos"
-               :query "maildir:/linaro/linaro-list/stratos-dev OR recip:stratos-dev@op-lists.linaro.org"
+               :query "maildir:/linaro-list/stratos-dev OR recip:stratos-dev@op-lists.linaro.org"
                :key ?R)
               (:name "Xen Devel (unread)"
                :query "(list:xen-devel* OR recip:xen-devel@lists.xenproject.org) and flag:unread"
@@ -882,7 +884,7 @@ patches."
                :key ?v)
               ;; Linaro Specific
               (:name "Linaro public TCWG posts"
-               :query "list:linaro-toolchain.lists.linaro.org OR maildir:/linaro/linaro-list/linaro-tcwg"
+               :query "list:linaro-toolchain.lists.linaro.org OR maildir:/linaro-list/linaro-tcwg"
                :hide-unread t
                :key ?T)
               (:name "Linaro private TCWG posts"
