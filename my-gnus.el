@@ -86,7 +86,8 @@
 
 (use-package gnus-article
   :bind (:map gnus-article-mode-map
-              ("R" . gnus-article-wide-reply-with-original)))
+              ("R" . gnus-article-wide-reply-with-original))
+  :config (setq gnus-treat-strip-cr t))
 
 (use-package gnus-msg
   :config (setq gnus-posting-styles
