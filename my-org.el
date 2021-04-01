@@ -153,18 +153,15 @@ This is used by `my-org-run-default-block' which is added to
       checkitem
       (file+headline "review.org" "Review Comments")
       "  - [ ] %i%?")
-     ("t" "Add TODO task"
+     ("t" "Add TODO task with current region"
       entry
-      (file+regexp "team.org" "\* Tasks ")
-      "** TODO %i%?\n%T")
-     ("m" "Add a maintainer TODO mail reference"
-      checkitem
-      (file+headline "qemu.org" "Maintainer Tasks")
-      "  - [ ] %a")
-     ("T" "Add TODO task with mail reference"
+      (file+headline "qemu.org" "Tasks")
+      "** TODO %?
+%i")
+     ("T" "Add TODO task with a reference"
       entry
-      (file+headline "team.org" "Tasks")
-      "** TODO %i\nSee %a")
+      (file+headline "qemu.org" "Tasks")
+      "** TODO %a")
      ("p" "Posted email to list"
       item
       (file+function "team.org" my-org-choose-target)
@@ -177,8 +174,7 @@ This is used by `my-org-run-default-block' which is added to
      ("Q" "Queue Review (email)"
       entry
       (file+regexp "team.org" "Review Queue")
-      "** TODO %a
-Added: %t"
+      "** TODO %a"
       :immediate-finish t :prepend t))))
 
 ;; ORG Based review automation
@@ -272,7 +268,6 @@ If `NEW-STATUS' is set then change TODO state."
          org-clock-persist 't
          org-clock-in-resume 't                 ; resume currently open clock
          org-clock-persist-query-resume 'nil    ; don't ask me about it
-         org-log-into-drawer 't                 ; roll clocks up into drawers
          org-clock-idle-time 'nil
          ;; Mode line tweaks for clock
          org-clock-mode-line-total 'current
@@ -382,12 +377,13 @@ Return the filespec of the jump."
      org-provide-todo-statistics t
      org-checkbox-hierarchical-statistics nil
      org-hierarchical-todo-statistics t
-     org-log-done 'note
+     org-log-done nil
+     org-log-into-drawer t
      org-enforce-todo-dependencies t
-     org-todo-keywords '((sequence "TODO" "ACTIVE" "BLOCKED" "DONE"))
+     org-todo-keywords '((sequence "TODO(t!/!)" "BLOCKED(b@/!)" "|" "DONE(d@)" "CANCELED(c@)"))
      org-todo-keyword-faces '(("TODO" . org-todo )
-                              ("ACTIVE" . "blue")
                               ("BLOCKED" . org-warning)
+                              ("CANCELED" . org-done)
                               ("DONE" . org-done))
      ;; Export settings
      org-export-allow-bind-keywords t)
@@ -412,9 +408,10 @@ Return the filespec of the jump."
        (kbd "C-x O")
        (defhydra my-hydra-org (:color blue)
          "
-Org: _c_apture task, view _a_genda, _g_oto: %(my-return-to-org-file) save _p_osted work
+Org: _c_apture task or _T_ODO, view _a_genda, _g_oto: %(my-return-to-org-file) save _p_osted work
 Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment _j_ump to: %(my-jump-to-org-file t)"
          ("c" org-capture nil)
+         ("T" (org-capture nil "T") nil)
          ("a" (org-agenda nil "n") nil)
          ("j" my-jump-to-org-file nil)
          ("g" my-return-to-org nil)
