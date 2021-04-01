@@ -580,6 +580,11 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
   (interactive)
   (my-git-fetch-and-apply-via-b4 (my-mu4e-kill-message-id 't)))
 
+(defun mu4e-action-setup-reword-b4 (msg)
+  "Find the Message-Id in the buffer and pass to b4 to learn commits"
+  (interactive)
+  (my-set-reword-commits-from-b4 (my-mu4e-kill-message-id 't)))
+
 (defun my-mu4e-search-from (&optional edit)
   "Find msgs from author of the message, optionally EDIT the search."
   (interactive "P")
@@ -776,6 +781,7 @@ patches."
             '(("gapply git patches" . mu4e-action-git-apply-patch)
               ("mgit am patch" . mu4e-action-git-apply-mbox)
               ("bb4 am patch" . mu4e-action-git-apply-b4)
+              ("ssetup reword list with b4" . mu4e-action-setup-reword-b4)
               ("crun checkpatch script" . my-mu4e-action-run-check-patch)
               ("MCheck if merged" . my-mu4e-action-check-if-merged)))))
     ;; Bookmarks

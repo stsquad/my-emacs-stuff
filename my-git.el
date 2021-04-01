@@ -101,6 +101,10 @@ not, I'd rather just go to magit-status. Lets make it so."
      (format "Signed-off-by: %s" (my-dco-address))
      nil t)))
 
+(defvar my-b4-message-id-history nil
+  "History of b4 message-id's processed")
+
+
 ;; Tweaks to git-commit-mode
 ;;
 ;; Mainly hooks for automation
@@ -129,7 +133,7 @@ not, I'd rather just go to magit-status. Lets make it so."
   (let ((tags)
         (add-dco (rx (: "+ " (group (regexp my-bare-dco-tag-re))))))
     (with-temp-buffer
-      (call-process "b4" nil t t "am" id "-o" "-")
+      (call-process "b4" nil t t "am" "-S" "-t" id "-o" "-")
       (goto-char 0)
       (when (re-search-forward subject nil t)
         (forward-line)
@@ -137,6 +141,7 @@ not, I'd rather just go to magit-status. Lets make it so."
         (while (string-match add-dco (thing-at-point 'line))
           (push (match-string-no-properties 1 (thing-at-point 'line)) tags)
           (forward-line))))
+    (message "found %d tags" (length tags))
     tags))
 
 (defun my-commit-update-with-b4 ()
@@ -147,16 +152,18 @@ This only works if there is a message id in the buffer to search for."
   (let ((subj) (id))
     (save-excursion
       (goto-char 0)
-      (setq subj (substring-no-properties (thing-at-point 'line)))
+      (setq subj (chomp (substring-no-properties (thing-at-point 'line))))
       (if (re-search-forward my-capture-msgid-re nil t)
-          (setq id (match-string-no-properties 1))))
+          (setq id (match-string-no-properties 1))
+        (setq id (completing-read "Message-ID:" my-b4-message-id-history))))
     (when (and subj id)
       (let ((tags (my-git-check-for-updates-with-b4 id subj)))
         (--map
          (save-excursion
            (goto-char 0)
            (when (not (re-search-forward it nil t))
-             (re-search-forward my-capture-msgid-re nil t)
+             (or (re-search-forward my-capture-msgid-re nil t)
+                 (re-search-forward my-bare-dco-tag-re nil t))
              (beginning-of-line)
              (insert it ?\n))) tags)))))
 
@@ -228,7 +235,7 @@ bother asking for the git tree again (useful for bulk actions)."
   "Fetch `id' via the b4 tool and apply it."
   (interactive "sMessage-id:")
   (with-temp-buffer
-    (call-process "b4" nil t t "am" id)
+    (call-process "b4" nil t t "am" "-S" "-t" id)
     (goto-char 0)
     (when (re-search-forward
            (rx (: "git am "
@@ -281,13 +288,47 @@ variables."
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward my-rebase-match-re (point-max) t)
-        (let ((msg (match-string-no-properties 1)))
-          (when (--any? (s-contains-p msg it) my-rebase-reword-commits)
+        (let ((commit (match-string-no-properties 1))
+              (subject (match-string-no-properties 2)))
+          (when (or (--any?
+                     (s-contains-p commit it)  my-rebase-reword-commits)
+                    (--any?
+                     (s-contains-p subject it)  my-rebase-reword-commits))
             (git-rebase-reword))
-          (when (--any? (s-contains-p msg it) my-rebase-edit-commits)
+          (when (--any? (s-contains-p commit it) my-rebase-edit-commits)
             (git-rebase-edit)))))
     (setq my-rebase-reword-commits nil)
     (setq my-rebase-edit-commits nil)))
+
+
+(defun my-set-reword-commits-from-b4 (&optional id)
+  "Run b4 to collect a list of subjects that have updated tags and
+fill in `my-rebase-reword-commits'. This can be used to manually
+prepare for a re-base where we are not rebuilding the tree from
+  scratch. Each commit can then be updated with
+  `my-commit-update-with-b4'."
+  (interactive (list (completing-read "Root Message-Id:" nil)))
+  (let ((add-dco (rx (: "+ " (group (regexp my-bare-dco-tag-re)))))
+        (subjects))
+    (with-temp-buffer
+      (call-process "b4" nil t t "am" "-S" "-t" id "-o" "-")
+      (save-excursion
+        (goto-char 0)
+        (while (re-search-forward add-dco nil t)
+          (save-excursion
+            (beginning-of-line)
+            (forward-line -1)
+            (when (re-search-forward "] " nil t)
+              (push
+               (buffer-substring-no-properties (point) (point-at-eol))
+               subjects))))))
+    (if (not subjects)
+        (message "No additional DCOs found")
+      (add-to-list 'my-b4-message-id-history id)
+      (message "Added %d subjects to my-rebase-reword-commits"
+               (length (setq my-rebase-reword-commits subjects))))))
+
+
 
 (defun my-mark-rebase-commits-for-tagging ()
   "Set any commits in a re-base buffer to if tagging required."
