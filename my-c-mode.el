@@ -64,6 +64,14 @@ We must have reached the end of irony-cdb-compilation-databases."
    lsp-clients-clangd-executable
    (which-lookup '("clangd-7" "clangd"))))
 
+(use-package lsp-ui
+  :ensure
+  :commands lsp-ui-mode
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable nil))
 ;;
 ;; End of c-mode customisations
 ;;
