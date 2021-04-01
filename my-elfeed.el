@@ -14,7 +14,7 @@
 
 (use-package elfeed-org
   :ensure t
-  :config (setq rmh-elfeed-org-files (list "~/org/elfeed.org"))
+  :config (setq rmh-elfeed-org-files (list "~/org/elfeed.org")))
 
 (provide 'my-elfeed)
 ;;; .el ends here
