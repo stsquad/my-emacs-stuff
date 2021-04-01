@@ -184,11 +184,11 @@
 ;; Nice window sizing
 (use-package golden-ratio
   :ensure t
+  :commands (golden-ratio-mode)
   :defer 30
-  :config (progn
-            (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
-                                               "mu4e-view-mode"))
-            (golden-ratio)))
+  :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
+                                             "mu4e-view-mode"))
+                (golden-ratio-mode))
 
 ;; Manual colour themes
 (setq custom-safe-themes
