@@ -189,7 +189,7 @@ This is used by `my-org-run-default-block' which is added to
       (org-capture nil "g"))))
 
 (with-eval-after-load 'mu4e-view
-  (when (fboundp 'mu4e-view-mode-map)
+  (when (boundp 'mu4e-view-mode-map)
     (define-key mu4e-view-mode-map (kbd "C-c C-c") 'my-org-maybe-capture-review-tag-or-comment)))
 
 (defun my-org-get-elements (file heading)
