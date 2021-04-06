@@ -65,7 +65,6 @@ We must have reached the end of irony-cdb-compilation-databases."
    (which-lookup '("clangd-7" "clangd"))))
 
 (use-package lsp-ui
-  :ensure
   :commands lsp-ui-mode
   :hook (lsp-mode . lsp-ui-mode)
   :custom
