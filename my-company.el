@@ -52,7 +52,7 @@
     (define-key company-mode-map [remap indent-for-tab-command]
       'company-indent-for-tab-command)))
 
-(when (version<= "25.1" emacs-version)
+(when (and have-melpa (version<= "25.1" emacs-version))
   (use-package company-lsp
     :ensure t
     :after company

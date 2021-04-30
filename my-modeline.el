@@ -20,20 +20,21 @@
 (require 'use-package)
 (require 'my-tracking)
 
-(use-package doom-modeline
-  :ensure t
-  :config
-  (setq doom-modeline-icon (display-graphic-p)
-        doom-modeline-major-mode-icon t
-        doom-modeline-major-mode-color-icon t
-        doom-modeline-project-detection 'project
-        doom-modeline-lsp t
-        doom-modeline-modal-icon t
-        doom-modeline-mu4e t
-        doom-modeline-minor-modes nil
-        doom-modeline-buffer-state-icon t
-        doom-modeline-buffer-modification-icon t)
-   :hook (after-init . doom-modeline-mode))
+(unless I-am-on-pixelbook
+  (use-package doom-modeline
+    :ensure t
+    :config
+    (setq doom-modeline-icon (display-graphic-p)
+          doom-modeline-major-mode-icon t
+          doom-modeline-major-mode-color-icon t
+          doom-modeline-project-detection 'project
+          doom-modeline-lsp t
+          doom-modeline-modal-icon t
+          doom-modeline-mu4e t
+          doom-modeline-minor-modes nil
+          doom-modeline-buffer-state-icon t
+          doom-modeline-buffer-modification-icon t)
+    :hook (after-init . doom-modeline-mode)))
 
 (use-package diminish
   :commands diminish

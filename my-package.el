@@ -35,6 +35,10 @@
  'package-archives
  '("org" . "https://orgmode.org/elpa/") t)
 
+(defvar have-melpa
+  (assoc "melpa" package-archives)
+  "Do we have melpa on this machine")
+
 ;; Pin use-package
 (when (boundp 'package-pinned-packages)
   (setq package-pinned-packages

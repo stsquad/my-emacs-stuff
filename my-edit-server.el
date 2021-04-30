@@ -12,8 +12,9 @@
 (use-package my-vars)
 (use-package my-web)
 
-(use-package jira-markup-mode
-  :ensure t)
+(when have-melpa
+  (use-package jira-markup-mode
+    :ensure t))
 
 (use-package edit-server
   :load-path (lambda () (my-return-path-if-ok "~/mysrc/edit-with-emacs.git/servers"))
