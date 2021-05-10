@@ -317,7 +317,8 @@ If `NEW-STATUS' is set then change TODO state."
 (defun my-save-org-position-in-bookmark (&rest args)
   "Save position at jump."
   (and (org-mark-ring-push)
-       (bookmark-set "org-pos-at-jump" nil)))
+       (bookmark-set "org-pos-at-jump" nil))
+  nil)
 
 (defun my-return-to-org ()
   "Return to position at jump (if set)."
