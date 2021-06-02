@@ -103,21 +103,6 @@ of things where C-SPC can't be used."
                      ((eq cmd 'cycle-space) 'my-mark-or-expand-dwim)
                      (t 'cycle-space)))))
 
-;; God-mode
-(use-package god-mode
-  :commands god-mode-all
-  :requires my-toggles
-  :init (define-key my-toggle-map "g" 'god-mode-all)
-  :config
-  (progn
-    (defun my-update-god-cursor ()
-      "Update the cursor style depending on status of god-mode."
-      (setq cursor-type (if (or god-local-mode buffer-read-only)
-                            'hollow
-                          'box)))
-    (add-hook 'god-mode-disabled-hook 'my-update-god-cursor)
-    (add-hook 'god-mode-enabled-hook 'my-update-god-cursor)))
-
 ;; Macro to expand the variable and helper function to toggle a major
 ;; mode.
 (defmacro my-make-mode-toggle (mode)
@@ -157,8 +142,7 @@ of things where C-SPC can't be used."
   (:hint nil :color blue :timeout 5)
   (concat "Toggle mode from %`major-mode to ")
   ("o" my-toggle-org-mode "org-mode")
-  ("t" my-toggle-text-mode "text-mode")
-  ("g" god-mode-all "god-mode"))
+  ("t" my-toggle-text-mode "text-mode"))
 
 (defhydra my-debug-toggle
   (:hint nil :color blue :timeout 5)
