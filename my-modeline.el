@@ -29,6 +29,7 @@
           doom-modeline-major-mode-color-icon t
           doom-modeline-project-detection 'project
           doom-modeline-lsp t
+          doom-modeline-irc nil
           doom-modeline-modal-icon t
           doom-modeline-mu4e t
           doom-modeline-minor-modes nil
