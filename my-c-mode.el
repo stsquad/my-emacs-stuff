@@ -57,7 +57,7 @@ We must have reached the end of irony-cdb-compilation-databases."
 
 (use-package lsp-mode
   :hook (c-mode . lsp-mode)
-  :commands lsp
+  :ensure t
   :config
   (setq
    lsp-prefer-flymake nil
@@ -66,6 +66,7 @@ We must have reached the end of irony-cdb-compilation-databases."
 
 (use-package lsp-ui
   :commands lsp-ui-mode
+  :ensure t
   :hook (lsp-mode . lsp-ui-mode)
   :custom
   (lsp-ui-peek-always-show t)
