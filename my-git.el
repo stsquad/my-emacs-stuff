@@ -321,7 +321,10 @@ prepare for a re-base where we are not rebuilding the tree from
             (when (re-search-forward "] " nil t)
               (push
                (buffer-substring-no-properties (point) (point-at-eol))
-               subjects))))))
+               subjects)))))
+      (setq my-b4-current-results-buffer
+            (generate-new-buffer "*b4 run*"))
+      (copy-to-buffer my-b4-current-results-buffer (point-min) (point-max)))
     (if (not subjects)
         (message "No additional DCOs found")
       (add-to-list 'my-b4-message-id-history id)

@@ -27,21 +27,24 @@
   (format "ajb-linaro/oftc:%s"
           (my-pass-password "znc")))
 
-(defun my-freenode-znc-nick-password (server)
+(defun my-znc-libera-password (server)
   "Return the password for the `SERVER'."
-  (my-pass-password "freenode-znc-nick"))
+  (format "ajb-linaro/libera:%s"
+          (my-pass-password "znc")))
 
+;; These are both "personal" nicks for non-ZNC bounced connections
 (defun my-freenode-nick-password (server)
   "Return the password for the `SERVER'."
   (my-pass-password "freenode-nick"))
 
-(defun my-oftc-nick-password (server)
+(defun my-libera-nick-password (server)
   "Return the password for the `SERVER'."
-  (my-pass-password "oftc-nick"))
+  (my-pass-password "stsquad@irc.libera.chat"))
 
 (defun my-gitter-password (server)
   "Return the password for the `SERVER'."
   (my-pass-password "gitter-irc"))
+
 
 ;; Lui
 (use-package lui
@@ -94,9 +97,10 @@
   (circe-lagmon-mode)
   (when I-am-at-work
     (circe "znc-freenode")
+    (circe "znc-libera")
     (circe "znc-oftc")
     (circe "bitlbee"))
-  (circe "Freenode")
+  (circe "Libera Chat")
   (circe "Pl0rt"))
 
 (defun my-disable-irc-login ()
@@ -134,6 +138,10 @@
       (setq circe-default-nick "stsquad"
             circe-default-user "stsquad"
             circe-default-realname "stsquad"))
+    ;; override cert check for pl0rt
+    (let ((id (nsm-id "irc.pl0rt.org" 6697)))
+      (setq nsm-temporary-host-settings
+            (list (list :id id :conditions '(:no-host-match :expired :invalid :verify-cert)))))
     (setq circe-reduce-lurker-spam t
           circe-network-options
           `(("Freenode"
@@ -153,6 +161,14 @@
              :nick "stsquad-not-via-znc"
              :channels ("#debian-devel" "#debian-cross")
              )
+            ("Libera Chat"
+             :host "irc.libera.chat"
+             :server-buffer-name "⇄ Libera Chat"
+             :port "6697"
+             :tls t
+             :nick "stsquad"
+             :nickserv-password my-libera-nick-password
+             )
             ("znc-freenode"
              :host "ircproxy.linaro.org"
              :server-buffer-name "⇄ Freenode (ZNC)"
@@ -166,10 +182,18 @@
              :host "ircproxy.linaro.org"
              :server-buffer-name "⇄ OFTC (ZNC)"
              :port "6697"
+             :tls t
              :pass my-znc-oftc-password
-             ;; :nickserv-password my-oftc-nick-password
+             ;; NickServ is handled by ZNC and the SASL login
              :channels ("#qemu" "#qemu-gsoc")
-             :tls 't
+             )
+            ("znc-libera"
+             :host "ircproxy.linaro.org"
+             :server-buffer-name "⇄ Libera Chat (ZNC)"
+             :port "6697"
+             :tls t
+             :pass my-znc-libera-password
+             ;; NickServ is handled by ZNC and the SASL login
              )
             ("gitter"
              :host "irc.gitter.im"
