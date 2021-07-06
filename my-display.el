@@ -49,21 +49,29 @@
   :commands imagemagick-register-types
   :init (imagemagick-register-types))
 
-;; fonts....
-(use-package unicode-fonts
-  :ensure t
-  :if (and (getenv "DISPLAY") (locate-library "unicode-fonts"))
-  :config (unicode-fonts-setup))
+;;
+;; The easiest solution is to locally install one of the Nerd Fonts
+;; from https://www.nerdfonts.com/ where you can get fonts that have
+;; been pimped out with the rest of the unicode space. Otherwise we
+;; let unicode-fonts try and do it's thing.
+;;
+(if (--filter (s-prefix-p "DejaVuSansMono Nerd Font" it)
+              (font-family-list))
+    (set-face-attribute 'default nil
+                        :family "DejaVuSansMono Nerd Font"
+                        :height 150
+                        :weight 'normal
+                        :width 'normal)
+  (use-package unicode-fonts
+    :ensure t
+    :if (and (getenv "DISPLAY") (locate-library "unicode-fonts"))
+    :config (unicode-fonts-setup))
 
-; messing about - what about dynamic-font stuff?
-(set-face-attribute 'default nil
-                    :family "DejaVu Sans Mono"
-                    :height 145
-                    ;; :family "Symbola"
-                    ;; :height 180
-                    :weight 'normal
-                    :width 'normal)
-
+  (set-face-attribute 'default nil
+                      :family "DejaVu Sans Mono"
+                      :height 145
+                      :weight 'normal
+                      :width 'normal))
 
 ; default-frame-alist
 (setq default-frame-alist '((fullscreen . 'fullboth)
@@ -181,14 +189,37 @@
                            tabs trailing lines-tail empty
                            space-after-tab tab-mark)))
 
+;; WIP: what I want is to be able to re-size without being locked to
+;; the golden ratio
+(defun my-shrink-window-horizontally (delta)
+  "Temporarily disable golden-ratio before shrinking window."
+  (interactive "p")
+  (if (not golden-ratio-mode)
+      (shrink-window-horizontally delta)
+    (golden-ratio-mode -1)
+    (shrink-window-horizontally delta)))
+
+;; (defadvice shrink-window
+;;     (before disable-golden-ratio)
+;;   "Disable golden ratio before changing window size."
+;;   (golden-ratio -1))
+
+;; (defadvice enlarge-window
+;;     (before disable-golden-ratio)
+;;   "Disable golden ratio before changing window size."
+;;   (golden-ratio -1))
+
 ;; Nice window sizing
 (use-package golden-ratio
   :ensure t
   :commands (golden-ratio-mode)
   :defer 30
   :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
-                                             "mu4e-view-mode"))
-                (golden-ratio-mode))
+                                             "mu4e-view-mode"
+                                             "gnus-summary-mode"))
+  (add-to-list 'golden-ratio-extra-commands 'ace-window)
+  (golden-ratio-mode))
+
 
 ;; Manual colour themes
 (setq custom-safe-themes
