@@ -102,8 +102,10 @@ not, I'd rather just go to magit-status. Lets make it so."
      nil t)))
 
 (defvar my-b4-message-id-history nil
-  "History of b4 message-id's processed")
+  "History of b4 message-id's processed.")
 
+(defvar my-b4-current-results-buffer nil
+  "Buffer of the current b4 results.")
 
 ;; Tweaks to git-commit-mode
 ;;
@@ -128,12 +130,16 @@ not, I'd rather just go to magit-status. Lets make it so."
             (insert "\n")
             (message "Added %d tags to buffer" (length tags))))))))
 
-(defun my-git-check-for-updates-with-b4 (id subject)
-  "Fetch `id' via the b4 tool and check for new tags."
+(defun my-git-check-for-updates-with-b4 (subject &optional id)
+  "Get tags for `SUBJECT' from message `ID' or `my-b4-current-results-buffer'."
+  (unless (or id my-b4-current-results-buffer)
+    (user-error "Need a Message-ID or active b4 buffer to continue"))
   (let ((tags)
         (add-dco (rx (: "+ " (group (regexp my-bare-dco-tag-re))))))
     (with-temp-buffer
-      (call-process "b4" nil t t "am" "-S" "-t" id "-o" "-")
+      (if id
+          (call-process "b4" nil t t "am" "-S" "-t" id "-o" "-")
+        (insert-buffer-substring-no-properties my-b4-current-results-buffer))
       (goto-char 0)
       (when (re-search-forward subject nil t)
         (forward-line)
@@ -144,20 +150,37 @@ not, I'd rather just go to magit-status. Lets make it so."
     (message "found %d tags" (length tags))
     tags))
 
-(defun my-commit-update-with-b4 ()
+(defun my-check-for-b4-results-with-subject (subject)
+  "Check if SUBJ appears in the results buffer."
+  (when my-b4-current-results-buffer
+    (with-current-buffer my-b4-current-results-buffer
+      (save-excursion
+        (re-search-forward subject nil t)))))
+
+(defun my-commit-update-with-b4 (&optional prefix)
   "Check if the current commit has tags from it's last posting.
 
-This only works if there is a message id in the buffer to search for."
-  (interactive)
+This works by looking for a message-id in the buffer or prompting for
+  one. If none can be found it might still be able to apply manually
+  from `my-b4-current-results-buffer'. Interactively setting `PREFIX'
+  forces this mode."
+  (interactive "P")
   (let ((subj) (id))
     (save-excursion
       (goto-char 0)
       (setq subj (chomp (substring-no-properties (thing-at-point 'line))))
-      (if (re-search-forward my-capture-msgid-re nil t)
-          (setq id (match-string-no-properties 1))
-        (setq id (completing-read "Message-ID:" my-b4-message-id-history))))
-    (when (and subj id)
-      (let ((tags (my-git-check-for-updates-with-b4 id subj)))
+      (setq id (cond
+                ;; prefix forces a b4 lookup
+                (prefix nil)
+                ;; if subject exists we know we are good
+                ((my-check-for-b4-results-with-subject subj) nil)
+                ;; if we can find an id use that
+                ((re-search-forward my-capture-msgid-re nil t)
+                 (match-string-no-properties 1))
+                ;; finally fall back to query
+                (t (completing-read "Message-ID:" my-b4-message-id-history)))))
+    (when (or subj id)
+      (let ((tags (my-git-check-for-updates-with-b4 subj id)))
         (--map
          (save-excursion
            (goto-char 0)
