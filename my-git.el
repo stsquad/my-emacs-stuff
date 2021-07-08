@@ -172,7 +172,7 @@ This only works if there is a message id in the buffer to search for."
 (defun my-commit-mode-add-fixes (commit)
   "Insert a Fixes line, selecting a COMMIT."
   (interactive (list (magit-read-range-or-commit "Fixes commit:")))
-  (insert (magit-git-str "showfix" commit)))
+  (insert (magit-git-string "showfix" commit)))
 
 (use-package git-commit
   :bind (:map git-commit-mode-map
