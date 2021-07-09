@@ -172,8 +172,13 @@ of things where C-SPC can't be used."
  (kbd "C-x t")
  (defhydra my-hydra-toggle (:hint nil :color blue :timeout 5)
    (concat
-    "_f_ill:%`auto-fill-function _T_abs: %`indent-tabs-mode "
+    "_D_edicated: %s(window-dedicated-p)"
+    " reset _g_olden ratio: %`golden-ratio-mode"
+    " _f_ill:%`auto-fill-function _T_abs: %`indent-tabs-mode "
     "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
+   ;; lock windows
+   ("D" toggle-window-dedicated)
+   ("g" golden-ratio-mode)
    ;; Fill, whitespace and other editing modes
    ("f" auto-fill-mode)
    ("T" my-toggle-tabs)
@@ -187,6 +192,7 @@ of things where C-SPC can't be used."
    ;; Narrowing, region selection
    ("n" my-narrow-or-widen-dwim "arrow-or-w")
    ("e" er/expand-region "xpand-r")
+   ("i" iedit-mode "iedit")
 
    ;; Chained Hydras
    ("d" my-debug-toggle/body "ebug toggles")
