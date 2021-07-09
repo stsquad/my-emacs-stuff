@@ -33,6 +33,21 @@
     (my-git-apply-mbox buffer-file-name)
     (delete-file buffer-file-name)))
 
+;;
+;; This was not as obvious as I hoped, however
+;; "<87sjxrxo2q.fsf@member.fsf.org>" pointed the way in the gnus-user
+;; group.
+(defun my-gnus-fetch-message-id ()
+  "Fetch the message-id"
+  (mail-header-message-id
+   (gnus-data-header
+    (gnus-data-find
+     (gnus-summary-article-number)))))
+
+(defun my-gnus-b4-article ()
+  "Take the current article id and pass to b4"
+  (interactive)
+  (my-git-fetch-and-apply-via-b4 (my-gnus-fetch-message-id)))
 
 (defvar my-gnus-group-dir-mapping
   '( ("org.nongnu.qemu-devel" . "~/lsrc/qemu.git/")
@@ -51,10 +66,14 @@
               default-directory))))
 
 (use-package gnus-art
-  :hook (gnus-article-prepare . my-gnus-article-set-dir)
+  :hook ((gnus-article-prepare . my-gnus-article-set-dir))
   :bind (:map gnus-article-mode-map
               ("q" . delete-window)
-              ("C-c a" . my-gnus-apply-article-patch)))
+              ("C-c a" . my-gnus-apply-article-patch)
+              ("C-c b" . my-gnus-b4-article)
+              ("R" . gnus-article-wide-reply-with-original))
+  :config (setq gnus-treat-strip-cr t))
+
 
 (defvar my-gnus-group-email-mapping
   '( ("org.nongnu.qemu-devel" . "qemu-devel@nongnu.org")
@@ -84,18 +103,21 @@
 (use-package gnus-agent
   :config (setq gnus-agent-synchronize-flags 'ask))
 
-(use-package gnus-article
-  :bind (:map gnus-article-mode-map
-              ("R" . gnus-article-wide-reply-with-original))
-  :config (setq gnus-treat-strip-cr t))
-
 (use-package gnus-msg
   :config (setq gnus-posting-styles
                 '((my-gnus-reply-find-group
                    ("Bcc" my-gnus-reply-find-group)))))
 
+(defun my-gnus-fetch-whole-thread ()
+  "like `A R' `T o' `A T' in the summary buffer."
+  (interactive)
+  (gnus-summary-refer-references)
+  (gnus-summary-top-thread)
+  (gnus-summary-refer-thread))
+
 (use-package gnus-summary
   :bind (:map gnus-summary-mode-map
+              ("C-c t" . my-gnus-fetch-whole-thread)
               ("R" . gnus-article-wide-reply-with-original))
   :config
   (setq-default
@@ -119,11 +141,17 @@
   (progn
    (setq
     gnus-select-method '(nntp "nntp.lore.kernel.org")
-    gnus-thread-hide-subtree t
     gnus-view-pseudo-asynchronously t
-    gnus-build-sparse-threads 'some
-
     gnus-activate-level 3
+    ;; Scoring
+    gnus-use-adaptive-scoring t
+    gnus-decay-scores t
+
+    ;; Thread behaviour
+    gnus-build-sparse-threads 'some
+    gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
+    gnus-thread-hide-subtree t
+
     ;; Thread sorting (primary function is the last)
     gnus-thread-sort-functions
     '(gnus-thread-sort-by-total-score
