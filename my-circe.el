@@ -37,6 +37,10 @@
   "Return the password for the `SERVER'."
   (my-pass-password "freenode-nick"))
 
+(defun my-oftc-nick-password (server)
+  "Return the password for the `SERVER'."
+  (my-pass-password "stsquad@irc.oftc.net"))
+
 (defun my-libera-nick-password (server)
   "Return the password for the `SERVER'."
   (my-pass-password "stsquad@irc.libera.chat"))
@@ -46,22 +50,34 @@
   (my-pass-password "gitter-irc"))
 
 
-;; Lui
-(use-package lui
-  :config (setq lui-flyspell-p t))
-
 ;; Logging
 (use-package lui-logging
   :commands enable-lui-logging)
 
 (defvar my-logged-chans
-  '("#qemu" "#qemu-gsoc" "#linaro-virtualization" "#linaro-tcwg")
+  '("#qemu@znc-oftc" "#qemu-gsoc@znc-oftc" "#linaro-virtualization@znc-oftc" "#linaro-tcwg@znc-freenode")
   "List of channels which I log")
 
 (defun my-maybe-log-channel ()
   "Maybe start logging the an IRC channel."
   (when (-contains? my-logged-chans (buffer-name))
     (enable-lui-logging)))
+
+(defun my-check-for-meeting ()
+  "Check for start/endmeeting and enable appropriately."
+  (unless (-contains? my-logged-chans (buffer-name))
+    (save-excursion
+      (goto-char 0)
+      (if (re-search-forward "#startmeeting" nil t)
+          (enable-lui-logging)
+        (goto-char 0)
+        (if (and (re-search-forward "#endmeeting" nil t) lui-logging-timer)
+            (disable-lui-logging))))))
+
+;; Lui
+(use-package lui
+  :config (setq lui-flyspell-p t)
+  :hook (lui-pre-input . my-check-for-meeting))
 
 ;; Auto pasting
 (use-package lui-autopaste
@@ -96,11 +112,9 @@
   (interactive)
   (circe-lagmon-mode)
   (when I-am-at-work
-    (circe "znc-freenode")
     (circe "znc-libera")
     (circe "znc-oftc")
     (circe "bitlbee"))
-  (circe "Libera Chat")
   (circe "Pl0rt"))
 
 (defun my-disable-irc-login ()
@@ -151,14 +165,14 @@
              :tls t
              :nick "stsquad"
              :nickserv-password my-freenode-nick-password
-             :channels (:after-auth "#emacs" "#emacs-circe" "#gentoo-arm")
              )
             ("OFTC"
              :host "irc.oftc.net"
              :server-buffer-name "⇄ OFTC"
              :port "6697"
              :tls t
-             :nick "stsquad-not-via-znc"
+             :nick "stsquad"
+             :nickserv-password my-oftc-nick-password
              :channels ("#debian-devel" "#debian-cross")
              )
             ("Libera Chat"
@@ -224,7 +238,12 @@
              ; does this set circe-lagmon-disabled in the server buffer?
              :lagmon-disabled t
              :host "localhost"
-             :service "6667")))
+             :service "6667")
+            ("Slack"
+             :nick "alex.bennee"
+             :server-buffer-name "⇄ Slack"
+             :host "localhost"
+             :service "9007")))
     (add-to-list 'clean-buffer-list-kill-never-regexps (rx bol (or "#" "⇄")))))
 
 (use-package circe-chanop
