@@ -174,7 +174,8 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
     (add-to-list 'savehist-additional-variables 'counsel-compile-history)
     ;; lets not overtax the regex match on our huge compilation buffers
     (when I-am-at-work
-      (setq compilation-error-regexp-alist '(gcc-include gnu tsan)))
+      (setq compilation-error-regexp-alist '(gcc-include gnu tsan
+                                                         rustic-error rustic-warning rustic-info rustic-panic)))
     ;; Detect stalls
     (add-hook 'compilation-filter-hook
               #'my-compilation-mode-warn-about-prompt)
