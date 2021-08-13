@@ -38,7 +38,8 @@
         elpy-rpc-project-specific 't
         elpy-rpc-python-command "python3"
         ; work around native-compile bug
-        elpy-rpc-pythonpath (file-name-directory (locate-library "elpy.el" t)))
+        elpy-rpc-pythonpath (file-name-directory (locate-library "elpy.el" t))
+        elpy-rpc-virtualenv-path 'system)
   (eval-after-load 'flycheck-mode
     (when (fboundp 'flycheck-tip-cycle)
       (define-key elpy-mode-map (kbd "C-c C-n")
