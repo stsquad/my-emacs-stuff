@@ -84,32 +84,15 @@
   "Return the most recent contacts for completion"
   (split-string (shell-command-to-string
                  (concat mu4e-mu-binary
-                         " find -n 100 "
+                         " find -n 500 "
                          "--sortfield=date --reverse --fields f "
                          "recip:alex.bennee | sort | uniq"))
                 "\n"))
-
-(defun my-rig-mu4e-for-idle-running ()
-  "Setup more comprehensive indexing when Emacs is idle."
-  (setq mu4e-index-lazy-check nil   ; more comprehensive
-        mu4e-index-cleanup t        ; check msgs still in store
-        mu4e-get-mail-command "mbsync  -V -Dm linaro-sync"))
-
-
-(defun my-rig-mu4e-for-active-running ()
-  "Setup faster indexing for when I'm actively using Emacs mail."
-  (setq mu4e-index-lazy-check nil     ; faster sync
-        mu4e-index-cleanup t     ; skip checking the whole store
-        mu4e-get-mail-command "mbsync  -V -Dm linaro-sync")
-  (when (not (-contains? (--map (aref it 5) timer-idle-list) 'my-rig-mu4e-for-idle-running))
-    (run-with-idle-timer 600 nil 'my-rig-mu4e-for-idle-running)))
 
 ;; Switch function
 (defun my-switch-to-mu4e (&optional prefix)
   "Smart dwim switch to mu4e."
   (interactive "P")
-  (when I-am-at-work
-    (my-rig-mu4e-for-active-running))
   (if prefix
       (mu4e)
     (let ((candidate
@@ -139,8 +122,6 @@ Instead of the heuristics of `my-switch-to-mu4e' we build a list of
 all mu4e buffers and allow ivy selection of them.
 "
   (interactive "P")
-  (when I-am-at-work
-    (my-rig-mu4e-for-active-running))
   (if (or prefix (not (get-buffer " *mu4e-main*")))
       (mu4e)
     (let (collection)
@@ -295,7 +276,11 @@ Useful for replies and drafts")
      "\\(?:via [^<]+<[^>]+>\\)"
      "qemu-devel@nongun.org"
      "qemu-devel@nonngnu.org"
-     "richard.hendreson@linaro.org")
+     "nognu.org"
+     "linaor.org"
+     "liaro.org"
+     "richard.hendreson@linaro.org"
+     "Peter.maydel@linaro.org")
      "List of regexs to clean contact list.")
 
 (defun my-mu4e-contact-cleaner (addr)
@@ -410,7 +395,7 @@ Useful for replies and drafts")
           (push (propertize (format "reference: %s" id)
                             'id id) refs))))
     ;; Headers
-    (when (mu4e-message-at-point)
+    (when (and (derived-mode-p 'gnus-article-mode) (mu4e-message-at-point))
       (let ((id (mu4e-message-field-at-point :message-id)))
         (push (propertize (format "header: %s" id)
                           'id id) refs)))
@@ -453,11 +438,15 @@ Useful for replies and drafts")
                                 (car refs)))))
       (magit-show-commit final))))
 
-(use-package mu4e-view
-  :commands mu4e-view
+
+(or (require 'mu4e-view-gnus) (require 'mu4e-view))
+
+(use-package mu4e-view-gnus
+  :commands mu4e-view-gnus
   :bind (:map mu4e-view-mode-map
               ("C-c C-l". org-store-link)
-              ("C-c c" . my-mu4e-jump-to-commit)
+              ;; ("C-c c" . my-mu4e-jump-to-commit) aliases with
+              ;; compile command
               ("C-c f" . my-mu4e-search-from)
               ("C-c t" . my-switch-to-thread)
               ("C-c i" . my-mu4e-kill-message-id)
@@ -619,11 +608,14 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
      (cond
       (I-am-at-work "mbsync  -V -Dm linaro-sync")
       (t "true"))
+     ;; debug
+     mu4e-mu-debug t
+     ;;
      mu4e-update-interval 800
      mu4e-hide-index-messages t
      mu4e-change-filenames-when-moving t ; keep mbsync happy
-     mu4e-index-lazy-check t             ; faster sync
-     mu4e-index-cleanup nil              ; should toggle this
+     mu4e-index-lazy-check nil           ; faster sync when t
+     mu4e-index-cleanup t                ; faster cleanup when nil
      ;; completion
      mu4e-completing-read-function 'completing-read
      ;; navigate options
@@ -804,7 +796,7 @@ patches."
                :query "recip:alex.bennee s:Re NOT flag:seen"
                :key ?S)
               (:name "Mail sent by me"
-               :query "\(from:alex.bennee OR from:bennee.com\)"
+               :query "\(from:alex.bennee OR from:bennee.com\) not flag:draft"
                :key ?s)
               (:name "My Patches"
                :query "\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
@@ -825,7 +817,7 @@ patches."
                :query "flag:flagged NOT flag:seen"
                :key ?F)
               (:name "From my boss"
-               :query "to:alex.bennee@linaro.org AND from:maxim.kuvyrkov@linaro.org"
+               :query "to:alex.bennee@linaro.org AND (from:maxim.kuvyrkov OR mike.holmes)"
                :key ?B)
               (:name "From my Engineers"
                      :query (concat "recip:alex.bennee@linaro.org"
@@ -952,10 +944,18 @@ patches."
                     "recip:alex.bennee flag:unread date:7d..now AND NOT flag:trashed")
               (mu4e-alert-enable-mode-line-display))))
 
+(defun my-defer-mu4e-patch-highlight ()
+  "Set-up to highlight patch once we are idle."
+  (run-with-idle-timer
+     0.1 nil
+     (lambda (buffer)
+       (with-current-buffer buffer
+         (mu4e-patch-highlight))) (current-buffer)))
+
 (use-package mu4e-patch
   :load-path (lambda () (my-return-path-if-ok
                          "~/src/emacs/mu4e-patch.git"))
-  :config (add-hook 'mu4e-view-mode-hook #'mu4e-patch-highlight))
+  :config (add-hook 'mu4e-view-mode-hook #'my-defer-mu4e-patch-highlight))
 
 
 ;; Magic handling for multiple email addrsses
