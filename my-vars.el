@@ -36,6 +36,10 @@
 (defvar I-am-remote (getenv "SSH_TTY"))
 (defvar I-am-root (= (user-uid) 0))
 
+;; tweaks some low level vars
+(setq gc-cons-threshold 100000000
+      read-process-output-max (* 1024 1024))
+
 ;; Environment variables the shell may not have set
 (when I-am-at-work
   (setenv "DEBEMAIL" "alex.bennee@linaro.org")
