@@ -52,12 +52,6 @@
     (define-key company-mode-map [remap indent-for-tab-command]
       'company-indent-for-tab-command)))
 
-(when (and have-melpa (version<= "25.1" emacs-version))
-  (use-package company-lsp
-    :ensure t
-    :after company
-    :config (push 'company-lsp company-backends)))
-
 ;; company-irony uses clang, but it should be before company-clang in
 ;; the company-backends list or it will never get the chance to complete
 (use-package company-irony
