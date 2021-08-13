@@ -79,6 +79,24 @@ If the region is less than a line long assume I want to mark the next
                 ("C-n" . my-next-mc-or-line-dwim))
     :init (region-bindings-mode-enable)))
 
+;; Finally a hydra for the complex editing commands
+;; currently set to C-# but I might want to lead via C-SPC later.
+
+(global-set-key
+ (kbd "C-#")
+ (defhydra my-editing-hydra (:exit nil :hint nil :color red :timeout 5)
+       "
+line: %(line-number-at-pos) region: %(- (region-end) (region-beginning)) chars
+----------------------------------------------------------------
+_n_ext like this: %(buffer-substring-no-properties (region-beginning) (region-end))
+_e_xpand or _c_ontract current region
+"
+       ;; Multiple cursors
+       ("n" mc/mark-next-like-this)
+       ;; Expand Region
+       ("e" er/expand-region)
+       ("c" er/contract-region)))
+
 (use-package ws-butler
   :ensure t
   :hook (prog-mode . ws-butler-mode))
