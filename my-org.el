@@ -20,6 +20,8 @@
 (require 'my-basic-modes)
 (require 'my-hydra)
 (require 'bookmark)
+(require 'magit-git)
+(require 'magit-process)
 
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
@@ -120,6 +122,11 @@ This is used by `my-org-run-default-block' which is added to
             (define-key org-src-mode-map (kbd "C-c C-c") 'org-edit-src-exit)
             (setq org-src-window-setup 'reorganize-frame)))
 
+;;
+;; Capture and Refile configuration
+;;
+(use-package org-refile
+  :hook (org-after-refile-insert . org-update-parent-todo-statistics))
 
 (defun my-org-choose-target ()
   "Move cursor to insertion point for a given headline."
@@ -175,6 +182,11 @@ This is used by `my-org-run-default-block' which is added to
       entry
       (file+regexp "team.org" "Review Queue")
       "** TODO %a"
+      :immediate-finish t :prepend t)
+     ("M" "Queue Maintainer Review (email)"
+      entry
+      (file+function "qemu.org" my-org-choose-target)
+      "* TODO %a"
       :immediate-finish t :prepend t))))
 
 ;; ORG Based review automation
@@ -336,7 +348,7 @@ If `NEW-STATUS' is set then change TODO state."
   "Jump to the relevant section of the org-file unless NOJUMP is t.
 Return the filespec of the jump."
   (interactive)
-  (let* ((head (magit-git-str "log" "--pretty=%s" "HEAD^.."))
+  (let* ((head (magit-git-string "log" "--pretty=%s" "HEAD^.."))
          (link (my-org-locate-review-comments head)))
     (when link
       (let ((buf (car (car link)))
@@ -410,7 +422,7 @@ Return the filespec of the jump."
        (defhydra my-hydra-org (:color blue)
          "
 Org: _c_apture task or _T_ODO, view _a_genda, _g_oto: %(my-return-to-org-file) save _p_osted work
-Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment _j_ump to: %(my-jump-to-org-file t)"
+Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comment _j_ump to: %(my-jump-to-org-file t)"
          ("c" org-capture nil)
          ("T" (org-capture nil "T") nil)
          ("a" (org-agenda nil "n") nil)
@@ -419,6 +431,7 @@ Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment _j_ump to: %(my-j
          ("h" counsel-org-agenda-headlines nil)
          ("p" (org-capture nil "p") nil)
          ("C" (org-capture nil "C") nil)
+         ("m" (org-capture nil "M") nil)
          ("q" (org-capture nil "Q") nil)
          ("r" (org-capture nil "r") nil))))
     (org-clock-persistence-insinuate)))
@@ -471,6 +484,8 @@ Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment _j_ump to: %(my-j
   (use-package ob-restclient
     :ensure t))
 
+(use-package ox-md)
+
 ;; org-babel packages in stable
 (use-package ob-async
   :ensure t)
@@ -497,6 +512,18 @@ Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment _j_ump to: %(my-j
   (progn
     (setq org-src-fontify-natively t)))
 
+(use-package plantuml-mode
+  :if (locate-library "plantuml-mode")
+  :config
+  (setq plantuml-default-exec-mode 'jar
+        plantuml-jar-path (find-valid-file '("/usr/share/plantuml/plantuml.jar")))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
+
+
+(use-package ob-plantuml
+  :if (locate-library "plantuml-mode")
+  :config (setq org-plantuml-jar-path (find-valid-file '("/usr/share/plantuml/plantuml.jar"))))
+
 ;; Build list of available languages
 (let ((langs '((emacs-lisp . t)
                (C . t)
@@ -515,6 +542,8 @@ Reviews: save _C_ompleted, _q_ueue or capture _r_eview comment _j_ump to: %(my-j
     (add-to-list 'langs '(gnuplot . t)))
   (when (locate-library "sparql-mode")
     (add-to-list 'langs '(sparql . t)))
+  (when (locate-library "plantuml-mode")
+    (add-to-list 'langs '(plantuml . t)))
   (if (locate-library "ob-sh")
       (add-to-list 'langs '(sh . t))
     (add-to-list 'langs '(shell . t)))
