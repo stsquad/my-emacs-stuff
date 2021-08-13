@@ -57,6 +57,7 @@ We must have reached the end of irony-cdb-compilation-databases."
 
 (use-package lsp-mode
   :hook (c-mode . lsp-mode)
+  :bind (:map lsp-mode-map ("C-c C-c" . lsp-execute-code-action))
   :ensure t
   :config
   (setq
