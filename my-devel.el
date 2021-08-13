@@ -33,7 +33,7 @@
   (progn
     (add-hook 'prog-mode-hook 'origami-mode)
     (with-eval-after-load 'hydra
-      (define-key origami-mode-map (kbd "C-x f")
+      (define-key origami-mode-map (kbd "C-c f")
         (defhydra hydra-folding (:color red :hint nil)
    "
 _o_pen node    _n_ext fold       toggle _f_orward    _F_ill column: %`fill-column
