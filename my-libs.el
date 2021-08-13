@@ -31,7 +31,7 @@
 
 (use-package s
   :ensure t
-  :commands s-suffix? s-contains? s-replace-all s-chop-suffix s-trim)
+  :commands s-suffix? s-contains? s-replace-all s-chop-suffix s-trim s-prefix-p)
 
 (use-package fn
   :ensure t)
