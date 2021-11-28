@@ -12,6 +12,7 @@
 (require 'my-utils)
 (require 'my-spell)
 (require 'tls)
+(require 'nsm)
 
 (defun my-bitlbee-password (server)
   "Return the password for the `SERVER'."

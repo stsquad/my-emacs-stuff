@@ -21,6 +21,7 @@
 
 (require 'use-package)
 (require 'my-vars)
+(require 'my-libs)
 
 ;;; Display hacks
 ;
