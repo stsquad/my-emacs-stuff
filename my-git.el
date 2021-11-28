@@ -6,9 +6,11 @@
 ;;
 ;;; Code:
 
+(eval-when-compile (require 'use-package))
+
 (require 'my-vars)
-(require 'use-package)
 (require 'my-find)
+(require 'my-hydra)
 
 ; work-around stale shells
 (when I-am-at-work
@@ -25,6 +27,15 @@
   (remove-hook 'find-file-hook 'vc-find-file-hook)
   (remove-hook 'find-file-hook 'vc-refresh-state)
   (setq vc-handled-backends nil))
+
+;; accelerate magit?
+
+(use-package libgit
+  :ensure t)
+
+(use-package magit-libgit
+  :ensure t
+  :after (magit libgit))
 
 ;; As the built-in project.el support expects to use vc-mode hooks to
 ;; find the root of projects we need to provide something equivalent
@@ -202,7 +213,8 @@ This works by looking for a message-id in the buffer or prompting for
               ("C-c b" . my-commit-update-with-b4)
               ("C-c x" . my-commit-mode-check-and-apply-tags)
               ("C-c f" . my-commit-mode-add-fixes)
-              ("C-c s" . my-mu4e-search-for-id)))
+              ("C-c s" . my-mu4e-search-for-id))
+  :config (setq git-commit-summary-max-length 50))
 
 ;;
 ;;
@@ -389,6 +401,24 @@ prepare for a re-base where we are not rebuilding the tree from
   :bind (:map git-rebase-mode-map
               ("C-x t" . my-mark-rebase-commits-for-tagging)
               ("C-x e" . my-mark-rebase-commits-for-editing)))
+
+;;
+;; Add forge support
+;;
+(use-package forge
+  :ensure t
+  :after magit)
+
+(use-package code-review
+  :ensure t
+  :after forge
+  :load-path (lambda () (my-return-path-if-ok
+  "~/src/emacs/code-review.git/"))
+  :config
+    (define-key
+      forge-pullreq-section-map (kbd "R")
+      'code-review-forge-pr-at-point))
+
 
 ;;;
 ;;; Additional GIT bits
