@@ -19,7 +19,7 @@
 ;; Always run on loading
 ;;
 
-;;(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages")))
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages")))
 
 ;; Setup packages
 (when I-am-at-work
@@ -30,10 +30,6 @@
 (add-to-list
  'package-archives
  '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-
-(add-to-list
- 'package-archives
- '("org" . "https://orgmode.org/elpa/") t)
 
 (defvar have-melpa
   (assoc "melpa" package-archives)
@@ -82,8 +78,9 @@ package is installed programatically."
 ;; native-compile support
 (when (version<= "28.0.50" emacs-version)
   (use-package comp
-    :init (setq comp-deferred-compilation t)))
-
+    :init (setq comp-deferred-compilation (daemonp)
+                ;; fixme, very much zen specific
+                native-comp-compiler-options '("-O2" "-march=haswell" "-mtune=native"))))
 
 (when (version<= "24.4" emacs-version)
   (use-package paradox
