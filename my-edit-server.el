@@ -41,6 +41,9 @@
                         '("github.com" . markdown-mode))))
 
 (with-eval-after-load 'edit-server
+  ;; Markdown
+  (add-to-list 'edit-server-url-major-mode-alist
+               '("reddit" . markdown-mode))
   ;; Mediawiki
   (add-to-list 'edit-server-url-major-mode-alist
                '("mediawiki" . mediawiki-mode))
