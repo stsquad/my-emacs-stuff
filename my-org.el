@@ -186,7 +186,7 @@ This is used by `my-org-run-default-block' which is added to
      ("M" "Queue Maintainer Review (email)"
       entry
       (file+function "qemu.org" my-org-choose-target)
-      "* TODO %a"
+      "*** TODO %a"
       :immediate-finish t :prepend t))))
 
 ;; ORG Based review automation
@@ -495,6 +495,7 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
   (when (file-exists-p lob)
     (org-babel-lob-ingest lob)))
 
+;; https://emacs.stackexchange.com/questions/13244/edebug-orgmode-source-code-blocks-with-input-variables
 (defun org-src-debug ()
   "Put a call to this function at the beginning of the org source block to debug it."
   (save-excursion
