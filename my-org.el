@@ -534,7 +534,7 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
                (sqlite . t))))
   (when (locate-library "ob-perl")
     (add-to-list 'langs '(perl . t)))
-  (when (locate-library "ob-r")
+  (when (or (locate-library "ob-r") (locate-library "ess"))
     (add-to-list 'langs '(R . t)))
   (when (locate-library "ob-restclient")
     (add-to-list 'langs '(restclient . t)))
