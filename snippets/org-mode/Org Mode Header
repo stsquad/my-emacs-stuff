@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Org Mode Header
+# key: $head
+# --
+# -*- my-org-default-action: nil; my-org-default-code-block: nil -*-
+#+TITLE: $1
+#+AUTHOR: Alex Bennée
+#+EMAIL: ${2:`(my-yas-expand-email)`}

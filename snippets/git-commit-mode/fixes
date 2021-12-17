@@ -1,0 +1,19 @@
+# key: $fix
+# name: fixes
+# --
+${1:`(let
+      ((ref (completing-read "Issue # or commit: " nil))
+       (origin (and
+                (magit-git-repo-p default-directory)
+                (magit-get "remote" "origin" "url"))))
+    (format "Resolves: %s\n"
+            (cond
+             ((s-match
+               (rx
+                (>= 4 hex))
+               ref)
+              (magit-git-str "showref" ref))
+             ((s-contains-p "github" origin)
+              (format "%s/issues/%s" origin ref))
+             ((s-contains-p "gitlab" origin)
+              (format "%s/-/issues/%s" origin ref))))))`}
