@@ -203,7 +203,6 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 
 ;; checkpatch
-;; currently disabled, there is also checkpatch for flycheck
 (use-package checkpatch-mode
   :after magit
   :load-path (lambda () (my-return-path-if-ok
