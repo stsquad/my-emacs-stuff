@@ -53,7 +53,8 @@
    lava-api-token #'(lambda () (my-pass-password "lava" t))))
 
 (use-package lava-job-list-mode
-  :bind ("C-c l" . lava-list-jobs)
+  :disabled t
+  :bind ("C-c C-x l" . lava-list-jobs)
   :config
   (progn
     (when (fboundp 'tracking-add-buffer)
