@@ -143,7 +143,7 @@ all mu4e buffers and allow ivy selection of them.
           (push (propertize
                  (format "mu4e headers:%s"
                          (with-current-buffer headers
-                           mu4e~headers-last-query))
+                           mu4e--search-last-query))
                  'buffer headers) collection)))
 
       ;; What are we composing
@@ -267,7 +267,7 @@ Useful for replies and drafts")
 
 
 (defvar my-bad-addresses
-  '( "docs.google.com"
+   '( "docs.google.com"
      "\\(?:confirm.*@\\)"
      "\\(?:\\(?:not?\\)-?reply\\)"
      "\\(?:@bugs\\.launchpad\\.net\\)"
@@ -278,9 +278,12 @@ Useful for replies and drafts")
      "qemu-devel@nonngnu.org"
      "nognu.org"
      "linaor.org"
+     "linrao.org"
      "liaro.org"
      "richard.hendreson@linaro.org"
-     "Peter.maydel@linaro.org")
+     "Peter.maydel@linaro.org"
+     "vincent.guitto@linaro.org"
+     "vincent.guitttot@linaro.org")
      "List of regexs to clean contact list.")
 
 (defun my-mu4e-contact-cleaner (addr)
@@ -298,9 +301,9 @@ Useful for replies and drafts")
   :config (setq mu4e-compose-signature 'my-sig-function
                 mu4e-compose-complete-addresses t
                 mu4e-compose-complete-only-personal nil ;; personal seems to miss things
-
                 mu4e-compose-complete-only-after "2013-11-01"
-                mu4e-contact-process-function #'my-mu4e-contact-cleaner))
+                mu4e-contact-process-function #'my-mu4e-contact-cleaner
+                mu4e-sent-messages-behavior 'delete))
 
 
 (defun my-update-async-jobs (ignored)
@@ -439,10 +442,10 @@ Useful for replies and drafts")
       (magit-show-commit final))))
 
 
-(or (require 'mu4e-view-gnus) (require 'mu4e-view))
+(or (require 'mu4e-view-gnus nil t) (require 'mu4e-view))
 
-(use-package mu4e-view-gnus
-  :commands mu4e-view-gnus
+(use-package mu4e-view
+  :commands mu4e-view
   :bind (:map mu4e-view-mode-map
               ("C-c C-l". org-store-link)
               ;; ("C-c c" . my-mu4e-jump-to-commit) aliases with
@@ -454,14 +457,10 @@ Useful for replies and drafts")
               ("C-x t" . my-mu4e-view-toggle/body)
               ("h"     . my-gnus-article-toggle-long-cc))
   :hook (mu4e-view-mode . my-set-view-directory)
-  :config (setq mu4e-view-show-images t
-                mu4e-view-show-addresses t
-                mu4e-view-fill-headers nil
-                mu4e-view-fields
+  :config (setq mu4e-view-fields
                 '(:from :to :cc
                         :subject :flags
-                        :date :tags :attachments :signature)
-                mu4e-view-use-gnus t))
+                        :date :tags :attachments :signature)))
 
 ;; spam learning: ionice -c 3 sa-learn --progress --spam
 ;; ~/Maildir/.Spam/cur/*
