@@ -275,11 +275,15 @@ Useful for replies and drafts")
      "\\(?:(via[^)]+)\\)"
      "\\(?:via [^<]+<[^>]+>\\)"
      "qemu-devel@nongun.org"
+     "nongu.org"
+     "nongdu.org"
      "qemu-devel@nonngnu.org"
      "nognu.org"
      "linaor.org"
      "linrao.org"
      "liaro.org"
+     "linar.org"
+     "rehat.com"
      "richard.hendreson@linaro.org"
      "Peter.maydel@linaro.org"
      "vincent.guitto@linaro.org"
@@ -287,7 +291,7 @@ Useful for replies and drafts")
      "List of regexs to clean contact list.")
 
 (defun my-mu4e-contact-cleaner (addr)
-  "Clean out junk emails from contacts"
+  "Clean out junk emails from contacts."
   (if (--any (string-match-p it addr) my-bad-addresses)
       nil
     addr))
