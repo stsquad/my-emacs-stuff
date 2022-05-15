@@ -28,6 +28,7 @@
   "The location of my main work scratchpad.")
 
 (use-package ob-shell
+  :pin gnu
   :defer t
   :config (setq
            org-babel-default-header-args:sh
@@ -131,7 +132,7 @@ This is used by `my-org-run-default-block' which is added to
 (defun my-org-choose-target ()
   "Move cursor to insertion point for a given headline."
   (counsel-org-goto)
-  (outline-show-entry)
+  (outline-show-children)
   (outline-next-visible-heading 1)
   (previous-line)
   (move-end-of-line 1))
@@ -365,6 +366,7 @@ Return the filespec of the jump."
 
 (use-package org
   :ensure t
+  :pin gnu
   :mode ("\\.org\\'" . org-mode)
   :commands (org-agenda org-capture)
   :bind (:map org-mode-map
@@ -514,7 +516,7 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
     (setq org-src-fontify-natively t)))
 
 (use-package plantuml-mode
-  :if (locate-library "plantuml-mode")
+  :ensure t
   :config
   (setq plantuml-default-exec-mode 'jar
         plantuml-jar-path (find-valid-file '("/usr/share/plantuml/plantuml.jar")))
