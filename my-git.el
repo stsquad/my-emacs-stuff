@@ -130,6 +130,8 @@ not, I'd rather just go to magit-status. Lets make it so."
       (goto-char (point-min))
       (setq title (chomp (substring-no-properties (thing-at-point
                                                    'line)))))
+    (when my-b4-current-results-buffer
+      (my-commit-update-with-b4 t))
     (when title
       (let ((tags (my-org-find-review-tags title "DONE")))
         (when tags
