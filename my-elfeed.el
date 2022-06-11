@@ -13,7 +13,10 @@
                 elfeed-use-curl 't))
 
 (use-package elfeed-org
-  :config (setq rmh-elfeed-org-files (list "~/org/elfeed.org")))
+  :ensure t
+  :config (progn
+            (setq rmh-elfeed-org-files (list "~/org/elfeed.org"))
+            (elfeed-org)))
 
 (provide 'my-elfeed)
 ;;; .el ends here
