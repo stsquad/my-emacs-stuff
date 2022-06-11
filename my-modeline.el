@@ -24,7 +24,7 @@
   (use-package doom-modeline
     :ensure t
     :config
-    (setq doom-modeline-icon (or (display-graphic-p) (I-am-at-work))
+    (setq doom-modeline-icon (or (display-graphic-p) I-am-at-work)
           doom-modeline-major-mode-icon t
           doom-modeline-major-mode-color-icon t
           doom-modeline-project-detection 'project
