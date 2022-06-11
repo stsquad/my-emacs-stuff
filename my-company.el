@@ -27,6 +27,8 @@
                  company-clang)
   "Backends I disable/blacklist.")
 
+(add-to-list 'completion-category-overrides '((email (basic orderless))))
+
 (use-package company
   :ensure t
   :commands (global-company-mode company-complete-common)
@@ -62,7 +64,10 @@
             (add-to-list 'company-backends #'company-irony))
             (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
 
+;; this does raise a question about company sorting when it shouldn't,
+;; for example when mu4e provides the list of emails...
 (use-package company-statistics
+  :ensure t
   :defer 60
   :config (company-statistics-mode))
 
