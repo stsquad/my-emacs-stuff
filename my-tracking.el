@@ -26,7 +26,8 @@
   :ensure t
   :commands (tracking-mode tracking-add-buffer)
   :init (tracking-mode)
-  :config (setq tracking-most-recent-first t
+  :config (setq tracking-sort-faces-first t
+                tracking-most-recent-first t
                 tracking-position 'end))
 
 
