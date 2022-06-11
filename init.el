@@ -135,7 +135,7 @@
 ;; Finished loading
 
 (setq I-completed-loading-dotinit 't)
-(message "Done .emacs")
+(message "Done .emacs (%d gcs in %f)" gcs-done gc-elapsed)
 
 (provide 'init)
 ;;; init.el ends here
