@@ -85,7 +85,7 @@
   :bind (:map counsel-mode-map
               ("M-x" . counsel-M-x)
               ("M-y" . counsel-yank-pop)
-              ("C-x b" . counsel-switch-buffer)
+              ("C-x b" . counsel-ibuffer)
               ("C-x m" . counsel-mark-ring)
               ("C-h ?" . counsel-search))
   :init (counsel-mode))
