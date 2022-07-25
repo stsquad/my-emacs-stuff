@@ -105,7 +105,7 @@ This is used by `my-org-run-default-block' which is added to
 (use-package org-agenda
   :commands org-agenda
   :config
-  (setq 
+  (setq
    ;; Agenda locations
    org-agenda-files '("~/org/")
    org-agenda-custom-commands
@@ -524,7 +524,7 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
 
 
 (use-package ob-plantuml
-  :if (locate-library "plantuml-mode")
+  :after plantuml-mode
   :config (setq org-plantuml-jar-path (find-valid-file '("/usr/share/plantuml/plantuml.jar"))))
 
 ;; Build list of available languages

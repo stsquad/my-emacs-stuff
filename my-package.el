@@ -43,13 +43,6 @@
 
 (package-initialize)
 
-;; Remove Org-mode that was shipped with Emacs if we are using ELPA
-; This seems to be a case of something triggering a load from the
-; original when we should be getting everything from the ELPA version.
-                                        ;
-(when (file-expand-wildcards (concat package-user-dir "/org-[0-9]*"))
-  (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path)))
-
 ;; Workaround https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341
 (when (and (version<= "26.0" emacs-version) (version<= emacs-version "26.3"))
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
