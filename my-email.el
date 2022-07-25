@@ -274,6 +274,7 @@ Useful for replies and drafts")
      "\\(?:bounces[^@]*@\\)"
      "\\(?:(via[^)]+)\\)"
      "\\(?:via [^<]+<[^>]+>\\)"
+     "reply@github.com"
      "qemu-devel@nongun.org"
      "nongu.org"
      "nongdu.org"
@@ -331,6 +332,24 @@ Useful for replies and drafts")
                 mu4e-headers-date-format "%a %d/%m/%y"
                 mu4e-headers-skip-duplicates t
                 mu4e-headers-include-related t
+                ;; Fancy chars
+                mu4e-use-fancy-chars        t
+                mu4e-headers-draft-mark     '("D" . "💈")
+                mu4e-headers-flagged-mark   '("F" . "📍")
+                mu4e-headers-new-mark       '("N" . "🔥")
+                mu4e-headers-passed-mark    '("P" . "❯")
+                mu4e-headers-replied-mark   '("R" . "❮")
+                mu4e-headers-seen-mark      '("S" . "☑")
+                mu4e-headers-trashed-mark   '("T" . "💀")
+                mu4e-headers-attach-mark    '("a" . "📎")
+                mu4e-headers-encrypted-mark '("x" . "🔒")
+                mu4e-headers-signed-mark    '("s" . "🔑")
+                mu4e-headers-unread-mark    '("u" . "📨")
+                mu4e-headers-list-mark      '("s" . "🔈")
+                mu4e-headers-personal-mark  '("p" . "👨")
+                mu4e-headers-calendar-mark  '("c" . "📅")
+                ;; which flags for the above
+                mu4e-headers-visible-flags '(draft flagged unread seen passed replied trashed attach encrypted signed)
                 ;; mu4e-headers-hide-predicate 'my-mu4e-headers-hide-muted-p
                 mu4e-headers-actions '(("gapply git patches" . mu4e-action-git-apply-patch)
                                        ("mgit am patch" . mu4e-action-git-apply-mbox)
