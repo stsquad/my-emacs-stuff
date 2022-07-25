@@ -42,7 +42,8 @@
 ;; Environment variables the shell may not have set
 (when I-am-at-work
   (setenv "DEBEMAIL" "alex.bennee@linaro.org")
-  (setenv "DEBFULLNAME" "Alex Bennée"))
+  (setenv "DEBFULLNAME" "Alex Bennée")
+  (setenv "LSP_USE_PLISTS" "1"))
 
 ;; Shared regexps
 

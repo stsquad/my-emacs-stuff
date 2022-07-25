@@ -56,14 +56,18 @@ We must have reached the end of irony-cdb-compilation-databases."
     :config (add-hook 'irony-mode-hook #'irony-eldoc)))
 
 (use-package lsp-mode
-  :hook (c-mode . lsp-mode)
-  :bind (:map lsp-mode-map ("C-c C-c" . lsp-execute-code-action))
   :ensure t
+  :commands (lsp)
+  :hook (c-mode . lsp)
+  :bind (:map lsp-mode-map ("C-c C-c" . lsp-execute-code-action))
+  :init (setq lsp-keymap-prefix "C-c C-l")
   :config
   (setq
-   lsp-prefer-flymake nil
-   lsp-clients-clangd-executable
-   (which-lookup '("clangd-7" "clangd"))))
+   ;; lsp-log-io t
+   lsp-use-plists t))
+
+(with-eval-after-load 'lsp-mode
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
 
 (use-package lsp-ui
   :commands lsp-ui-mode
@@ -73,6 +77,10 @@ We must have reached the end of irony-cdb-compilation-databases."
   (lsp-ui-peek-always-show t)
   (lsp-ui-sideline-show-hover t)
   (lsp-ui-doc-enable nil))
+
+(use-package lsp-ivy
+  :ensure t)
+
 ;;
 ;; End of c-mode customisations
 ;;
