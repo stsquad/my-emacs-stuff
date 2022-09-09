@@ -54,16 +54,6 @@
     (define-key company-mode-map [remap indent-for-tab-command]
       'company-indent-for-tab-command)))
 
-;; company-irony uses clang, but it should be before company-clang in
-;; the company-backends list or it will never get the chance to complete
-(use-package company-irony
-  :ensure t
-  :after irony
-  :commands (company-irony company-irony-setup-begin-commands)
-  :config (progn
-            (add-to-list 'company-backends #'company-irony))
-            (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
-
 ;; this does raise a question about company sorting when it shouldn't,
 ;; for example when mu4e provides the list of emails...
 (use-package company-statistics
@@ -95,6 +85,22 @@
   (let ((completion-at-point-functions-saved completion-at-point-functions)
         (completion-at-point-functions '(company-complete-common-wrapper)))
     (indent-for-tab-command arg)))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
+
 
 (provide 'my-company)
 ;;; my-company.el ends here

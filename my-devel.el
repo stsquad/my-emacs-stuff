@@ -75,6 +75,36 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :commands re-builder
   :config (setq reb-re-syntax 'rx))
 
+
+;;
+;; All hail LSP mode
+;;
+
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp)
+  :hook (c-mode . lsp)
+  :bind (:map lsp-mode-map ("C-c C-c" . lsp-execute-code-action))
+  :init (setq lsp-keymap-prefix "C-c C-l")
+  :config
+  (setq
+   ;; lsp-log-io t
+   ;; lsp-enable-on-type-formatting nil - if it starts getting in the way
+   lsp-use-plists t))
+
+(with-eval-after-load 'lsp-mode
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :ensure t
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable nil))
+
+
 ;;
 ;; Rust
 ;;
