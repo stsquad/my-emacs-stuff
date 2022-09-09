@@ -85,10 +85,13 @@
   :bind (:map counsel-mode-map
               ("M-x" . counsel-M-x)
               ("M-y" . counsel-yank-pop)
-              ("C-x b" . counsel-ibuffer)
+              ("C-x b" . counsel-switch-buffer)
               ("C-x m" . counsel-mark-ring)
               ("C-h ?" . counsel-search))
   :init (counsel-mode))
+
+(use-package ivy-rich
+  :ensure t)
 
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here
