@@ -93,7 +93,9 @@ Assumes that the frame is only split into two."
 (use-package ace-window
   :ensure t
   :bind ("C-x o" . ace-window)
-  :config (setq aw-scope 'frame))
+  :config (setq
+           aw-scope 'visible ;; jump between visible frames across displays
+           ))
 
 (provide 'my-windows)
 ;;; my-windows.el ends here
