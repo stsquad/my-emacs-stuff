@@ -121,7 +121,7 @@ This is used by `my-org-run-default-block' which is added to
   :commands org-edit-src-code
   :config (progn
             (define-key org-src-mode-map (kbd "C-c C-c") 'org-edit-src-exit)
-            (setq org-src-window-setup 'reorganize-frame)))
+            (setq org-src-window-setup 'current-window)))
 
 ;;
 ;; Capture and Refile configuration
@@ -522,6 +522,8 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
         plantuml-jar-path (find-valid-file '("/usr/share/plantuml/plantuml.jar")))
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
 
+(use-package ob-python
+  :config (setq org-babel-python-command "python3"))
 
 (use-package ob-plantuml
   :after plantuml-mode
