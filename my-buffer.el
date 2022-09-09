@@ -75,7 +75,7 @@
                (group
                 (auto-project))
                (auto-directory)
-               (auto-mode)))
+               (auto-mode))))
   (use-package ibuffer
     :commands ibuffer
     :bind ("C-x C-b" . my-ibuffer-bs-show)
@@ -92,7 +92,7 @@
                                         (mode . c-mode)
                                         (mode . java-mode)
                                         (mode . idl-mode)
-                                        (mode . lisp-mode)))))))))))
+                                        (mode . lisp-mode))))))))))
 
 (provide 'my-buffer)
 ;;; my-buffer.el ends here
