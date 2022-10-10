@@ -89,7 +89,9 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :config
   (setq
    ;; lsp-log-io t
-   ;; lsp-enable-on-type-formatting nil - if it starts getting in the way
+   ;; lsp-enable-on-type-formatting nil - if it starts getting in the
+   ;; way
+   lsp-clients-clangd-args '("--header-insertion-decorators=0" "--header-insertion=never")
    lsp-use-plists t))
 
 (with-eval-after-load 'lsp-mode
