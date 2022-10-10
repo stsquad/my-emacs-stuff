@@ -146,6 +146,10 @@
                    (daemonp)
                    (not I-am-root)
                    (not my-irc-login-timer))
+          ;; override cert check for pl0rt
+          (let ((id (nsm-id "irc.pl0rt.org" 6697)))
+            (setq nsm-temporary-host-settings
+                  (list (list :id id :conditions '(:no-host-match :expired :invalid :verify-cert)))))
           (setq my-irc-login-timer (run-with-idle-timer 120 nil 'my-irc-login)))
   :config
   (progn
@@ -153,10 +157,6 @@
       (setq circe-default-nick "stsquad"
             circe-default-user "stsquad"
             circe-default-realname "stsquad"))
-    ;; override cert check for pl0rt
-    (let ((id (nsm-id "irc.pl0rt.org" 6697)))
-      (setq nsm-temporary-host-settings
-            (list (list :id id :conditions '(:no-host-match :expired :invalid :verify-cert)))))
     (setq circe-reduce-lurker-spam t
           circe-network-options
           `(("Freenode"
