@@ -34,9 +34,10 @@
   :defer 240
   :init (global-auto-revert-mode 1))
   
-;; Keep track of my key-presses
+;; Keep track of my key-presses - use keyfreq-show to view
 (use-package keyfreq
   :if (daemonp)
+  :ensure t
   :defer 240
   :config
   (progn
