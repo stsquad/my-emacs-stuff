@@ -77,8 +77,11 @@
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-c\C-m" 'execute-extended-command)
 
-;(global-set-key (kbd "<C-tab>") 'bury-buffer)
+;; Basic buffer navigation
 (global-set-key (kbd "<C-tab>") 'pop-global-mark)
+;; maps to C-c page-up/down
+(global-set-key (kbd "C-c <prior>") 'previous-buffer)
+(global-set-key (kbd "C-c <next>") 'next-buffer)
 
 ;; Handle next/prev error on keymap / and * (with numlock off)
 (global-set-key (kbd "M-O o") 'previous-error)
