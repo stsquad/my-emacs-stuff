@@ -31,7 +31,7 @@
 (use-package elpy
   :ensure t
   :commands elpy-enable
-  :after python
+  :after (python flycheck)
   :init (elpy-enable)
   :config
   (setq elpy-rpc-backend "jedi"
@@ -39,7 +39,8 @@
         elpy-rpc-python-command "python3"
         ; work around native-compile bug
         elpy-rpc-pythonpath (file-name-directory (locate-library "elpy.el" t))
-        elpy-rpc-virtualenv-path 'system)
+        elpy-rpc-virtualenv-path 'system
+        elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (eval-after-load 'flycheck-mode
     (when (fboundp 'flycheck-tip-cycle)
       (define-key elpy-mode-map (kbd "C-c C-n")
