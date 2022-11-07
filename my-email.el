@@ -805,27 +805,30 @@ patches."
             '(
               ;; Work bookmarks
               (:name "Unread posts addressed to me"
-               :query "recip:alex.bennee flag:unread"
+               :query "recip:alex.bennee@linaro.org flag:unread"
                :key ?M)
+              (:name "Unreplied posts addressed to me"
+               :query "to:/alex.bennee/ and not (flag:replied or flag:trashed or s:Re)"
+               :key ?U)
               (:name "Unread list email addressed to me"
-               :query "recip:alex.bennee flag:list flag:unread"
+               :query "recip:alex.bennee@linaro.org flag:unread AND NOT maildir:\"/Inbox\""
                :key ?m)
               (:name "Mail addressed to me with git tags"
-               :query "recip:alex.bennee AND \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
+               :query "recip:/alex.bennee/ AND \( \(reviewed ADJ by\) OR \(signed ADJ off ADJ by\) \)"
                :hide-unread t
                :key ?g)
               (:name "Mail sent by me (unread replied)"
-               :query "recip:alex.bennee s:Re NOT flag:seen"
+               :query "(flag:replied OR (recip:/alex.bennee/ AND s:Re)) NOT flag:seen"
                :key ?S)
               (:name "Mail sent by me"
-               :query "\(from:alex.bennee OR from:bennee.com\) not flag:draft"
+               :query "f:/alex.bennee/ and not flag:draft"
                :key ?s)
               (:name "My Patches"
-               :query "\(from:alex.bennee OR from:bennee.com\) AND s:PATCH NOT s:Re"
+               :query "\(from:/alex.bennee/ OR from:/bennee.com/\) AND s:PATCH NOT s:Re"
                :hide-unread t
                :key ?p)
               (:name "My tags"
-               :query "\(from:alex.bennee OR from:bennee.com\) AND \ \(b:\"Reviewed\" OR b:\"Tested\"\)"
+               :query "from:/alex.bennee/ AND \ \(b:\"Reviewed\" OR b:/Tested-by/ OR b:/Acked-by/ \)"
                :hide-unread t
                :key ?r)
               (:name "Pull Reqs with my name"
@@ -839,12 +842,11 @@ patches."
                :query "flag:flagged NOT flag:seen"
                :key ?F)
               (:name "From my boss"
-               :query "to:alex.bennee@linaro.org AND (from:maxim.kuvyrkov OR mike.holmes)"
+               :query "to:alex.bennee@linaro.org AND (from:/maxim.kuvyrkov/ OR f:/mike.holmes/)"
                :key ?B)
               (:name "From my Engineers"
                      :query (concat "recip:alex.bennee@linaro.org"
                                     " AND ("
-                                    "f:masami.hiramatsu@linaro.org OR "
                                     "f:takahiro.akashi@linaro.org OR "
                                     "f:arnd@linaro.org OR "
                                     "f:jean-philippe@linaro.org OR "
@@ -863,22 +865,22 @@ patches."
                :hide-unread t
                :key ?H)
               (:name "My emails in the last week"
-               :query "from:alex.bennee date:1w..now"
+               :query "from:/alex.bennee/ date:1w..now"
                :key ?w)
               ;;:name "Bugs" and CI stuff
               (:name "Bugs and Notifications"
-               :query "recip:alex.bennee AND (f:bugs.debian.org OR f:bugs.launchpad.net)"
+               :query "recip:/alex.bennee/ AND (f:bugs.debian.org OR f:bugs.launchpad.net OR f:gitlab.com)"
                :key ?b)
               (:name "CI Notifications"
                :query "f:noreply@shippable.com OR f:builds@travis-ci.org"
                :key ?C)
               ;; Virt related
               (:name "Latest QEMU posts (unread)"
-               :query "(list:qemu-devel* OR recip:qemu-devel@nongnu.org) and flag:unread"
+               :query "(list:/qemu-devel.*/ OR recip:qemu-devel@nongnu.org) and flag:unread"
                :hide-unread t
                :key ?q)
               (:name "Latest QEMU Maintainer Posts"
-               :query "recip:alex.bennee AND recip:qemu-devel AND (b:/fpu/ OR b:\"tests/fp\" OR b:\"tests/tcg/multiarch\" OR b:gdbstub OR b:plugin OR b:semihosting OR b:travis OR b:shippable OR b:docker OR b:\"tests/vm\" OR b:gitlab OR b:\"tests/tcg/Makefile\" OR b:gitdm)"
+               :query "recip:/alex.bennee/ AND recip:/qemu-devel/ AND (b:/fpu/ OR b:\"tests/fp\" OR b:\"tests/tcg/multiarch\" OR b:gdbstub OR b:plugin OR b:semihosting OR b:docker OR b:\"tests/vm\" OR b:gitlab OR b:\"tests/tcg/Makefile\" OR b:gitdm)"
                :hide-unread t
                :key ?Q)
               (:name "QEMU ARM posts"
