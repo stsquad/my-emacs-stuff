@@ -58,7 +58,7 @@ I'm in a work for hire directory."
   "Return a pull request string from a given directory."
   (interactive)
   (let ((base "origin/master")
-        (repo "https://github.com/stsquad/qemu.git")
+        (repo "https://gitlab.com/stsquad/qemu.git")
         (head (shell-command-to-string "git describe")))
     (shell-command-to-string
      (format "git request-pull %s %s %s" base repo head))))
