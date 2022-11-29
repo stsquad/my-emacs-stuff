@@ -11,6 +11,27 @@
 (eval-when-compile (require 'use-package))
 (use-package my-vars)
 
+(defun my-current-frame-is-portrait-p ()
+  "Return t if the current frame is in portrait mode."
+  (< (/ (float (frame-width)) (frame-height)) 1.5))
+
+(defun my-display-buffer-in-narrow-frame (buffer alist)
+  "Add a few smarts to selecting a new buffer to use."
+  (when (and (my-current-frame-is-portrait-p)
+             (= 2 (length (window-list)))
+             (not (with-current-buffer (window-buffer (frame-first-window))
+                    buffer-read-only)))
+      ;; "top left"
+      (frame-first-window)))
+
+;;
+;; See: https://www.masteringemacs.org/article/demystifying-emacs-window-manager
+;;
+(use-package window
+  :config (setq
+           display-buffer-reuse-frames t  ;; Re-use existing frames if buffer already exists in one
+           display-buffer-base-action '(my-display-buffer-in-narrow-frame display-buffer-in-direction '(direction . above))))
+
 ;; Window navigation and size control
 (use-package windmove
   :commands windmove-default-keybindings

@@ -74,13 +74,10 @@
                       :weight 'normal
                       :width 'normal))
 
-; default-frame-alist
-(setq default-frame-alist '((fullscreen . 'fullboth)
-                            (vertical-scroll-bars))
-      frame-background-mode 'dark)
-
-; Re-use existing frames if buffer already exists in one
-(setq-default display-buffer-reuse-frames t)
+(use-package frame
+  :config (setq default-frame-alist '((fullscreen . 'fullboth)
+                                      (vertical-scroll-bars))
+                frame-background-mode 'dark))
 
 ;; Prettier unique buffer names.
 (use-package uniquify
