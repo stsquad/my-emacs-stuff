@@ -28,15 +28,6 @@
   (remove-hook 'find-file-hook 'vc-refresh-state)
   (setq vc-handled-backends nil))
 
-;; accelerate magit?
-
-(use-package libgit
-  :ensure t)
-
-(use-package magit-libgit
-  :ensure t
-  :after (magit libgit))
-
 ;; As the built-in project.el support expects to use vc-mode hooks to
 ;; find the root of projects we need to provide something equivalent
 ;; for it.
