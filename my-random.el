@@ -19,7 +19,7 @@
 ;;; Code:
 
 ;; Require prerequisites
-(require 'cl)
+(eval-when-compile (require 'cl-lib))
 
 ;; Variables
 

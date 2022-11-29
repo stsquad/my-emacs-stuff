@@ -8,10 +8,10 @@
 
 (require 'package)
 (require 'my-vars)
-(require 'cl-lib)
+(eval-when-compile (require 'cl-lib))
 
 (defun my-package-recompile(&optional dir)
-  "Recompile all packages."
+  "Recompile all packages in elpa or optionally override with DIR."
   (interactive "D")
   (byte-recompile-directory (or dir "~/.emacs.d/elpa") 0 t))
 
@@ -34,7 +34,7 @@
 
 (defvar have-melpa
   (assoc "melpa" package-archives)
-  "Do we have melpa on this machine")
+  "Do we have melpa on this machine?")
 
 ;; Pin use-package
 (when (boundp 'package-pinned-packages)
