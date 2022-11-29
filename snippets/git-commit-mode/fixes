@@ -9,7 +9,7 @@ ${1:`(let
             (cond
              ((s-match
                (rx
-                (>= 4 hex))
+                (>= 5 hex))
                ref)
               (format "Fixes: %s" (magit-git-str "showref" ref)))
              ((s-contains-p "github" origin)
