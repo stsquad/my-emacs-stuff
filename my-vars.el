@@ -50,43 +50,37 @@
 ;; DCO Tag snarfing
 ;;
 ;; This is used for grabbing Reviewed-by and other such tags from a
-;; mailing list.
-;;
-(if (version<= emacs-version "27")
+;; mailing list. As not all installs of Emacs have the rx-define magic
+;; (since ~27.1) we have a manual fall-back with the hand written
+;; results of the rx evaluation.
+
+(if (fboundp 'rx-define)
     (progn
-      (defvar my-bare-dco-tag-rx
-        '((any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
-          (one-or-more (in alpha blank "-."))                  ;;name
-          blank
-          "<" (one-or-more (not (in ">"))) ">")               ;; email
-        "RX match plain DCO tag")
+      (rx-define my-bare-dco-tag-rx
+        (: (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
+           (one-or-more (in alpha blank "-."))                  ;;name
+           blank
+           "<" (one-or-more (not (in ">"))) ">"))               ;; email
+
+      (rx-define my-dco-tag-rx
+        (: bol (zero-or-more (in blank)) my-bare-dco-tag-rx))
 
       (defvar my-bare-dco-tag-re
-        (rx (eval `(: ,@my-bare-dco-tag-rx)))
-        "Rexexp to match plain DCO tag")
+        (rx my-bare-dco-tag-rx)
+        "Regexp to match plain DCO tag")
 
       (defvar my-dco-tag-re
-        (rx (: bol (zero-or-more (in blank))
-               (eval `(: ,@my-bare-dco-tag-rx))))
+        (rx my-dco-tag-rx)
         "Regexp to match DCO style tag."))
+  (progn
+      (defvar my-bare-dco-tag-re
+        "[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
+        "Regexp to match plain DCO tag")
 
-  ;; modern approach for Emacs 27+
-  (rx-define my-bare-dco-tag-rx
-    (: (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
-       (one-or-more (in alpha blank "-."))                  ;;name
-       blank
-       "<" (one-or-more (not (in ">"))) ">"))               ;; email
+      (defvar my-dco-tag-re
+        "^[[:blank:]]*[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
+        "Regexp to match DCO style tag.")))
 
-  (rx-define my-dco-tag-rx
-    (: bol (zero-or-more (in blank)) my-bare-dco-tag-rx))
-
-  (defvar my-bare-dco-tag-re
-    (rx my-bare-dco-tag-rx)
-    "Regexp to match plain DCO tag")
-
-  (defvar my-dco-tag-re
-    (rx my-dco-tag-rx)
-    "Regexp to match DCO style tag."))
 
 (defun my-capture-review-tags ()
   "Return a list of DCO style tags for current buffer."
