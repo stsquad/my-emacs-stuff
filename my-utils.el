@@ -20,7 +20,7 @@
 
 (defun which-lookup(name-or-list)
   "Perform a `which` like file look-up of NAME-OR-LIST.
-Returning the first hit or 'nil if no match found"
+Returning the first hit or nil if no match found"
   (cl-loop for x in (if (listp name-or-list) name-or-list (list name-or-list))
         do (let ((path (chomp (shell-command-to-string (concat "which " x)))))
              (if (and (file-exists-p path) (> (length path) 0))
@@ -29,9 +29,9 @@ Returning the first hit or 'nil if no match found"
 ; uses common lisp
 (defun find-valid-file (list-of-files)
   "Go though LIST-OF-FILES and return the first one that is present."
-  (loop for path in list-of-files
-        until (file-exists-p path)
-        finally return path))
+  (cl-loop for path in list-of-files
+           until (file-exists-p path)
+           finally return path))
 
 ; the 'elisp' way
 (defun find-valid-file-elisp-way (list-of-files)
@@ -47,7 +47,7 @@ Returning the first hit or 'nil if no match found"
   "Go though LIST-OF-FILES and return the first one that is present."
   (dolist (f list-of-files)
     (if (file-exists-p f)
-        (return f))))
+        (cl-return f))))
 
 ; via: http://stackoverflow.com/questions/3815467/stripping-duplicate-elements-in-a-list-of-strings-in-elisp
 (defun strip-duplicate-strings (list)
@@ -169,7 +169,7 @@ Save password if `CACHE' is non nil."
 
 (defvar my-last-set-directory
   nil
-  "Last value I set the directory to")
+  "Last value I set the directory to.")
 
 (defun my-set-default-directory (&optional dir)
   "Set new `default-directory' to DIR."
