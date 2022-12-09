@@ -34,8 +34,8 @@
 
 (use-package hi-lock
   :commands hi-lock-face-phrase-buffer
-  :hook ((text-mode-hook . my-highlight-non-possessive-its)
-         (prog-mode-hook . my-highlight-non-possessive-its))
+  :hook ((text-mode . my-highlight-non-possessive-its)
+         (prog-mode . my-highlight-non-possessive-its))
   :config (eval-after-load "hi-lock"
             '(assq-delete-all 'hi-lock-mode minor-mode-map-alist)))
 
