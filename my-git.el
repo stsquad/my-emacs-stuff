@@ -398,19 +398,20 @@ prepare for a re-base where we are not rebuilding the tree from
 ;;
 ;; Add forge support
 ;;
-(use-package forge
-  :ensure t
-  :after magit)
+(when I-am-at-work
+  (use-package forge
+    :ensure t
+    :after magit)
 
-(use-package code-review
-  :ensure t
-  :after forge
-  :load-path (lambda () (my-return-path-if-ok
-  "~/src/emacs/code-review.git/"))
-  :config
+  (use-package code-review
+    :ensure t
+    :after forge
+    :load-path (lambda () (my-return-path-if-ok
+                           "~/src/emacs/code-review.git/"))
+    :config
     (define-key
-      forge-pullreq-section-map (kbd "R")
-      'code-review-forge-pr-at-point))
+     forge-pullreq-section-map (kbd "R")
+     'code-review-forge-pr-at-point)))
 
 
 ;;;

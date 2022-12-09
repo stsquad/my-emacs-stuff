@@ -16,7 +16,6 @@
 
 (require 'my-libs)
 (require 'my-vars)
-(require 'my-email)
 (require 'my-basic-modes)
 (require 'my-hydra)
 (require 'bookmark)
@@ -320,6 +319,7 @@ If `NEW-STATUS' is set then change TODO state."
                              "org-static"))))))
 ;; Mail integration
 (when I-am-at-work
+  (require 'my-email)
   (use-package org-mu4e
     :if (locate-library "org-mu4e")
     :config

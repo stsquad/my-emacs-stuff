@@ -12,11 +12,12 @@
   :config (setq elfeed-log-level 'debug
                 elfeed-use-curl 't))
 
-(use-package elfeed-org
-  :ensure t
-  :config (progn
-            (setq rmh-elfeed-org-files (list "~/org/elfeed.org"))
-            (elfeed-org)))
+(when have-melpa
+  (use-package elfeed-org
+    :ensure t
+    :config (progn
+              (setq rmh-elfeed-org-files (list "~/org/elfeed.org"))
+              (elfeed-org))))
 
 (provide 'my-elfeed)
 ;;; .el ends here
