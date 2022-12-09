@@ -244,8 +244,9 @@
              :nick "alex.bennee"
              :server-buffer-name "⇄ Slack"
              :host "localhost"
-             :service "9007")))
-    (add-to-list 'clean-buffer-list-kill-never-regexps (rx bol (or "#" "⇄")))))
+             :service "9007")))))
+
+;(add-to-list 'clean-buffer-list-kill-never-regexps (rx bol (or "#" "⇄")))))
 
 (use-package circe-chanop
   :after circe)
