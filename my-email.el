@@ -73,21 +73,24 @@
 ;;
 
 (let ((local-mu4e (my-return-path-if-ok
-                   "~/src/emacs/mu/install/share/emacs/site-lisp/mu4e/")))
+                   "~/src/emacs/install/share/emacs/site-lisp/mu4e/")))
   (setq mu4e-mu-binary (or
                         (my-return-path-if-ok "/usr/bin/mu")
-                        (my-return-path-if-ok "~/src/emacs/mu/install/bin/mu")))
+                        (my-return-path-if-ok "~/src/emacs/install/bin/mu")))
   (when local-mu4e
     (add-to-list 'load-path local-mu4e)))
 
 (defun my-return-most-recent-mu4e-contacts ()
   "Return the most recent contacts for completion"
-  (split-string (shell-command-to-string
-                 (concat mu4e-mu-binary
-                         " find -n 500 "
-                         "--sortfield=date --reverse --fields f "
-                         "recip:alex.bennee | sort | uniq"))
-                "\n"))
+  (split-string
+   (ansi-color-filter-apply
+    (shell-command-to-string
+     (concat mu4e-mu-binary
+             " find -n 500 "
+             "--sortfield=date --reverse "
+             "--fields f "
+             "recip:alex.bennee | sort | uniq")))
+    "\n"))
 
 ;; Switch function
 (defun my-switch-to-mu4e (&optional prefix)
@@ -269,12 +272,14 @@ Useful for replies and drafts")
 (defvar my-bad-addresses
    '( "docs.google.com"
      "\\(?:confirm.*@\\)"
-     "\\(?:\\(?:not?\\)-?reply\\)"
+     "\\(?:\\(?:[nN]o?t?\\)[-_ ]?[rR]eply\\)"
      "\\(?:@bugs\\.launchpad\\.net\\)"
      "\\(?:bounces[^@]*@\\)"
      "\\(?:(via[^)]+)\\)"
      "\\(?:via [^<]+<[^>]+>\\)"
+     "notifications@github.com"
      "reply@github.com"
+     "reply.github.com"
      "qemu-devel@nongun.org"
      "nongu.org"
      "nongdu.org"
