@@ -15,14 +15,11 @@
   "Return t if the current frame is in portrait mode."
   (< (/ (float (frame-width)) (frame-height)) 1.5))
 
-(defun my-display-buffer-in-narrow-frame (buffer alist)
-  "Add a few smarts to selecting a new buffer to use."
-  (when (and (my-current-frame-is-portrait-p)
-             (= 2 (length (window-list)))
-             (not (with-current-buffer (window-buffer (frame-first-window))
-                    buffer-read-only)))
-      ;; "top left"
-      (frame-first-window)))
+(defun my-display-new-buffer-in-narrow-frame (buffer alist)
+  "Returns t if its worth creating a new window."
+  (and (my-current-frame-is-portrait-p)
+       (buffer-file-name buffer)
+       (> 2 (length (window-list)))))
 
 ;;
 ;; See: https://www.masteringemacs.org/article/demystifying-emacs-window-manager
@@ -30,7 +27,13 @@
 (use-package window
   :config (setq
            display-buffer-reuse-frames t  ;; Re-use existing frames if buffer already exists in one
-           display-buffer-base-action '(my-display-buffer-in-narrow-frame display-buffer-in-direction '(direction . above))))
+           display-buffer-alist
+           '((my-display-new-buffer-in-narrow-frame
+              (display-buffer-in-direction) (direction . above))
+             ("*Article*"
+              (display-buffer-in-side-window)
+              (side . top) (slot . 1)))
+           display-buffer-base-action nil))
 
 ;; Window navigation and size control
 (use-package windmove
