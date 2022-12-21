@@ -95,7 +95,8 @@
 (use-package my-org
   :if (not I-am-root))
 ;; Helm
-(use-package my-helm)
+(use-package my-helm
+  :disabled t)
 ;; More keybindings
 (use-package my-toggles)
 ;; Window and buffer navigation

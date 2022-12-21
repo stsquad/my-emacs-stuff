@@ -26,12 +26,6 @@
 ;; Code
 
 (eval-when-compile (require 'use-package))
-(use-package my-helm)
-
-(use-package helm-git-grep
-  :disabled t
-  :commands helm-git-grep
-  :config (setq helm-git-grep-candidate-number-limit nil))
 
 ;; from https://github.com/abo-abo/swiper/issues/1068
 (defun my-ivy-with-thing-at-point (cmd &optional dir)
@@ -59,9 +53,6 @@ be using git-grep)."
    'counsel-git-grep))
 
 (global-set-key (kbd "<f6>") 'my-counsel-ag-from-here)
-
-(use-package wgrep-helm
-  :ensure t)
 
 (use-package flx
   :ensure t)
