@@ -23,18 +23,18 @@
 
 (use-package editorconfig-custom-majormode
   :ensure t
-  :config (add-hook 'editorconfig-custom-hooks 'editorconfig-custom-majormode))
+  :config (add-hook 'editorconfig-after-apply-functions
+                    #'editorconfig-custom-majormode))
 
 ;; Origami code folding
 (use-package origami
   :if (locate-library "origami")
   :commands origami-mode
-  :config
-  (progn
-    (add-hook 'prog-mode-hook 'origami-mode)
-    (with-eval-after-load 'hydra
-      (define-key origami-mode-map (kbd "C-c f")
-        (defhydra hydra-folding (:color red :hint nil)
+  :after hydra
+  :hook (prog-mode . origami-mode)
+  :bind (:map origami-mode-map
+              ("C-c f" . hydra-folding/body))
+  :init (defhydra hydra-folding (:color red :hint nil)
    "
 _o_pen node    _n_ext fold       toggle _f_orward    _F_ill column: %`fill-column
 _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
@@ -46,7 +46,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
    ("f" origami-forward-toggle-node)
    ("a" origami-toggle-all-nodes)
    ("F" fill-column)
-   ("x" nil :color blue))))))
+   ("x" nil :color blue)))
 
 (use-package prog-mode
   :hook (prog-mode . turn-on-auto-fill))
@@ -58,23 +58,24 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :commands rx)
 
 ;; xr allows you to covert regex into rx
-(use-package xr)
-
-(defhydra my-reb-hydra (:color teal)
-  (concat "<TAB> Toggle syntax: %`reb-re-syntax ")
-  ("TAB" reb-change-syntax nil)
-  ("t" my-hydra-toggle/body "main toggles")
-  ("q" quit-window "quit"))
+(use-package xr
+  :ensure t
+  :pin gnu)
 
 (use-package re-builder
   :ensure t
+  :after (hydra my-toggles)
+  :commands (re-builder reb-change-syntax)
   :bind (:map reb-mode-map
               ("C-x t" . my-reb-hydra/body)
          :map reb-lisp-mode-map
               ("C-x t" . my-reb-hydra/body))
-  :commands re-builder
-  :config (setq reb-re-syntax 'rx))
-
+  :config (setq reb-re-syntax 'rx)
+  :init (defhydra my-reb-hydra (:color teal)
+          (concat "<TAB> Toggle syntax: %`reb-re-syntax ")
+          ("TAB" reb-change-syntax nil)
+          ("t" my-hydra-toggle/body "main toggles")
+          ("q" quit-window "quit")))
 
 ;;
 ;; All hail LSP mode
