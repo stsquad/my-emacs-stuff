@@ -23,7 +23,10 @@
 (setq inhibit-splash-screen t)
 
 ;; Default mode is text-mode,
-(setq-default major-mode 'text-mode)
+(use-package text-mode
+  :bind (:map text-mode-map
+         ("C-c C-c" . server-edit))
+  :config (setq-default major-mode 'text-mode))
 
 ;; Don't truncate message buffer. For debugging reasons.
 (setq message-log-max t)
