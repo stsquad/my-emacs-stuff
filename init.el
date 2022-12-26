@@ -14,8 +14,8 @@
 ;;; Code:
 
 ; debugging weird start-up issues.
-;(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
-;(setq debug-on-error 't)
+;; (setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
+;; (setq debug-on-error t)
 
 ;; Use .el if it is newer
 (when (boundp 'load-prefer-newer)
@@ -109,7 +109,12 @@
 (use-package my-local-pkgs)
 
 ;; Useful modes
-(use-package my-company)
+; currently considering corfu over company but only if I can get it to
+; work properly with LSP mode.
+(use-package my-company
+  :disabled t)
+(use-package my-corfu)
+
 (use-package my-yasnippet)
 
 ;; other customisations
@@ -125,6 +130,9 @@
 
 (use-package my-circe
   :if (not I-am-root))
+
+(use-package my-telegram
+  :if I-am-at-work)
 
 (use-package my-diff)
 
