@@ -27,17 +27,18 @@
 
 (eval-when-compile (require 'use-package))
 
+(defun my-get-initial-string ()
+  "Return substring from thing-at-point or empty string."
+  (substring-no-properties (or (thing-at-point 'symbol) "")))
+
+
 ;; from https://github.com/abo-abo/swiper/issues/1068
 (defun my-ivy-with-thing-at-point (cmd &optional dir)
   "Wrap a call to CMD with setting "
   (let ((ivy-initial-inputs-alist
          (list
-          (cons cmd (substring-no-properties (or (thing-at-point
-                                                  'symbol) ""))))))
+          (cons cmd (my-get-initial-string)))))
     (funcall cmd nil dir)))
-
-(use-package counsel
-  :config (setq counsel-ag-base-command "ag --vimgrep -a %s"))
 
 (defun my-counsel-ag-from-here (&optional dir)
   "Start ag but from the directory the file is in (otherwise I would
@@ -52,7 +53,20 @@ be using git-grep)."
   (my-ivy-with-thing-at-point
    'counsel-git-grep))
 
-(global-set-key (kbd "<f6>") 'my-counsel-ag-from-here)
+(use-package counsel
+  :disabled t
+  :config (setq counsel-ag-base-command "ag --vimgrep %s")
+  :bind ("<f6>" . my-counsel-ag-from-here))
+
+(defun my-consult-rg-from-here (&optional dir)
+  "Start rg but from the directory the file is in (otherwise I would be using git-grep)."
+  (interactive "D")
+  (funcall #'consult-ripgrep
+           (or dir (file-name-directory (buffer-file-name)))
+           (my-get-initial-string)))
+
+(use-package consult
+  :bind ("<f6>" . my-consult-rg-from-here))
 
 (use-package flx
   :ensure t)
@@ -61,12 +75,13 @@ be using git-grep)."
 (defun my-swoop-with-swiper ()
   "Replicate helm-swoop but with ivy. C-c C-o into occur C-c C-p into wgrep."
   (interactive)
-  (swiper (thing-at-point 'symbol)))
+  (swiper (or (and (use-region-p) (buffer-substring (mark) (point)))
+              (thing-at-point 'symbol))))
 
 (use-package swiper
   :after ivy
   :ensure t
-  :bind (("C-s" . swiper)
+  :bind (("C-s" . swiper-isearch)
          ("C-c o" . my-swoop-with-swiper)))
 
 (defun my-ivy-rich-switch-buffer-project (candidate)
@@ -115,13 +130,17 @@ variable `buffer-file-name'."
     (setq directory (or default-directory buffer-file-name)))
 
   (let ((is-git-dir (locate-dominating-file directory ".git")))
-    (if (and
-         is-git-dir
-         (file-directory-p is-git-dir)
-         (functionp 'counsel-git-grep))
-        (let ((default-directory directory))
-          (call-interactively #'my-counsel-git-grep t (vector (thing-at-point 'symbol))))
-    (call-interactively #'my-counsel-ag-from-here t (vector directory)))))
+    (if (and is-git-dir (file-directory-p is-git-dir))
+        (let ((default-directory directory)
+              (initial (my-get-initial-string)))
+          (cond
+           ((functionp 'consult-git-grep)
+            (funcall-interactively #'consult-git-grep default-directory initial))
+           ((functionp 'counsel-git-grep)
+            (call-interactively #'my-counsel-git-grep t (vector initial)))
+           (t
+            (call-interactively #'vc-git-grep initial))))
+      (call-interactively (key-binding (kbd "<f6>")) t (vector directory)))))
 
 (global-set-key (kbd "<f5>") 'my-project-find)
 
