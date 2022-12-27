@@ -72,14 +72,13 @@
       (defvar my-dco-tag-re
         (rx my-dco-tag-rx)
         "Regexp to match DCO style tag."))
-  (progn
-      (defvar my-bare-dco-tag-re
-        "[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
-        "Regexp to match plain DCO tag")
+  (defvar my-bare-dco-tag-re
+    "[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
+    "Regexp to match plain DCO tag")
 
-      (defvar my-dco-tag-re
-        "^[[:blank:]]*[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
-        "Regexp to match DCO style tag.")))
+  (defvar my-dco-tag-re
+    "^[[:blank:]]*[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
+    "Regexp to match DCO style tag."))
 
 
 (defun my-capture-review-tags ()
@@ -104,7 +103,7 @@
          "@"
          (one-or-more (one-or-more alnum)
                       (zero-or-one "."))))
-  "Regexp to match host")
+  "Regexp to match host.")
 
 (defun my-capture-login ()
   "Return a login string if one exists in the buffer."
