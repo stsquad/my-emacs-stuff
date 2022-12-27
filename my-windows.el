@@ -21,15 +21,15 @@
 ;; See: https://www.masteringemacs.org/article/demystifying-emacs-window-manager
 ;;
 (use-package window
-  :config (setq
-           display-buffer-reuse-frames t  ;; Re-use existing frames if buffer already exists in one
-           display-buffer-alist
-           '((my-display-new-buffer-in-narrow-frame
-              (display-buffer-in-direction) (direction . above))
-             ("*Article*"
-              (display-buffer-in-side-window)
-              (side . top) (slot . 1)))
-           display-buffer-base-action nil))
+  :config (setq display-buffer-alist
+                '(("\\*Warnings\\*"
+                   (display-buffer-no-window))
+                  (my-display-new-buffer-in-narrow-frame
+                   (display-buffer-in-direction) (direction . above))
+                  ("\\*Article\\*"
+                   (display-buffer-in-side-window)
+                   (side . top) (slot . 1)))
+                display-buffer-base-action nil))
 
 ;; Window navigation and size control
 (use-package windmove
