@@ -40,8 +40,7 @@
 (if (version<= "26.3" emacs-version)
     (use-package bufler
       :ensure t
-      :bind (("C-x C-b" . bufler)
-             ("C-x b" . bufler-switch-buffer))
+      :bind (("C-x C-b" . bufler))
       :config (bufler-defgroups
                (group
                 ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
