@@ -11,10 +11,6 @@
 (eval-when-compile (require 'use-package))
 (use-package my-vars)
 
-(defun my-current-frame-is-portrait-p ()
-  "Return t if the current frame is in portrait mode."
-  (< (/ (float (frame-width)) (frame-height)) 1.5))
-
 (defun my-display-new-buffer-in-narrow-frame (buffer alist)
   "Returns t if its worth creating a new window."
   (and (my-current-frame-is-portrait-p)

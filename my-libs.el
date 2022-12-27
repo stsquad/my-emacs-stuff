@@ -53,5 +53,12 @@
     (when (file-exists-p ep)
       ep)))
 
+;;
+;; Some helper predicates
+;;
+(defun my-current-frame-is-portrait-p ()
+  "Return t if the current frame is in portrait mode."
+  (< (/ (float (frame-width)) (frame-height)) 1.5))
+
 (provide 'my-libs)
 ;;; my-libs.el ends here
