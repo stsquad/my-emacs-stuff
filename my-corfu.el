@@ -1,4 +1,4 @@
-;;; my-corfu --- Corfu customisations
+;;; my-corfu --- Corfu customisation
 ;;
 ;;; Commentary:
 ;;
@@ -44,7 +44,8 @@
 (use-package corfu
   :ensure t
   :hook (lsp-completion-mode . my-lsp-mode-setup-completion)
-  :init (global-corfu-mode))
+  :init (global-corfu-mode)
+  :config (setq corfu-auto t))
 
 (use-package kind-icon
   :ensure t
