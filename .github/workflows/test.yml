@@ -28,8 +28,7 @@ jobs:
 
     - uses: actions/checkout@v2
     - name: Run tests
-      run:
-        - ./tests/check_daemon_starts.sh 0
-        - ./tests/check_daemon_starts.sh 1
-        - emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
-        - emacs -q --batch -l "~/.emacs.d/mininit.el" -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
+    - run: ./tests/check_daemon_starts.sh 0
+    - run: ./tests/check_daemon_starts.sh 1
+    - run: emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
+    - run: emacs -q --batch -l "~/.emacs.d/mininit.el" -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
