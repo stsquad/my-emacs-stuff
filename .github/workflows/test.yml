@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    paths-ignore:
+    - '**.md'
+    - 'tools/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version:
+          - 26.1 # buster
+          - 26.2
+          - 26.3 # focal
+          - 27.1 # buster-backports/bullseye/jammy
+          - 27.2
+          - 28.1
+          - 28.2 # bookworm
+          - snapshot
+    steps:
+    - uses: purcell/setup-emacs@master
+      with:
+        version: ${{ matrix.emacs_version }}
+
+    - uses: actions/checkout@v2
+    - name: Run tests
+      run:
+        - ./tests/check_daemon_starts.sh 0
+        - ./tests/check_daemon_starts.sh 1
+        - emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
+        - emacs -q --batch -l "~/.emacs.d/mininit.el" -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
