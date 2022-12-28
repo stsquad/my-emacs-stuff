@@ -332,7 +332,7 @@ Useful for replies and drafts")
               ("C-c A" . my-mu4e-apply-marked-mbox-patches))
   :hook ((mu4e-headers-mode . my-yas-local-disable)
          (mu4e-headers-found . my-set-view-directory)
-         (mu4e-headers-search . my-update-async-jobs))
+         (mu4e-search . my-update-async-jobs))
   :config (setq mu4e-headers-time-format "%H:%M:%S"
                 mu4e-headers-date-format "%a %d/%m/%y"
                 mu4e-headers-skip-duplicates t
@@ -356,6 +356,7 @@ Useful for replies and drafts")
                 ;; which flags for the above
                 mu4e-headers-visible-flags '(draft flagged unread seen passed replied trashed attach encrypted signed)
                 ;; mu4e-headers-hide-predicate 'my-mu4e-headers-hide-muted-p
+                mu4e-search-results-limit 1000
                 mu4e-headers-actions '(("gapply git patches" . mu4e-action-git-apply-patch)
                                        ("mgit am patch" . mu4e-action-git-apply-mbox)
                                        ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
