@@ -28,7 +28,8 @@
 (defun my-sig-function ()
   "Generate a signature."
   (interactive)
-  (concat "Alex Bennée"))
+  (concat "Alex Bennée\n"
+          "Virtualisation Tech Lead @ Linaro"))
 
 ;; Simple mail-mode and message-mode hooks.
 ;;
@@ -81,7 +82,7 @@
     (add-to-list 'load-path local-mu4e)))
 
 (defun my-return-most-recent-mu4e-contacts ()
-  "Return the most recent contacts for completion"
+  "Return the most recent contacts for completion."
   (split-string
    (ansi-color-filter-apply
     (shell-command-to-string
@@ -119,7 +120,7 @@
 
 ;; ivy powered switch function
 (defun my-ivy-switch-to-mu4e (&optional prefix)
-  "Ivy based switch to mu4e.
+  "Ivy based switch to mu4e, with PREFIX switch directly to main menu.
 
 Instead of the heuristics of `my-switch-to-mu4e' we build a list of
 all mu4e buffers and allow ivy selection of them.
