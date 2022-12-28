@@ -109,8 +109,7 @@
                 vertico-resize nil
                 vertico-multiform-commands
                 '((my-lusty-file-explorer unobtrusive)))
-  :init
-  (vertico-multiform-mode))
+  :init (vertico-mode) (vertico-multiform-mode))
 
 ;; Example configuration for Consult
 (use-package consult
