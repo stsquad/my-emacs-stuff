@@ -56,7 +56,7 @@
 
 (when (getenv "DISPLAY")
   (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
-  (add-hook 'focus-in-hook 'my-fixup-gpg-agent))
+  (add-hook 'after-focus-change-function 'my-fixup-gpg-agent))
 
 (use-package epa-file
   :if (string-match "socrates" (system-name))
