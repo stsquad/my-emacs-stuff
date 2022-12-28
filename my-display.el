@@ -207,22 +207,24 @@
 ;;   "Disable golden ratio before changing window size."
 ;;   (golden-ratio -1))
 
+(defun my-ediff-comparison-buffer-p ()
+  "Safely check if in an ediff session"
+  (and (boundp 'ediff-this-buffer-ediff-sessions)
+       ediff-this-buffer-ediff-sessions))
+
 ;; Nice window sizing
 (use-package golden-ratio
   :ensure t
   :commands (golden-ratio-mode)
   :defer 30
-  :init (defun my-ediff-comparison-buffer-p ()
-          (and (boundp 'ediff-this-buffer-ediff-sessions)
-               ediff-this-buffer-ediff-sessions))
   :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
                                              "mu4e-view-mode"
                                              "gnus-summary-mode"
                                              "ediff-mode")
-                golden-ratio-inhibit-functions #'my-ediff-comparison-buffer-p)
+                golden-ratio-inhibit-functions
+                #'my-ediff-comparison-buffer-p)
   (add-to-list 'golden-ratio-extra-commands 'ace-window)
-  (golden-ratio-mode))
-
+  :init (golden-ratio-mode))
 
 ;; Manual colour themes
 (setq custom-safe-themes
