@@ -246,8 +246,6 @@
              :host "localhost"
              :service "9007")))))
 
-;(add-to-list 'clean-buffer-list-kill-never-regexps (rx bol (or "#" "⇄")))))
-
 (use-package circe-chanop
   :after circe)
 
