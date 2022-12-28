@@ -79,7 +79,6 @@ be using git-grep)."
               (thing-at-point 'symbol))))
 
 (use-package swiper
-  :after ivy
   :ensure t
   :bind (("C-s" . swiper-isearch)
          ("C-c o" . my-swoop-with-swiper)))
