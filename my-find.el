@@ -134,7 +134,7 @@ variable `buffer-file-name'."
               (initial (my-get-initial-string)))
           (cond
            ((functionp 'consult-git-grep)
-            (funcall-interactively #'consult-git-grep default-directory initial))
+            (funcall-interactively #'consult-git-grep is-git-dir initial))
            ((functionp 'counsel-git-grep)
             (call-interactively #'my-counsel-git-grep t (vector initial)))
            (t
