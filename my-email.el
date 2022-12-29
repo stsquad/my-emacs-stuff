@@ -126,7 +126,7 @@ Instead of the heuristics of `my-switch-to-mu4e' we build a list of
 all mu4e buffers and allow ivy selection of them.
 "
   (interactive "P")
-  (if (or prefix (not (get-buffer " *mu4e-main*")))
+  (if (or prefix (not (get-buffer "*mu4e-main*")))
       (mu4e)
     (let (collection)
       ;; Go backwards in priority (as add to list prepends by default)
