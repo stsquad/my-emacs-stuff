@@ -132,7 +132,7 @@ all mu4e buffers and allow ivy selection of them.
       ;; Go backwards in priority (as add to list prepends by default)
       ;; The main menu
       (push (propertize (format "mu4e menu")
-                        'buffer (get-buffer " *mu4e-main*")) collection)
+                        'buffer (get-buffer "*mu4e-main*")) collection)
       ;; What are we reading
       (let ((view (or (get-buffer "*mu4e-view*") (get-buffer "*Article*"))))
         (when view
