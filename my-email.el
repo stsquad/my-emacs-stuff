@@ -852,16 +852,14 @@ patches."
                :query "to:alex.bennee@linaro.org AND (from:/maxim.kuvyrkov/ OR f:/mike.holmes/)"
                :key ?B)
               (:name "From my Engineers"
-                     :query (concat "recip:alex.bennee@linaro.org"
-                                    " AND ("
-                                    "f:takahiro.akashi@linaro.org OR "
-                                    "f:arnd@linaro.org OR "
-                                    "f:jean-philippe@linaro.org OR "
-                                    "f:peter.maydell@linaro.org OR "
-                                    "f:haibo.xu@linaro.org OR "
-                                    "f:richard.henderson@linaro.org"
-                                    ") "
-                                    "AND NOT (flag:list OR recip:nongnu.org)")
+               :query "recip:alex.bennee@linaro.org \
+AND (\
+f:takahiro.akashi@linaro.org OR \
+f:viresh.kumar@linaro.org OR \
+f:peter.maydell@linaro.org OR \
+f:richard.henderson@linaro.org OR\
+f:philmd@linaro.org \
+) AND NOT (flag:list OR recip:nongnu.org)"
                :key ?e)
               (:name "In the last hour"
                :query "date:1h..now"
