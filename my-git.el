@@ -139,7 +139,7 @@ not, I'd rather just go to magit-status. Lets make it so."
   (unless (or id my-b4-current-results-buffer)
     (user-error "Need a Message-ID or active b4 buffer to continue"))
   (let ((tags)
-        (add-dco (rx (: "+ " (group (regexp my-bare-dco-tag-re))))))
+        (add-dco (rx (: "+ " (group my-bare-dco-tag-rx) " "))))
     (with-temp-buffer
       (if id
           (call-process "b4" nil t t "am" "-S" "-t" id "-o" "-")
@@ -148,9 +148,12 @@ not, I'd rather just go to magit-status. Lets make it so."
       (when (re-search-forward subject nil t)
         (forward-line)
         (beginning-of-line)
-        (while (string-match add-dco (thing-at-point 'line))
-          (push (match-string-no-properties 1 (thing-at-point 'line)) tags)
-          (forward-line))))
+        (let ((end-of-subj
+               (save-excursion
+                 (re-search-forward "PATCH"))))
+          (while (re-search-forward add-dco end-of-subj t)
+            (push (match-string-no-properties 1) tags)
+            (forward-line)))))
     (message "found %d tags" (length tags))
     tags))
 
