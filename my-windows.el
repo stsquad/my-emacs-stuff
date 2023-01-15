@@ -23,13 +23,13 @@
 (use-package window
   :config (setq display-buffer-alist
                 '(("\\*Warnings\\*"
-                   (display-buffer-no-window))
+                   display-buffer-no-window
+                   (allow-no-window . t))
                   (my-display-new-buffer-in-narrow-frame
-                   (display-buffer-in-direction) (direction . above))
+                   display-buffer-in-direction (direction . above))
                   ("\\*Article\\*"
-                   (display-buffer-in-side-window)
-                   (side . top) (slot . 1)))
-                display-buffer-base-action nil))
+                   display-buffer-in-side-window
+                   (side . top) (slot . 1)))))
 
 ;; Window navigation and size control
 (use-package windmove
