@@ -88,7 +88,8 @@
 (use-package counsel
   :ensure t
   ;; individually bind the useful functions
-  :bind ("C-h b" . counsel-descbinds))
+  :bind (("C-h b" . counsel-descbinds)
+         ("C-h a" . counsel-apropos)))
 
 ;; :commands counsel-mode
 ;; :bind (:map counsel-mode-map
@@ -108,7 +109,9 @@
   :config (setq vertico-count 20
                 vertico-resize nil
                 vertico-multiform-commands
-                '((my-lusty-file-explorer unobtrusive)))
+                '((my-lusty-file-explorer unobtrusive))
+                vertico-multiform-categories
+                '((consult-grep buffer)))
   :init (vertico-mode) (vertico-multiform-mode))
 
 ;; Example configuration for Consult
@@ -155,8 +158,7 @@
 
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
-  :config
-
+  :config (setq consult-preview-key (kbd "M-."))
   ;; Optionally configure preview. The default value
   ;; is 'any, such that any key triggers the preview.
   ;; (setq consult-preview-key 'any)
@@ -165,13 +167,12 @@
   ;; For some commands and buffer sources it is useful to configure the
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
   (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-theme :preview-key '(kbd "M-.")
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
    consult--source-bookmark consult--source-file-register
    consult--source-recent-file consult--source-project-recent-file
-   ;; :preview-key (kbd "M-.")
-   :preview-key '(:debounce 0.4 any))
+   :preview-key (kbd "M-."))
 
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
