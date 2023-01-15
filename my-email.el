@@ -609,7 +609,7 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
   (let ((from (mu4e-message-field-at-point ':from)))
     (when from
       (mu4e-headers-search
-       (format "f:%s" (cdr (car from))) nil edit))))
+       (format "f:%s" (plist-get (car from) :email)) nil edit))))
 
 (use-package mu4e
   :commands mu4e
