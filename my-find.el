@@ -27,6 +27,12 @@
 
 (eval-when-compile (require 'use-package))
 
+; we want get to editable grep buffers from most searches
+(use-package wgrep
+  :ensure t
+  :bind (:map grep-mode-map
+              ("w" . wgrep-change-to-wgrep-mode)))
+
 (defun my-get-initial-string ()
   "Return substring from thing-at-point or empty string."
   (substring-no-properties (or (thing-at-point 'symbol) "")))
