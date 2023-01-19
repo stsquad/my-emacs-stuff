@@ -220,7 +220,8 @@
   :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
                                              "mu4e-view-mode"
                                              "gnus-summary-mode"
-                                             "ediff-mode")
+                                             "ediff-mode"
+                                             reb-lisp-mode)
                 golden-ratio-inhibit-functions
                 #'my-ediff-comparison-buffer-p)
   (add-to-list 'golden-ratio-extra-commands 'ace-window)
