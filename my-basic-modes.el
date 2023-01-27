@@ -106,6 +106,9 @@
 ;; Enable vertico
 (use-package vertico
   :ensure t
+  :bind (:map vertico-map
+         ("<prior>" . vertico-scroll-down)
+         ("<next>" . vertico-scroll-up))
   :config (setq vertico-count 20
                 vertico-resize nil
                 vertico-multiform-commands
