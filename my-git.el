@@ -16,12 +16,6 @@
 (when I-am-at-work
   (setenv "GIT_AUTHOR_EMAIL" "alex.bennee@linaro.org"))
 
-(with-eval-after-load 'magit
-  (defun my-magit-file-bindings ()
-    "Setup my file bindings"
-    (local-set-key (kbd "<f5>") 'my-counsel-git-grep))
-  (add-hook 'magit-find-file-hook 'my-magit-file-bindings))
-
 ;; I only really use git, stamp on vc-mode....
 (with-eval-after-load 'vc
   (remove-hook 'find-file-hook 'vc-find-file-hook)
@@ -54,27 +48,15 @@ not, I'd rather just go to magit-status. Lets make it so."
 
 (use-package magit
   :ensure t
+  :pin melpa-stable
   :commands magit-status
   :bind (("C-x g" . my-magit-dispatch)
          :map magit-hunk-section-map
-         ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree))
-  :init
-  (progn
-    (setq magit-last-seen-setup-instructions "1.4.0"))
-  :config
-  (progn
-    (add-hook 'magit-mode-hook #'(lambda() (yas-minor-mode -1)))
-    (add-hook 'magit-log-edit-mode-hook #'(lambda() (auto-fill-mode
-                                                     1)))
-    (setq
-     ;; tweak magit
-     magit-patch-arguments '("--cover-letter")
-     magit-auto-revert-immediately 't)
-    ;; Hydra for modes
-    (with-eval-after-load 'hydra
-      (define-key magit-mode-map
-        (kbd "C-x t")
-        (defhydra my-git-mode-hydra (:hint nil :color blue :timeout 10)
+         ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree)
+         :map magit-mode-map
+         ("C-x t" . hydra-magit/body))
+  :hook (magit-log-edit-mode . auto-fill-mode)
+  :hydra (hydra-magit (:hint nil :color blue :timeout 10)
           (concat "Tweak Buffer State : _l_ock buffer:%`magit-buffer-locked-p "
                   "Navigate History   : _p_revious/_b_ack history: %(nth 3 (car help-xref-stack)) _n_ext/_f_orward history: %(nth 3 (car help-xref-forward-stack))")
           ;; Lock/unlock
@@ -85,8 +67,15 @@ not, I'd rather just go to magit-status. Lets make it so."
           ("f" (magit-go-forward) nil :color red)
           ("n" (magit-go-forward)  nil :color red)
           ;; Main toggles
-          ("t" my-hydra-toggle/body nil)
-          )))))
+          ("t" my-hydra-toggle/body nil))
+  :config (setq
+           ;; tweak magit
+           magit-patch-arguments '("--cover-letter")
+           magit-auto-revert-immediately 't))
+
+;; we use magit-git-string ourselves but there is no autoload
+(use-package magit-git
+  :commands magit-git-string)
 
 ;; DCO helpers
 ;;

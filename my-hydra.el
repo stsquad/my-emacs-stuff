@@ -30,6 +30,9 @@
   :ensure t
   :commands defhydra)
 
+(use-package use-package-hydra
+  :ensure t)
+
 (provide 'my-hydra)
 ;;; my-hydra.el ends here
 
