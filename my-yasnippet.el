@@ -9,25 +9,24 @@
 (require 'use-package)
 (require 'my-libs)
 
+(defun my-disable-yas-if-no-snippets ()
+  (when (and yas-minor-mode (null (yas--get-snippet-tables)))
+    (yas-minor-mode -1)))
 
-(defun my-add-fundamental-mode-to-yas ()
-  "Include `fundamental-mode' snippets for global catch-all."
-  (yas-activate-extra-mode 'fundamental-mode))
+(add-hook 'yas-minor-mode-hook #'disable-yas-if-no-snippets)
 
 ;; YASnippet itself
 (use-package yasnippet
   :ensure t
   :commands (snippet-mode yas-global-mode)
   :defer 60
-  :config
-  (progn
-    (when (file-exists-p "~/.emacs.d/my-snippets")
-          (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
-    (yas-global-mode)
-    (setq yas-prompt-functions
-          '(yas-ido-prompt yas-completing-prompt yas-no-prompt))
-    (add-hook 'yas-minor-mode-hook 'my-add-fundamental-mode-to-yas)))
-
+  :hook (yas-minor-mode . #'my-disable-yas-if-no-snippets)
+  :config (progn
+            (when (file-exists-p "~/.emacs.d/my-snippets")
+              (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
+            (yas-global-mode)
+            (setq yas-prompt-functions
+                  '(yas-ido-prompt yas-completing-prompt yas-no-prompt)))
 
 ;; Helper functions
 (defvar my-yas-emails
