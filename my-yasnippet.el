@@ -13,20 +13,18 @@
   (when (and yas-minor-mode (null (yas--get-snippet-tables)))
     (yas-minor-mode -1)))
 
-(add-hook 'yas-minor-mode-hook #'disable-yas-if-no-snippets)
-
 ;; YASnippet itself
 (use-package yasnippet
   :ensure t
   :commands (snippet-mode yas-global-mode)
   :defer 60
-  :hook (yas-minor-mode . #'my-disable-yas-if-no-snippets)
+  :hook (yas-minor-mode . my-disable-yas-if-no-snippets)
   :config (progn
             (when (file-exists-p "~/.emacs.d/my-snippets")
               (add-to-list 'yas-snippet-dirs "~/.emacs.d/my-snippets"))
-            (yas-global-mode)
+            (yas-global-mode 1)
             (setq yas-prompt-functions
-                  '(yas-ido-prompt yas-completing-prompt yas-no-prompt)))
+                  '(yas-ido-prompt yas-completing-prompt yas-no-prompt))))
 
 ;; Helper functions
 (defvar my-yas-emails
