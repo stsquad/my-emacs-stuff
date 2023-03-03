@@ -211,10 +211,11 @@ Useful for replies and drafts")
   (let ((msg (mu4e-message-at-point t)))
     (if (not msg)
         default-directory
-      (let ((list (mu4e-message-field msg :mailing-list))
+      (let ((list (mu4e-message-field msg :list))
             (maildir (mu4e-message-field msg :maildir))
-            (addresses (-map 'cdr (append (mu4e-message-field msg :to)
-                                          (mu4e-message-field msg :cc)))))
+            (addresses (--map (plist-get it :email)
+                              (append (mu4e-message-field msg :to)
+                                      (mu4e-message-field msg :cc)))))
         (expand-file-name
          (or
           (assoc-default list my-mailing-list-dir-mapping)
@@ -338,8 +339,7 @@ Useful for replies and drafts")
               ("C-c d" . my-set-view-directory)
               ("C-x n l" . my-narrow-to-list)
               ("C-c A" . my-mu4e-apply-marked-mbox-patches))
-  :hook ((mu4e-headers-mode . my-yas-local-disable)
-         (mu4e-headers-found . my-set-view-directory)
+  :hook ((mu4e-headers-found . my-set-view-directory)
          (mu4e-search . my-update-async-jobs))
   :config (setq mu4e-headers-time-format "%H:%M:%S"
                 mu4e-headers-date-format "%a %d/%m/%y"
