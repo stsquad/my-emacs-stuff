@@ -65,6 +65,12 @@
       (rx-define my-dco-tag-rx
         (: bol (zero-or-more (in blank)) my-bare-dco-tag-rx))
 
+      (rx-define my-msgid-rx
+         (: "Message-I" (or "d" "D") ": "
+            "<"
+            (one-or-more (not (in ">")))
+            ">"))
+
       (defvar my-bare-dco-tag-re
         (rx my-bare-dco-tag-rx)
         "Regexp to match plain DCO tag")
@@ -72,13 +78,22 @@
       (defvar my-dco-tag-re
         (rx my-dco-tag-rx)
         "Regexp to match DCO style tag."))
+
+      (defvar my-msgid-re
+        (rx my-msgid-rx)
+        "Regexp to match Message-Id")
+
   (defvar my-bare-dco-tag-re
     "[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
     "Regexp to match plain DCO tag")
 
   (defvar my-dco-tag-re
     "^[[:blank:]]*[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
-    "Regexp to match DCO style tag."))
+    "Regexp to match DCO style tag.")
+
+  (defvar my-msgid-re
+    "Message-I[Dd]: <[^>]+>"
+    "Regexp to match Message-Id"))
 
 
 (defun my-capture-review-tags ()

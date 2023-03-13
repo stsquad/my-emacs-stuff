@@ -128,19 +128,22 @@ not, I'd rather just go to magit-status. Lets make it so."
   (unless (or id my-b4-current-results-buffer)
     (user-error "Need a Message-ID or active b4 buffer to continue"))
   (let ((tags)
-        (add-dco (rx (: "+ " (group my-bare-dco-tag-rx) " "))))
+        (valid-tags (rx bol (group (or my-bare-dco-tag-rx
+                                       my-msgid-rx)))))
     (with-temp-buffer
       (if id
           (call-process "b4" nil t t "am" "-S" "-t" id "-o" "-")
         (insert-buffer-substring-no-properties my-b4-current-results-buffer))
       (goto-char 0)
-      (when (re-search-forward subject nil t)
+      (when (re-search-forward
+             (rx "Subject: [" (zero-or-more nonl) "] " (literal subject))
+             nil t)
         (forward-line)
         (beginning-of-line)
         (let ((end-of-subj
                (save-excursion
-                 (re-search-forward "PATCH"))))
-          (while (re-search-forward add-dco end-of-subj t)
+                 (re-search-forward "---"))))
+          (while (re-search-forward valid-tags end-of-subj t)
             (push (match-string-no-properties 1) tags)
             (forward-line)))))
     (message "found %d tags" (length tags))
@@ -299,7 +302,7 @@ bother asking for the git tree again (useful for bulk actions)."
 
 (defvar my-rebase-edit-commits
   nil
-  "List of commits that need re-wording in the current re-base.")
+  "List of commits that need editing in the current re-base.")
 
 (defun my-rebase-auto-tag-commits ()
   "Mark commits as needing reword/edit depending on the appropriate
