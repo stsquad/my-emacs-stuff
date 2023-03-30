@@ -1,0 +1,37 @@
+# -*- mode: snippet -*-
+# name: need-review
+# key: $review
+# --
+`
+(let* ((default-directory my-last-set-directory)
+       (commits (magit-git-lines "rev-list" "origin/master..HEAD"))
+       (rb (rx (: bol "Reviewed-by:")))
+       (sob (rx (: bol "Signed-off-by: ")))
+       (ab  (rx (: bol "Acked-by:")))
+       (tb  (rx (: bol "Tested-by:")))
+       (need-review))
+    (setq need-review
+          (--remove
+           (let ((body (with-temp-buffer
+                         (magit-git-insert "show" "-s" "--format=%B" it)
+                         (buffer-string))))
+             (or (string-match-p rb body)
+                 (> (length (s-match-strings-all sob body)) 1)))
+           commits))
+    (if need-review
+        (mapconcat
+         (lambda (it)
+           (let* ((title (magit-git-lines "show" "-s" "--pretty=format:%s" it))
+                  (body (with-temp-buffer
+                          (magit-git-insert "show" "-s" "--format=%B" it)
+                          (buffer-string)))
+                  (abs (length (s-match-strings-all ab body)))
+                  (sbs (length (s-match-strings-all sob body)))
+                  (tbs (length (s-match-strings-all tb body))))
+             (concat
+              (car title)
+              (when (or (> sbs 1) (> abs 0) (> tbs 0))
+                (format " (%d acks, %d sobs, %d tbs)" abs sbs tbs)))))
+             need-review "\n")
+      (message "All %d patches reviewed" (length commits))))
+`
