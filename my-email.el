@@ -478,6 +478,21 @@ Useful for replies and drafts")
                                 (car refs)))))
       (magit-show-commit final))))
 
+(defun my-mu4e-view-copy-reference ()
+  "Grab the headers needed to find this message into the kill ring."
+  (interactive)
+  (let ((path (mu4e-message-readable-path))
+             (headers))
+         (with-temp-buffer
+           (insert-file-contents path)
+           (goto-char (point-min))
+           (while (re-search-forward
+                   (rx (or "From:"
+                           "Subject:"
+                           "Date:"
+                           (: "Message-" (or "Id" "ID") ":" ))) nil t)
+             (push (buffer-substring-no-properties (match-beginning 0) (line-end-position)) headers)))
+         (kill-new (mapconcat 'identity headers "\n"))))
 
 (or (require 'mu4e-view-gnus nil t) (require 'mu4e-view))
 
@@ -490,6 +505,7 @@ Useful for replies and drafts")
               ("C-c f" . my-mu4e-search-from)
               ("C-c t" . my-switch-to-thread)
               ("C-c i" . my-mu4e-kill-message-id)
+              ("C-c w" . my-mu4e-view-copy-reference)
               ("C-x n l" . my-narrow-to-list)
               ("C-x t" . my-mu4e-view-toggle/body)
               ("h"     . my-gnus-article-toggle-long-cc))
