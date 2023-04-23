@@ -13,7 +13,9 @@
 
 (defun my-display-new-buffer-in-narrow-frame (buffer alist)
   "Returns t if its worth creating a new window."
+  (setq my-debug-var (cons buffer alist))
   (and (my-current-frame-is-portrait-p)
+       (bufferp buffer)
        (buffer-file-name buffer)
        (> 2 (length (window-list)))))
 
@@ -21,7 +23,8 @@
 ;; See: https://www.masteringemacs.org/article/demystifying-emacs-window-manager
 ;;
 (use-package window
-  :config (setq display-buffer-alist
+  :config (setq ignore-window-parameters t ; allow split/delete ops to ignore params
+                display-buffer-alist
                 '(("\\*Warnings\\*"
                    display-buffer-no-window
                    (allow-no-window . t))
