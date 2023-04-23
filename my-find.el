@@ -59,11 +59,6 @@ be using git-grep)."
   (my-ivy-with-thing-at-point
    'counsel-git-grep))
 
-(use-package counsel
-  :disabled t
-  :config (setq counsel-ag-base-command "ag --vimgrep %s")
-  :bind ("<f6>" . my-counsel-ag-from-here))
-
 (defun my-consult-rg-from-here (&optional dir)
   "Start rg but from the directory the file is in (otherwise I would be using git-grep)."
   (interactive "D")

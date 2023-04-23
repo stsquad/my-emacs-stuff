@@ -185,10 +185,16 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
     #1 page_flush_tb_1 /home/alex/lsrc/qemu/qemu.git/translate-all.c:818 (qemu-arm+0x00006000cb42)
 ")
 
-
+;;
+;; The keymap for counsel-compile-map is too complicated and should be
+;; cleared up:
+;;   M-o brings up actions (d to delete the entry from history)
+;;   C-j execute current minibuffer (rather than take matching entry)
+;;   C-o brings up the ivy hydra
+;;
 (use-package compile
-  :bind (("C-c c" . counsel-compile)
-         ("C-c r" . recompile)
+  :after counsel
+  :bind (("C-c r" . recompile)
          (:map compilation-mode-map
                ("n" . compilation-next-error)
                ("p" . compilation-previous-error)))

@@ -87,9 +87,14 @@
 
 (use-package counsel
   :ensure t
+  ;; :load-path (lambda () (my-return-path-if-ok
+  ;;                        "~/src/emacs/swiper.git"))
   ;; individually bind the useful functions
   :bind (("C-h b" . counsel-descbinds)
-         ("C-h a" . counsel-apropos)))
+         ("C-h a" . counsel-apropos)
+         ("C-c c" . counsel-compile)
+         (:map counsel-compile-map
+               ("C-j" . ivy-immediate-done))))
 
 ;; :commands counsel-mode
 ;; :bind (:map counsel-mode-map
@@ -98,10 +103,6 @@
 ;;             ("C-x b" . counsel-switch-buffer)
 ;;             ("C-x m" . counsel-mark-ring)
 ;;             ("C-h ?" . counsel-search))
-
-(use-package ivy-rich
-  :disabled t
-  :ensure t)
 
 ;; Enable vertico
 (use-package vertico
