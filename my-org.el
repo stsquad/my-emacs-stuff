@@ -19,8 +19,6 @@
 (require 'my-basic-modes)
 (require 'my-hydra)
 (require 'bookmark)
-(require 'magit-git)
-(require 'magit-process)
 
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
@@ -116,11 +114,27 @@ This is used by `my-org-run-default-block' which is added to
    org-refile-targets '((nil :maxlevel . 2)
                         (org-agenda-files :maxlevel . 2))))
 
+;; https://emacs.stackexchange.com/questions/13244/edebug-orgmode-source-code-blocks-with-input-variables
+(defun org-src-debug ()
+  "Put a call to this function at the beginning of the org source block to debug it."
+  (save-excursion
+    (let ((pt (let ((case-fold-search t)) (org-babel-where-is-src-block-head))))
+      (unless pt (error "Not at source block"))
+      (goto-char pt)
+      (org-edit-src-code)
+      (let ((parse-sexp-ignore-comments t))
+        (goto-char (point-min))
+        (forward-sexp 2)
+        (edebug-defun)))))
+
 (use-package org-src
+  :pin gnu
   :commands org-edit-src-code
-  :config (progn
-            (define-key org-src-mode-map (kbd "C-c C-c") 'org-edit-src-exit)
-            (setq org-src-window-setup 'current-window)))
+  :bind (:map org-src-mode-map
+              ("C-c C-c" . org-edit-src-exit))
+  :config (setq
+           org-src-fontify-natively t
+           org-src-window-setup 'current-window))
 
 ;;
 ;; Capture and Refile configuration
@@ -488,32 +502,10 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
 
 (use-package ox-md)
 
-;; org-babel packages in stable
-(use-package ob-async
-  :ensure t)
-
 ;; Org Babel configurations
 (let ((lob "~/org/library.org"))
   (when (file-exists-p lob)
     (org-babel-lob-ingest lob)))
-
-;; https://emacs.stackexchange.com/questions/13244/edebug-orgmode-source-code-blocks-with-input-variables
-(defun org-src-debug ()
-  "Put a call to this function at the beginning of the org source block to debug it."
-  (save-excursion
-    (let ((pt (let ((case-fold-search t)) (org-babel-where-is-src-block-head))))
-      (unless pt (error "Not at source block"))
-      (goto-char pt)
-      (org-edit-src-code)
-      (let ((parse-sexp-ignore-comments t))
-        (goto-char (point-min))
-        (forward-sexp 2)
-        (edebug-defun)))))
-
-(use-package org-src
-  :config
-  (progn
-    (setq org-src-fontify-natively t)))
 
 (use-package plantuml-mode
   :ensure t
