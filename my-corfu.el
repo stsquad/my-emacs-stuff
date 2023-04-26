@@ -40,12 +40,16 @@
   ;; Optionally configure the cape-capf-buster. FIXME
   (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point))))
 
-
 (use-package corfu
   :ensure t
   :hook (lsp-completion-mode . my-lsp-mode-setup-completion)
   :init (global-corfu-mode)
   :config (setq corfu-auto t))
+
+(unless (display-graphic-p)
+  (use-package corfu-terminal
+    :ensure t
+    :init (corfu-terminal-mode +1)))
 
 (use-package kind-icon
   :ensure t
