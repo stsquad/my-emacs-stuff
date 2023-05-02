@@ -53,6 +53,8 @@ not, I'd rather just go to magit-status. Lets make it so."
   :bind (("C-x g" . my-magit-dispatch)
          :map magit-hunk-section-map
          ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree)
+         :map magit-revision-mode-map
+         ("C-c s" . my-mu4e-search-for-id)
          :map magit-mode-map
          ("C-x t" . hydra-magit/body))
   :hook (magit-log-edit-mode . auto-fill-mode)
@@ -75,7 +77,16 @@ not, I'd rather just go to magit-status. Lets make it so."
 
 ;; we use magit-git-string ourselves but there is no autoload
 (use-package magit-git
-  :commands magit-git-string)
+  :requires magit
+  :commands (magit-git-string magit-git-lines))
+
+(use-package magit-process
+  :requires magit
+  :commands magit-process-git)
+
+(use-package magit-files
+  :requires magit
+  :commands magit-file-dispatch)
 
 ;; DCO helpers
 ;;
@@ -196,9 +207,35 @@ This works by looking for a message-id in the buffer or prompting for
   (interactive (list (magit-read-range-or-commit "Fixes commit:")))
   (insert (magit-git-string "showfix" commit)))
 
+
+(defun my-commit-kill-message-id (&optional no-kill)
+  "Snarf the message-id into the kill ring unless NO-KILL prefix."
+  (interactive "P")
+  (let ((refs))
+    ;; References
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward my-capture-msgid-re nil t)
+        (let ((id (match-string-no-properties 1)))
+          (push (propertize (format "reference: %s" id)
+                            'id id) refs))))
+    ;; do it
+    (let ((final
+           (get-text-property 0 'id
+                              (if (< 1 (length refs))
+                                  (ivy-read "select reference:" refs)
+                                (car refs)))))
+      (message "message-id: %s" final)
+      (unless no-kill
+        (kill-new final))
+      final)))
+
+
 (use-package git-commit
+  :ensure t
   :bind (:map git-commit-mode-map
               ("C-c b" . my-commit-update-with-b4)
+              ("C-c i" . my-commit-kill-message-id)
               ("C-c x" . my-commit-mode-check-and-apply-tags)
               ("C-c f" . my-commit-mode-add-fixes)
               ("C-c s" . my-mu4e-search-for-id))
