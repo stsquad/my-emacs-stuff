@@ -56,10 +56,10 @@
 ;; been pimped out with the rest of the unicode space. Otherwise we
 ;; let unicode-fonts try and do it's thing.
 ;;
-(if (--filter (s-prefix-p "DejaVuSansMono Nerd Font" it)
+(if (--filter (s-prefix-p "DejaVuSansM Nerd Font" it)
               (font-family-list))
     (set-face-attribute 'default nil
-                        :family "DejaVuSansMono Nerd Font"
+                        :family "DejaVuSansM Nerd Font"
                         :height 150
                         :weight 'normal
                         :width 'normal)
@@ -78,6 +78,9 @@
   :config (setq default-frame-alist '((fullscreen . 'fullboth)
                                       (vertical-scroll-bars))
                 frame-background-mode 'dark))
+
+(use-package nerd-icons
+  :config (setq nerd-icons-font-family "DejaVuSansM Nerd Font"))
 
 ;; Prettier unique buffer names.
 (use-package uniquify
