@@ -130,6 +130,14 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 
 
 ;;
+;; Rust
+;;
+
+(use-package rustic
+  :ensure t)
+
+
+;;
 ;; Compile Mode
 ;;
 
@@ -338,6 +346,22 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (use-package dockerfile-mode
   :mode ("\\.docker\\'" . dockerfile-mode)
   :ensure t)
+
+;; AI!
+(use-package chatgpt-shell
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/chatgpt-shell.git/"))
+  :config (setq
+           chatgpt-shell-chatgpt-model-version "gpt-3.5-turbo"
+           chatgpt-shell-openai-key '(lambda () (my-pass-password "api.openai.com"))))
+
+; "code-davinci-edit-001"
+; gpt-3.5-turbo is the cheaper faster one
+
+
+(use-package gptel
+  :config
+  (setq gptel-api-key '(lambda () (my-pass-password "api.openai.com"))))
 
 (provide 'my-devel)
 ;;; my-devel.el ends here
