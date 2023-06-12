@@ -13,7 +13,6 @@
 
 (defun my-display-new-buffer-in-narrow-frame (buffer alist)
   "Returns t if its worth creating a new window."
-  (setq my-debug-var (cons buffer alist))
   (and (my-current-frame-is-portrait-p)
        (bufferp buffer)
        (buffer-file-name buffer)
