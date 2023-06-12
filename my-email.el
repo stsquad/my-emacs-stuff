@@ -111,7 +111,7 @@
             ;; current search
             (get-buffer "*mu4e-headers*")
             ;; current view
-            (get-buffer "*mu4e-view*"))))
+            (get-buffer "*mu4e-article*"))))
       (if candidate
           (progn
             (switch-to-buffer candidate)
@@ -134,7 +134,9 @@ all mu4e buffers and allow ivy selection of them.
       (push (propertize (format "mu4e menu")
                         'buffer (get-buffer "*mu4e-main*")) collection)
       ;; What are we reading
-      (let ((view (or (get-buffer "*mu4e-view*") (get-buffer "*Article*"))))
+      (let ((view (or (get-buffer "*mu4e-view*")
+                      (get-buffer "*mu4e-article*")
+                      (get-buffer "*Article*"))))
         (when view
           (push (propertize
                  (format "reading:%s"
@@ -370,8 +372,8 @@ Useful for replies and drafts")
                                        ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
                                        ("sMark SPAM" . my-mu4e-register-spam-action)
                                        ("hMark HAM" . my-mu4e-register-ham-action)
-                                       ("MMute Thread" . my-mu4e-headers-hide-muted-p)
-                                       ("GCheck if merged" . my-mu4e-action-check-if-merged))))
+                                       ("GCheck if merged" . my-mu4e-action-check-if-merged)
+                                       ("Llog details" . my-mu4e-log-thread-data))))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
@@ -565,6 +567,17 @@ Move next if the message at point is what we have just processed."
   (my-mu4e-register-action msg "ham" my-mu4e-register-ham-cmd)
   (mu4e-action-retag-message msg "-spam")
   (my-mu4e-next-if-at-point (mu4e-message-field msg :message-id) t))
+
+;(:docid 4434882 :subject "[PATCH] gitlab-ci: Remove unused container images" :message-id "20210219110950.2308025-1-thuth@redhat.com" :path "/home/alex/Maildir/virtualization/qemu/cur/1613734787.14625_21.zen,U=596021:2,RS" :maildir "/virtualization/qemu" :priority normal :date
+
+(defun my-mu4e-log-thread-data (msg)
+  (add-to-list 'my-debug-var
+               (list (cons 'thread (mu4e-message-field msg :thread))
+                     (cons 'docid (mu4e-message-field msg :docid))
+                     (cons 'subject (mu4e-message-field msg :subject))
+                     (cons 'maildir (mu4e-message-field msg :maildir))
+                     (cons 'msgid (mu4e-message-field msg :message-id))
+                     (cons 'references (mu4e-message-field msg :references)))))
 
 ;; Check if patch merged into a given tree
 ;;
@@ -922,6 +935,10 @@ f:philmd@linaro.org \
                :query "((list:qemu-devel* OR list:qemu-arm* OR recip:qemu-*) AND (s:fpu OR s:softfloat OR s:float))"
                :hide-unread t
                :key ?o)
+              (:name "SFConservancy emails"
+               :query "recip:qemu@sfconservancy.org"
+               :hide-unread t
+               :key ?c)
               (:name "Project Stratos"
                :query "maildir:/linaro-list/stratos-dev OR recip:stratos-dev@op-lists.linaro.org"
                :key ?R)
@@ -941,10 +958,6 @@ f:philmd@linaro.org \
                :query "to:tcwg@linaro.org"
                :hide-unread t
                :key ?t)
-              (:name "Latest Conf emails"
-               :query "list:conf.lists.linaro.org AND flag:unread"
-               :hide-unread t
-               :key ?c)
               (:name "Latest Linaro-Dev emails"
                :query "list:linaro-dev.lists.linaro.org AND flag:unread"
                :hide-unread t
