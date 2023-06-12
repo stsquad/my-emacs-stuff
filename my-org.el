@@ -32,9 +32,12 @@
            '((:prologue . "exec 2>&1") (:epilogue . ":"))))
 
 (use-package ob-async
-  :ensure t)
+  :ensure t
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/ob-async.git")))
 
 (use-package ob-core
+  :pin gnu
   :defer t)
 
 (defvar my-org-babel-hashes nil
@@ -100,6 +103,7 @@ This is used by `my-org-run-default-block' which is added to
 ;; (add-to-list 'org-ctrl-c-ctrl-c-final-hook 'my-org-run-default-block)
 
 (use-package org-agenda
+  :pin gnu
   :commands org-agenda
   :config
   (setq
@@ -415,6 +419,7 @@ Return the filespec of the jump."
                               ("CANCELED" . org-done)
                               ("DONE" . org-done))
      ;; Export settings
+     org-export-with-toc nil
      org-export-allow-bind-keywords t)
 
     ;; Add my special handler.
@@ -480,6 +485,7 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
 
 
 (use-package ox
+  :pin gnu
   :config
   (org-link-set-parameters "mu4e" :export 'my-org-mu4e-export))
 
@@ -541,6 +547,8 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
     (add-to-list 'langs '(sparql . t)))
   (when (locate-library "plantuml-mode")
     (add-to-list 'langs '(plantuml . t)))
+  (when (locate-library "ob-chatgpt-shell")
+    (add-to-list 'langs '(chatgpt-shell . t)))
   (if (locate-library "ob-sh")
       (add-to-list 'langs '(sh . t))
     (add-to-list 'langs '(shell . t)))
@@ -557,6 +565,13 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
                 (my-add-world-to-env cust-install)))
             (add-to-list 'org-src-lang-modes
                          '("dot" . graphviz-dot))))
+
+(use-package edraw-org
+  :disabled t
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/el-easydraw.git"))
+  :init (edraw-org-setup-default))
+
 
 ;;
 ;; Stats things
