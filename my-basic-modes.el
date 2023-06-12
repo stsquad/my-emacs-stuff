@@ -69,8 +69,8 @@
 ;;
 (use-package ivy
   :ensure t
-  :load-path (lambda () (my-return-path-if-ok
-                         "~/src/emacs/swiper.git"))
+  ;; :load-path (lambda () (my-return-path-if-ok
+  ;;                        "~/src/emacs/swiper.git"))
   :commands ivy-mode
   ;; :init (ivy-mode)
   :config
@@ -204,6 +204,11 @@
   ;; enabled right away. Note that this forces loading the package.
   (marginalia-mode))
 
+;; Also icons ;-)
+(use-package nerd-icons-completion
+  :ensure t
+  :config
+  (nerd-icons-completion-mode))
 
 (use-package embark
   :ensure t
