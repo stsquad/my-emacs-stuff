@@ -46,10 +46,19 @@
   :init (global-corfu-mode)
   :config (setq corfu-auto t))
 
-(unless (display-graphic-p)
-  (use-package corfu-terminal
-    :ensure t
-    :init (corfu-terminal-mode +1)))
+;; we also need to handle disabling on new frames
+(defun my-maybe-enable-corfu-terminal-mode ()
+  "Enable corfu-terminal-mode if non-graphic frame.
+
+This should be called from a hook such as `server-after-make-frame-hook'"
+  (if (display-graphic-p)
+      (corfu-terminal-mode -1)
+    (corfu-terminal-mode +1)))
+
+(use-package corfu-terminal
+  :ensure t
+  :commands corfu-terminal-mode
+  :hook (server-after-make-frame . my-maybe-enable-corfu-terminal-mode))
 
 (use-package kind-icon
   :ensure t
