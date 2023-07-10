@@ -111,8 +111,8 @@
 ;; Useful modes
 ; currently considering corfu over company but only if I can get it to
 ; work properly with LSP mode.
-(use-package my-company
-  :disabled t)
+;; (use-package my-company
+;;   :disabled t)
 (use-package my-corfu)
 
 (use-package my-yasnippet)
