@@ -321,7 +321,7 @@ Useful for replies and drafts")
               ("<f5>". my-search-code-from-email))
   :config (setq mu4e-compose-signature 'my-sig-function
                 mu4e-compose-complete-addresses t
-                mu4e-compose-complete-only-personal nil ;; personal seems to miss things
+                mu4e-compose-complete-only-personal t ;; personal seems to miss things
                 mu4e-compose-complete-only-after "2013-11-01"
                 mu4e-contact-process-function #'my-mu4e-contact-cleaner
                 mu4e-sent-messages-behavior 'delete))
@@ -493,8 +493,12 @@ Useful for replies and drafts")
                            "Subject:"
                            "Date:"
                            (: "Message-" (or "Id" "ID") ":" ))) nil t)
-             (push (buffer-substring-no-properties (match-beginning 0) (line-end-position)) headers)))
-         (kill-new (mapconcat 'identity headers "\n"))))
+             (push (buffer-substring-no-properties (match-beginning 0)
+                                                   (line-end-position))
+                   headers)))
+         (let ((ref (mapconcat 'identity headers "\n")))
+           (kill-new ref)
+           (message (format "Copied %d chars of reference" (length ref))))))
 
 (or (require 'mu4e-view-gnus nil t) (require 'mu4e-view))
 
@@ -885,7 +889,10 @@ patches."
                :query "flag:flagged NOT flag:seen"
                :key ?F)
               (:name "From my boss"
-               :query "to:alex.bennee@linaro.org AND (from:/maxim.kuvyrkov/ OR f:/mike.holmes/)"
+               :query "recip:alex.bennee@linaro.org AND \
+(f:/maxim.kuvyrkov/ OR \
+f:/mike.holmes/ OR \
+f:/tim.benton/)"
                :key ?B)
               (:name "From my Engineers"
                :query "recip:alex.bennee@linaro.org \
@@ -893,8 +900,10 @@ AND (\
 f:takahiro.akashi@linaro.org OR \
 f:viresh.kumar@linaro.org OR \
 f:peter.maydell@linaro.org OR \
-f:richard.henderson@linaro.org OR\
-f:philmd@linaro.org \
+f:richard.henderson@linaro.org OR \
+f:philmd@linaro.org OR \
+f:manos.pitsidianakis@linaro.org OR \
+f:erik.schilling@linaro.org \
 ) AND NOT (flag:list OR recip:nongnu.org)"
                :key ?e)
               (:name "In the last hour"
