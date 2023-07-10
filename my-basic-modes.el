@@ -26,8 +26,7 @@
 
 ;; Save history
 (use-package savehist
-  :defer 60
-  :init (savehist-mode))
+  :init (savehist-mode 1))
 
 ;; Don't prompt me to revert something
 (use-package autorevert
