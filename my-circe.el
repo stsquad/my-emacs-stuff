@@ -56,7 +56,7 @@
   :commands enable-lui-logging)
 
 (defvar my-logged-chans
-  '("#qemu@znc-oftc" "#qemu-gsoc@znc-oftc" "#linaro-virtualization@znc-oftc" "#linaro-tcwg@znc-freenode")
+  '("#qemu@znc-oftc" "#qemu-gsoc@znc-oftc" "#linaro-virtualization@znc-libera" "#linaro-tcwg@znc-freenode")
   "List of channels which I log")
 
 (defun my-maybe-log-channel ()
@@ -157,6 +157,10 @@
       (setq circe-default-nick "stsquad"
             circe-default-user "stsquad"
             circe-default-realname "stsquad"))
+    ;; override cert check for pl0rt
+    (let ((id (nsm-id "irc.pl0rt.org" 6697)))
+      (setq nsm-temporary-host-settings
+            (list (list :id id :conditions '(:no-host-match :expired :invalid :verify-cert)))))
     (setq circe-reduce-lurker-spam t
           circe-network-options
           `(("Freenode"
