@@ -204,10 +204,11 @@
   (marginalia-mode))
 
 ;; Also icons ;-)
-(use-package nerd-icons-completion
-  :ensure t
-  :config
-  (nerd-icons-completion-mode))
+(when have-melpa
+  (use-package nerd-icons-completion
+    :ensure t
+    :config
+    (nerd-icons-completion-mode)))
 
 (use-package embark
   :ensure t
