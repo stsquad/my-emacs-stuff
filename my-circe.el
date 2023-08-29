@@ -115,7 +115,8 @@
   (when I-am-at-work
     (circe "znc-libera")
     (circe "znc-oftc")
-    (circe "bitlbee"))
+    ;; (circe "bitlbee")
+    )
   (circe "Pl0rt"))
 
 (defun my-disable-irc-login ()
