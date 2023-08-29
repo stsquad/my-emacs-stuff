@@ -55,8 +55,7 @@
                (setenv       "SSH_AUTH_SOCK" (match-string 1 ssh))))))
 
 (when (getenv "DISPLAY")
-  (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent)
-  (add-hook 'after-focus-change-function 'my-fixup-gpg-agent))
+  (add-hook 'after-make-frame-functions 'my-fixup-gpg-agent))
 
 (use-package epa-file
   :if (string-match "socrates" (system-name))
