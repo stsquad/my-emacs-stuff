@@ -18,6 +18,7 @@
 (require 'my-vars)
 (require 'my-basic-modes)
 (require 'my-hydra)
+(require 'my-git)
 (require 'bookmark)
 
 (defvar ajb-work-org-file
