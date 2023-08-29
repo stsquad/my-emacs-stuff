@@ -46,6 +46,11 @@
 (use-package async
   :ensure t)
 
+(use-package emacs-gc-stats
+  :ensure t
+  :config (setq gc-cons-threshold 100000000)
+  :init (emacs-gc-stats-mode))
+
 ;; Other helpers
 (defun my-return-path-if-ok (path)
   "Return an expanded file-path if it exists."
