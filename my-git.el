@@ -283,9 +283,10 @@ This works by looking for a message-id in the buffer or prompting for
 If the `default-directory' matches the most recent history entry don't
 bother asking for the git tree again (useful for bulk actions)."
 
-  (let ((cwd (substring-no-properties
+  (let ((cwd (expand-file-name
+              (substring-no-properties
               (or (car my-patch-directory-history)
-                  "not-a-dir"))))
+                  "not-a-dir")))))
         (unless (and (stringp cwd) (string= default-directory cwd))
           (setq cwd (my-read-patch-directory "Target directory: ")))
         (let ((default-directory cwd))
