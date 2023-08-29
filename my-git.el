@@ -140,14 +140,18 @@ not, I'd rather just go to magit-status. Lets make it so."
     (user-error "Need a Message-ID or active b4 buffer to continue"))
   (let ((tags)
         (valid-tags (rx bol (group (or my-bare-dco-tag-rx
-                                       my-msgid-rx)))))
+                                       my-msgid-rx))))
+        ;; tweak subject for wrapped lines which b4 may have added
+        (tweaked-subject (replace-regexp-in-string
+                          " " "[[:space:]]+" subject)))
     (with-temp-buffer
       (if id
           (call-process "b4" nil t t "am" "-S" "-t" id "-o" "-")
         (insert-buffer-substring-no-properties my-b4-current-results-buffer))
       (goto-char 0)
       (when (re-search-forward
-             (rx "Subject: [" (zero-or-more nonl) "] " (literal subject))
+             (concat
+              (rx "Subject: [" (zero-or-more nonl) "] ") tweaked-subject)
              nil t)
         (forward-line)
         (beginning-of-line)
