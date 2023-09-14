@@ -57,15 +57,45 @@ Returns the line as a string."
   (interactive)
   (-map 'transmission-add (dired-get-marked-files)))
 
-(defun my-add-first-elfeed-enclosure-to-transmission ()
-  "Queue the first enclosure (if it is a torrent)."
-  (interactive)
+
+(defun my-snarf-first-elfeed-enclosure-as-link ()
+  "Find the first enclosure (if it is a torrent) and return the link."
   (let ((enclosures (elfeed-entry-enclosures elfeed-show-entry)))
     (when (and enclosures
                (string-match-p
                 "application/x-bittorrent"
                 (nth 1 (-first-item enclosures))))
-      (transmission-add (-first-item (-first-item enclosures))))))
+      (-first-item (-first-item enclosures)))))
+
+(defun my-add-first-elfeed-enclosure-to-transmission ()
+  "Queue the first enclosure (if it is a torrent)."
+  (interactive)
+  (let ((torrent (or (my-snarf-first-elfeed-enclosure-as-link)
+                     (elfeed-entry-link elfeed-show-entry))))
+    (when torrent
+      (transmission-add torrent))))
+
+(defvar my-transmission-current-status
+  ""
+  "Current status of transmission")
+
+(defun my-transmission-update-stats ()
+  "Add transmission stats to modeline"
+  (transmission-request-async
+   (lambda (response)
+     (let-alist response
+       (setq my-transmission-current-status
+             (format
+              (concat "%d kB/s down, %d kB/s up; %d/%d torrents active; "
+                         "%s received, %s sent; uptime %s")
+                (transmission-rate .downloadSpeed)
+                (transmission-rate .uploadSpeed)
+                .activeTorrentCount .torrentCount
+                (transmission-size .current-stats.downloadedBytes)
+                (transmission-size .current-stats.uploadedBytes)
+                (transmission-eta .current-stats.secondsActive nil)))))
+   "session-stats"))
+
 
 (use-package transmission
   :ensure t
@@ -77,7 +107,9 @@ Returns the line as a string."
          ("C-c a t" . my-dired-add-to-transmission))
   :config (setq transmission-rpc-auth
                 '(:username "transmission" :password "transmission")
-                elfeed-enclosure-default-dir "~/torrent/"))
+                elfeed-enclosure-default-dir "~/torrent/"
+                global-mode-string '(my-transmission-current-status display-time-string)))
+
 
 (provide 'my-transmission)
 ;;; my-transmission.el ends here

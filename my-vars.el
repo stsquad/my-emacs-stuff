@@ -14,7 +14,7 @@
 
 (defvar I-am-at-work (string-match "draig" (system-name)))
 (defvar I-am-at-home (string-match "danny" (system-name)))
-(defvar I-am-on-server (string-match "socrates" (system-name)))
+(defvar I-am-on-server (string-match "seed" (system-name)))
 (defvar I-am-on-pixelbook (string-match "penguin" (system-name)))
 
 ;; I can probably disable a bunch of stuff for test machines
