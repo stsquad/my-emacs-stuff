@@ -213,9 +213,8 @@
 (use-package embark
   :ensure t
   :bind
-  (:map minibuffer-mode-map
-   ("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
+  (("C-c C-." . embark-act)         ;; pick some comfortable binding
+   ("C-c C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
   :init
