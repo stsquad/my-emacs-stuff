@@ -131,7 +131,7 @@
 (use-package my-circe
   :if (not I-am-root))
 
-(use-package my-telegram
+(use-package my-matrix
   :if I-am-at-work)
 
 (use-package my-diff)
