@@ -6,7 +6,13 @@
 ;;
 ;;; Code:
 
+;; while running ement from a checkout we need to ensure
+;; some of its dependencies
+(use-package taxy-magit-section
+  :ensure t)
+
 (use-package ement
+  :requires (taxy taxy-magit-section)
   :load-path (lambda () (my-return-path-if-ok
                          "~/src/emacs/ement.el.git"))
   :custom
