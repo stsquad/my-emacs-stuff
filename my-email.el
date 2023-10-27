@@ -74,7 +74,7 @@
 ;;
 
 (let ((local-mu4e (my-return-path-if-ok
-                   "~/src/emacs/install/share/emacs/site-lisp/mu4e/")))
+                   "~/src/emacs/install/share/emacs/site-lisp/mu4e")))
   (setq mu4e-mu-binary (or
                         (my-return-path-if-ok "/usr/bin/mu")
                         (my-return-path-if-ok "~/src/emacs/install/bin/mu")))
