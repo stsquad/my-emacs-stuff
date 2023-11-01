@@ -41,8 +41,10 @@
 (use-package flycheck-package
   :ensure t)
 
+;; The upstream package is stale so we need to use the local fork
 (use-package flycheck-checkpatch
-  :ensure t
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/flycheck-checkpatch.git"))
   :config (flycheck-checkpatch-setup)
   :config (setq flycheck-checkers (delete 'checkpatch flycheck-checkers))
   :config (add-to-list 'flycheck-checkers 'checkpatch t))
