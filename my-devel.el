@@ -265,6 +265,7 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
          (".*\.bb$" . sh-mode)))
 
 (use-package fish-mode
+  :mode (("config.fish" . fish-mode))
   :ensure t)
 
 (use-package fish-completion
