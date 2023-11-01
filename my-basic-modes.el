@@ -32,16 +32,6 @@
 (use-package autorevert
   :defer 240
   :init (global-auto-revert-mode 1))
-  
-;; Keep track of my key-presses - use keyfreq-show to view
-(use-package keyfreq
-  :if (daemonp)
-  :ensure t
-  :defer 240
-  :config
-  (progn
-    (keyfreq-mode)
-    (keyfreq-autosave-mode)))
 
 ;; Simple access to the calculator
 (use-package calculator
