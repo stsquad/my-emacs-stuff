@@ -29,7 +29,6 @@
         python-shell-interpreter-args "-i"))
 
 (use-package elpy
-  ;; :ensure t
   :disabled t
   :commands elpy-enable
   :after (python flycheck)

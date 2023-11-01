@@ -84,7 +84,8 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (use-package lsp-mode
   :ensure t
   :commands (lsp)
-  :hook (c-mode . lsp)
+  :hook ((c-mode . lsp)
+         (python-mode . lsp))
   :bind (:map lsp-mode-map ("C-c C-c" . lsp-execute-code-action))
   :init (setq lsp-keymap-prefix "C-c C-l")
   :config
