@@ -60,15 +60,18 @@ This should be called from a hook such as `server-after-make-frame-hook'"
   :commands corfu-terminal-mode
   :hook (server-after-make-frame . my-maybe-enable-corfu-terminal-mode))
 
+;; Disable for now as it breaks ement:
+;;  https://github.com/alphapapa/ement.el/issues/212
+;;  https://github.com/rougier/svg-lib/issues/18
 (use-package kind-icon
-  :ensure t
-  :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+   :disabled t
+   :after corfu
+   :custom
+   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+   :config
+   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-;; A few more useful configurations...
+;; a few more useful configurations...
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
