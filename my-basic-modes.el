@@ -84,6 +84,11 @@
   :after ivy
   :ensure t)
 
+;; Counsel
+;;
+;; I mostly use counsel-compile (although the descbinds and apropos
+;; helpers are also nice). Narrowing is now handled mostly by vertico.
+;;
 (use-package counsel
   :ensure t
   ;; :load-path (lambda () (my-return-path-if-ok
@@ -94,14 +99,6 @@
          ("C-c c" . counsel-compile)
          (:map counsel-compile-map
                ("C-j" . ivy-immediate-done))))
-
-;; :commands counsel-mode
-;; :bind (:map counsel-mode-map
-;;             ("M-x" . counsel-M-x)
-;;             ("M-y" . counsel-yank-pop)
-;;             ("C-x b" . counsel-switch-buffer)
-;;             ("C-x m" . counsel-mark-ring)
-;;             ("C-h ?" . counsel-search))
 
 ;; Enable vertico
 (use-package vertico
