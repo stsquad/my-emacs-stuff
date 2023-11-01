@@ -11,8 +11,11 @@
 (use-package taxy-magit-section
   :ensure t)
 
+(use-package plz
+  :ensure t)
+
 (use-package ement
-  :requires (taxy taxy-magit-section)
+  :requires (plz taxy taxy-magit-section)
   :load-path (lambda () (my-return-path-if-ok
                          "~/src/emacs/ement.el.git"))
   :custom
