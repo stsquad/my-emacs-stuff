@@ -26,7 +26,7 @@
     (lusty-file-explorer)))
 
 (use-package lusty-explorer
-  :ensure t
+  :disabled t
   :commands lusty-file-explorer
   :bind (("C-x C-f" . my-lusty-file-explorer)))
 
