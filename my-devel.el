@@ -218,8 +218,6 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
     (add-to-list
      'compilation-error-regexp-alist-alist
      (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0))
-    (add-to-list 'savehist-additional-variables 'compile-history)
-    (add-to-list 'savehist-additional-variables 'counsel-compile-history)
     ;; lets not overtax the regex match on our huge compilation buffers
     (when I-am-at-work
       (setq compilation-error-regexp-alist '(gcc-include gnu tsan

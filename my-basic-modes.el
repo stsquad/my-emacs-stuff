@@ -26,7 +26,9 @@
 
 ;; Save history
 (use-package savehist
-  :init (savehist-mode 1))
+  :init (savehist-mode 1)
+  :config (apply 'add-to-list
+                 '(savehist-additional-variables compile-history)))
 
 ;; Don't prompt me to revert something
 (use-package autorevert
