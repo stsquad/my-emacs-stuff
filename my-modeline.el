@@ -20,24 +20,11 @@
 (require 'use-package)
 (require 'my-tracking)
 
-(unless I-am-on-pixelbook
-  (use-package doom-modeline
-    :ensure t
-    :config
-    (setq doom-modeline-icon (or (display-graphic-p) I-am-at-work)
-          doom-modeline-major-mode-icon t
-          doom-modeline-major-mode-color-icon t
-          doom-modeline-project-detection 'project
-          doom-modeline-lsp t
-          ;; IRC notifications are handled separately by tracking.el
-          doom-modeline-irc nil
-          doom-modeline-irc-buffers nil
-          doom-modeline-modal-icon t
-          doom-modeline-mu4e t
-          doom-modeline-minor-modes nil
-          doom-modeline-buffer-state-icon t
-          doom-modeline-buffer-modification-icon t)
-    :hook (after-init . doom-modeline-mode)))
+(use-package mood-line
+  :config (mood-line-mode)
+  :custom
+  (mood-line-glyph-alist mood-line-glyphs-unicode)
+  (mood-line-format mood-line-format-default-extended))
 
 (use-package diminish
   :commands diminish
