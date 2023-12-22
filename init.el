@@ -83,6 +83,7 @@
 
 ;; Development related stuff
 (use-package my-devel)
+(use-package my-assistants)
 (use-package my-text)
 
 (use-package my-flycheck
