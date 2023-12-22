@@ -313,6 +313,19 @@ Useful for replies and drafts")
       nil
     addr))
 
+(defun my-mu4e-reply-function (&optional arg)
+  "An alternate reply function that considers mailing lists."
+  (interactive "P")
+  (let* ((emails (--map (plist-get it :email)
+                        (append (mu4e-message-field-at-point :to)
+                                (mu4e-message-field-at-point :cc))))
+         (mailing-list-p (--any
+                          (assoc-string it my-mail-address-mapping)
+                          emails)))
+    (if (and (not arg) mailing-list-p)
+        (mu4e-compose-wide-reply)
+      (mu4e-compose-reply))))
+
 (use-package mu4e-compose
   :hook ((mu4e-compose-mode . my-set-compose-directory)
           (mu4e-compose-pre . my-choose-mail-address))
@@ -505,6 +518,8 @@ Useful for replies and drafts")
 (use-package mu4e-view
   :commands mu4e-view
   :bind (:map mu4e-view-mode-map
+              ("C-h b" . counsel-descbinds)
+              ;; local tweaks
               ("C-c C-l". org-store-link)
               ;; ("C-c c" . my-mu4e-jump-to-commit) aliases with
               ;; compile command
@@ -514,7 +529,9 @@ Useful for replies and drafts")
               ("C-c w" . my-mu4e-view-copy-reference)
               ("C-x n l" . my-narrow-to-list)
               ("C-x t" . my-mu4e-view-toggle/body)
-              ("h"     . my-gnus-article-toggle-long-cc))
+              ;; overrides
+              ("h"     . my-gnus-article-toggle-long-cc)
+              ("R"     . my-mu4e-reply-function))
   :hook (mu4e-view-mode . my-set-view-directory)
   :config (setq mu4e-view-fields
                 '(:from :to :cc
@@ -634,7 +651,7 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
   (mu4e-headers-search (format "i:%s" (my-mu4e-kill-message-id 't))))
 
 (defun mu4e-action-git-apply-b4 (msg)
-  "Find the Message-Id in the buffer and pass to b4"
+  "Find the Message-Id in the `MSG' buffer and pass to b4"
   (interactive)
   (my-git-fetch-and-apply-via-b4 (my-mu4e-kill-message-id 't)))
 
@@ -679,12 +696,14 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
       (t "true"))
      ;; debug
      mu4e-mu-debug t
-     ;;
+     mu4e-headers-report-render-time t
+          ;;
      mu4e-update-interval 800
      mu4e-hide-index-messages t
      mu4e-change-filenames-when-moving t ; keep mbsync happy
      mu4e-index-lazy-check nil           ; faster sync when t
      mu4e-index-cleanup t                ; faster cleanup when nil
+     mu4e-mu-allow-temp-file t           ; optimise large transfers
      ;; completion
      mu4e-completing-read-function 'completing-read
      ;; navigate options
