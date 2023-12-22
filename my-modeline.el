@@ -20,11 +20,59 @@
 (require 'use-package)
 (require 'my-tracking)
 
+;; override mood-line's default squashing of faces
+(defun my-mood-line-segment-misc-info ()
+  "Return the current value of `mode-line-misc-info'."
+  (let ((misc-info (format-mode-line mode-line-misc-info)))
+    (unless (string-blank-p misc-info)
+      (propertize (string-trim misc-info)))))
+
 (use-package mood-line
   :config (mood-line-mode)
   :custom
   (mood-line-glyph-alist mood-line-glyphs-unicode)
-  (mood-line-format mood-line-format-default-extended))
+  (mood-line-format '((" "
+                       (mood-line-segment-modal)
+                       " "
+                       (or
+                        (mood-line-segment-buffer-status)
+                        (mood-line-segment-client)
+                        " ")
+                       " "
+                       (mood-line-segment-project)
+                       "/"
+                       (mood-line-segment-buffer-name)
+                       "  "
+                       (mood-line-segment-anzu)
+                       "  "
+                       (mood-line-segment-multiple-cursors)
+                       "  "
+                       (mood-line-segment-cursor-position)
+                       ""
+                       #(":" 0 1
+                         (face mood-line-unimportant))
+                       (mood-line-segment-cursor-point)
+                       " "
+                       (mood-line-segment-region)
+                       " "
+                       (mood-line-segment-scroll)
+                       "")
+                      ((mood-line-segment-indentation)
+                       "  "
+                       (mood-line-segment-eol)
+                       "  "
+                       (mood-line-segment-encoding)
+                       "  "
+                       (mood-line-segment-vc)
+                       "  "
+                       (mood-line-segment-major-mode)
+                       "  "
+                       (my-mood-line-segment-misc-info)
+                       "  "
+                       (mood-line-segment-checker)
+                       "  "
+                       (mood-line-segment-process)
+                       "  " " "))))
 
 (use-package diminish
   :commands diminish
