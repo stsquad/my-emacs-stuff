@@ -20,10 +20,8 @@
 
 (use-package dired
   :commands dired
-  :config (progn
-            (add-hook 'dired-mode-hook
-                      'my-dired-enable-recursive-delete)
-            (setq dired-dwim-target t)))
+  :hook (dired-mode . my-dired-enable-recursive-delete)
+  :config (setq dired-dwim-target t))
 
 (use-package dired-async
   :ensure async)
@@ -36,17 +34,17 @@
 (use-package dired-rsync
   :load-path (lambda () (my-return-path-if-ok
                          "~/mysrc/dired-rsync.git"))
+  :bind (:map dired-mode-map
+         ("C-c C-r" . dired-rsync))
   :hook (dired-mode . (lambda () (setq-local mode-line-process
-                                             'dired-rsync-modeline-status)))
-  :config
-  (bind-key "C-c C-r" 'dired-rsync dired-mode-map))
+                                             'dired-rsync-modeline-status))))
 
 (defvar my-last-dired-directory
   nil
-  "Return the directory dired was last killed in.")
+  "Return the directory DIRED was last killed in.")
 
 (defun my-dired-frame (directory)
-  "Open up a dired frame in `DIRECTORY' which closes on exit."
+  "Open up a DIRED frame in `DIRECTORY' which closes on exit."
   (interactive)
   (switch-to-buffer (dired directory))
   (local-set-key
