@@ -71,13 +71,12 @@ If the region is less than a line long assume I want to mark the next
         (call-interactively #'mc/mark-next-like-this))
     (call-interactively #'next-line)))
 
-(when (locate-library "region-bindings-mode")
-  (use-package region-bindings-mode
-    ; not in stable  :ensure t
-    :commands (region-bindings-mode-enable)
-    :bind (:map region-bindings-mode-map
-                ("C-n" . my-next-mc-or-line-dwim))
-    :init (region-bindings-mode-enable)))
+;; This replaces region-bindings-mode
+(use-package selected
+  :ensure t
+  :bind (:map selected-keymap
+              ("C-n" . my-next-mc-or-line-dwim))
+  :config (selected-global-mode))
 
 ;; Finally a hydra for the complex editing commands
 ;; currently set to C-# but I might want to lead via C-SPC later.
