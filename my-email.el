@@ -252,8 +252,8 @@ Useful for replies and drafts")
                  (--first
                   (assoc-default it my-mail-address-mapping)
                   (nconc
-                   (when (stringp cc) (s-split ", " cc))
-                   (when (stringp to) (s-split ", " to))))
+                   (when (stringp cc) (-map 's-trim (s-split "," cc)))
+                   (when (stringp to) (-map 's-trim (s-split ", " to)))))
                  my-mail-address-mapping))))
     (when dir (setq default-directory dir)))))
 
