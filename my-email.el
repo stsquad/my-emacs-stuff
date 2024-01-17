@@ -429,7 +429,7 @@ Useful for replies and drafts")
         (setq my-gnus-cc-hiding-overlay
               (cond
                ((< nlpos (point-max))
-                (make-overlay (1- nlpos) (point-max)))
+                (make-overlay (1- nlpos) (1- (point-max))))
                ((> cclen winlen)
                 (make-overlay (+ (point-min) (- winlen 8))
                               (- (point-max) 4)))
