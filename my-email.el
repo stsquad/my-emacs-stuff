@@ -242,20 +242,24 @@ Useful for replies and drafts")
 
 ;; We don't have the benefit of mu4e-message-at-point here so we do
 ;; things by hand using message-fetch-field.
+
+(defun my-get-gnus-emails ()
+  "Return a list of emacs from the GNUs headers"
+  (let ((cc (message-fetch-field "cc"))
+        (to (message-fetch-field "to")))
+    (nconc
+     (when (stringp cc) (-map 's-trim (s-split "," cc)))
+     (when (stringp to) (-map 's-trim (s-split ", " to))))))
+
 (defun my-set-compose-directory ()
   "Switch the `default-directory' when composing an email."
   (interactive)
-  (let ((cc (message-fetch-field "cc"))
-        (to (message-fetch-field "to")))
-    (let ((dir (cdr
-                (assoc
-                 (--first
-                  (assoc-default it my-mail-address-mapping)
-                  (nconc
-                   (when (stringp cc) (-map 's-trim (s-split "," cc)))
-                   (when (stringp to) (-map 's-trim (s-split ", " to)))))
-                 my-mail-address-mapping))))
-    (when dir (setq default-directory dir)))))
+  (let ((dir
+         (--first (and (stringp it) (file-directory-p it))
+          (--map
+           (assoc-default it my-mail-address-mapping 's-contains-p)
+           (my-get-gnus-emails)))))
+    (when dir (setq default-directory dir))))
 
 (defun my-search-code-from-email ()
   "Search code depending on email."
