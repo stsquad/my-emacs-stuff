@@ -16,8 +16,9 @@
 
 (use-package ement
   :requires (plz taxy taxy-magit-section)
-  :load-path (lambda () (my-return-path-if-ok
-                         "~/src/emacs/ement.el.git"))
+  :ensure t
+  ;; :load-path (lambda () (my-return-path-if-ok
+  ;;                        "~/src/emacs/ement.el.git"))
   :custom
   ;; :NOTE| Notifications ought to be limited to @mentions only!
   (ement-notify-notification-predicates '(ement-notify--event-mentions-session-user-p
