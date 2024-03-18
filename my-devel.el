@@ -257,9 +257,9 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
               ("C-x c" . checkpatch-run-from-magit)))
 
 ;; Coverage
-(use-package cov
-  :ensure t)
-
+(when have-melpa
+  (use-package cov
+    :ensure t))
 
 ;; shell modes
 
