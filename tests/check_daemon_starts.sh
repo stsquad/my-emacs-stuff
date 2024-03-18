@@ -8,7 +8,7 @@ emacs --daemon
 
 sleep 1
 
-if test $(emacsclient -e "(if I-completed-loading-dotinit 0 -1)") = "0"
+if test "$(emacsclient -e '(if I-completed-loading-dotinit 0 -1)')" = "0"
 then
     echo "Failed --daemon start-up"
     exit 1
