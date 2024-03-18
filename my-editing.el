@@ -72,11 +72,12 @@ If the region is less than a line long assume I want to mark the next
     (call-interactively #'next-line)))
 
 ;; This replaces region-bindings-mode
-(use-package selected
-  :ensure t
-  :bind (:map selected-keymap
-              ("C-n" . my-next-mc-or-line-dwim))
-  :config (selected-global-mode))
+(when have-melpa
+  (use-package selected
+    :ensure t
+    :bind (:map selected-keymap
+                ("C-n" . my-next-mc-or-line-dwim))
+    :config (selected-global-mode)))
 
 ;; Finally a hydra for the complex editing commands
 ;; currently set to C-# but I might want to lead via C-SPC later.
