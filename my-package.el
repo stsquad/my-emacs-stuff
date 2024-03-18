@@ -73,8 +73,7 @@ package is installed programatically."
 (when (version<= "28.0.50" emacs-version)
   (use-package comp
     :init (setq comp-deferred-compilation (daemonp)
-                ;; fixme, very much zen specific
-                native-comp-compiler-options '("-O2" "-march=haswell" "-mtune=native"))))
+                native-comp-compiler-options '("-O2"))))
 
 (when (version<= "24.4" emacs-version)
   (use-package paradox
