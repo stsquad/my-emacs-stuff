@@ -4,7 +4,7 @@
 #
 set -ex
 emacs --version
-emacs --daemon --debug-init
+emacs --daemon
 
 sleep 1
 
