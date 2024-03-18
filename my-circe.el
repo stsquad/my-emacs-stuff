@@ -33,6 +33,16 @@
   (format "ajb-linaro/libera:%s"
           (my-pass-password "znc")))
 
+(defun my-znc-libera-codelinaro-password (server)
+  "Return the password for the `SERVER'."
+  (format "ajb-linaro/libera:%s"
+          (my-pass-password "znc-admin@codelinaro")))
+
+(defun my-znc-oftc-codelinaro-password (server)
+  "Return the password for the `SERVER'."
+  (format "ajb-linaro/oftc:%s"
+          (my-pass-password "znc-admin@codelinaro")))
+
 ;; These are both "personal" nicks for non-ZNC bounced connections
 (defun my-freenode-nick-password (server)
   "Return the password for the `SERVER'."
@@ -103,6 +113,13 @@
               (error "Error during pasting to pastebin.linaro.org")))
         (kill-buffer buf)))))
 
+;; Auto pasting
+(use-package lui-autopaste
+  :commands enable-lui-autopaste
+  :custom (lui-autopaste-function 'lui-autopaste-service-sprunge-us
+                                  "Use sprunge.us as the paster"))
+
+
 ;; Auto join everything
 (defvar my-irc-login-timer
   nil
@@ -113,8 +130,8 @@
   (interactive)
   (circe-lagmon-mode)
   (when I-am-at-work
-    (circe "znc-libera")
-    (circe "znc-oftc")
+    (circe "znc-cl-libera")
+    (circe "znc-cl-oftc")
     ;; (circe "bitlbee")
     )
   (circe "Pl0rt"))
@@ -189,30 +206,21 @@
              :nick "stsquad"
              :nickserv-password my-libera-nick-password
              )
-            ("znc-freenode"
-             :host "ircproxy.linaro.org"
-             :server-buffer-name "⇄ Freenode (ZNC)"
+            ("znc-cl-oftc"
+             :host "irc.codelinaro.org"
+             :server-buffer-name "⇄ OFTC (ZNC/CL)"
              :port "6697"
              :tls t
-             :pass my-znc-freenode-password
-             ;; NickServ is handled by ZNC and the SASL login
-             :channels ("#linaro" "#linaro-virtualization")
-             )
-            ("znc-oftc"
-             :host "ircproxy.linaro.org"
-             :server-buffer-name "⇄ OFTC (ZNC)"
-             :port "6697"
-             :tls t
-             :pass my-znc-oftc-password
+             :pass my-znc-oftc-codelinaro-password
              ;; NickServ is handled by ZNC and the SASL login
              :channels ("#qemu" "#qemu-gsoc")
              )
-            ("znc-libera"
-             :host "ircproxy.linaro.org"
-             :server-buffer-name "⇄ Libera Chat (ZNC)"
+            ("znc-cl-libera"
+             :host "irc.codelinaro.org"
+             :server-buffer-name "⇄ Libera Chat (ZNC/CL)"
              :port "6697"
              :tls t
-             :pass my-znc-libera-password
+             :pass my-znc-libera-codelinaro-password
              ;; NickServ is handled by ZNC and the SASL login
              )
             ("gitter"
