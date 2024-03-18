@@ -6,7 +6,9 @@ set -ex
 emacs --version
 emacs --daemon
 
-sleep 1
+sleep 10
+
+ps ax | grep emacs
 
 CHECK_STATUS=$(emacsclient -e '(if I-completed-loading-dotinit 0 -1)')
 echo "got $CHECK_STATUS"
