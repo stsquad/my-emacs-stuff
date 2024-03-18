@@ -50,11 +50,20 @@
   :commands imagemagick-register-types
   :init (imagemagick-register-types))
 
+(use-package image-file
+  :if (getenv "DISPLAY")
+  :init (auto-image-file-mode 1))
+
+
+;; Tweaks for terminals
+(use-package faces
+  :config (add-to-list 'term-file-aliases '("foot" . "xterm")))
+
 ;;
 ;; The easiest solution is to locally install one of the Nerd Fonts
 ;; from https://www.nerdfonts.com/ where you can get fonts that have
 ;; been pimped out with the rest of the unicode space. Otherwise we
-;; let unicode-fonts try and do it's thing.
+;; let unicode-fonts try and do its thing.
 ;;
 (if (--filter (s-prefix-p "DejaVuSansM Nerd Font" it)
               (font-family-list))
