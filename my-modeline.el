@@ -28,6 +28,7 @@
       (propertize (string-trim misc-info)))))
 
 (use-package mood-line
+  :ensure t
   :config (mood-line-mode)
   :custom
   (mood-line-glyph-alist mood-line-glyphs-unicode)
