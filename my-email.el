@@ -190,6 +190,7 @@ all mu4e buffers and allow ivy selection of them.
      ("qemu-devel.nongnu.org" . "~/lsrc/qemu.git/")
      ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/linux.git/")
      ("kvm.vger.kernel.org" . "~/lsrc/linux.git/")
+     ("linux-kernel.vger.kernel.org" . "~/lsrc/linux.git/")
      ("virtualization.lists.linux-foundation.org" ."~/lsrc/linux.git/"))
   "Mapping from mailing lists to source tree.")
 
@@ -204,7 +205,9 @@ all mu4e buffers and allow ivy selection of them.
   ' (
      ("qemu-devel@gnu.org" . "~/lsrc/qemu.git/")
      ("qemu-devel@nongnu.org" . "~/lsrc/qemu.git/")
-     ("kvmarm@lists.cs.columbia.edu" . "~/lsrc/linux.git/")
+     ("kvm@vger.kernel.org" . "~/lsrc/linux.git/")
+     ("kvmarm@lists.linux.dev" . "~/lsrc/linux.git/")
+     ("buildroot@buildroot.org" . "~/lsrc/tests/buildroot.git")
      ("xen-devel@lists.xenproject.org" . "~/lsrc/xen/xen.git"))
     "Mapping from target address to source tree.
 Useful for replies and drafts")
@@ -342,7 +345,7 @@ Useful for replies and drafts")
                 mu4e-compose-complete-only-personal t ;; personal seems to miss things
                 mu4e-compose-complete-only-after "2013-11-01"
                 mu4e-contact-process-function #'my-mu4e-contact-cleaner
-                mu4e-sent-messages-behavior 'delete))
+                mu4e-sent-messages-behavior 'trash))
 
 
 (defun my-update-async-jobs (ignored)
