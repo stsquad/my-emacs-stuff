@@ -236,7 +236,8 @@ This works by looking for a message-id in the buffer or prompting for
 
 
 (use-package git-commit
-  :ensure t
+  ;; now part of magit: https://github.com/magit/magit/blob/main/CHANGELOG#v410----2024-09-01
+  :requires magit
   :bind (:map git-commit-mode-map
               ("C-c b" . my-commit-update-with-b4)
               ("C-c i" . my-commit-kill-message-id)
