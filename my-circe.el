@@ -90,11 +90,7 @@
   :config (setq lui-flyspell-p t)
   :hook (lui-pre-input . my-check-for-meeting))
 
-;; Auto pasting
-(use-package lui-autopaste
-  :commands enable-lui-autopaste)
-
-(defun lui-autopaste-service-linaro (text)
+(defun lui-autopaste-service-private-linaro (text)
   "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
   (let ((url-request-method "POST")
         (url-request-extra-headers
@@ -113,11 +109,57 @@
               (error "Error during pasting to pastebin.linaro.org")))
         (kill-buffer buf)))))
 
+(defun lui-autopaste-service-linaro (text)
+  "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
+  (let ((url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")
+           ("Referer" . "https://pastebin.linaro.org")))
+        (url-request-data (format "text=%s&language=text"
+                                  (url-hexify-string text)))
+        (url-http-attempt-keepalives nil))
+    (let ((buf (url-retrieve-synchronously
+                "https://pastebin.linaro.org/api/create")))
+      (unwind-protect
+          (with-current-buffer buf
+            (goto-char (point-min))
+            (if (re-search-forward "\\(https://pastebin.linaro.org/view/.*\\)" nil t)
+                (match-string 1)
+              (error "Error during pasting to pastebin.linaro.org")))
+        (kill-buffer buf)))))
+
+(defvar my-find-paste-url
+  (rx (:
+       ">"
+       (group (: "paste.debian.net/" (one-or-more (in digit))))
+       "</a>"))
+  "Regexp to extract result URL from response. We need to fish it out
+  from the returned page like savages.")
+
+(defun lui-autopaste-service-debian (text)
+  "Paste TEXT to paste.debian.net return the paste url."
+  (let ((url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")
+           ("Referer" . "https://paste.debian.net")))
+        (url-request-data (format "code=%s&lang=text&expire=604800"
+                                  (url-hexify-string text)))
+        (url-http-attempt-keepalives nil))
+    (let ((buf (url-retrieve-synchronously
+                "https://paste.debian.net")))
+      (unwind-protect
+          (with-current-buffer buf
+            (goto-char (point-min))
+            (if (re-search-forward my-find-paste-url nil t)
+                (format "http://%s" (match-string 1))
+              (error "Error during pasting to paste.debian.net")))
+        (kill-buffer buf)))))
+
 ;; Auto pasting
 (use-package lui-autopaste
   :commands enable-lui-autopaste
-  :custom (lui-autopaste-function 'lui-autopaste-service-sprunge-us
-                                  "Use sprunge.us as the paster"))
+  :custom (lui-autopaste-function 'lui-autopaste-service-debian
+                                  "Use debian.net for pasting"))
 
 
 ;; Auto join everything
