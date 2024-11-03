@@ -182,8 +182,7 @@ This is used by `my-org-run-default-block' which is added to
      ("t" "Add TODO task with current region"
       entry
       (file+headline "qemu.org" "Tasks")
-      "** TODO %?
-%i")
+      "** TODO %?\n%i\n")
      ("T" "Add TODO task with a reference"
       entry
       (file+headline "qemu.org" "Tasks")
@@ -484,6 +483,11 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
      ((eq format 'ascii)
       (format "%s\nMessage-Id: <%s>" desc (match-string 1 path))))))
 
+;; diagrams and stuff
+(use-package pikchr-mode
+  :ensure t
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/pikchr-mode.git")))
 
 (use-package ox
   :pin gnu
