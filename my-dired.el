@@ -30,6 +30,10 @@
   :ensure t
   :config (dired-quick-sort-setup))
 
+(use-package casual-dired
+  :ensure t
+  :bind (:map dired-mode-map ("C-o" . 'casual-dired-tmenu)))
+
 ;; Enable dired-rsync
 (use-package dired-rsync
   :load-path (lambda () (my-return-path-if-ok
