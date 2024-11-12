@@ -172,6 +172,32 @@ all mu4e buffers and allow ivy selection of them.
                             (car collection))))
       (delete-other-windows))))
 
+(defun my-set-mu4e-index-params ()
+  "Set the index parameters for the current update.
+
+This is dependant on if I'm active (hence wanting a quick update) or
+away (in which case it can take its time). Ideally we would do this
+right before the index but currently there is no hook for that."
+  (let ((idle (time-convert (current-idle-time) 'integer))
+        (old-lazy mu4e-index-lazy-check)
+        (old-cleanup mu4e-index-cleanup))
+    (if (and (current-idle-time)
+             (> idle mu4e-update-interval))
+      (setq mu4e-index-lazy-check nil
+            mu4e-index-cleanup t)
+    (setq mu4e-index-lazy-check t
+          mu4e-index-cleanup nil))
+    (when (not (and (equal old-lazy mu4e-index-lazy-check)
+                    (equal old-cleanup mu4e-index-cleanup)))
+      (message (format "my-set-mu4e-index-params: idle:%s lazy:%s cleanup:%s"
+                       idle mu4e-index-lazy-check mu4e-index-cleanup)))))
+
+(use-package mu4e-update
+  :after mu4e
+  :hook (mu4e-update-pre . my-set-mu4e-index-params)
+  :config (setq mu4e-index-lazy-check t             ; faster sync when t
+                mu4e-index-cleanup nil))                ; faster cleanup when nil
+
 ;; Jump to current thread
 (defun my-switch-to-thread ()
   "Switch to headers view of current thread."
@@ -709,8 +735,6 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
      mu4e-update-interval 800
      mu4e-hide-index-messages t
      mu4e-change-filenames-when-moving t ; keep mbsync happy
-     mu4e-index-lazy-check nil           ; faster sync when t
-     mu4e-index-cleanup t                ; faster cleanup when nil
      mu4e-mu-allow-temp-file t           ; optimise large transfers
      ;; completion
      mu4e-completing-read-function 'completing-read
