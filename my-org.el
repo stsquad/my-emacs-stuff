@@ -507,9 +507,12 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
 (when (assoc "melpa" package-archives)
   ;; for JIRA export
   (use-package ox-jira
-    :ensure t)
-  (use-package ob-restclient
     :ensure t))
+
+(use-package ob-restclient
+  :after restclient
+  :load-path (lambda ()
+               (my-return-path-if-ok "~/src/emacs/ob-restclient.git")))
 
 (use-package ox-md)
 
