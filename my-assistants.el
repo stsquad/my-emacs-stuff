@@ -20,9 +20,25 @@
   :ensure t)
 
 (use-package llm-openai
-  :config (setq my-openai-llm
+  :config (setq my-gpt4
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "gpt-4o")))
+                                 :chat-model "gpt-4o")
+                ; cheaper version of gpt4
+                my-gpt4-mini
+                (make-llm-openai :key (my-pass-password "api.openai.com")
+                                 :chat-model "gpt-4o-mini")
+                ; aliases to the latest chatgpt model
+                my-chatgpt
+                (make-llm-openai :key (my-pass-password "api.openai.com")
+                                 :chat-model "chatgpt-4o-latest")
+                ; broad general reasoning model, expensive
+                my-openai-o1
+                (make-llm-openai :key (my-pass-password "api.openai.com")
+                                 :chat-model "o1")
+                ; cheaper version of o1 focused on coding, math,science
+                my-openai-o1-mini
+                (make-llm-openai :key (my-pass-password "api.openai.com")
+                                 :chat-model "o1-mini")))
 
 (use-package llm-ollama
   :config (setq my-ollama-codellama
@@ -38,6 +54,9 @@
                 my-gemini-pro-llm
                 (make-llm-gemini :key (my-pass-password "api.gemini.google.com")
                                  :chat-model "gemini-1.5-pro-latest")
+                my-gemini-2-flash-llm
+                (make-llm-gemini :key (my-pass-password "api.gemini.google.com")
+                                 :chat-model "gemini-2.0-flash-exp")
                 my-gemma2-llm
                 (make-llm-gemini :key (my-pass-password "api.gemini.google.com")
                                  :chat-model "gemma-2-27b-it")))
@@ -93,10 +112,19 @@
   :ensure t
   :init (setopt ellama-language "English"
                 ellama-provider my-gemini-llm
-                ellama-providers '(("Gemini Pro" . my-gemini-pro-llm)
-                                   ("Gemini" . my-gemini-llm)
-                                   ("Gemma2" . my-gemma2-llm)
-                                   ("ChatGPT" . my-openai-llm))
+                ellama-providers
+                '(
+                  ;; Google Gemini Models
+                  ("Gemini Pro" . my-gemini-pro-llm)
+                  ("Gemini" . my-gemini-llm)
+                  ("Gemini 2 Flash (experimental)" . my-gemini-2-flash-llm)
+                  ("Gemma2" . my-gemma2-llm)
+                  ;; OpenAI Models
+                  ("ChatGPT (latest)" . my-chatgpt)
+                  ("OpenAI GPT4o" . my-gpt4)
+                  ("OpenAI GPT4o-mini" . my-gpt4-mini)
+                  ("OpenAI o1" . my-openai-o1)
+                  ("OpenAI o1-mini" . my-openai-o1-mini))
                 ellama-keymap-prefix "C-c C-l l"))
 
 ;;
