@@ -11,6 +11,7 @@
 (require 'my-vars)
 (require 'my-utils)
 (require 'my-spell)
+(require 'my-circe-secrets nil t)
 (require 'tls)
 (require 'nsm)
 
@@ -213,10 +214,6 @@
           (setq my-irc-login-timer (run-with-idle-timer 120 nil 'my-irc-login)))
   :config
   (progn
-    (when I-am-on-server
-      (setq circe-default-nick "stsquad"
-            circe-default-user "stsquad"
-            circe-default-realname "stsquad"))
     ;; override cert check for pl0rt
     (let ((id (nsm-id "irc.pl0rt.org" 6697)))
       (setq nsm-temporary-host-settings
