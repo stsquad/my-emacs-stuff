@@ -104,7 +104,7 @@
                 '((my-lusty-file-explorer unobtrusive))
                 vertico-multiform-categories
                 '((consult-grep buffer)))
-  :init (vertico-mode) (vertico-multiform-mode))
+  :init (vertico-mode 1) (vertico-multiform-mode 1))
 
 ;; Example configuration for Consult
 (use-package consult
