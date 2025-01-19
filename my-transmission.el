@@ -70,8 +70,11 @@ Returns the line as a string."
 (use-package transmission
   :ensure t
   :commands transmission-add
-  :bind (:map elfeed-show-mode-map
-              ("C-c C-c" . my-add-first-elfeed-enclosure-to-transmission))
+  :bind (("C-x t" . tranmission)
+         :map elfeed-show-mode-map
+         ("C-c a t" . my-add-first-elfeed-enclosure-to-transmission)
+         :map dired-mode-map
+         ("C-c a t" . my-dired-add-to-transmission))
   :config (setq transmission-rpc-auth
                 '(:username "transmission" :password "transmission")
                 elfeed-enclosure-default-dir "~/torrent/"))
