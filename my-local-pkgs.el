@@ -13,10 +13,10 @@
 
 ;; currently in my branch of RISU
 (use-package risu
-  :if (file-exists-p "~/lsrc/qemu/risu.git/risu.el")
-  :load-path "~/lsrc/qemu/risu.git"
+  :if (file-exists-p "~/lsrc/tests/risu.git/risu.el")
+  :load-path "~/lsrc/tests/risu.git"
   :mode ("\\.risu\\'" . risu-mode))
-  
+
 ;; QEMU system mode comint mode (https://github.com/stsquad/qemu-mode)
 (use-package qemu-mode
   :commands run-qemu
