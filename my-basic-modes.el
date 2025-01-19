@@ -72,8 +72,8 @@
     '((ivy-switch-buffer . ivy--regex-plus)
       (t . ivy--regex-plus))))
 
-(use-package ivy-hydra
-  :after ivy
+
+(use-package casual
   :ensure t)
 
 ;; Counsel

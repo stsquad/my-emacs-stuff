@@ -39,7 +39,8 @@
   :load-path (lambda () (my-return-path-if-ok
                          "~/mysrc/dired-rsync.git"))
   :bind (:map dired-mode-map
-         ("C-c C-r" . dired-rsync))
+         ("C-c C-r" . dired-rsync)
+         ("C-x t" . casual-dired-tmenu))
   :hook (dired-mode . (lambda () (setq-local mode-line-process
                                              'dired-rsync-modeline-status))))
 
@@ -62,18 +63,6 @@
 ;; Hydras
 (with-eval-after-load 'dired
   (progn
-    ;; Inside dired
-    (define-key dired-mode-map
-      (kbd "C-x t")
-      (defhydra my-hydra-dired
-        (:hint nil :color red :timeout 5)
-        "
-Number of marked items: %(length (dired-get-marked-files))
-"
-        ("m" dired-mark "mark")
-        ("x" wdired-change-to-wdired-mode "wdired" :exit t)
-        ("t" my-hydra-toggle/body "main toggles" :exit t)))
-
     ;; Global access to dired
     (global-set-key
      (kbd "C-x d")
