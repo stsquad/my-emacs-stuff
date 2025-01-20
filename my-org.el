@@ -485,7 +485,6 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
 
 ;; diagrams and stuff
 (use-package pikchr-mode
-  :ensure t
   :load-path (lambda () (my-return-path-if-ok
                          "~/src/emacs/pikchr-mode.git")))
 
