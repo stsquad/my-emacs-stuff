@@ -72,7 +72,9 @@
     '((ivy-switch-buffer . ivy--regex-plus)
       (t . ivy--regex-plus))))
 
-
+;; Casual provides a whole bunch of transient menus for various modes
+;; however it does require at least Emacs 29.1 (bookworm backports
+;; will do).
 (use-package casual
   :ensure t)
 
