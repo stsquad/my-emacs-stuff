@@ -70,7 +70,7 @@ Returns the line as a string."
 (use-package transmission
   :ensure t
   :commands transmission-add
-  :bind (("C-x t" . tranmission)
+  :bind (("C-x t" . transmission)
          :map elfeed-show-mode-map
          ("C-c a t" . my-add-first-elfeed-enclosure-to-transmission)
          :map dired-mode-map
