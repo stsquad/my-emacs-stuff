@@ -233,6 +233,7 @@
                                              "mu4e-view-mode"
                                              "gnus-summary-mode"
                                              "ediff-mode"
+                                             "my-diff-mode"
                                              reb-lisp-mode)
                 golden-ratio-inhibit-functions
                 #'my-ediff-comparison-buffer-p)
