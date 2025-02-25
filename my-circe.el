@@ -67,7 +67,7 @@
   :commands enable-lui-logging)
 
 (defvar my-logged-chans
-  '("#qemu@znc-oftc" "#qemu-gsoc@znc-oftc" "#linaro-virtualization@znc-libera" "#linaro-tcwg@znc-freenode")
+  '("#qemu@znc-cl-oftc" "#qemu-gsoc@znc-cl-oftc" "#linaro-virtualization@znc-cl-libera")
   "List of channels which I log")
 
 (defun my-maybe-log-channel ()
