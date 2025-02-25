@@ -47,19 +47,44 @@
                 (make-llm-ollama :chat-model "mistrel")))
 
 (use-package llm-gemini
-  :config (setq my-gemini-llm
-                (make-llm-gemini :key (my-pass-password "api.gemini.google.com")
-                                 :chat-model
-                                 "gemini-1.5-flash")
-                my-gemini-pro-llm
-                (make-llm-gemini :key (my-pass-password "api.gemini.google.com")
-                                 :chat-model "gemini-1.5-pro-latest")
-                my-gemini-2-flash-llm
-                (make-llm-gemini :key (my-pass-password "api.gemini.google.com")
-                                 :chat-model "gemini-2.0-flash-exp")
-                my-gemma2-llm
-                (make-llm-gemini :key (my-pass-password "api.gemini.google.com")
-                                 :chat-model "gemma-2-27b-it")))
+  :config (setq
+           ;; cost efficient, low latency
+           my-gemini-llm-flash-lite
+           (make-llm-gemini
+            :key (my-pass-password "api.gemini.google.com")
+            :chat-model
+            "gemini-2.0-flash-lite-preview-02-05")
+           ;; general purpose
+           my-gemini-llm-flash
+           (make-llm-gemini
+            :key (my-pass-password "api.gemini.google.com")
+            :chat-model
+            "gemini-2.0-flash-001")
+           ;; advanced coding model
+           my-gemini-pro-llm
+           (make-llm-gemini
+            :key (my-pass-password "api.gemini.google.com")
+            :chat-model "gemini-2.0-pro-exp-02-05")
+           ;; reasoning model
+           my-gemini-flash-thinking
+           (make-llm-gemini
+            :key (my-pass-password "api.gemini.google.com")
+            :chat-model "gemini-2.0-flash-thinking-exp-01-21")))
+
+(use-package llm-claude
+  :config (setq
+           ;; Powerful model for highly complex tasks. most expensive
+           my-claude-opus
+           (make-llm-claude :key (my-pass-password "api.anthropic.com")
+                            :chat-model "claude-3-opus-latest")
+           ;; Fast an relatively cheaper model
+           my-claude-haiku
+           (make-llm-claude :key (my-pass-password "api.anthropic.com")
+                            :chat-model "claude-3-5-haiku-latest")
+           ;; Intelligent, a little cheaper than opus
+           my-claude-sonnet
+           (make-llm-claude :key (my-pass-password "api.anthropic.com")
+                            :chat-model "claude-3-5-sonnet-latest")))
 
 ;;
 ;; The OG ChatGpt integration
@@ -111,21 +136,29 @@
 (use-package ellama
   :ensure t
   :init (setopt ellama-language "English"
-                ellama-provider my-gemini-llm
+                ellama-provider my-gemini-llm-flash-lite
                 ellama-providers
                 '(
                   ;; Google Gemini Models
-                  ("Gemini Pro" . my-gemini-pro-llm)
-                  ("Gemini" . my-gemini-llm)
-                  ("Gemini 2 Flash (experimental)" . my-gemini-2-flash-llm)
-                  ("Gemma2" . my-gemma2-llm)
+                  ("Gemini Pro (coding)" . my-gemini-pro-llm)
+                  ("Gemini Flash" . my-gemini-llm-flash)
+                  ("Gemini Flash Lite" . my-gemini-flash-lite)
+                  ("Gemini Flash Thinking" . my-gemini-flash-thinking)
                   ;; OpenAI Models
                   ("ChatGPT (latest)" . my-chatgpt)
                   ("OpenAI GPT4o" . my-gpt4)
                   ("OpenAI GPT4o-mini" . my-gpt4-mini)
-                  ("OpenAI o1" . my-openai-o1)
-                  ("OpenAI o1-mini" . my-openai-o1-mini))
-                ellama-keymap-prefix "C-c C-l l"))
+                  ;; not available on API unless a pro member
+                  ;; ("OpenAI o1" . my-openai-o1)
+                  ("OpenAI o1-mini" . my-openai-o1-mini)
+                  ;; Anthropic
+                  ("Claude Sonnet" . my-claude-sonnet)
+                  ("Claude Haiku (cheap, fast)" . my-claude-haiku)
+                  ("Claude Opus (slow, expensive)" . my-claude-opus)
+                  ;;
+                  )
+                ellama-keymap-prefix "C-c C-l l"
+                ellama-context-poshandler 'posframe-poshandler-frame-bottom-right-corner))
 
 ;;
 ;; Codeium
