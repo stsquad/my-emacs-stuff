@@ -152,7 +152,7 @@ This is used by `my-org-run-default-block' which is added to
   (counsel-org-goto)
   (outline-show-children)
   (outline-next-visible-heading 1)
-  (previous-line)
+  (forward-line -1)
   (move-end-of-line 1))
 
 (use-package org-capture
@@ -337,8 +337,8 @@ If `NEW-STATUS' is set then change TODO state."
                              "org-static"))))))
 ;; Mail integration
 (when I-am-at-work
-  (require 'my-email)
   (use-package org-mu4e
+    :requires my-email
     :if (locate-library "org-mu4e")
     :config
     (progn
@@ -378,7 +378,7 @@ Return the filespec of the jump."
         (goto-char pos)
         (save-excursion
           (org-up-heading-safe)
-          (org-show-entry)))))))
+          (org-fold-show-entry)))))))
 
 (defun my-org-mark-ring-info ())
 

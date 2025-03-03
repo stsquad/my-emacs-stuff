@@ -1,4 +1,4 @@
-;;; my-modeline --- Modeline stuff
+;;; my-modeline --- Modeline stuff -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 ;;
