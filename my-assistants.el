@@ -71,6 +71,7 @@
             :key (my-pass-password "api.gemini.google.com")
             :chat-model "gemini-2.0-flash-thinking-exp-01-21")))
 
+;; See https://docs.anthropic.com/en/docs/about-claude/models/all-models
 (use-package llm-claude
   :config (setq
            ;; Powerful model for highly complex tasks. most expensive
@@ -84,7 +85,7 @@
            ;; Intelligent, a little cheaper than opus
            my-claude-sonnet
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-3-5-sonnet-latest")))
+                            :chat-model "claude-3-7-sonnet-latest")))
 
 ;;
 ;; The OG ChatGpt integration
@@ -133,6 +134,11 @@
 ;;
 ;; Ellama
 ;;
+
+;; we want posframe to handle the positioning of the context
+(use-package posframe
+  :ensure t)
+
 (use-package ellama
   :ensure t
   :init (setopt ellama-language "English"
