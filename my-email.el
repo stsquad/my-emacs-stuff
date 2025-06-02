@@ -483,11 +483,19 @@ Useful for replies and drafts")
         (let ((id (match-string-no-properties 1)))
           (push (propertize (format "reference: %s" id)
                             'id id) refs))))
-    ;; Headers
+    ;; Headers (simplified list and singleton handling)
     (when (and (derived-mode-p 'gnus-article-mode) (mu4e-message-at-point))
-      (let ((id (mu4e-message-field-at-point :message-id)))
-        (push (propertize (format "header: %s" id)
-                          'id id) refs)))
+      (dolist (header-type '(:message-id :in-reply-to :references))
+        (let ((header-value (mu4e-message-field-at-point header-type)))
+          (cond
+           ((listp header-value)
+            (dolist (id header-value)
+              (when (not (string-empty-p id))
+                (push (propertize (format "header reference: %s" id)
+                                  'id id) refs))))
+           ((and header-value (not (string-empty-p header-value)))
+            (push (propertize (format "header %s: %s" (symbol-name header-type) header-value)
+                              'id header-value) refs))))))
     ;; Gnus
 
 
