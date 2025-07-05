@@ -38,13 +38,18 @@
                 ; cheaper version of o1 focused on coding, math,science
                 my-openai-o1-mini
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "o1-mini")))
+                                 :chat-model "o1-mini")
+                my-local-openai-llama
+                (make-llm-openai-compatible :url "http://localhost:8080/v1/")))
+
 
 (use-package llm-ollama
   :config (setq my-ollama-codellama
-                (make-llm-ollama :chat-model "codellama")
+                (make-llm-ollama :port 8080 :chat-model "codellama")
                 my-ollama-mistral
-                (make-llm-ollama :chat-model "mistrel")))
+                (make-llm-ollama :port 8080
+                                 :chat-model "mistral"
+                                 :embedding-model "mistral")))
 
 (use-package llm-gemini
   :config (setq
@@ -53,23 +58,18 @@
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-2.0-flash-lite-preview-02-05")
+            "gemini-2.0-flash-lite")
            ;; general purpose
            my-gemini-llm-flash
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-2.0-flash-001")
+            "gemini-2.5-flash")
            ;; advanced coding model
            my-gemini-pro-llm
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
-            :chat-model "gemini-2.0-pro-exp-02-05")
-           ;; reasoning model
-           my-gemini-flash-thinking
-           (make-llm-gemini
-            :key (my-pass-password "api.gemini.google.com")
-            :chat-model "gemini-2.0-flash-thinking-exp-01-21")))
+            :chat-model "gemini-2.5-pro")))
 
 ;; See https://docs.anthropic.com/en/docs/about-claude/models/all-models
 (use-package llm-claude
@@ -77,7 +77,7 @@
            ;; Powerful model for highly complex tasks. most expensive
            my-claude-opus
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-3-opus-latest")
+                            :chat-model "claude-opus-4-0")
            ;; Fast an relatively cheaper model
            my-claude-haiku
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
@@ -85,7 +85,7 @@
            ;; Intelligent, a little cheaper than opus
            my-claude-sonnet
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-3-7-sonnet-latest")))
+                            :chat-model "claude-sonnet-4-0")))
 
 ;;
 ;; The OG ChatGpt integration
@@ -147,9 +147,8 @@
                 '(
                   ;; Google Gemini Models
                   ("Gemini Pro (coding)" . my-gemini-pro-llm)
-                  ("Gemini Flash" . my-gemini-llm-flash)
-                  ("Gemini Flash Lite" . my-gemini-flash-lite)
-                  ("Gemini Flash Thinking" . my-gemini-flash-thinking)
+                  ("Gemini Flash (general)" . my-gemini-llm-flash)
+                  ("Gemini Flash Lite (cheaper, low latency)" . my-gemini-flash-lite)
                   ;; OpenAI Models
                   ("ChatGPT (latest)" . my-chatgpt)
                   ("OpenAI GPT4o" . my-gpt4)
@@ -157,6 +156,9 @@
                   ;; not available on API unless a pro member
                   ;; ("OpenAI o1" . my-openai-o1)
                   ("OpenAI o1-mini" . my-openai-o1-mini)
+                  ;; Local ramalama provided model
+                  ("Local Llama" . my-local-openai-llama)
+                  ("Local Mistral" . my-ollama-mistral)
                   ;; Anthropic
                   ("Claude Sonnet" . my-claude-sonnet)
                   ("Claude Haiku (cheap, fast)" . my-claude-haiku)
