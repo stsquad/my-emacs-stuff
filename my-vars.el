@@ -50,51 +50,58 @@
 ;; DCO Tag snarfing
 ;;
 ;; This is used for grabbing Reviewed-by and other such tags from a
-;; mailing list. As not all installs of Emacs have the rx-define magic
-;; (since ~27.1) we have a manual fall-back with the hand written
-;; results of the rx evaluation.
+;; mailing list. This will fail on older Emacsen (before ~27.1) but
+;; that is over 4 years old by now so I've dropped the manual
+;; fallback.
+;;
 
-(if (fboundp 'rx-define)
-    (progn
-      (rx-define my-bare-dco-tag-rx
-        (: (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
-           (one-or-more (in alpha blank "-."))                  ;;name
-           blank
-           "<" (one-or-more (not (in ">"))) ">"))               ;; email
+;; capture group for contents of <data>
+(rx-define my-capture-brackets-rx
+  (: (zero-or-one "<")
+     (group (one-or-more (not (in ">" "/" blank cntrl))))))
 
-      (rx-define my-dco-tag-rx
-        (: bol (zero-or-more (in blank)) my-bare-dco-tag-rx))
+(rx-define my-bare-dco-tag-rx
+  (: (any "RSTA") (one-or-more (in alpha "-")) "-by: "    ;; tag
+     (one-or-more (in alpha blank "-."))                  ;;name
+     blank
+     "<" (one-or-more (not (in ">"))) ">"))               ;; email
 
-      (rx-define my-msgid-rx
-         (: "Message-I" (or "d" "D") ": "
-            "<"
-            (one-or-more (not (in ">")))
-            ">"))
+(rx-define my-dco-tag-rx
+  (: bol (zero-or-more (in blank)) my-bare-dco-tag-rx))
 
-      (defvar my-bare-dco-tag-re
-        (rx my-bare-dco-tag-rx)
-        "Regexp to match plain DCO tag")
+(rx-define my-msgid-tag-rx
+  (: "Message-" (or "I" "i") (or "d" "D")))
 
-      (defvar my-dco-tag-re
-        (rx my-dco-tag-rx)
-        "Regexp to match DCO style tag."))
+(rx-define my-based-on-tag-rx
+  (: "Based-" (or "O" "o") "n"))
 
-      (defvar my-msgid-re
-        (rx my-msgid-rx)
-        "Regexp to match Message-Id")
+(rx-define my-msgid-rx
+  (: my-msgid-tag-rx ": "
+     "<"
+     (one-or-more (not (in ">")))
+     ">"))
 
-  (defvar my-bare-dco-tag-re
-    "[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
-    "Regexp to match plain DCO tag")
+(defvar my-bare-dco-tag-re
+  (rx my-bare-dco-tag-rx)
+  "Regexp to match plain DCO tag")
 
-  (defvar my-dco-tag-re
-    "^[[:blank:]]*[AR-T][[:alpha:]-]+-by: [.[:alpha:][:blank:]-]+[[:blank:]]<[^>]+>"
-    "Regexp to match DCO style tag.")
+(defvar my-dco-tag-re
+  (rx my-dco-tag-rx)
+  "Regexp to match DCO style tag.")
 
-  (defvar my-msgid-re
-    "Message-I[Dd]: <[^>]+>"
-    "Regexp to match Message-Id"))
+(defvar my-msgid-re
+  (rx my-msgid-rx)
+  "Regexp to match Message-Id")
 
+;; Capturing msgids
+(defvar my-capture-msgid-re
+  (rx (: (or my-based-on-tag-rx my-msgid-tag-rx "patchew.org/qemu")
+         (or "/" ": ")
+         my-capture-brackets-rx))
+  "Regexp to extract Message-Id from git tags. Expects a lowered string.")
+
+
+;; Common helper functions
 
 (defun my-capture-review-tags ()
   "Return a list of DCO style tags for current buffer."
@@ -105,12 +112,15 @@
         (add-to-list 'tags (match-string-no-properties 0))))
     tags))
 
+(defun my-capture-msgids()
+  "Returns a list of unique msg-id strings for current buffer."
+  (let ((ids) (case-fold-search t))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward my-capture-msgid-re nil t)
+        (push (match-string-no-properties 1) ids)))
+    (delete-dups ids)))
 
-(defvar my-capture-msgid-re
-  (rx (: (or "Based-on" "Message-Id" "patchew.org/QEMU")
-         (or "/" ": ") (zero-or-one "<")
-         (group (one-or-more (not (in ">" "/" blank cntrl))))))
-  "Regexp to extract Message-Id from git tags.")
 
 ;; This is used for grabbing logins
 (defvar my-ssh-login-re
