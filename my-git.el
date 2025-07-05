@@ -213,27 +213,24 @@ This works by looking for a message-id in the buffer or prompting for
 
 
 (defun my-commit-kill-message-id (&optional no-kill)
-  "Snarf the message-id into the kill ring unless NO-KILL prefix."
+  "Snarf a message-id from the commit message into the kill ring."
   (interactive "P")
-  (let ((refs))
-    ;; References
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward my-capture-msgid-re nil t)
-        (let ((id (match-string-no-properties 1)))
-          (push (propertize (format "reference: %s" id)
-                            'id id) refs))))
-    ;; do it
-    (let ((final
-           (get-text-property 0 'id
-                              (if (< 1 (length refs))
-                                  (ivy-read "select reference:" refs)
-                                (car refs)))))
-      (message "message-id: %s" final)
+  (let* ((ids (my-capture-msgids))
+         (refs (--map (propertize (format "reference: %s" it) 'id
+                                  it) ids))
+         (final-id
+          (get-text-property
+           0 'id
+           (cond ((= (length refs) 1)
+                  (car refs))
+                 ((> (length refs) 1)
+                  (ivy-read "select reference:" refs))
+                 (t nil)))))
+    (when final-id
+      (message "message-id: %s" final-id)
       (unless no-kill
-        (kill-new final))
-      final)))
-
+        (kill-new final-id)))
+    final-id))
 
 (use-package git-commit
   ;; now part of magit: https://github.com/magit/magit/blob/main/CHANGELOG#v410----2024-09-01
