@@ -131,8 +131,7 @@
   :config
   (add-hook 'overwrite-mode-hook 'ins-cursor-set))
 
-(if I-am-emacs-21+
-    (blink-cursor-mode -1))
+(blink-cursor-mode -1)
 
 (setq frame-title-format "%b")
 (setq  icon-title-format "%b")

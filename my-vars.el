@@ -9,8 +9,6 @@
 
 (require 'my-utils)
 
-(defvar I-am-emacs-21+ (>= emacs-major-version 21))
-
 ;; Lets define which machine I'm on, therefor if I am at work
 ;; (this of course falls down when logging on remotely via tramp)
 
