@@ -22,16 +22,7 @@
   "Return t if I'm on a primary machine."
   (or I-am-at-home I-am-at-work I-am-on-server))
 
-;; Lets set some parameters if we are running as a console or under X
-;
-; Note these are not useful for --daemon invocations and should now be
-; deprecated in favour of "live" tests on window-system
-;
-(defvar I-am-in-X (eval 'window-system));
-(defvar I-am-in-console (not (eval 'window-system)))
-(defvar I-am-on-MacOSX (or (string-match "Carbon" (emacs-version))
-                           (string-match "apple-darwin" (emacs-version))))
-(defvar I-am-remote (getenv "SSH_TTY"))
+;; When I-am-root we tweak some config
 (defvar I-am-root (= (user-uid) 0))
 
 ;; tweaks some low level vars
