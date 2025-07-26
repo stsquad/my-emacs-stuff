@@ -39,6 +39,10 @@
 (use-package calculator
   :bind ("C-<return>" . calculator))
 
+(use-package calc-mode
+  :bind (:map calc-mode-map
+              ("C-x t" . casual-calc-tmenu)))
+
 ;; Recentf
 ;;
 ;; This is mainly for the benefit of helm-mini
@@ -76,7 +80,15 @@
 ;; however it does require at least Emacs 29.1 (bookworm backports
 ;; will do).
 (use-package casual
-  :ensure t)
+  :ensure t
+  :bind (("C-c c" . casual-compile)
+         (:map bookmark-bmenu-mode-map
+               ("C-x t" . casual-bookmarks-tmenu))
+         (:map dired-mode-map
+               ("C-x t" . casual-dired-tmenu))
+         (:map eshell-mode-map
+               ("C-x t" . casual-eshell-tmenu))))
+
 
 ;; Counsel
 ;;
