@@ -81,8 +81,7 @@
 ;; will do).
 (use-package casual
   :ensure t
-  :bind (("C-c c" . casual-compile)
-         (:map bookmark-bmenu-mode-map
+  :bind ((:map bookmark-bmenu-mode-map
                ("C-x t" . casual-bookmarks-tmenu))
          (:map dired-mode-map
                ("C-x t" . casual-dired-tmenu))
@@ -92,19 +91,13 @@
 
 ;; Counsel
 ;;
-;; I mostly use counsel-compile (although the descbinds and apropos
-;; helpers are also nice). Narrowing is now handled mostly by vertico.
+;; There are still a few I use - namely descbinds and apropos.
+;; Narrowing is now handled mostly by vertico.
 ;;
 (use-package counsel
   :ensure t
-  ;; :load-path (lambda () (my-return-path-if-ok
-  ;;                        "~/src/emacs/swiper.git"))
-  ;; individually bind the useful functions
   :bind (("C-h b" . counsel-descbinds)
-         ("C-h a" . counsel-apropos)
-         ("C-c c" . counsel-compile)
-         (:map counsel-compile-map
-               ("C-j" . ivy-immediate-done))))
+         ("C-h a" . counsel-apropos)))
 
 ;; Enable vertico
 (use-package vertico
