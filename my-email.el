@@ -486,14 +486,11 @@ Useful for replies and drafts")
 (defun my-mu4e-kill-message-id (&optional no-kill)
   "Snarf the message-id into the kill ring unless NO-KILL prefix."
   (interactive "P")
-  (let ((refs))
-    ;; References
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward my-capture-msgid-re nil t)
-        (let ((id (match-string-no-properties 1)))
-          (push (propertize (format "reference: %s" id)
-                            'id id) refs))))
+
+  ;; First set up the text references we have found.
+  (let ((refs
+         (--map (propertize (format "id: %s" it) 'id it)
+                (my-capture-msgids))))
     ;; Headers (simplified list and singleton handling)
     (when (and (derived-mode-p 'gnus-article-mode) (mu4e-message-at-point))
       (dolist (header-type '(:message-id :in-reply-to :references))
@@ -507,10 +504,7 @@ Useful for replies and drafts")
            ((and header-value (not (string-empty-p header-value)))
             (push (propertize (format "header %s: %s" (symbol-name header-type) header-value)
                               'id header-value) refs))))))
-    ;; Gnus
-
-
-    ;; do it
+    ;; Finally select from the list
     (let ((final
            (get-text-property 0 'id
                               (if (< 1 (length refs))
