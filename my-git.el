@@ -312,6 +312,21 @@ bother asking for the git tree again (useful for bulk actions)."
         (message "applied %s" mbox)
         (delete-file mbox)))))
 
+(defun my-grab-lore-mbox-from-b4 (id)
+  (interactive "sMessage-id:")
+  (let ((mbox))
+  (with-temp-buffer
+    (call-process "b4" nil t t "mbox" id)
+    (goto-char 0)
+    (when (re-search-forward
+           (rx (: (group (one-or-more (not space)) ".mbx"))))
+      (setq mbox (match-string-no-properties 1))))
+  (switch-to-buffer (get-buffer-create (format "*%s*" id)))
+  (erase-buffer)
+  (call-process "clean-mbox.py" nil t t mbox)
+  (goto-char (point-min))))
+
+
 (defun my-git-apply-region (beg end)
   "Apply region as a patch."
   (interactive "r")

@@ -707,6 +707,10 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
   (interactive)
   (my-set-reword-commits-from-b4 (my-mu4e-kill-message-id 't)))
 
+(defun my-mu4e-grab-lore-mbox (msg)
+  "Select a Message-Id to pass to lore to fetch a santised mbox"
+  (my-grab-lore-mbox-from-b4 (my-mu4e-kill-message-id 't)))
+
 (defun my-mu4e-search-from (&optional edit)
   "Find msgs from author of the message, optionally EDIT the search."
   (interactive "P")
@@ -908,6 +912,7 @@ patches."
               ("bb4 am patch" . mu4e-action-git-apply-b4)
               ("ssetup reword list with b4" . mu4e-action-setup-reword-b4)
               ("crun checkpatch script" . my-mu4e-action-run-check-patch)
+              ("lgrab santised lore archive" . my-mu4e-grab-lore-mbox)
               ("MCheck if merged" . my-mu4e-action-check-if-merged)))))
     ;; Bookmarks
     (setq mu4e-bookmarks
