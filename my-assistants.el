@@ -38,9 +38,19 @@
                 ; cheaper version of o1 focused on coding, math,science
                 my-openai-o1-mini
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "o1-mini")
-                my-local-openai-llama
-                (make-llm-openai-compatible :url "http://localhost:8080/v1/")))
+                                 :chat-model "o1-mini")))
+
+;; Also some hosted models
+(setq my-textsynth-mistral
+      (make-llm-openai-compatible :url "http://api.textsynth.com/v1/"
+                                  :chat-model "mistral_7B"
+                                  :key (my-pass-password
+                                        "api.textsynth.com"))
+      my-textsynth-llama-70b
+      (make-llm-openai-compatible :url "http://api.textsynth.com/v1/"
+                                  :chat-model "llama3.3_70B_instruct"
+                                  :key (my-pass-password
+                                        "api.textsynth.com")))
 
 
 (use-package llm-ollama
@@ -156,6 +166,9 @@
                   ;; not available on API unless a pro member
                   ;; ("OpenAI o1" . my-openai-o1)
                   ("OpenAI o1-mini" . my-openai-o1-mini)
+                  ;; Hosted open models
+                  ("Mistral 7B (textsynth)" . my-textsynth-mistral)
+                  ("Llama 70B (textsynth)". my-textsynth-llama-70b)
                   ;; Local ramalama provided model
                   ("Local Llama" . my-local-openai-llama)
                   ("Local Mistral" . my-ollama-mistral)
