@@ -46,7 +46,7 @@
   (turn-on-auto-fill))
 
 (defun my-mail-mode-tweaks()
-  "Customise mail-mode stuff"
+  "Customise `mail-mode' stuff."
   (interactive)
   (my-common-mail-tweaks)
   (when (and
@@ -96,7 +96,7 @@
 
 ;; Switch function
 (defun my-switch-to-mu4e (&optional prefix)
-  "Smart dwim switch to mu4e."
+  "DWIM switch to mu4e. Skip straight to splash page when `PREFIX' is set."
   (interactive "P")
   (if prefix
       (mu4e)
