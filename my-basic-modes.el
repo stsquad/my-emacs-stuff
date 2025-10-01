@@ -106,12 +106,17 @@
          ("<prior>" . vertico-scroll-down)
          ("<next>" . vertico-scroll-up))
   :config (setq vertico-count 20
-                vertico-resize nil
-                vertico-multiform-commands
+                vertico-resize nil)
+  :init (vertico-mode 1))
+
+; in the vertico package
+(use-package vertico-multiform
+  :after vertico
+  :config (setq vertico-multiform-commands
                 '((my-lusty-file-explorer unobtrusive))
                 vertico-multiform-categories
                 '((consult-grep buffer)))
-  :init (vertico-mode 1) (vertico-multiform-mode 1))
+  :init  (vertico-multiform-mode 1))
 
 ;; Example configuration for Consult
 (use-package consult
