@@ -380,9 +380,18 @@ Useful for replies and drafts")
              shell-command-queue)
     (shell-command-queue-run)))
 
+(defun my-mu4e-thread-fold-action ()
+  "Toggle thread folding on thread at point"
+  (interactive)
+  (if (mu4e-thread-is-folded)
+           (mu4e-thread-unfold)
+         (mu4e-thread-fold)))
+
+
 (use-package mu4e-headers
   :commands mu4e-headers-mode
   :bind (:map mu4e-headers-mode-map
+              ("TAB" . my-mu4e-thread-fold-action)
               ("C-c C-l" . org-store-link)
               ("C-c t" . my-switch-to-thread)
               ("C-c d" . my-set-view-directory)
@@ -394,6 +403,8 @@ Useful for replies and drafts")
                 mu4e-headers-date-format "%a %d/%m/%y"
                 mu4e-headers-skip-duplicates t
                 mu4e-headers-include-related t
+                ;; thread folding
+                mu4e-thread-fold-unread t
                 ;; Fancy chars
                 mu4e-use-fancy-chars        t
                 mu4e-headers-draft-mark     '("D" . "💈")
