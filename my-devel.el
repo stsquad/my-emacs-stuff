@@ -51,6 +51,15 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (use-package prog-mode
   :hook (prog-mode . turn-on-auto-fill))
 
+
+;; Tree sitter
+
+(use-package treesit-auto
+  :ensure t
+  :custom (treesit-auto-install 'prompt)
+  :config (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
 ;; Regex's
 
 (use-package rx
@@ -270,6 +279,11 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 (when have-melpa
   (use-package cov
     :ensure t))
+
+;; We use kconfig a lot
+(use-package kconfig-mode
+  :ensure t
+  :mode (("Config.in" . kconfig-mode)))
 
 ;; shell modes
 
