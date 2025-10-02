@@ -27,6 +27,16 @@
     (unless (string-blank-p misc-info)
       (propertize (string-trim misc-info)))))
 
+;; not in latest elpa stable release
+(defun my-mood-line-segment-project ()
+  "Return project name from project.el or Projectile, if any."
+  (or
+   (and (fboundp 'project-name)
+        (project-current)
+        (project-name (project-current)))
+   (and (fboundp 'projectile-project-name)
+        (projectile-project-name))))
+
 (use-package mood-line
   :ensure t
   :config (mood-line-mode)
@@ -40,7 +50,7 @@
                         (mood-line-segment-client)
                         " ")
                        " "
-                       (mood-line-segment-project)
+                       (my-mood-line-segment-project)
                        "/"
                        (mood-line-segment-buffer-name)
                        "  "
