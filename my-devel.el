@@ -154,6 +154,12 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
         (lwarn 'emacs :warning "Compilation process in %s seems stalled!"
                (buffer-name))))))
 
+;; See: https://www.reddit.com/r/emacs/comments/1h2o8hr/share_your_mx_compile_compilationmode_config
+(defun my-colorise-compilation-buffer ()
+  "Colorise and interpret ANSI control chars in build output."
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+
 (defun my-hide-compilation-buffer (proc)
   "Hide the compile buffer `PROC' is ignored."
   (let* ((window (get-buffer-window "*compilation*"))
@@ -194,6 +200,12 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
     #1 page_flush_tb_1 /home/alex/lsrc/qemu/qemu.git/translate-all.c:818 (qemu-arm+0x00006000cb42)
 ")
 
+
+;; New package, who dis?
+(use-package hubi
+  :load-path "/home/alex/mysrc/hubi.git"
+  :bind ("C-c c" . hubi))
+
 ;;
 ;; The keymap for counsel-compile-map is too complicated and should be
 ;; cleared up:
@@ -202,19 +214,20 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
 ;;   C-o brings up the ivy hydra
 ;;
 (use-package compile
-  :after counsel
   :bind (("C-c r" . recompile)
          (:map compilation-mode-map
                ("n" . compilation-next-error)
                ("p" . compilation-previous-error)))
   :diminish ((compilation-in-progress . "*COM*"))
+  ;; are these being applied properly?
+  :hook ((compilation-filter . my-compilation-mode-warn-about-prompt) ; detect stalls
+         (compilation-filter . my-colorise-compilation-buffer)) ; pretty bits
   :config
   (progn
     (setq
      compilation-auto-jump-to-first-error nil
      compilation-scroll-output t
-     compilation-window-height 10
-     counsel-compile-make-args (format "-j%d" (+ 1 my-core-count)))
+     compilation-window-height 10)
     (add-to-list
      'compilation-error-regexp-alist-alist
      (list 'tsan my-tsan-compilation-mode-regex 1 2 nil 0))
@@ -222,9 +235,6 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
     (when I-am-at-work
       (setq compilation-error-regexp-alist '(gcc-include gnu tsan
                                                          rustic-error rustic-warning rustic-info rustic-panic)))
-    ;; Detect stalls
-    (add-hook 'compilation-filter-hook
-              #'my-compilation-mode-warn-about-prompt)
     ;; Add tracking to the compilation buffer
     (with-eval-after-load 'tracking
       (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
