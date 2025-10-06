@@ -388,35 +388,38 @@ Useful for replies and drafts")
          (mu4e-thread-fold)))
 
 (defun my-mu4e-archive-headers ()
-  "Archive all the emails in the headers currently displayed."
-    (interactive)
-    (let ((buffer
-           (get-buffer-create
-            (format "*Mu4e Archive of %s*" mu4e--search-last-query))))
-      ;; Add a pre-amble
-      (with-current-buffer buffer
-        (erase-buffer)
-        (goto-char 0)
-        (insert (format "Archive of email thread, generated at:")
-                (format-time-string "%d/%m/%y %H:%M")
-                "\n\n"))
-      ;; collect the message text into the buffer
-      (mu4e-headers-for-each
-       (lambda (msg)
-         (with-current-buffer buffer
-           (insert
-            (format "Message-Id: %s\n" (mu4e-message-field msg :message-id))
-            (mu4e-view-message-text msg)
-            (format "*End of Message*\n\n\n")))))
-      ;; prompt to write the file out
+  "Archive all the emails in the headers currently displayed to a
+  file."
+  (interactive)
+  (let* ((search-query mu4e--search-last-query)
+         (buffer-name (if search-query
+                          (format "*Mu4e Archive of %s*" search-query)
+                        "*Mu4e Archive*"))
+         (archive-buffer (get-buffer-create buffer-name))
+         (timestamp (format-time-string "%Y-%m-%d %H:%M:%S"))
+         (preamble (concat "Archive generated at: " timestamp "\n"))
+         (separator "\n----------------------------------------\n"))
+    (with-current-buffer archive-buffer
+      (erase-buffer)
+      (goto-char (point-min))
+      (insert preamble)
+      (when search-query
+        (insert (format "Search query: %s\n\n" search-query))))
+
+    (mu4e-headers-for-each
+     (lambda (msg)
+       (with-current-buffer archive-buffer
+         (insert separator)
+         (insert (format "Message-ID: %s\n" (mu4e-message-field msg :message-id)))
+         (insert (mu4e-view-message-text msg))
+         (insert "\n*End of Message*\n\n"))))
+
+    (with-current-buffer archive-buffer
       (let ((filename (read-file-name "Enter filename for archive:"
                                       nil "archive.txt" nil)))
         (when filename
-          (with-current-buffer buffer
-            (write-file (expand-file-name filename))
+          (write-file (expand-file-name filename))
           (message "Archived to %s" filename))))))
-
-
 
 (use-package mu4e-headers
   :commands mu4e-headers-mode
@@ -426,7 +429,7 @@ Useful for replies and drafts")
               ("C-c t" . my-switch-to-thread)
               ("C-c d" . my-set-view-directory)
               ("C-x n l" . my-narrow-to-list)
-              ("C-c A" . my-mu4e-apply-marked-mbox-patches))
+              ("C-c A" . my-mu4e-archive-headers))
   :hook ((mu4e-headers-found . my-set-view-directory)
          (mu4e-search . my-update-async-jobs))
   :config (setq mu4e-headers-time-format "%H:%M:%S"
