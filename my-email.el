@@ -7,9 +7,9 @@
 ;;
 ;;; Code:
 
-(require 'use-package)
-(require 'my-vars)
-(require 'my-libs)
+(eval-when-compile (require 'use-package))
+(use-package my-vars)
+(use-package my-libs)
 (require 'my-hydra)
 (require 'my-mail-secrets nil t)
 (require 'dash)
