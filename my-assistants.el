@@ -87,7 +87,7 @@
            ;; Powerful model for highly complex tasks. most expensive
            my-claude-opus
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-opus-4-0")
+                            :chat-model "claude-opus-4-1")
            ;; Fast an relatively cheaper model
            my-claude-haiku
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
@@ -95,7 +95,7 @@
            ;; Intelligent, a little cheaper than opus
            my-claude-sonnet
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-sonnet-4-0")))
+                            :chat-model "claude-sonnet-4-5")))
 
 ;;
 ;; The OG ChatGpt integration
