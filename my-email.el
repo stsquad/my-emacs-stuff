@@ -429,7 +429,7 @@ Useful for replies and drafts")
               ("C-c t" . my-switch-to-thread)
               ("C-c d" . my-set-view-directory)
               ("C-x n l" . my-narrow-to-list)
-              ("C-c A" . my-mu4e-archive-headers))
+              ("C-c C-e" . my-mu4e-archive-headers))
   :hook ((mu4e-headers-found . my-set-view-directory)
          (mu4e-search . my-update-async-jobs))
   :config (setq mu4e-headers-time-format "%H:%M:%S"
