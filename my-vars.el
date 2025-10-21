@@ -1,4 +1,4 @@
-;;; my-vars.el --- Common variables used used by all config files
+;;; my-vars.el --- Common variables used used by all config files -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
