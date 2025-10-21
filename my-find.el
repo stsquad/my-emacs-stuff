@@ -35,8 +35,13 @@
 
 (defun my-get-initial-string ()
   "Return substring from thing-at-point or empty string."
-  (substring-no-properties (or (thing-at-point 'symbol) "")))
-
+  (substring-no-properties
+   (or
+    (thing-at-point
+     (if (region-active-p)
+         'region
+       'symbol))
+     "")))
 
 ;; from https://github.com/abo-abo/swiper/issues/1068
 (defun my-ivy-with-thing-at-point (cmd &optional dir)
