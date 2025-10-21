@@ -6,7 +6,7 @@ set -ex
 emacs --version
 emacs --daemon
 
-sleep 10
+sleep 30
 
 ps ax | grep emacs
 
