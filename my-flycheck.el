@@ -10,23 +10,14 @@
 
 (eval-when-compile (require 'use-package))
 
-;; Fixups
-(defun my-flycheck-elisp-dirs ()
-  "Ensure flycheck has set search directories."
-  (when (and (eq major-mode 'emacs-lisp-mode)
-	     buffer-file-name)
-    (setq flycheck-emacs-lisp-load-path (list (file-name-directory
-					       (file-chase-links
-						buffer-file-name))))))
-
 (use-package flycheck
   :ensure t
   :if (version<= "24.4" emacs-version)
   :commands flycheck-mode
-  :hook ((prog-mode . flycheck-mode)
-         (flycheck-mode . my-flycheck-elisp-dirs))
+  :hook ((prog-mode . flycheck-mode))
   :config
-  (setq-default flycheck-emacs-lisp-initialize-packages t
+  (setq-default flycheck-emacs-lisp-initialize-packages 'auto
+                flycheck-emacs-lisp-load-path 'inherit
                 flycheck-highlighting-mode 'lines
                 flycheck-disabled-checkers '(c/c++-gcc)))
 
