@@ -217,13 +217,15 @@ right before the index but currently there is no hook for that."
      ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/linux.git/")
      ("kvm.vger.kernel.org" . "~/lsrc/linux.git/")
      ("linux-kernel.vger.kernel.org" . "~/lsrc/linux.git/")
-     ("virtualization.lists.linux-foundation.org" ."~/lsrc/linux.git/"))
-  "Mapping from mailing lists to source tree.")
+     ("virtualization.lists.linux-foundation.org" . "~/lsrc/linux.git/")
+     ("virtio-comment.lists.linux.dev" . "~/lsrc/virtio-spec.git") )
+     "Mapping from mailing lists to source tree.")
 
 (defvar my-maildir-mapping
   '( ("virtualization/qemu" . "~/lsrc/qemu.git/")
      ("virtualization/qemu-arm" . "~/lsrc/qemu.git/")
      ("virtualization/qemu-multithread" . "~/lsrc/qemu.git/")
+     ("virtualization/virtio" . "~/lsrc/virtio-spec.git")
      ("kernel" . "~/lsrc/linux.git/") )
   "Mapping from maildirs to source tree.")
 
@@ -234,7 +236,8 @@ right before the index but currently there is no hook for that."
      ("kvm@vger.kernel.org" . "~/lsrc/linux.git/")
      ("kvmarm@lists.linux.dev" . "~/lsrc/linux.git/")
      ("buildroot@buildroot.org" . "~/lsrc/tests/buildroot.git")
-     ("xen-devel@lists.xenproject.org" . "~/lsrc/xen/xen.git"))
+     ("xen-devel@lists.xenproject.org" . "~/lsrc/xen/xen.git")
+     ("virtio-comment@lists.linux.dev" . "~/lsrc/virtio-spec.git/") )
     "Mapping from target address to source tree.
 Useful for replies and drafts")
 
