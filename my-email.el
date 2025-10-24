@@ -425,51 +425,6 @@ Useful for replies and drafts")
           (write-file (expand-file-name filename))
           (message "Archived to %s" filename))))))
 
-(use-package mu4e-headers
-  :commands mu4e-headers-mode
-  :bind (:map mu4e-headers-mode-map
-              ("TAB" . my-mu4e-thread-fold-action)
-              ("C-c C-l" . org-store-link)
-              ("C-c t" . my-switch-to-thread)
-              ("C-c d" . my-set-view-directory)
-              ("C-x n l" . my-narrow-to-list)
-              ("C-c C-e" . my-mu4e-archive-headers))
-  :hook ((mu4e-headers-found . my-set-view-directory)
-         (mu4e-search . my-update-async-jobs))
-  :config (setq mu4e-headers-time-format "%H:%M:%S"
-                mu4e-headers-date-format "%a %d/%m/%y"
-                mu4e-headers-skip-duplicates t
-                mu4e-headers-include-related t
-                ;; thread folding
-                mu4e-thread-fold-unread t
-                ;; Fancy chars
-                mu4e-use-fancy-chars        t
-                mu4e-headers-draft-mark     '("D" . "💈")
-                mu4e-headers-flagged-mark   '("F" . "📍")
-                mu4e-headers-new-mark       '("N" . "🔥")
-                mu4e-headers-passed-mark    '("P" . "❯")
-                mu4e-headers-replied-mark   '("R" . "❮")
-                mu4e-headers-seen-mark      '("S" . "☑")
-                mu4e-headers-trashed-mark   '("T" . "💀")
-                mu4e-headers-attach-mark    '("a" . "📎")
-                mu4e-headers-encrypted-mark '("x" . "🔒")
-                mu4e-headers-signed-mark    '("s" . "🔑")
-                mu4e-headers-unread-mark    '("u" . "📨")
-                mu4e-headers-list-mark      '("s" . "🔈")
-                mu4e-headers-personal-mark  '("p" . "👨")
-                mu4e-headers-calendar-mark  '("c" . "📅")
-                ;; which flags for the above
-                mu4e-headers-visible-flags '(draft flagged unread seen passed replied trashed attach encrypted signed)
-                ;; mu4e-headers-hide-predicate 'my-mu4e-headers-hide-muted-p
-                mu4e-search-results-limit 1000
-                mu4e-headers-actions '(("gapply git patches" . mu4e-action-git-apply-patch)
-                                       ("mgit am patch" . mu4e-action-git-apply-mbox)
-                                       ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
-                                       ("sMark SPAM" . my-mu4e-register-spam-action)
-                                       ("hMark HAM" . my-mu4e-register-ham-action)
-                                       ("GCheck if merged" . my-mu4e-action-check-if-merged)
-                                       ("Llog details" . my-mu4e-log-thread-data))))
-
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
   "Match start of line without any quotes or whitespace.")
@@ -693,6 +648,7 @@ Move next if the message at point is what we have just processed."
 ;; [PATCH v12 for 5.1-rc1 5/7] even more
 ;; [PATCH for 5.2] random patch
 ;; [RFC PATCH] fix thing
+;; [Virtio-msg] [PATCH v1 1/4] virtio: Introduce notify_queue
 ;; TODO: move to my-vars, add ert tests
 
 (defvar my-extract-patch-title
@@ -704,7 +660,8 @@ Move next if the message at point is what we have just processed."
   account series and re-roll formats.")
 
 (defvar my-extract-patch-title-from-series
-  (rx (: (or "[PATCH" "[RFC")
+  (rx (: (zero-or-more print) ; and leading fluff from mailing list
+         (or "[PATCH" "[RFC")
          (zero-or-more space)
          (group-n 2 (zero-or-one (: (in "vV") (one-or-more digit))))
          (minimal-match (zero-or-more print))
@@ -755,6 +712,127 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
     (when from
       (mu4e-headers-search
        (format "f:%s" (plist-get (car from) :email)) nil edit))))
+
+;;
+;; Patch application via marking
+;;
+;; This is mostly fall-back where b4 doesn't work because the patches
+;; aren't in a lore archived mailing list.
+
+;; Header markers
+(defvar my-mu4e-patches nil
+  "List of mu4e-messages snagged by the (Patches) actions.")
+(defvar my-mu4e-applied-patches nil
+  "List of mu4e-messages successfully applied by the (Patches)
+actions.")
+(make-variable-buffer-local 'my-mu4e-patches)
+(make-variable-buffer-local 'my-mu4e-applied-patches)
+
+(defun my-mu4e-get-patch-number (msg)
+  "Return patch number from a message."
+  (let ((subject (mu4e-message-field msg :subject)))
+    (when
+        (string-match
+         (rx (: (group-n 1 (one-or-more (any "0-9"))) (any "/")
+                (one-or-more (any "0-9"))))
+         subject)
+      (match-string 1 subject))))
+
+(defun my-mu4e-remaining-patches ()
+"Return a sorted list of patches left to apply"
+(--sort
+ (string<
+   (my-mu4e-get-patch-number it)
+   (my-mu4e-get-patch-number other))
+ (-difference my-mu4e-patches
+              my-mu4e-applied-patches)))
+
+;; from latest mu4e
+(defvar mu4e~patch-directory-history nil
+  "History of directories we have applied patches to.")
+
+;; This essentially works around the fact that read-directory-name
+;; can't have custom history.
+(defun mu4e~read-patch-directory (&optional prompt)
+  "Read a `PROMPT'ed directory name via `completing-read' with history."
+  (unless prompt
+    (setq prompt "Target directory:"))
+  (file-truename
+   (completing-read prompt 'read-file-name-internal #'file-directory-p
+                    nil nil 'mu4e~patch-directory-history)))
+
+(defun mu4e-action-git-apply-mbox (msg &optional signoff)
+  "Apply `MSG' a git patch with optional `SIGNOFF'.
+
+If the `default-directory' matches the most recent history entry don't
+bother asking for the git tree again (useful for bulk actions)."
+  (my-git-apply-mbox (mu4e-message-field msg :path) signoff))
+
+(defun my-mu4e-apply-marked-mbox-patches (&optional arg)
+  "Apply patches in order. With PREFIX include signoff"
+  (interactive "P")
+  (let ((applied-or-skipped
+         (--take-while
+          (let ((docid (plist-get it :docid)))
+            (if (mu4e-mark-docid-marked-p docid)
+                (if (= 0 (mu4e-action-git-apply-mbox it arg))
+                    (when (mu4e~headers-goto-docid docid)
+                      (mu4e-mark-set 'unmark) t)
+                  ; failed to apply, stop
+                  (switch-to-buffer "*Shell Command Output*")
+                  nil)
+              ; not marked, skip
+              t))
+          (my-mu4e-remaining-patches))))
+    (setq my-mu4e-applied-patches
+          (-union my-mu4e-applied-patches applied-or-skipped))
+
+    (message (format "Applied %d (%d)/%d patches"
+                     (length applied-or-skipped)
+                     (length my-mu4e-applied-patches)
+                     (length my-mu4e-patches)))))
+
+;; The following two functions are custom marker functions
+;; Match function
+(defun my-mu4e-patch-match (msg parent-id)
+  "Match any patches related to the parent-id. Add them
+to `my-mu4e-patches' for later processing."
+  (let ((pid (car (last (mu4e-message-field-raw msg :references))))
+        (subj (mu4e-message-field-raw msg :subject)))
+    (when (and subj pid
+               (string-match parent-id pid)
+               (string-match my-extract-patch-title-from-series subj))
+      (add-to-list 'my-mu4e-patches msg))))
+
+(defun my-mu4e-unapplied-patch-match (msg parent-id)
+  "Same at `my-mu4e-patch-match' but only selecting un-applied
+patches."
+  (let ((pid (car (last (mu4e-message-field-raw msg :references))))
+        (subj (mu4e-message-field-raw msg :subject)))
+    (when (and subj pid
+               (string-match parent-id pid)
+               (string-match my-extract-patch-title-from-series subj))
+      (message "Checking: %s" subj)
+      (unless (my-magit-check-if-subject-merged
+               (match-string-no-properties 1 subj) "HEAD"
+               default-directory)
+        (add-to-list 'my-mu4e-patches msg)))))
+
+;; Param function
+(defun my-mu4e-patch-setup ()
+  "Reset the patch list and extract parent-id for `my-mu4e-patch-match'"
+  (setq my-mu4e-patches nil
+        my-mu4e-applied-patches nil)
+  (let ((msg (mu4e-message-at-point)))
+    (mu4e-message-field-raw msg :message-id)))
+
+(use-package mu4e-mark
+  :after mu4e
+  :config (add-to-list
+           'mu4e-marks
+           '(patch
+             :char ("#" . "🩹")
+             :prompt "Patch")))
 
 (use-package mu4e
   :commands mu4e
@@ -818,128 +896,7 @@ Groups: 1:subject, 2:revision, 3: patch number. ")
           ("/.Spam" . ?s)
           ("/.Oldmail" . ?o) ))))
 
-    ;; Header markers
-    (defvar my-mu4e-patches nil
-      "List of mu4e-messages snagged by the (Patches) actions.")
-    (defvar my-mu4e-applied-patches nil
-      "List of mu4e-messages successfully applied by the (Patches)
-    actions.")
-    (make-variable-buffer-local 'my-mu4e-patches)
-    (make-variable-buffer-local 'my-mu4e-applied-patches)
 
-    (defun my-mu4e-get-patch-number (msg)
-      "Return patch number from a message."
-      (let ((subject (mu4e-message-field msg :subject)))
-        (when
-            (string-match
-             (rx (: (group-n 1 (one-or-more (any "0-9"))) (any "/")
-                    (one-or-more (any "0-9"))))
-             subject)
-          (match-string 1 subject))))
-
-    (defun my-mu4e-remaining-patches ()
-    "Return a sorted list of patches left to apply"
-    (--sort
-     (string<
-       (my-mu4e-get-patch-number it)
-       (my-mu4e-get-patch-number other))
-     (-difference my-mu4e-patches
-                  my-mu4e-applied-patches)))
-
-    ;; from latest mu4e
-    (defvar mu4e~patch-directory-history nil
-      "History of directories we have applied patches to.")
-
-    ;; This essentially works around the fact that read-directory-name
-    ;; can't have custom history.
-    (defun mu4e~read-patch-directory (&optional prompt)
-      "Read a `PROMPT'ed directory name via `completing-read' with history."
-      (unless prompt
-        (setq prompt "Target directory:"))
-      (file-truename
-       (completing-read prompt 'read-file-name-internal #'file-directory-p
-                        nil nil 'mu4e~patch-directory-history)))
-
-    (defun mu4e-action-git-apply-mbox (msg &optional signoff)
-      "Apply `MSG' a git patch with optional `SIGNOFF'.
-
-If the `default-directory' matches the most recent history entry don't
-bother asking for the git tree again (useful for bulk actions)."
-      (my-git-apply-mbox (mu4e-message-field msg :path) signoff))
-
-    (defun my-mu4e-apply-marked-mbox-patches (&optional arg)
-      "Apply patches in order. With PREFIX include signoff"
-      (interactive "P")
-      (let ((applied-or-skipped
-             (--take-while
-              (let ((docid (plist-get it :docid)))
-                (if (mu4e-mark-docid-marked-p docid)
-                    (if (= 0 (mu4e-action-git-apply-mbox it arg))
-                        (when (mu4e~headers-goto-docid docid)
-                          (mu4e-mark-set 'unmark) t)
-                      ; failed to apply, stop
-                      (switch-to-buffer "*Shell Command Output*")
-                      nil)
-                  ; not marked, skip
-                  t))
-              (my-mu4e-remaining-patches))))
-        (setq my-mu4e-applied-patches
-              (-union my-mu4e-applied-patches applied-or-skipped))
-
-        (message (format "Applied %d (%d)/%d patches"
-                         (length applied-or-skipped)
-                         (length my-mu4e-applied-patches)
-                         (length my-mu4e-patches)))))
-
-    ;; The following two functions are custom marker functions
-    ;; Match function
-    (defun my-mu4e-patch-match (msg parent-id)
-      "Match any patches related to the parent-id. Add them
-to `my-mu4e-patches' for later processing."
-      (let ((pid (or (mu4e-message-field-raw msg :in-reply-to)
-                     (mu4e-message-field-raw msg :message-id)))
-            (subj (mu4e-message-field-raw msg :subject)))
-        (when (and (string-match parent-id pid)
-                   subj
-                   (string-match my-extract-patch-title-from-series subj))
-          (add-to-list 'my-mu4e-patches msg))))
-
-    (defun my-mu4e-unapplied-patch-match (msg parent-id)
-      "Same at `my-mu4e-patch-match' but only selecting un-applied
-patches."
-      (let ((subj (mu4e-message-field-raw msg :subject)))
-        (when (and (string-match parent-id
-                                 (or
-                                  (mu4e-message-field-raw msg :in-reply-to)
-                                  (mu4e-message-field-raw msg :message-id)))
-                 (string-match my-extract-patch-title-from-series
-                               subj))
-          (message "Checking: %s" subj)
-          (unless (my-magit-check-if-subject-merged
-                   (match-string-no-properties 1 subj) "HEAD"
-                   default-directory)
-            (add-to-list 'my-mu4e-patches msg)))))
-
-    ;; Param function
-    (defun my-mu4e-patch-setup ()
-      "Reset the patch list and extract parent-id for `my-mu4e-patch-match'"
-      (setq my-mu4e-patches nil
-            my-mu4e-applied-patches nil)
-      (let ((msg (mu4e-message-at-point)))
-        (mu4e-message-field-raw msg :message-id)))
-
-    (when (boundp 'mu4e-marks)
-      (add-to-list
-       'mu4e-marks
-       '(patch
-         :char ("#" . "#")
-         :prompt "Patch")))
-
-    (setq mu4e-headers-custom-markers
-          (delete-dups
-           (append mu4e-headers-custom-markers
-                   '(("Patches" my-mu4e-patch-match my-mu4e-patch-setup)
-                     ("Unapplied patches" my-mu4e-unapplied-patch-match my-mu4e-patch-setup)))))
     ;; Message actions
     (setq mu4e-view-actions
           (delete-dups
@@ -971,6 +928,57 @@ patches."
               ("tag:spam" "Tagged Spam" ?t)
               ("to:bugzilla@bennee.com" "Bug Mail" ?B)))))))
 
+
+(use-package mu4e-headers
+  :after mu4e
+  :commands mu4e-headers-mode
+  :bind (:map mu4e-headers-mode-map
+              ("TAB" . my-mu4e-thread-fold-action)
+              ("C-c C-l" . org-store-link)
+              ("C-c t" . my-switch-to-thread)
+              ("C-c d" . my-set-view-directory)
+              ("C-x n l" . my-narrow-to-list)
+              ("C-c C-e" . my-mu4e-archive-headers))
+  :hook ((mu4e-headers-found . my-set-view-directory)
+         (mu4e-search . my-update-async-jobs))
+  :config (setq mu4e-headers-time-format "%H:%M:%S"
+                mu4e-headers-date-format "%a %d/%m/%y"
+                mu4e-headers-skip-duplicates t
+                mu4e-headers-include-related t
+                ;; thread folding
+                mu4e-thread-fold-unread t
+                ;; Fancy chars
+                mu4e-use-fancy-chars        t
+                mu4e-headers-draft-mark     '("D" . "💈")
+                mu4e-headers-flagged-mark   '("F" . "📍")
+                mu4e-headers-new-mark       '("N" . "🔥")
+                mu4e-headers-passed-mark    '("P" . "❯")
+                mu4e-headers-replied-mark   '("R" . "❮")
+                mu4e-headers-seen-mark      '("S" . "☑")
+                mu4e-headers-trashed-mark   '("T" . "💀")
+                mu4e-headers-attach-mark    '("a" . "📎")
+                mu4e-headers-encrypted-mark '("x" . "🔒")
+                mu4e-headers-signed-mark    '("s" . "🔑")
+                mu4e-headers-unread-mark    '("u" . "📨")
+                mu4e-headers-list-mark      '("s" . "🔈")
+                mu4e-headers-personal-mark  '("p" . "👨")
+                mu4e-headers-calendar-mark  '("c" . "📅")
+                ;; which flags for the above
+                mu4e-headers-visible-flags '(draft flagged unread seen passed replied trashed attach encrypted signed)
+                ;; mu4e-headers-hide-predicate 'my-mu4e-headers-hide-muted-p
+                mu4e-search-results-limit 1000
+                mu4e-headers-actions '(("gapply git patches" . mu4e-action-git-apply-patch)
+                                       ("mgit am patch" . mu4e-action-git-apply-mbox)
+                                       ("rrun checkpatch script" . my-mu4e-action-run-check-patch)
+                                       ("sMark SPAM" . my-mu4e-register-spam-action)
+                                       ("hMark HAM" . my-mu4e-register-ham-action)
+                                       ("GCheck if merged" . my-mu4e-action-check-if-merged)
+                                       ("Llog details" .  my-mu4e-log-thread-data))
+                mu4e-headers-custom-markers
+                (delete-dups
+                 (append mu4e-headers-custom-markers
+                         '(("Patches" my-mu4e-patch-match my-mu4e-patch-setup)
+                           ("Unapplied patches" my-mu4e-unapplied-patch-match my-mu4e-patch-setup))))))
 
 (when (locate-library "mu4e")
   (use-package mu4e-alert
