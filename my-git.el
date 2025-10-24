@@ -115,8 +115,9 @@ not, I'd rather just go to magit-status. Lets make it so."
 ;;
 ;; Mainly hooks for automation
 
-(defun my-commit-mode-check-and-apply-tags ()
-  "Run in git-commit-mode to check for any archived tags."
+(defun my-commit-mode-check-and-apply-tags (&optional prefix)
+  "Run in git-commit-mode to check for any archived tags. When
+called with `PREFIX' we include Message-Id tags."
   (interactive)
   (let ((title))
     (save-excursion
@@ -124,7 +125,7 @@ not, I'd rather just go to magit-status. Lets make it so."
       (setq title (chomp (substring-no-properties (thing-at-point
                                                    'line)))))
     (when my-b4-current-results-buffer
-      (my-commit-update-with-b4 t))
+      (my-commit-update-with-b4 t prefix))
     (when title
       (let ((tags (my-org-find-review-tags title "DONE")))
         (when tags
@@ -136,13 +137,16 @@ not, I'd rather just go to magit-status. Lets make it so."
             (insert "\n")
             (message "Added %d tags to buffer" (length tags))))))))
 
-(defun my-git-check-for-updates-with-b4 (subject &optional id)
+(defun my-git-check-for-updates-with-b4 (subject &optional id inc-msg-id)
   "Get tags for `SUBJECT' from message `ID' or `my-b4-current-results-buffer'."
   (unless (or id my-b4-current-results-buffer)
     (user-error "Need a Message-ID or active b4 buffer to continue"))
   (let ((tags)
-        (valid-tags (rx bol (group (or my-bare-dco-tag-rx
-                                       my-msgid-rx))))
+        ;; might be nice not to sweep up msg-ids sometimes
+        (valid-tags (if inc-msg-id
+                        (rx bol (group (or my-bare-dco-tag-rx
+                                           my-msgid-rx)))
+                      (rx bol (group my-bare-dco-tag-rx))))
         ;; tweak subject for wrapped lines which b4 may have added
         (tweaked-subject (replace-regexp-in-string
                           " " "[[:space:]]+" subject)))
@@ -173,13 +177,13 @@ not, I'd rather just go to magit-status. Lets make it so."
       (save-excursion
         (re-search-forward subject nil t)))))
 
-(defun my-commit-update-with-b4 (&optional prefix)
-  "Check if the current commit has tags from it's last posting.
+(defun my-commit-update-with-b4 (&optional prefix include-msg-id)
+  "Check if the current commit has tags from its last posting.
 
 This works by looking for a message-id in the buffer or prompting for
   one. If none can be found it might still be able to apply manually
   from `my-b4-current-results-buffer'. Interactively setting `PREFIX'
-  forces this mode."
+  forces this mode. Unless `include-msg-id' set skip those tags."
   (interactive "P")
   (let ((subj) (id))
     (save-excursion
@@ -196,7 +200,7 @@ This works by looking for a message-id in the buffer or prompting for
                 ;; finally fall back to query
                 (t (completing-read "Message-ID:" my-b4-message-id-history)))))
     (when (or subj id)
-      (let ((tags (my-git-check-for-updates-with-b4 subj id)))
+      (let ((tags (my-git-check-for-updates-with-b4 subj id include-msg-id)))
         (--map
          (save-excursion
            (goto-char 0)
