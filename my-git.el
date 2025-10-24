@@ -299,7 +299,7 @@ bother asking for the git tree again (useful for bulk actions)."
   "Fetch `id' via the b4 tool and apply it."
   (interactive "sMessage-id:")
   (with-temp-buffer
-    (call-process "b4" nil t t "am" "-S" "-t" id)
+    (call-process "b4" nil t t "am" "-S" id)
     (goto-char 0)
     (when (re-search-forward
            (rx (: "git am "
