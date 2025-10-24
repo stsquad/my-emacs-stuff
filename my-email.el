@@ -75,13 +75,15 @@
 ;; This is my main work horse for day to day email.
 ;;
 
-(let ((local-mu4e (my-return-path-if-ok
-                   "~/src/emacs/install/share/emacs/site-lisp/mu4e")))
-  (setq mu4e-mu-binary (or
-                        (my-return-path-if-ok "/usr/bin/mu")
-                        (my-return-path-if-ok "~/src/emacs/install/bin/mu")))
-  (when local-mu4e
-    (add-to-list 'load-path local-mu4e)))
+(use-package mu4e-server
+  :init
+  (let ((local-mu4e (my-return-path-if-ok "~/src/emacs/install")))
+    (setq mu4e-mu-binary (or (my-return-path-if-ok "/usr/bin/mu")
+                             (and local-mu4e
+                                  (my-return-path-if-ok
+                                   (format "%s/bin/mu" local-mu4e)))))
+    (when local-mu4e
+      (add-to-list 'load-path local-mu4e))))
 
 (defun my-return-most-recent-mu4e-contacts ()
   "Return the most recent contacts for completion."
