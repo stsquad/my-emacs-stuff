@@ -54,7 +54,7 @@ not, I'd rather just go to magit-status. Lets make it so."
          :map magit-hunk-section-map
          ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree)
          :map magit-revision-mode-map
-         ("C-c s" . my-mu4e-search-for-id)
+         ("C-c i" . my-commit-kill-message-id)
          :map magit-mode-map
          ("C-x t" . hydra-magit/body))
   :hook (magit-log-edit-mode . auto-fill-mode)
@@ -73,6 +73,8 @@ not, I'd rather just go to magit-status. Lets make it so."
   :config (setq
            ;; tweak magit
            magit-patch-arguments '("--cover-letter")
+           ;; fancy icons in diff
+           magit-format-file-function #'magit-format-file-nerd-icons
            magit-auto-revert-immediately 't))
 
 ;; we use magit-git-string ourselves but there is no autoload
@@ -239,8 +241,7 @@ This works by looking for a message-id in the buffer or prompting for
               ("C-c b" . my-commit-update-with-b4)
               ("C-c i" . my-commit-kill-message-id)
               ("C-c x" . my-commit-mode-check-and-apply-tags)
-              ("C-c f" . my-commit-mode-add-fixes)
-              ("C-c s" . my-mu4e-search-for-id))
+              ("C-c f" . my-commit-mode-add-fixes))
   :config (setq git-commit-summary-max-length 50))
 
 ;;
