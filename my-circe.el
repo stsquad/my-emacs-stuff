@@ -158,10 +158,7 @@
 
 ;; Auto pasting
 (use-package lui-autopaste
-  :commands enable-lui-autopaste
-  :custom (lui-autopaste-function 'lui-autopaste-service-debian
-                                  "Use debian.net for pasting"))
-
+  :commands enable-lui-autopaste)
 
 ;; Auto join everything
 (defvar my-irc-login-timer
