@@ -194,12 +194,8 @@
   ;; Either bind `marginalia-cycle' globally or only in the minibuffer
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle))
-  :config
-  (add-to-list 'marginalia-annotator-registry '(file none marginalia-annotate-file))
-
   ;; The :init configuration is always executed (Not lazy!)
   :init
-
   ;; Must be in the :init section of use-package such that the mode gets
   ;; enabled right away. Note that this forces loading the package.
   (marginalia-mode))
