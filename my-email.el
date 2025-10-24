@@ -10,6 +10,7 @@
 (eval-when-compile (require 'use-package))
 (use-package my-vars)
 (use-package my-libs)
+(use-package my-git)
 (require 'my-hydra)
 (require 'my-mail-secrets nil t)
 (require 'dash)
