@@ -32,8 +32,8 @@
 (require 'my-vars)
 
 ;; For auto-testing
-(defvar I-completed-loading-dotinit 'nil
-  "Flag indicating succesful start-up.")
+(defvar my-auto-shutdown-daemon-flag 'nil
+  "Flag indicating daemon should dump stats and shutdown.")
 
 ;; Load the initial packaging setup.
 ;; This will bring in use-package for us.
@@ -143,9 +143,19 @@
   :if (string-match "seed" (system-name)))
 
 ;; Finished loading
-
-(setq I-completed-loading-dotinit 't)
-(message "Done .emacs (%d gcs in %f)" gcs-done gc-elapsed)
+(run-with-idle-timer
+ 5.0 nil
+ (lambda (gcs-string)
+   (when my-auto-shutdown-daemon-flag
+     (let ((messages (with-current-buffer (messages-buffer)
+                       (buffer-string))))
+       (with-temp-buffer
+         (insert (format "Done .emacs (%s)\n" gcs-string))
+         (insert "\n\n")
+         (insert messages)
+         (write-file (expand-file-name "~/emacs-startup.txt")))
+       (kill-emacs 0 nil))))
+ (format "%d gcs in %f" gcs-done gc-elapsed))
 
 (provide 'init)
 ;;; init.el ends here
