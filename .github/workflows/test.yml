@@ -28,5 +28,6 @@ jobs:
       - name: Run tests
         run: |
           emacs --debug-init --batch -u $USER
+          ./tests/check_daemon_starts.sh
           emacs -q --batch -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
           emacs -q --batch -l "~/.emacs.d/mininit.el" -l "tests/my-ert.el" -f ert-run-tests-batch-and-exit
