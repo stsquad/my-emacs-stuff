@@ -32,9 +32,6 @@
                '("wikipedia" . mediawiki-mode))
   (add-to-list 'atomic-chrome-url-major-mode-alist
                '("wiki.qemu.org" . mediawiki-mode))
-  (when (package-installed-p 'moinmoin-mode)
-    (add-to-list 'atomic-chrome-url-major-mode-alist
-                 '("wiki.linaro.org" . moinmoin-mode)))
   (add-to-list 'atomic-chrome-url-major-mode-alist
                '("www.bennee.com/~alex/blog" . web-mode)))
 
