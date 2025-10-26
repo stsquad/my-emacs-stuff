@@ -83,7 +83,7 @@
                                   (my-return-path-if-ok
                                    (format "%s/bin/mu" local-mu4e)))))
     (when local-mu4e
-      (add-to-list 'load-path local-mu4e))))
+      (add-to-list 'load-path (format "%s/share/emacs/site-lisp/mu4e" local-mu4e)))))
 
 (defun my-return-most-recent-mu4e-contacts ()
   "Return the most recent contacts for completion."
