@@ -255,41 +255,47 @@ If `NEW-STATUS' is set then change TODO state."
        (fn done))
       tags)))
 
-(defun my-org-locate-review-comments (subject)
-  "Locate review comments in review buffer pertaining to `SUBJECT'."
-  (interactive)
-  (let ((ast (my-org-get-elements "review.org" "Review Comments"))
-        (buffer (org-capture-target-buffer "review.org")))
+(defun my-org-get-review-data (subject &optional org-file org-section)
+  "Non-interactive function to return an alist for a given SUBJECT.
+By default this is in review.org/Review Comments but can be overridden"
+
+  (let* ((file (or org-file "review.org"))
+         (sect (or org-section "Review Comments"))
+         (ast (my-org-get-elements file sect))
+         (buf (org-capture-target-buffer file))
+         (return))
+
+    ;; Iterate the AST, adding each match to results
     (org-element-map ast 'item
       (lambda (item)
-        (let ((check (org-element-property :checkbox item))
-              (beg (org-element-property :contents-begin item))
-              (end (org-element-property :contents-end item))
-              (link))
-          (setq link (with-current-buffer buffer
-                       (buffer-substring-no-properties beg end)))
+        (let* ((check (org-element-property :checkbox item))
+               (beg (org-element-property :contents-begin item))
+               (end (org-element-property :contents-end item))
+               (link (with-current-buffer buf
+                       (buffer-substring-no-properties beg end))))
           (when (and (eq check 'off)
                      (stringp subject)
                      (string-match-p subject link))
-            (cons buffer beg)))))))
+            (push
+             `((:location . ,(cons buf beg))
+               (:org-link . ,(chomp link)))
+             return)))))
+
+    return))
+
+(defun my-org-locate-review-comments (subject)
+  "Locate review comments in review buffer pertaining to `SUBJECT'."
+  (interactive)
+  (let ((data (my-org-get-review-data subject)))
+    (when data
+      (cdr (assoc :location (car data))))))
 
 (defun my-org-find-review-comments (subject)
   "Return links to comments pertaining to `SUBJECT'."
   (interactive)
-  (let ((ast (my-org-get-elements "review.org" "Review Comments"))
-        (buffer (org-capture-target-buffer "review.org")))
-    (org-element-map ast 'item
-      (lambda (item)
-        (let ((check (org-element-property :checkbox item))
-              (beg (org-element-property :contents-begin item))
-              (end (org-element-property :contents-end item))
-              (link))
-          (setq link (with-current-buffer buffer
-                       (buffer-substring-no-properties beg end)))
-          (when (and (eq  check 'off)
-                     (string-match-p subject link))
-            (chomp link)))))))
-
+  (let ((data (my-org-get-review-data subject)))
+    (when data
+      (cdr (assoc :org-link (car data))))))
 
 ;; Clocking behaviour
 (use-package org-clock
@@ -370,8 +376,8 @@ Return the filespec of the jump."
   (let* ((head (magit-git-string "log" "--pretty=%s" "HEAD^.."))
          (link (my-org-locate-review-comments head)))
     (when link
-      (let ((buf (car (car link)))
-            (pos (cdr (car link))))
+      (let ((buf (car link))
+            (pos (cdr link)))
       (if nojump
           (format "%s:%d" buf pos)
         (switch-to-buffer-other-window buf)
