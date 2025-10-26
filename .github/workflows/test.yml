@@ -9,7 +9,6 @@ jobs:
     strategy:
       matrix:
         emacs_version:
-          - 28.2 # bookworm
           - 30.1 # bookworm-backports / trixie
           - snapshot
     steps:
