@@ -27,16 +27,17 @@
 ;; find the root of projects we need to provide something equivalent
 ;; for it.
 (defun my-git-project-finder (dir)
-  "Integrate .git project roots."
-  (let ((dotgit (and (setq dir (locate-dominating-file dir ".git"))
-                     (expand-file-name dir))))
-    (and dotgit
-         (cons 'transient (file-name-directory dotgit)))))
+  "Integrate .git from DIR into project roots."
+  (let ((dotgit (locate-dominating-file dir ".git")))
+    (when dotgit
+         (cons 'transient
+               (file-name-directory (expand-file-name dotgit))))))
 
 (add-hook 'project-find-functions 'my-git-project-finder)
 
 (defun my-magit-dispatch (&optional prefix)
-  "My personal preference for magit-dispatch.
+  "My personal magit-dispatch with `PREFIX' forcing `magit-status'.
+
 While magit-file-dispatch is cool, falling back to magit-dispatch is
 not, I'd rather just go to magit-status. Lets make it so."
   (interactive "P")
