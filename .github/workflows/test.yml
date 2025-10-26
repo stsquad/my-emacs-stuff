@@ -21,6 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Setup .emacs.d
+        run: |
+          ./setup_emacs.sh
+
       - name: Run tests
         run: |
           emacs --debug-init --batch -u $USER
