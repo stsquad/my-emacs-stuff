@@ -1,4 +1,4 @@
-;;; my-git.el --- My git customisation
+;;; my-git.el --- My git customisation -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
@@ -8,9 +8,10 @@
 
 (eval-when-compile (require 'use-package))
 
-(require 'my-vars)
-(require 'my-find)
-(require 'my-hydra)
+(use-package my-vars)
+(use-package my-find)
+(use-package my-hydra)
+(use-package my-org)
 
 ; work-around stale shells
 (when I-am-at-work
