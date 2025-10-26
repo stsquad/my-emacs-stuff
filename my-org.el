@@ -386,8 +386,6 @@ Return the filespec of the jump."
           (org-up-heading-safe)
           (org-fold-show-entry)))))))
 
-(defun my-org-mark-ring-info ())
-
 (use-package org
   :ensure t
   :pin gnu
