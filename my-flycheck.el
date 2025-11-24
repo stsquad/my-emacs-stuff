@@ -21,6 +21,12 @@
                 flycheck-highlighting-mode 'lines
                 flycheck-disabled-checkers '(c/c++-gcc)))
 
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
+  :config
+  (global-flycheck-eglot-mode 1))
+
 ;; Other pkgs
 (use-package flycheck-tip
   :ensure t
