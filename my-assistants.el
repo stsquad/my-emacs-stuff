@@ -61,6 +61,7 @@
                                  :chat-model "mistral"
                                  :embedding-model "mistral")))
 
+;; https://ai.google.dev/gemini-api/docs/models
 (use-package llm-gemini
   :config (setq
            ;; cost efficient, low latency
@@ -68,7 +69,7 @@
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-2.0-flash-lite")
+            "gemini-2.5-flash-lite")
            ;; general purpose
            my-gemini-llm-flash
            (make-llm-gemini
@@ -79,7 +80,11 @@
            my-gemini-pro-llm
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
-            :chat-model "gemini-2.5-pro")))
+            :chat-model "gemini-2.5-pro")
+           my-gemini-pro-preview-llm
+           (make-llm-gemini
+            :key (my-pass-password "api.gemini.google.com")
+            :chat-model "gemini-3-pro-preview")))
 
 ;; See https://docs.anthropic.com/en/docs/about-claude/models/all-models
 (use-package llm-claude
@@ -102,7 +107,7 @@
 ;;
 
 (defun my-project-name (project)
-  "Return the name of the current project."
+  "Return the name of the current `PROJECT'."
   (file-name-sans-extension
    (file-name-nondirectory (directory-file-name (cdr project)))))
 
@@ -156,6 +161,7 @@
                 ellama-providers
                 '(
                   ;; Google Gemini Models
+                  ("Gemini Pro 3 Preview" . my-gemini-pro-preview-llm)
                   ("Gemini Pro (coding)" . my-gemini-pro-llm)
                   ("Gemini Flash (general)" . my-gemini-llm-flash)
                   ("Gemini Flash Lite (cheaper, low latency)" . my-gemini-flash-lite)
@@ -187,7 +193,7 @@
 
 ;; https://github.com/Exafunction/codeium.el/issues/97#issuecomment-2354092579
 (defun my-codeium-wrapper ()
-  "Decouple codeium from other completions"
+  "Decouple codeium from other completions."
   (interactive)
   (cape-interactive #'codeium-completion-at-point))
 
