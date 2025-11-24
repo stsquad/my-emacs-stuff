@@ -240,6 +240,26 @@ This works by looking for a message-id in the buffer or prompting for
         (kill-new final-id)))
     final-id))
 
+(defun my-commit-kill-extra-msgids ()
+  "Kill extraneous msgids keeping the most recent one.
+
+This assumes they all have the same domain with datestring at front of
+the message id itself. If the commit has multiple ids from different
+domains then you'd best edit it yourself."
+  (interactive)
+  (let ((matches '()))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward my-msgid-re nil t)
+        (push (match-string-no-properties 1) matches)))
+    (let ((sorted (seq-sort 'string< matches)))
+      (while (> (length sorted) 1)
+        (let ((to-kill (pop sorted)))
+          (save-excursion
+            (goto-char (point-min))
+            (when (search-forward to-kill nil t)
+              (kill-whole-line))))))))
+
 (use-package git-commit
   ;; now part of magit: https://github.com/magit/magit/blob/main/CHANGELOG#v410----2024-09-01
   :after magit
@@ -247,7 +267,8 @@ This works by looking for a message-id in the buffer or prompting for
               ("C-c b" . my-commit-update-with-b4)
               ("C-c i" . my-commit-kill-message-id)
               ("C-c x" . my-commit-mode-check-and-apply-tags)
-              ("C-c f" . my-commit-mode-add-fixes))
+              ("C-c f" . my-commit-mode-add-fixes)
+              ("C-c k" . my-commit-kill-extra-msgids))
   :config (setq git-commit-summary-max-length 50))
 
 ;;

@@ -67,7 +67,7 @@
 (rx-define my-msgid-rx
   (: my-msgid-tag-rx ": "
      "<"
-     (one-or-more (not (in ">")))
+     (group (one-or-more (not (in ">"))))
      ">"))
 
 (defvar my-bare-dco-tag-re
@@ -84,7 +84,10 @@
 
 ;; Capturing msgids
 (defvar my-capture-msgid-re
-  (rx (: (or my-based-on-tag-rx my-msgid-tag-rx "patchew.org/qemu")
+  (rx (: (or my-based-on-tag-rx
+             my-msgid-tag-rx
+             "patchew.org/qemu"
+             "lore.kernel.org/qemu-devel")
          (or "/" ": ")
          my-capture-brackets-rx))
   "Regexp to extract Message-Id from git tags. Expects a lowered string.")
