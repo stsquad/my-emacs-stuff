@@ -87,36 +87,15 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
           ("q" quit-window "quit")))
 
 ;;
-;; All hail LSP mode
+;; All hail eglot-mode
+;;
+;; It is lighter weight than lsp-mode and comes bundled with Emacs
+;; since 29.1
 ;;
 
-(use-package lsp-mode
-  :ensure t
-  :commands (lsp)
-  :hook ((c-mode . lsp)
-         (python-mode . lsp))
-  :bind (:map lsp-mode-map ("C-c C-c" . lsp-execute-code-action))
-  :init (setq lsp-keymap-prefix "C-c C-l")
-  :config
-  (setq
-   ;; lsp-log-io t
-   ;; lsp-enable-on-type-formatting nil - if it starts getting in the
-   ;; way
-   lsp-clients-clangd-args '("--header-insertion-decorators=0" "--header-insertion=never")
-   lsp-use-plists t))
-
-(with-eval-after-load 'lsp-mode
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
-
-(use-package lsp-ui
-  :commands lsp-ui-mode
-  :ensure t
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable nil))
-
+(use-package eglot
+  :hook ((c-mode . eglot-ensure)
+         (python-mode . eglot-ensure)))
 
 ;;
 ;; Rust
@@ -137,14 +116,6 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
                  (add-to-list 'compilation-error-regexp-alist 'rustic-warning)
                  (add-to-list 'compilation-error-regexp-alist 'rustic-info)
                  (add-to-list 'compilation-error-regexp-alist 'rustic-panic)))
-
-
-;;
-;; Rust
-;;
-
-(use-package rustic
-  :ensure t)
 
 
 ;;
