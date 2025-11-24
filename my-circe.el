@@ -19,30 +19,15 @@
   "Return the password for the `SERVER'."
   (my-pass-password "bitlbee"))
 
-(defun my-znc-freenode-password (server)
-  "Return the password for the `SERVER'."
-  (format "ajb-linaro/Freenode:%s"
-          (my-pass-password "znc")))
-
-(defun my-znc-oftc-password (server)
-  "Return the password for the `SERVER'."
-  (format "ajb-linaro/oftc:%s"
-          (my-pass-password "znc")))
-
-(defun my-znc-libera-password (server)
-  "Return the password for the `SERVER'."
-  (format "ajb-linaro/libera:%s"
-          (my-pass-password "znc")))
-
-(defun my-znc-libera-codelinaro-password (server)
-  "Return the password for the `SERVER'."
-  (format "ajb-linaro/libera:%s"
-          (my-pass-password "znc-admin@codelinaro")))
-
-(defun my-znc-oftc-codelinaro-password (server)
-  "Return the password for the `SERVER'."
-  (format "ajb-linaro/oftc:%s"
-          (my-pass-password "znc-admin@codelinaro")))
+(defun my-circe-auth-helper (user server)
+  "Fetch password for `USER' @ `SERVER' via auth."
+  (let ((pfunc (plist-get
+                (car
+                 (auth-source-search
+                  :host server :user user))
+                :secret)))
+    (when pfunc
+      (funcall pfunc))))
 
 ;; These are both "personal" nicks for non-ZNC bounced connections
 (defun my-freenode-nick-password (server)
@@ -67,7 +52,7 @@
   :commands enable-lui-logging)
 
 (defvar my-logged-chans
-  '("#qemu@znc-cl-oftc" "#qemu-gsoc@znc-cl-oftc" "#linaro-virtualization@znc-cl-libera")
+  '("#qemu@irccloud (oftc)" "#qemu-gsoc@irccloud (oftc)" "#linaro-virtualization@irccloud (libera)")
   "List of channels which I log")
 
 (defun my-maybe-log-channel ()
@@ -111,7 +96,7 @@
         (kill-buffer buf)))))
 
 (defun lui-autopaste-service-linaro (text)
-  "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
+  "Paste TEXT to pastebin.linaro.org and return the paste url."
   (let ((url-request-method "POST")
         (url-request-extra-headers
          '(("Content-Type" . "application/x-www-form-urlencoded")
@@ -168,12 +153,12 @@
 (defun my-irc-login ()
   "Login into my usual IRCs."
   (interactive)
-  (circe-lagmon-mode)
+  ;; is lagmon causing the constant reconnects?
+  ;; (circe-lagmon-mode)
   (when I-am-at-work
-    (circe "znc-cl-libera")
-    (circe "znc-cl-oftc")
-    ;; (circe "bitlbee")
-    )
+    (circe "irccloud (libera)")
+    (circe "irccloud (oftc)")
+    (circe "irccloud (Linaro Slack)"))
   (circe "Pl0rt"))
 
 (defun my-disable-irc-login ()
@@ -242,22 +227,31 @@
              :nick "stsquad"
              :nickserv-password my-libera-nick-password
              )
-            ("znc-cl-oftc"
-             :host "irc.codelinaro.org"
-             :server-buffer-name "⇄ OFTC (ZNC/CL)"
+            ("irccloud (libera)"
+             :host "bnc.irccloud.com"
+             :server-buffer-name "⇄ Libera Chat (IRCCloud)"
              :port "6697"
              :tls t
-             :pass my-znc-oftc-codelinaro-password
-             ;; NickServ is handled by ZNC and the SASL login
-             :channels ("#qemu" "#qemu-gsoc")
+             :nick "ajb-linaro"
+             :pass (lambda(host) (my-circe-auth-helper "ajb-linaro" "irccloud-libera"))
              )
-            ("znc-cl-libera"
-             :host "irc.codelinaro.org"
-             :server-buffer-name "⇄ Libera Chat (ZNC/CL)"
+            ("irccloud (oftc)"
+             :host "bnc.irccloud.com"
+             :server-buffer-name "⇄ OFTC (IRCCloud)"
+             :channels ("#qemu" "#qemu-gsoc")
              :port "6697"
              :tls t
-             :pass my-znc-libera-codelinaro-password
-             ;; NickServ is handled by ZNC and the SASL login
+             :nick "stsquad"
+             :pass (lambda(host) (my-circe-auth-helper "stsquad" "irccloud-oftc"))
+             )
+            ("irccloud (Linaro Slack)"
+             :host "slack.irccloud.com"
+             :server-buffer-name "⇄ Linaro Slack (IRCCloud)"
+             :channels ("#linaro" "#linaro-tech-leads" "#watercooler" "#plat-virt-leads-only")
+             :port "6697"
+             :tls t
+             :nick "alex.bennee"
+             :pass (lambda(host) (my-circe-auth-helper "alex.bennee" "irccloud-slack"))
              )
             ("gitter"
              :host "irc.gitter.im"
@@ -274,26 +268,7 @@
              :nick "ajb"
              :use-tls t
              :channels ("#blue")
-             )
-            ("bitlbee"
-             :nick "ajb"
-             :server-buffer-name "⇄ bitlbee"
-             ;; :pass my-bitlbee-password
-             :nickserv-password my-bitlbee-password
-             :nickserv-mask "\\(bitlbee\\|root\\)!\\(bitlbee\\|root\\)@"
-             :nickserv-identify-challenge "use the \x02identify\x02 command to identify yourself"
-             :nickserv-identify-command "PRIVMSG &bitlbee :identify {password}"
-             :nickserv-identify-confirmation "Password accepted, settings and accounts loaded"
-             :channels ("&bitlbee")
-             ; does this set circe-lagmon-disabled in the server buffer?
-             :lagmon-disabled t
-             :host "localhost"
-             :service "6667")
-            ("Slack"
-             :nick "alex.bennee"
-             :server-buffer-name "⇄ Slack"
-             :host "localhost"
-             :service "9007")))))
+             )))))
 
 (use-package circe-chanop
   :after circe)
