@@ -156,8 +156,13 @@
 
 (use-package ellama
   :ensure t
+  :bind ("C-c a" . ellama-transient-main-menu)
+  :custom
+  (ellama-provider
+   my-gemini-llm-flash "Fast-ish general purpose")
+  (ellama-completion-provider
+   my-gemini-flash-lite "Favour latency for completion")
   :init (setopt ellama-language "English"
-                ellama-provider my-gemini-llm-flash-lite
                 ellama-providers
                 '(
                   ;; Google Gemini Models
