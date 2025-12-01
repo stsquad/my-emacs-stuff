@@ -155,13 +155,17 @@
   :ensure t)
 
 (use-package ellama
-  :ensure t
+  ;; :ensure t
+  :load-path (lambda () (my-return-path-if-ok
+                         "~/src/emacs/ellama.git"))
   :bind ("C-c a" . ellama-transient-main-menu)
   :custom
   (ellama-provider
    my-gemini-llm-flash "Fast-ish general purpose")
   (ellama-completion-provider
-   my-gemini-flash-lite "Favour latency for completion")
+   my-gemini-llm-flash-lite "Favour latency for completion")
+  (ellama-spinner-type 'moon)
+  (ellama-spinner-enabled t)
   :init (setopt ellama-language "English"
                 ellama-providers
                 '(
@@ -169,7 +173,7 @@
                   ("Gemini Pro 3 Preview" . my-gemini-pro-preview-llm)
                   ("Gemini Pro (coding)" . my-gemini-pro-llm)
                   ("Gemini Flash (general)" . my-gemini-llm-flash)
-                  ("Gemini Flash Lite (cheaper, low latency)" . my-gemini-flash-lite)
+                  ("Gemini Flash Lite (cheaper, low latency)" . my-gemini-llm-flash-lite)
                   ;; OpenAI Models
                   ("ChatGPT (latest)" . my-chatgpt)
                   ("OpenAI GPT4o" . my-gpt4)
