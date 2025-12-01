@@ -6,9 +6,9 @@
 ;;
 ;;; Code:
 
-(require 'my-org)
-(require 'my-hydra)
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+(use-package my-org)
+(use-package my-hydra)
 
 (defvar my-toggle-map
   nil
@@ -76,6 +76,11 @@ already narrowed."
 
 (define-key my-toggle-map "u" 'my-toggle-buffer-undo)
 
+(defun my-auto-fill-status ()
+  "Report auto-fill-status"
+  (if auto-fill-function
+      "enabled"
+    "disabled"))
 
 ;; Toggle tabs
 (defun my-toggle-tabs ()
@@ -174,7 +179,7 @@ of things where C-SPC can't be used."
    (concat
     "_D_edicated: %s(window-dedicated-p)"
     " reset _g_olden ratio: %`golden-ratio-mode"
-    " _f_ill:%`auto-fill-function _T_abs: %`indent-tabs-mode "
+    " _f_ill:%s(my-auto-fill-status) _T_abs: %`indent-tabs-mode "
     "_u_ndo: %s(my-undo-status) meta _s_pace: %s(my-meta-space-status)\n")
    ;; lock windows
    ("D" toggle-window-dedicated)
