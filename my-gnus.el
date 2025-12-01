@@ -1,4 +1,4 @@
-;;; my-gnus --- Basic GNUs setup (for reading actual news)
+;;; my-gnus --- Basic GNUs setup -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 ;;
@@ -18,8 +18,11 @@
 ;;
 ;;; Code:
 
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+(require 'transient)
+
 (use-package my-git)
+
 
 ;; GNUS Article Mode
 
@@ -115,9 +118,38 @@
   (gnus-summary-top-thread)
   (gnus-summary-refer-thread))
 
+(transient-define-prefix my-gnus-summary-dispatch ()
+  "Transient interface for Gnus operations."
+  [:description "Gnus Operations"
+   ["Navigation"
+    ("n" "Next Unread" gnus-summary-next-unread-article)
+    ("p" "Previous"    gnus-summary-prev-article)
+    ("q" "Quit"        gnus-summary-exit)]
+   ["Threading"
+    ("t" "Fetch Whole" my-gnus-fetch-whole-thread)
+    ("^" "Refer Parent" gnus-summary-refer-parent-article)
+    ("R" "Wide Reply"  gnus-article-wide-reply-with-original)]
+   ["Filter/Limit"
+    ("/ a" "Author"    gnus-summary-limit-to-author)
+    ("/ s" "Subject"   gnus-summary-limit-to-subject)
+    ("/ w" "Pop Limit" gnus-summary-pop-limit)
+    ("/ /" "Subject..." gnus-summary-limit-to-subject)]
+   ["Marking"
+    ("!"   "Tick (Save)" gnus-summary-tick-article-forward)
+    ("d"   "Read/Del"    gnus-summary-mark-as-read-forward)
+    ("c"   "Catchup All" gnus-summary-catchup-and-exit)]
+   ["View"
+    ("v r" "Raw Source"  gnus-summary-show-raw-article)
+    ("v h" "Toggle Head" gnus-summary-toggle-header)
+    ("v g" "Wash HTML"   gnus-article-wash-html)]
+   ["Development"
+    ("a" "Apply Patch" my-gnus-apply-article-patch)
+    ("b" "Apply (b4)"  my-gnus-b4-article)]])
+
 (use-package gnus-summary
   :bind (:map gnus-summary-mode-map
               ("C-c t" . my-gnus-fetch-whole-thread)
+              ("C-x t" . my-gnus-summary-dispatch)
               ("R" . gnus-article-wide-reply-with-original))
   :config
   (setq-default
@@ -134,6 +166,29 @@
    gnus-sum-thread-tree-vertical "│"))
 
 ;; Everything else
+
+(transient-define-prefix my-gnus-group-dispatch ()
+  "Transient interface for Gnus Group operations.
+Stays open until explicitly quit."
+  :transient-suffix 'transient--do-stay
+  [:description "Gnus Group Operations"
+   ["Views"
+    ("l" "List Subscribed" gnus-group-list-groups)
+    ("L" "List All"        gnus-group-list-all-groups)
+    ("A" "List Active"     gnus-group-list-active)
+    ("^" "Servers"         gnus-group-enter-server-mode :transient nil)]
+   ["Update"
+    ("g" "Get New News"    gnus-group-get-new-news)
+    ("G" "Check Group"     gnus-group-get-new-news-this-group)]
+   ["Quit"
+    ("q" "Quit Menu"       transient-quit-one)
+    ("Q" "Quit Gnus"       gnus-group-exit :transient nil)]])
+
+(use-package gnus-group
+  :ensure nil
+  :bind (:map gnus-group-mode-map
+              ("C-x t" . my-gnus-group-dispatch)))
+
 
 (use-package gnus
   :commands gnus
