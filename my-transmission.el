@@ -111,6 +111,10 @@ Returns the line as a string."
                 global-mode-string '(my-transmission-current-status display-time-string)))
 
 
+;; Hook into the quick section of casual-dired, after "b"ookmarks
+(with-eval-after-load 'casual
+  (transient-append-suffix 'casual-dired-tmenu "b"
+    '("T" "Transmission" transmission)))
+
 (provide 'my-transmission)
 ;;; my-transmission.el ends here
-
