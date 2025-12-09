@@ -97,6 +97,13 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :hook ((c-mode . eglot-ensure)
          (python-mode . eglot-ensure)))
 
+;; once clangd21 is more widely available we can avoid this global
+;; hack in favour of per-project .clangd configs
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(c-mode . ("clangd" "--header-insertion-decorators=0" "--header-insertion=never"))))
+
+
 ;;
 ;; Rust
 ;;
