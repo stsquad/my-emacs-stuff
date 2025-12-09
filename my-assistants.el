@@ -197,6 +197,12 @@
                 ellama-context-poshandler 'posframe-poshandler-frame-bottom-right-corner))
 
 ;;
+;; Editor Code Assistant - MCP enabled chat interface
+;;
+(use-package eca
+  :ensure t)
+
+;;
 ;; Codeium
 ;;;
 
@@ -209,6 +215,7 @@
 (use-package codeium
   :load-path (lambda () (my-return-path-if-ok
                          "~/src/emacs/codeium.el.git/"))
+  :commands codeium-completion-at-point
   :bind (:map prog-mode-map
               ("C-x c" . my-codeium-wrapper))
   :config
