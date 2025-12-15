@@ -11,7 +11,8 @@
 (use-package my-vars)
 (use-package my-find)
 (use-package my-hydra)
-(use-package my-org)
+(use-package my-org
+  :autoload my-org-find-review-tags my-org-find-review-comments)
 
 ; work-around stale shells
 (when I-am-at-work

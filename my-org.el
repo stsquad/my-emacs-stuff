@@ -14,12 +14,12 @@
 
 (eval-when-compile (require 'use-package))
 
-(require 'my-libs)
-(require 'my-vars)
-(require 'my-basic-modes)
-(require 'my-hydra)
-(require 'my-git)
-(require 'bookmark)
+(use-package bookmark)
+
+(use-package my-vars)
+(use-package my-libs)
+(use-package my-basic-modes)
+(use-package my-hydra)
 
 (defvar ajb-work-org-file
   (when I-am-at-work "/home/alex/org/index.org")
@@ -235,7 +235,6 @@ This is used by `my-org-run-default-block' which is added to
 (defun my-org-find-review-tags (subject &optional new-status)
   "Return first review tag to match `SUBJECT'.
 If `NEW-STATUS' is set then change TODO state."
-  (interactive)
   (with-current-buffer (org-capture-target-buffer "review.org")
     (let ((done)
           (tags))
@@ -292,7 +291,6 @@ By default this is in review.org/Review Comments but can be overridden"
 
 (defun my-org-find-review-comments (subject)
   "Return links to comments pertaining to `SUBJECT'."
-  (interactive)
   (let ((data (my-org-get-review-data subject)))
     (when data
       (cdr (assoc :org-link (car data))))))
