@@ -75,7 +75,7 @@
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-2.5-flash")
+            "gemini-3-flash-preview")
            ;; advanced coding model
            my-gemini-pro-llm
            (make-llm-gemini
@@ -171,7 +171,7 @@
                 '(
                   ;; Google Gemini Models
                   ("Gemini Pro 3 Preview" . my-gemini-pro-preview-llm)
-                  ("Gemini Pro (coding)" . my-gemini-pro-llm)
+                  ("Gemini Pro 2.5 (coding)" . my-gemini-pro-llm)
                   ("Gemini Flash (general)" . my-gemini-llm-flash)
                   ("Gemini Flash Lite (cheaper, low latency)" . my-gemini-llm-flash-lite)
                   ;; OpenAI Models
