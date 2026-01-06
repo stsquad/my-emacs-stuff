@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: QEMU Community Call
+# key: $agenda
+# --
+
+Hi,
+
+The KVM/QEMU community call is at:
+
+  https://meet.jit.si/kvmcallmeeting
+  @
+  `(chomp (shell-command-to-string
+                   "date -u --date='14:00 UTC this Tue' +'%d/%m/%Y %H:%M %Z'"))`
+
+Are there any agenda items for the sync-up?
+
+$0

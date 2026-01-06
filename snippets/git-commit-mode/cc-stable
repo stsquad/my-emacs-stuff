@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Cc stable
+# key: $stable
+# --
+Cc: qemu-stable@nongnu.org
