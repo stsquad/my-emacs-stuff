@@ -49,8 +49,7 @@
 ;; Up GC threshold from 800k to 2Mb
 (use-package emacs-gc-stats
   :ensure t
-  :config (setq gc-cons-threshold (* 2 1024 1024))
-  :init (emacs-gc-stats-mode))
+  :config (setq gc-cons-threshold (* 2 1024 1024)))
 
 ;; Other helpers
 (defun my-return-path-if-ok (path)
