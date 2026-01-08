@@ -1,4 +1,4 @@
-;;; my-devel.el --- Central configuration for development hooks
+;;; my-devel.el --- Central configuration for development hooks -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
@@ -6,11 +6,13 @@
 ;;
 ;;; Code:
 
-(require 'use-package)
-(require 'my-vars)
-(require 'my-find)
-(require 'my-tracking)
-(require 'my-hydra)
+(eval-when-compile (require 'use-package))
+
+(use-package my-vars)
+(use-package my-package)
+(use-package my-find)
+(use-package my-tracking)
+(use-package my-hydra)
 
 ;; EditorConfig
 (use-package editorconfig
@@ -26,31 +28,8 @@
   :config (add-hook 'editorconfig-after-apply-functions
                     #'editorconfig-custom-majormode))
 
-;; Origami code folding
-(use-package origami
-  :if (locate-library "origami")
-  :commands origami-mode
-  :after hydra
-  :hook (prog-mode . origami-mode)
-  :bind (:map origami-mode-map
-              ("C-c f" . hydra-folding/body))
-  :init (defhydra hydra-folding (:color red :hint nil)
-   "
-_o_pen node    _n_ext fold       toggle _f_orward    _F_ill column: %`fill-column
-_c_lose node   _p_revious fold   toggle _a_ll        e_x_it
-"
-   ("o" origami-open-node)
-   ("c" origami-close-node)
-   ("n" origami-next-fold)
-   ("p" origami-previous-fold)
-   ("f" origami-forward-toggle-node)
-   ("a" origami-toggle-all-nodes)
-   ("F" fill-column)
-   ("x" nil :color blue)))
-
 (use-package prog-mode
   :hook (prog-mode . turn-on-auto-fill))
-
 
 ;; Tree sitter
 
@@ -147,17 +126,16 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
 
-(defun my-hide-compilation-buffer (proc)
+(defun my-hide-compilation-buffer (_proc)
   "Hide the compile buffer `PROC' is ignored."
   (let* ((window (get-buffer-window "*compilation*"))
-         (frame (window-frame window))
          (buf (current-buffer)))
     (ignore-errors
       (delete-window window))
     ;; preserve the buffer we are in
     (set-buffer buf)))
 
-(defun my-report-compilation-finished (buf exit-string)
+(defun my-report-compilation-finished (buf _exit-string)
   "Report the compilation buffer `BUF' to tracker."
   (tracking-add-buffer buf))
 
@@ -253,15 +231,15 @@ _c_lose node   _p_revious fold   toggle _a_ll        e_x_it
   :bind (:map magit-commit-section-map
               ("C-x c" . checkpatch-run-from-magit)))
 
-;; Coverage
 (when have-melpa
+  ;; Coverage
   (use-package cov
-    :ensure t))
+    :ensure t)
 
-;; We use kconfig a lot
-(use-package kconfig-mode
-  :ensure t
-  :mode (("Config.in" . kconfig-mode)))
+  ;; We use kconfig a lot
+  (use-package kconfig-mode
+    :ensure t
+    :mode (("Config.in" . kconfig-mode))))
 
 ;; shell modes
 
