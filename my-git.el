@@ -73,12 +73,15 @@ not, I'd rather just go to magit-status. Lets make it so."
           ("n" (magit-go-forward)  nil :color red)
           ;; Main toggles
           ("t" my-hydra-toggle/body nil))
-  :config (setq
-           ;; tweak magit
-           magit-patch-arguments '("--cover-letter")
-           ;; fancy icons in diff
-           magit-format-file-function #'magit-format-file-nerd-icons
-           magit-auto-revert-immediately 't))
+  :config
+  (setq
+   ;; tweak magit
+   magit-patch-arguments '("--cover-letter")
+   magit-auto-revert-immediately 't)
+  (when window-system           ;; fancy icons in diff
+    (setq magit-format-file-function #'magit-format-file-nerd-icons)))
+
+
 
 ;; we use magit-git-string ourselves but there is no autoload
 (use-package magit-git
