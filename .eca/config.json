@@ -1,0 +1,17 @@
+{
+  "customTools": {
+      "emacs-symbol-search": {
+          "description": "Search the current emacs session for symbol definitions.",
+          "command": "emacsclient -e '(my-eca-search-symbols \"{{pattern}}\")'",
+          "schema": {
+              "properties": {
+                  "pattern": {
+                      "type": "string",
+                      "description": "a pattern or stem to search though."
+                  }
+              },
+              "required": ["pattern"]
+          }
+      }
+  }
+}

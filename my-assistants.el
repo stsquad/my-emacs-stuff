@@ -202,6 +202,22 @@
 (use-package eca
   :ensure t)
 
+; Some helpers
+
+(defun my-eca-search-symbols (pattern)
+  "Search for symbols matching a regex PATTERN."
+  (let ((matches '()))
+    (mapatoms
+     (lambda (sym)
+       (when (string-match-p pattern (symbol-name sym))
+         (push (format "%s (%s)"
+                       sym
+                       (cond ((fboundp sym) "function")
+                             ((boundp sym) "variable")
+                             (t "symbol")))
+               matches))))
+    (mapconcat #'identity (seq-take (sort matches #'string<) 30) "\n")))
+
 ;;
 ;; Codeium
 ;;;
