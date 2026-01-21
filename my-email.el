@@ -85,6 +85,12 @@
     (when local-mu4e
       (add-to-list 'load-path (format "%s/share/emacs/site-lisp/mu4e" local-mu4e)))))
 
+(use-package mu4e-search)
+(use-package mu4e-headers
+  :commands mu4e-headers-for-each)
+(use-package mu4e-view
+  :commands mu4e-view-message-text)
+
 (defun my-return-most-recent-mu4e-contacts ()
   "Return the most recent contacts for completion."
   (split-string
@@ -367,6 +373,7 @@ Useful for replies and drafts")
       (mu4e-compose-reply))))
 
 (use-package mu4e-compose
+  :after mu4e
   :hook ((mu4e-compose-mode . my-set-compose-directory)
           (mu4e-compose-pre . my-choose-mail-address))
   :bind (:map mu4e-compose-mode-map
@@ -393,10 +400,10 @@ Useful for replies and drafts")
            (mu4e-thread-unfold)
          (mu4e-thread-fold)))
 
-(defun my-mu4e-archive-headers ()
-  "Archive all the emails in the headers currently displayed to a
-  file."
-  (interactive)
+(defun my-mu4e-archive-headers (&optional arg)
+  "Archive the emails in the headers currently displayed to a file.
+If `ARG' then pop to the buffer when done."
+  (interactive "P")
   (let* ((search-query mu4e--search-last-query)
          (buffer-name (if search-query
                           (format "*Mu4e Archive of %s*" search-query)
@@ -420,12 +427,14 @@ Useful for replies and drafts")
          (insert (mu4e-view-message-text msg))
          (insert "\n*End of Message*\n\n"))))
 
-    (with-current-buffer archive-buffer
-      (let ((filename (read-file-name "Enter filename for archive:"
-                                      nil "archive.txt" nil)))
-        (when filename
-          (write-file (expand-file-name filename))
-          (message "Archived to %s" filename))))))
+    (if arg
+        (pop-to-buffer archive-buffer)
+      (with-current-buffer archive-buffer
+        (let ((filename (read-file-name "Enter filename for archive:"
+                                        nil "archive.txt" nil)))
+          (when filename
+            (write-file (expand-file-name filename))
+            (message "Archived to %s" filename)))))))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
@@ -533,6 +542,14 @@ Useful for replies and drafts")
                                   (ivy-read "select commit:" (nreverse refs))
                                 (car refs)))))
       (magit-show-commit final))))
+
+(defun my-mu4e-jump-to-message()
+  "Jump to referenced message in text."
+  (interactive)
+  (let ((msgid (my-commit-kill-message-id)))
+    (when msgid
+      (mu4e-view-message-with-message-id msgid))))
+
 
 (defun my-mu4e-view-copy-reference ()
   "Grab the headers needed to find this message into the kill ring."
