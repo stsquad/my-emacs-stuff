@@ -62,6 +62,43 @@ from it's current value."
       (setq stext (+ stext (buffer-size))))
     stext))
 
+;;
+
+(defun my-dump-window-tree (window indent)
+  "Recursively walk the window tree and print its structure."
+  (let* ((is-internal (window-child window))
+         (edges (window-pixel-edges window))
+         (width (- (nth 2 edges) (nth 0 edges)))
+         (height (- (nth 3 edges) (nth 1 edges)))
+         (type (cond ((window-combined-p window) "Vertical Split")
+                     ((window-combined-p window t) "Horizontal Split")
+                     (t "Root/Leaf"))))
+
+    ;; Print current window info
+    (insert (format "%s%s [%dx%d] %s\n"
+                    indent
+                    (if is-internal "Node:" "Leaf:")
+                    width height
+                    (if is-internal
+                        (format "(%s)" type)
+                      (format "Buffer: %s" (buffer-name (window-buffer window))))))
+
+    ;; Recurse into children if they exist
+    (let ((child (window-child window)))
+      (while child
+        (my/dump-window-tree child (concat indent "  │ "))
+        (setq child (window-right child))))))
+
+;; Execute the dump
+(defun my-dump-current-window-tree ()
+  (interactive)
+  (with-current-buffer (get-buffer-create "*Window-Tree-Dump*")
+    (erase-buffer)
+    (insert "Emacs Window Tree Layout:\n")
+    (insert "=========================\n")
+    (my/dump-window-tree (frame-root-window) "")
+    (display-buffer (current-buffer))))
+
 
 
 (provide 'my-debug)
