@@ -122,8 +122,7 @@
 ;; enable the mouse wheel
 (use-package mwheel
   :if window-system
-  :commands mwheel-install
-  :init (mwheel-install))
+  :init (mouse-wheel-mode))
 
 ; X11 paste to point
 (when (boundp 'mouse-yank-at-point)
