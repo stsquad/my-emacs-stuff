@@ -204,19 +204,39 @@
 
 ; Some helpers
 
-(defun my-eca-search-symbols (pattern)
-  "Search for symbols matching a regex PATTERN."
+(defun my-eca-search-symbols (pattern &optional limit-type)
+  "Search for symbols matching a regex PATTERN. Optional `LIMIT-TYPE'"
   (let ((matches '()))
     (mapatoms
      (lambda (sym)
        (when (string-match-p pattern (symbol-name sym))
-         (push (format "%s (%s)"
-                       sym
-                       (cond ((fboundp sym) "function")
-                             ((boundp sym) "variable")
-                             (t "symbol")))
-               matches))))
-    (mapconcat #'identity (seq-take (sort matches #'string<) 30) "\n")))
+         (let ((keep (pcase limit-type
+                       ('nil      t)
+                       ('function (fboundp sym))
+                       ('variable (boundp sym))
+                       ('command  (commandp sym))
+                       ('face     (facep sym))
+                       (_         t))))
+           (when keep
+             (push
+              (format "%s (%s)"
+                      sym
+                      (cond ((commandp sym) "command")
+                            ((fboundp sym) "function")
+                            ((boundp sym) "variable")
+                            ((facep sym) "face")
+                            (t "symbol")))
+              matches))))))
+    (let ((lms (length matches)))
+      (if (<= lms 0)
+          "no symbols found."
+        (concat
+         (mapconcat #'identity
+                    (seq-take (sort matches #'string<) 30)
+                    "\n")
+         (when (< 30 lms)
+           (format "\n%d results not show, please narrow your search." (- lms 30))))))))
+
 
 ;;
 ;; Codeium

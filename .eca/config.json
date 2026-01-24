@@ -7,10 +7,28 @@
               "properties": {
                   "pattern": {
                       "type": "string",
-                      "description": "a pattern or stem to search though."
+                      "description": "a emacs regex pattern or string stem to search for"
                   }
               },
               "required": ["pattern"]
+          }
+      },
+      "emacs-symbol-search-by-type": {
+          "description": "Search the current emacs session for symbol definitions.",
+          "command": "emacsclient -e '(my-eca-search-symbols \"{{pattern}}\" (quote {{limit-type}}))'",
+          "schema": {
+              "properties": {
+                  "pattern": {
+                      "type": "string",
+                      "description": "a emacs regex pattern or string stem to search for"
+                  },
+                  "limit-type": {
+                      "type": "string",
+                      "enum": ["function", "variable", "command", "face"],
+                      "description": "limit to a particular type of symbol"
+                  }
+              },
+              "required": ["pattern", "limit-type"]
           }
       }
   }
