@@ -240,6 +240,7 @@
   :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
                                              "mu4e-view-mode"
                                              "gnus-summary-mode"
+                                             "gnus-article-mode"
                                              "ediff-mode"
                                              "my-diff-mode"
                                              reb-lisp-mode)
