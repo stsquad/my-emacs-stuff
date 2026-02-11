@@ -1,4 +1,4 @@
-;;; my-corfu --- Corfu customisation
+;;; my-corfu --- Corfu customisation -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
@@ -7,19 +7,13 @@
 ;;
 ;;; Code:
 
+(eval-when-compile (require 'use-package))
 
 ;; Helpers for tweaking completion, we want flex first followed by
 ;; orderless.
 
 (defun my-orderless-dispatch-flex-first (_pattern index _total)
     (and (eq index 0) 'orderless-flex))
-
-;; ensure we use flex matching
-(defun my-lsp-mode-setup-completion ()
-  "Setup flex matching for LSP."
-  (message "setting up flex matching")
-  (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-        '(orderless))) ;; Configure flex
 
 ;; Optional cape package.
 ;; See the Cape README for more tweaks!
@@ -28,21 +22,17 @@
 
 (use-package orderless
   :ensure t
-  :init
-  ;; Tune the global completion style settings to your liking!
-  ;; This affects the minibuffer and non-lsp completion at point.
-  (setq completion-styles '(orderless partial-completion basic)
-        completion-category-defaults nil
-        completion-category-overrides nil)
-  ;; Optionally configure the first word as flex filtered.
-  (add-hook 'orderless-style-dispatchers #'my-orderless-dispatch-flex-first nil 'local)
+  :custom
+  (completion-styles '(orderless partial-completion basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides nil))
 
-  ;; Optionally configure the cape-capf-buster. FIXME
-  (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point))))
+  ;; :init
+  ;; ;; Optionally configure the first word as flex filtered.
+  ;; (add-hook 'orderless-style-dispatchers #'my-orderless-dispatch-flex-first nil 'local))
 
 (use-package corfu
   :ensure t
-  :hook (lsp-completion-mode . my-lsp-mode-setup-completion)
   :init (global-corfu-mode)
   :config (setq corfu-auto t))
 
@@ -57,7 +47,6 @@ This should be called from a hook such as `server-after-make-frame-hook'"
 
 (use-package corfu-terminal
   :ensure t
-  :commands corfu-terminal-mode
   :hook (server-after-make-frame . my-maybe-enable-corfu-terminal-mode))
 
 ;; Disable for now as it breaks ement:
@@ -73,27 +62,9 @@ This should be called from a hook such as `server-after-make-frame-hook'"
 
 ;; a few more useful configurations...
 (use-package emacs
-  :init
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3)
-
-  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
-  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
-
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
-  (setq tab-always-indent 'complete))
-
-  ;; :custom (lsp-completion-provider :none) ;; we use Corfu!
-  ;; :init
-  ;; (defun my-lsp-mode-setup-completion ()
-  ;;   (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-  ;;         '(flex))) ;; Configure flex
-
-  ;; :custom (lsp-completion-provider :none) ;; we use Corfu!
-  ;; :init
+  :init (setq
+         completion-cycle-threshold 3 ;; TAB cycle if there are only few candidates
+         tab-always-indent 'complete)) ;; Enable indentation+completion using the TAB key
 
 (provide 'my-corfu)
 ;;; my-corfu.el ends here
