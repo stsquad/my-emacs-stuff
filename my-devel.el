@@ -18,10 +18,7 @@
 (use-package editorconfig
   :ensure t
   :diminish "EdCf"
-  :config
-  ;; See https://github.com/editorconfig/editorconfig-emacs/issues/246
-  (add-to-list 'editorconfig-exclude-modes 'git-rebase-mode)
-  (editorconfig-mode 1))
+  :config (editorconfig-mode 1))
 
 (use-package editorconfig-custom-majormode
   :ensure t
