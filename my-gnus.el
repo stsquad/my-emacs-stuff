@@ -21,7 +21,8 @@
 (eval-when-compile (require 'use-package))
 (require 'transient)
 
-(use-package my-git)
+(use-package my-git
+  :commands my-git-apply-mbox)
 
 ;; GNUS Article Mode Helpers
 
@@ -30,8 +31,7 @@
   (interactive)
   (let ((buffer-file-name
          (make-temp-file "gnus-article" nil ".patch")))
-    ;; (set-buffer-modified-p t)
-    (save-buffer 0)
+    (write-region nil nil buffer-file-name)
     (my-git-apply-mbox buffer-file-name)
     (delete-file buffer-file-name)))
 
@@ -41,10 +41,14 @@
 ;; group.
 (defun my-gnus-fetch-message-id ()
   "Fetch the message-id"
-  (mail-header-message-id
-   (gnus-data-header
-    (gnus-data-find
-     (gnus-summary-article-number)))))
+  (cond
+   ((derived-mode-p 'gnus-article-mode)
+    (gnus-fetch-field "Message-ID"))
+   ((derived-mode-p 'gnus-summary-mode)
+    (mail-header-message-id
+     (gnus-data-header
+      (gnus-data-find
+       (gnus-summary-article-number)))))))
 
 (defun my-gnus-b4-article ()
   "Take the current article id and pass to b4"
@@ -56,6 +60,7 @@
      ("qemu-devel.nongnu.org" . "~/lsrc/qemu.git/")
      ("kvmarm.lists.cs.columbia.edu" . "~/lsrc/linux.git/")
      ("kvm.vger.kernel.org" . "~/lsrc/linux.git/")
+     ("dev.linux.lists.kvmarm" . "~/lsrc/linux.git/")
      ("virtualization.lists.linux-foundation.org" . "~/lsrc/linux.git/") )
   "Mapping from newgroups to source tree.")
 
@@ -170,8 +175,7 @@ Stays open while navigating articles."
 
 ;; `gnus-art` package configuration
 (use-package gnus-art
-  :hook ((gnus-article-prepare . my-gnus-article-set-dir)
-         (gnus-article-prepare . my-gnus-article-dispatch)) ; Auto-invoke transient on article entry
+  :hook ((gnus-article-prepare . my-gnus-article-set-dir))
   :bind (:map gnus-article-mode-map
               ("C-x t" . my-gnus-article-dispatch)
               ("q"     . my-gnus-article-close-and-quit-dispatch)) ; Override 'q' to use our wrapper
@@ -204,7 +208,7 @@ Stays open for navigation and filtering."
   :transient-suffix 'transient--do-stay
   [:description "Gnus Summary Operations"
    ["Navigation"
-    ("RET" "Open Article"    gnus-summary-read-article :transient nil)
+    ("RET" "Open Article"    gnus-summary-scroll-up :transient nil)
     ("n"   "Next Unread"     gnus-summary-next-unread-article)
     ("p"   "Previous Article" gnus-summary-prev-article)
     ("N"   "Next Thread"     gnus-summary-next-thread)
@@ -305,7 +309,7 @@ Stays open until explicitly quit."
   ;; Have the article view split horizontally thanks to my wide monitors
   (gnus-add-configuration '(article
                             (horizontal 1.0
-                                        (summary 0.25 point)
+                                        (summary 0.45 point)
                                         (article 1.0)))))
 
 (provide 'my-gnus)
