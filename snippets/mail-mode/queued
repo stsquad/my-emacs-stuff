@@ -2,4 +2,4 @@
 # name: queued
 # key: $q
 # --
-Queued to ${1:`(s-chomp (shell-command-to-string "git rev-parse --abbrev-ref HEAD"))`}, thanks.
+Queued to ${1:`(s-chomp (shell-command-to-string "git symbolic-ref --short HEAD 2>/dev/null || cat .git/rebase-merge/head-name 2>/dev/null | sed 's|refs/heads/||' || echo 'DETACHED'"))`}, thanks.
