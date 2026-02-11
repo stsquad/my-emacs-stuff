@@ -18,8 +18,9 @@
 ;;
 ;;; Code:
 
-(require 'use-package)
-(require 'my-libs)
+(eval-when-compile (require 'use-package))
+(use-package my-package)
+(use-package my-libs)
 
 ;; Automagically decompress files
 (auto-compression-mode t)
@@ -81,6 +82,7 @@
 ;; will do).
 (use-package casual
   :ensure t
+  :requires (bookmark dired esh-mode)
   :bind ((:map bookmark-bmenu-mode-map
                ("C-x t" . casual-bookmarks-tmenu))
          (:map dired-mode-map
@@ -138,10 +140,6 @@
          :map minibuffer-local-map
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
          ("M-r" . consult-history))                ;; orig. previous-matching-history-element
-
-  ;; Enable automatic preview at point in the *Completions* buffer. This is
-  ;; relevant when you use the default completion UI.
-  :hook (completion-list-mode . consult-preview-at-point-mode)
 
   ;; The :init configuration is always executed (Not lazy)
   :init
@@ -201,7 +199,7 @@
   (marginalia-mode))
 
 ;; Also icons ;-)
-(when have-melpa
+(when (and have-melpa window-system)
   (use-package nerd-icons-completion
     :ensure t
     :config
