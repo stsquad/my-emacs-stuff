@@ -583,18 +583,6 @@ Reviews: save _C_ompleted, _q_ueue normal | _m_aintiner or capture _r_eview comm
                          "~/src/emacs/el-easydraw.git"))
   :init (edraw-org-setup-default))
 
-
-;;
-;; Stats things
-;;
-(when I-am-at-work
-  (use-package ess
-    :ensure t
-    :config (setq
-             auto-mode-alist
-                                        ; don't override asm-mode
-             (delete '("\\.[qsS]\\'" . S-mode) auto-mode-alist))))
-
 ;; See http://emacs.stackexchange.com/questions/499/finding-and-executing-org-babel-snippets-programatically
 (defun my-babel-hashed-confirm (lang body)
   "Check against known hashes before prompting for confirmation.
