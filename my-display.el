@@ -98,7 +98,8 @@
                 frame-background-mode 'dark))
 
 (use-package nerd-icons
-  :if (and window-system (my-check-for-nerd-font))
+  :if (and (my-have-gui-system) (my-check-for-nerd-font))
+  :commands nerd-icons-dir-is-submodule
   :config (setq nerd-icons-font-family my-nerd-font))
 
 ;; Prettier unique buffer names.
@@ -114,14 +115,14 @@
 
 ;; Stop the mouse cursor getting in the way. This is great.
 (use-package avoid
-  :if window-system
+  :if (my-have-gui-system)
   :defer 60
   :config
   (mouse-avoidance-mode 'exile))
 
 ;; enable the mouse wheel
 (use-package mwheel
-  :if window-system
+  :if (my-have-gui-system)
   :init (mouse-wheel-mode))
 
 ; X11 paste to point

@@ -20,7 +20,15 @@
 ;; I can probably disable a bunch of stuff for test machines
 (defun my-primary-machine-p ()
   "Return t if I'm on a primary machine."
-  (or I-am-at-home I-am-at-work I-am-on-server))
+  (or I-am-at-home I-am-at-work))
+
+;; If we are running on my primary machine we probably will have a GUI
+;; we just don't know at start-up time. Wrap that "knowledge" in a helper.
+(defun my-have-gui-system ()
+  "Return t if we are on a GUI system."
+  (or window-system
+      (and (my-primary-machine-p)
+           (daemonp))))
 
 ;; When I-am-root we tweak some config
 (defvar I-am-root (= (user-uid) 0))

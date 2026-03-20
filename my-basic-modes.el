@@ -20,6 +20,7 @@
 
 (eval-when-compile (require 'use-package))
 (use-package my-package)
+(use-package my-vars)
 (use-package my-libs)
 
 ;; Automagically decompress files
@@ -199,7 +200,7 @@
   (marginalia-mode))
 
 ;; Also icons ;-)
-(when (and have-melpa window-system)
+(when (and have-melpa (my-have-gui-system))
   (use-package nerd-icons-completion
     :ensure t
     :config
