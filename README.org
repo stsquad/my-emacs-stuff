@@ -1,7 +1,7 @@
 #+TITLE: Alex's Emacs Configuration
 
 
-[[https://travis-ci.org/stsquad/my-emacs-stuff][https://travis-ci.org/stsquad/my-emacs-stuff.png?branch=master]]
+[[https://github.com/stsquad/my-emacs-stuff/actions/workflows/test.yml][https://github.com/stsquad/my-emacs-stuff/actions/workflows/test.yml/badge.svg?branch=master]]
 
 * Introduction
 
