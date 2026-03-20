@@ -61,7 +61,7 @@
                                  :chat-model "mistral"
                                  :embedding-model "mistral")))
 
-;; https://ai.google.dev/gemini-api/docs/models
+;; See https://ai.google.dev/gemini-api/docs/models
 (use-package llm-gemini
   :config (setq
            ;; cost efficient, low latency
@@ -69,7 +69,7 @@
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-2.5-flash-lite")
+            "gemini-3.1-flash-lite-preview")
            ;; general purpose
            my-gemini-llm-flash
            (make-llm-gemini
@@ -84,7 +84,7 @@
            my-gemini-pro-preview-llm
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
-            :chat-model "gemini-3-pro-preview")))
+            :chat-model "gemini-3.1-pro-preview")))
 
 ;; See https://docs.anthropic.com/en/docs/about-claude/models/all-models
 (use-package llm-claude
@@ -92,15 +92,15 @@
            ;; Powerful model for highly complex tasks. most expensive
            my-claude-opus
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-opus-4-1")
-           ;; Fast an relatively cheaper model
-           my-claude-haiku
-           (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-3-5-haiku-latest")
+                            :chat-model "claude-opus-4-6")
            ;; Intelligent, a little cheaper than opus
            my-claude-sonnet
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-sonnet-4-5")))
+                            :chat-model "claude-sonnet-4-6")
+           ;; Fast an relatively cheaper model
+           my-claude-haiku
+           (make-llm-claude :key (my-pass-password "api.anthropic.com")
+                            :chat-model "claude-haiku-4-5")))
 
 ;;
 ;; The OG ChatGpt integration
