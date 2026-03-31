@@ -58,6 +58,8 @@ not, I'd rather just go to magit-status. Lets make it so."
          ("<rebind> magit-visit-thing" . magit-diff-visit-file-worktree)
          :map magit-revision-mode-map
          ("C-c i" . my-commit-kill-message-id)
+         :map magit-log-mode-map
+         ("C-c C-e" . my-magit-archive-log)
          :map magit-mode-map
          ("C-x t" . hydra-magit/body))
   :hook (magit-log-edit-mode . auto-fill-mode)
@@ -86,7 +88,7 @@ not, I'd rather just go to magit-status. Lets make it so."
 ;; we use magit-git-string ourselves but there is no autoload
 (use-package magit-git
   :requires magit
-  :commands (magit-git-string magit-git-lines))
+  :commands (magit-git-string magit-git-lines magit-git-insert))
 
 (use-package magit-process
   :requires magit
@@ -289,6 +291,58 @@ domains then you'd best edit it yourself."
   (let ((default-directory dir))
     (magit-git-string
      "log" branch "--no-merges" "--oneline" "--grep" subj)))
+
+(defun my-magit-archive-log (&optional prefix)
+  "Archive the patches in the current magit-log view to a single buffer.
+If `PREFIX' then pop to the buffer when done without prompting for file.
+If `PREFIX' > 16 then pass the buffer to ellama to query."
+  (interactive "P")
+  (let* ((head (if (derived-mode-p 'magit-log-mode)
+                   (car magit-buffer-log-revisions)
+                 (magit-read-range-or-commit "HEAD" "HEAD")))
+         (base (car (apply #'magit-git-lines "merge-base" "origin/master"
+                      (list head))))
+         (buffer-name (format "*Magit Archive of %s..%s*" base head))
+         (revs
+          (apply #'magit-git-lines "log" "--format=%H" (list (format "%s..%s" base head)))))
+    (with-current-buffer (get-buffer-create buffer-name)
+      (let ((inhibit-read-only t)
+            (commits (length revs)))
+        (erase-buffer)
+        (insert (format "Archive generated at: %s\n" (format-time-string "%Y-%m-%d %H:%M:%S")))
+        (insert (format "Git Range: %s..%s\n" base head))
+        (insert (format "Total Commits: %d\n\n" commits))
+
+        (let ((count 0))
+          (dolist (rev (reverse revs))
+            (setq count (1+ count))
+            (insert "\n" (make-string 40 ?-) "\n")
+            (let ((pos (format "commit %d/%d" count commits)))
+              (insert (format "*Start of %s*\n" pos))
+              (magit-git-insert "show" "-p" "--no-color" rev)
+              (insert "\n*End of Commit*\n")
+              (message "Processing commit %d/%d..." count commits))))
+
+        (goto-char (point-min))
+        (set-buffer-modified-p nil)
+        (view-mode 1)))
+
+    (cond
+     ((= (prefix-numeric-value prefix)  4)
+      (pop-to-buffer buffer-name))
+     ((and (>= (prefix-numeric-value prefix) 16)
+           (fboundp 'ellama-ask-about))
+      (with-current-buffer buffer-name
+        (call-interactively 'ellama-ask-about)))
+     (t
+      (with-current-buffer buffer-name
+        (let* ((default (format "%s.txt" (string-replace "/" "_" head)))
+               (filename (read-file-name
+                          "Enter filename for archive:" nil
+                          default nil default)))
+          (when filename
+            (write-file (expand-file-name filename))
+            (message "Archived to %s" filename))))))))
 
 ;; Applying Patches Workflow
 ;;
