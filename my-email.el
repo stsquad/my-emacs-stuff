@@ -400,9 +400,10 @@ Useful for replies and drafts")
            (mu4e-thread-unfold)
          (mu4e-thread-fold)))
 
-(defun my-mu4e-archive-headers (&optional arg)
-  "Archive the emails in the headers currently displayed to a file.
-If `ARG' then pop to the buffer when done."
+(defun my-mu4e-archive-headers (&optional prefix)
+  "Archive the emails in the headers to a single buffer and save to a file.
+If `PREFIX' then pop to the buffer when done without prompting for file.
+If `PREFIX' > 16 then pass the buffer to ellama to query."
   (interactive "P")
   (let* ((search-query mu4e--search-last-query)
          (buffer-name (if search-query
@@ -427,14 +428,19 @@ If `ARG' then pop to the buffer when done."
          (insert (mu4e-view-message-text msg))
          (insert "\n*End of Message*\n\n"))))
 
-    (if arg
-        (pop-to-buffer archive-buffer)
+    (cond
+     ((= (prefix-numeric-value prefix)  4)
+      (pop-to-buffer archive-buffer))
+     ((= (prefix-numeric-value prefix) 16)
+      (with-current-buffer archive-buffer
+        (call-interactively 'ellama-ask-about)))
+     (t
       (with-current-buffer archive-buffer
         (let ((filename (read-file-name "Enter filename for archive:"
                                         nil "archive.txt" nil)))
           (when filename
             (write-file (expand-file-name filename))
-            (message "Archived to %s" filename)))))))
+            (message "Archived to %s" filename))))))))
 
 (defvar my-mu4e-line-without-quotes-regex
   (rx (: bol (not (any ">"))))
