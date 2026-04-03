@@ -7,6 +7,7 @@
 ;;; Code:
 
 (require 'ert)
+(require 'my-utils)
 
 ;; Setup path
 (defun my-ert-setup-path ()

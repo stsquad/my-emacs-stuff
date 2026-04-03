@@ -1,4 +1,4 @@
-;;; my-basic-modes --- Common global modes
+;;; my-basic-modes --- Common global modes -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 ;;
@@ -228,9 +228,8 @@
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
-  :ensure t ; only need to install it, embark loads it after consult if found
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+  :ensure t
+  :after consult)
 
 (provide 'my-basic-modes)
 ;;; my-basic-modes.el ends here

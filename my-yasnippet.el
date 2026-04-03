@@ -10,6 +10,7 @@
 (require 'my-libs)
 
 (defun my-disable-yas-if-no-snippets ()
+  "Disable ya-snippets if we have an empty snippet table."
   (when (and yas-minor-mode (null (yas--get-snippet-tables)))
     (yas-minor-mode -1)))
 
