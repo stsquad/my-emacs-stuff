@@ -16,11 +16,8 @@
   (emms-default-players))
 
 (use-package emms
-  :map
   :config
-  (setq emms-source-file-default-directory (if I-am-at-work
-                                               "/export/music"
-                                             "/home/alex/media/music")
+  (setq emms-source-file-default-directory "/mnt/music"
         emms-playlist-buffer-name "*Music*"
         emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
         emms-show-format "NP: %s"
