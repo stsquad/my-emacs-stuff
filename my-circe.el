@@ -1,4 +1,4 @@
-;;; my-circe --- Configuartion for Circe IRC client
+;;; my-circe --- Configuartion for Circe IRC client -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
@@ -12,40 +12,6 @@
 (require 'my-utils)
 (require 'my-spell)
 (require 'my-circe-secrets nil t)
-(require 'tls)
-(require 'nsm)
-
-(defun my-bitlbee-password (server)
-  "Return the password for the `SERVER'."
-  (my-pass-password "bitlbee"))
-
-(defun my-circe-auth-helper (user server)
-  "Fetch password for `USER' @ `SERVER' via auth."
-  (let ((pfunc (plist-get
-                (car
-                 (auth-source-search
-                  :host server :user user))
-                :secret)))
-    (when pfunc
-      (funcall pfunc))))
-
-;; These are both "personal" nicks for non-ZNC bounced connections
-(defun my-freenode-nick-password (server)
-  "Return the password for the `SERVER'."
-  (my-pass-password "freenode-nick"))
-
-(defun my-oftc-nick-password (server)
-  "Return the password for the `SERVER'."
-  (my-pass-password "stsquad@irc.oftc.net"))
-
-(defun my-libera-nick-password (server)
-  "Return the password for the `SERVER'."
-  (my-pass-password "stsquad@irc.libera.chat"))
-
-(defun my-gitter-password (server)
-  "Return the password for the `SERVER'."
-  (my-pass-password "gitter-irc"))
-
 
 ;; Logging
 (use-package lui-logging
@@ -176,7 +142,6 @@
       (shell-command-to-string
        (format "tmux new-window -a -n %s 'ssh %s'" host host)))))
 
-
 (use-package circe
   :ensure t
   :commands (circe circe-set-display-handler)
@@ -185,96 +150,17 @@
   :hook ((circe-channel-mode . enable-lui-autopaste)
          (circe-channel-mode . my-maybe-log-channel))
   :requires my-tracking
-  :init (when (and I-am-at-work
-                   (daemonp)
-                   (not I-am-root)
-                   (not my-irc-login-timer))
-          ;; override cert check for pl0rt
-          (let ((id (nsm-id "irc.pl0rt.org" 6697)))
-            (setq nsm-temporary-host-settings
-                  (list (list :id id :conditions '(:no-host-match :expired :invalid :verify-cert)))))
+  :init (when (and I-am-at-work (daemonp)
+                   (not (or I-am-root my-irc-login-timer)))
           (setq my-irc-login-timer (run-with-idle-timer 120 nil 'my-irc-login)))
-  :config
-  (progn
-    ;; override cert check for pl0rt
-    (let ((id (nsm-id "irc.pl0rt.org" 6697)))
-      (setq nsm-temporary-host-settings
-            (list (list :id id :conditions '(:no-host-match :expired :invalid :verify-cert)))))
-    (setq circe-reduce-lurker-spam t
-          circe-network-options
-          `(("Freenode"
-             :host "chat.freenode.net"
-             :server-buffer-name "⇄ Freenode"
-             :port "6697"
-             :tls t
-             :nick "stsquad"
-             :nickserv-password my-freenode-nick-password
-             )
-            ("OFTC"
-             :host "irc.oftc.net"
-             :server-buffer-name "⇄ OFTC"
-             :port "6697"
-             :tls t
-             :nick "stsquad"
-             :nickserv-password my-oftc-nick-password
-             :channels ("#debian-devel" "#debian-cross")
-             )
-            ("Libera Chat"
-             :host "irc.libera.chat"
-             :server-buffer-name "⇄ Libera Chat"
-             :port "6697"
-             :tls t
-             :nick "stsquad"
-             :nickserv-password my-libera-nick-password
-             )
-            ("irccloud (libera)"
-             :host "bnc.irccloud.com"
-             :server-buffer-name "⇄ Libera Chat (IRCCloud)"
-             :port "6697"
-             :tls t
-             :nick "ajb-linaro"
-             :pass (lambda(host) (my-circe-auth-helper "ajb-linaro" "irccloud-libera"))
-             )
-            ("irccloud (oftc)"
-             :host "bnc.irccloud.com"
-             :server-buffer-name "⇄ OFTC (IRCCloud)"
-             :channels ("#qemu" "#qemu-gsoc")
-             :port "6697"
-             :tls t
-             :nick "stsquad"
-             :pass (lambda(host) (my-circe-auth-helper "stsquad" "irccloud-oftc"))
-             )
-            ("irccloud (Linaro Slack)"
-             :host "slack.irccloud.com"
-             :server-buffer-name "⇄ Linaro Slack (IRCCloud)"
-             :channels ("#linaro" "#linaro-tech-leads" "#watercooler" "#plat-virt-leads-only")
-             :port "6697"
-             :tls t
-             :nick "alex.bennee"
-             :pass (lambda(host) (my-circe-auth-helper "alex.bennee" "irccloud-slack"))
-             )
-            ("gitter"
-             :host "irc.gitter.im"
-             :server-buffer-name "⇄ Gitter (irc gateway)"
-             :port "6697"
-             :nick "stsquad"
-             :pass my-gitter-password
-             :tls t
-             )
-            ("Pl0rt"
-             :host "irc.pl0rt.org"
-             :server-buffer-name "⇄ Pl0rt"
-             :port "6697"
-             :nick "ajb"
-             :use-tls t
-             :channels ("#blue")
-             )))))
+  :config (setq circe-reduce-lurker-spam t))
 
 (use-package circe-chanop
   :after circe)
 
 (use-package circe-color-nicks
   :after circe
+  :commands enable-circe-color-nicks
   :init (enable-circe-color-nicks))
 
 (provide 'my-circe)
