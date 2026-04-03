@@ -86,7 +86,7 @@ from it's current value."
     ;; Recurse into children if they exist
     (let ((child (window-child window)))
       (while child
-        (my/dump-window-tree child (concat indent "  │ "))
+        (my-dump-window-tree child (concat indent "  │ "))
         (setq child (window-right child))))))
 
 ;; Execute the dump
@@ -96,10 +96,38 @@ from it's current value."
     (erase-buffer)
     (insert "Emacs Window Tree Layout:\n")
     (insert "=========================\n")
-    (my/dump-window-tree (frame-root-window) "")
+    (my-dump-window-tree (frame-root-window) "")
     (display-buffer (current-buffer))))
 
+;; gnus headers
 
+(defun my-gnus-list-all-headers ()
+  "Extract all headers from the current article as an alist."
+  (interactive)
+  (let (header-alist)
+    (gnus-with-article-buffer
+      (save-excursion
+        (goto-char (point-min))
+        ;; Gnus articles have headers separated from body by an empty line
+        (let ((header-end (save-excursion
+                            (re-search-forward "^$" nil t)
+                            (point))))
+          (while (re-search-forward "^\\([^ \t:]+\\):\\s-*" header-end t)
+            (let ((key (match-string 1))
+                  (beg (point))
+                  (val ""))
+              ;; Handle multi-line (folded) headers
+              (forward-line 1)
+              (while (and (< (point) header-end)
+                          (looking-at "^[ \t]"))
+                (forward-line 1))
+              (setq val (buffer-substring-no-properties beg (1- (point))))
+              (push (cons key (string-trim val)) header-alist))))))
+
+    ;; Print to *Messages* for debugging
+    (dolist (pair (reverse header-alist))
+      (message "%s: %s" (car pair) (cdr pair)))
+    header-alist))
 
 (provide 'my-debug)
 ;;; my-debug.el ends here
