@@ -1,4 +1,4 @@
-;;; my-display --- Changes to how Emacs looks
+;;; my-display --- Changes to how Emacs looks - -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2014 Alex Bennée
 ;;
@@ -187,7 +187,7 @@
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
 
 (defun my-persist-theme (&optional frame)
-  "Persist the current theme"
+  "Persist the current theme."
   (when custom-enabled-themes
     (load-theme (car custom-enabled-themes) t)))
 
@@ -208,48 +208,6 @@
                            tabs trailing lines-tail empty
                            space-after-tab tab-mark)))
 
-;; WIP: what I want is to be able to re-size without being locked to
-;; the golden ratio
-(defun my-shrink-window-horizontally (delta)
-  "Temporarily disable golden-ratio before shrinking window."
-  (interactive "p")
-  (if (not golden-ratio-mode)
-      (shrink-window-horizontally delta)
-    (golden-ratio-mode -1)
-    (shrink-window-horizontally delta)))
-
-;; (defadvice shrink-window
-;;     (before disable-golden-ratio)
-;;   "Disable golden ratio before changing window size."
-;;   (golden-ratio -1))
-
-;; (defadvice enlarge-window
-;;     (before disable-golden-ratio)
-;;   "Disable golden ratio before changing window size."
-;;   (golden-ratio -1))
-
-(defun my-ediff-comparison-buffer-p ()
-  "Safely check if in an ediff session"
-  (and (boundp 'ediff-this-buffer-ediff-sessions)
-       ediff-this-buffer-ediff-sessions))
-
-;; Nice window sizing
-(use-package golden-ratio
-  :ensure t
-  :commands (golden-ratio-mode)
-  :defer 30
-  :config (setq golden-ratio-exclude-modes '("mu4e-headers-mode"
-                                             "mu4e-view-mode"
-                                             "gnus-summary-mode"
-                                             "gnus-article-mode"
-                                             "ediff-mode"
-                                             "my-diff-mode"
-                                             reb-lisp-mode)
-                golden-ratio-inhibit-functions
-                #'my-ediff-comparison-buffer-p)
-  (add-to-list 'golden-ratio-extra-commands 'ace-window)
-  :init (golden-ratio-mode))
-
 ;; Manual colour themes
 (setq custom-safe-themes
       '("84d2f9eeb3f82d619ca4bfffe5f157282f4779732f48a5ac1484d94d5ff5b279"
@@ -259,16 +217,9 @@
 (use-package facemenu
   :commands list-colors-display)
 
-(use-package moe-theme
-  :ensure t
-  :commands moe-dark
-  :init (when window-system
-          (moe-dark)))
-
 (use-package gruvbox-theme
   :ensure t
-  :init (when (not window-system)
-          (load-theme 'gruvbox t)))
+  :init (load-theme 'gruvbox t))
 
 (use-package zenburn-theme
   :ensure t)
