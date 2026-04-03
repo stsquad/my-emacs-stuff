@@ -186,7 +186,7 @@
 (put 'narrow-to-region 'disabled nil)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
 
-(defun my-persist-theme (&optional frame)
+(defun my-persist-theme (&optional _frame)
   "Persist the current theme."
   (when custom-enabled-themes
     (load-theme (car custom-enabled-themes) t)))
