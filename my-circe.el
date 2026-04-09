@@ -7,7 +7,9 @@
 ;;
 ;;; Code:
 
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+(require 'dash)
+(require 'url-http)
 (require 'my-vars)
 (require 'my-utils)
 (require 'my-spell)
@@ -15,11 +17,11 @@
 
 ;; Logging
 (use-package lui-logging
-  :commands enable-lui-logging)
+  :commands enable-lui-logging disable-lui-logging)
 
 (defvar my-logged-chans
   '("#qemu@irccloud (oftc)" "#qemu-gsoc@irccloud (oftc)" "#linaro-virtualization@irccloud (libera)")
-  "List of channels which I log")
+  "List of channels which I log.")
 
 (defun my-maybe-log-channel ()
   "Maybe start logging the an IRC channel."
@@ -37,7 +39,7 @@
         (if (and (re-search-forward "#endmeeting" nil t) lui-logging-timer)
             (disable-lui-logging))))))
 
-;; Lui
+;; Lui - Circe's Line User Interface
 (use-package lui
   :config (setq lui-flyspell-p t)
   :hook (lui-pre-input . my-check-for-meeting))
@@ -85,8 +87,8 @@
        ">"
        (group (: "paste.debian.net/" (one-or-more (in digit))))
        "</a>"))
-  "Regexp to extract result URL from response. We need to fish it out
-  from the returned page like savages.")
+  "Regexp to extract result URL from response.
+We need to fish it out from the returned page like savages.")
 
 (defun lui-autopaste-service-debian (text)
   "Paste TEXT to paste.debian.net return the paste url."
