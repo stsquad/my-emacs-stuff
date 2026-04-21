@@ -12,7 +12,9 @@
 (require 'my-vars)
 
 (use-package cc-mode
-  :commands c-mode)
+  :commands c-mode
+  :mode (("\\.c\\.inc" . c-mode)
+         ("\\.h\\.inc" . c-mode)))
 
 ;;
 ;; End of c-mode customisations
