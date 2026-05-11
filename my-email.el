@@ -13,7 +13,6 @@
 (use-package my-git)
 (require 'my-hydra)
 (require 'my-mail-secrets nil t)
-(require 'dash)
 
 (use-package smtpmail
   :commands smtpmail-send-queued-mail
@@ -133,8 +132,7 @@
   "Ivy based switch to mu4e, with PREFIX switch directly to main menu.
 
 Instead of the heuristics of `my-switch-to-mu4e' we build a list of
-all mu4e buffers and allow ivy selection of them.
-"
+all mu4e buffers and allow ivy selection of them."
   (interactive "P")
   (if (or prefix (not (get-buffer "*mu4e-main*")))
       (mu4e)
@@ -286,7 +284,7 @@ Useful for replies and drafts")
 ;; things by hand using message-fetch-field.
 
 (defun my-get-gnus-emails ()
-  "Return a list of emacs from the GNUs headers"
+  "Return a list of emacs from the GNUs headers."
   (let ((cc (message-fetch-field "cc"))
         (to (message-fetch-field "to")))
     (nconc
@@ -354,13 +352,14 @@ Useful for replies and drafts")
      "List of regexs to clean contact list.")
 
 (defun my-mu4e-contact-cleaner (addr)
-  "Clean out junk emails from contacts."
+  "Filter `ADDR' while processing contacts for junk emails."
   (if (--any (string-match-p it addr) my-bad-addresses)
       nil
     addr))
 
 (defun my-mu4e-reply-function (&optional arg)
-  "An alternate reply function that considers mailing lists."
+  "An alternate reply function defaults to wide reply if mailing list involved.
+The prefix `ARG' will override the wide reply."
   (interactive "P")
   (let* ((emails (--map (plist-get it :email)
                         (append (mu4e-message-field-at-point :to)
@@ -387,7 +386,7 @@ Useful for replies and drafts")
                 mu4e-sent-messages-behavior 'trash))
 
 
-(defun my-update-async-jobs (ignored)
+(defun my-update-async-jobs (_ignored)
   "Flush the command queue."
   (when (and (fboundp 'shell-command-queue-run)
              shell-command-queue)
