@@ -59,6 +59,10 @@
 (use-package faces
   :config (add-to-list 'term-file-aliases '("foot" . "xterm")))
 
+
+;; make window splitting fairer
+(setq window-combination-resize t)
+
 ;;
 ;; The easiest solution is to locally install one of the Nerd Fonts
 ;; from https://www.nerdfonts.com/ where you can get fonts that have
@@ -143,8 +147,8 @@
 
 (blink-cursor-mode -1)
 
-(setq frame-title-format "%b")
-(setq  icon-title-format "%b")
+(setq frame-title-format "%b"
+      icon-title-format "%b")
 
 (defun my-flash-modeline ()
   "Flash the modeline."
