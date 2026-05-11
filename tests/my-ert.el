@@ -1,4 +1,4 @@
-;;; my-ert.el -- ert tests for my stuff
+;;; my-ert.el -- ert tests for my stuff -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
@@ -7,7 +7,6 @@
 ;;; Code:
 
 (require 'ert)
-(require 'my-utils)
 
 ;; Setup path
 (defun my-ert-setup-path ()
@@ -23,7 +22,8 @@
 
 (ert-deftest whick-lookup-tests ()
   (my-ert-setup-path)
-  (require 'my-utils)
+  (use-package my-utils
+    :commands which-lookup)
   (should (eql (which-lookup "foo") nil))
   (should (string-match "emacs" (which-lookup "emacs")))
   (should (string-match "bin/true" (which-lookup '("true" "false"))))
