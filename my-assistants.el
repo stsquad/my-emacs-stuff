@@ -1,11 +1,15 @@
-;;; my-assistants --- integration of LLMs and similar tools
+;;; my-assistants --- integration of LLMs and similar tools -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
-;; This is the configuration of various digital assistants namely LLMs
-;; and other similar tools.
+;; This is the configuration of various digital assistants namely
+;; Large Language Models and the associated agentic tools.
 ;;
 ;;; Code:
+
+(eval-when-compile (require 'use-package))
+(use-package my-utils)
+(use-package my-tracking)
 
 ;; AI!
 (use-package pcsv
