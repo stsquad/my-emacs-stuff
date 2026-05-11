@@ -33,8 +33,8 @@
 ;; When I-am-root we tweak some config
 (defvar I-am-root (= (user-uid) 0))
 
-;; tweaks some low level vars
-(setq read-process-output-max (* 1024 1024))
+;; helps eglot/lsp as the responses can be quite big
+(setq read-process-output-max (* 4 1024 1024))
 
 ;; Environment variables the shell may not have set
 (when I-am-at-work
