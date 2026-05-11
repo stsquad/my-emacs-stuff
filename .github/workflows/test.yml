@@ -10,6 +10,7 @@ jobs:
       matrix:
         emacs_version:
           - 30.1 # bookworm-backports / trixie
+          - 30.2 # forky
           - snapshot
     steps:
       - name: Install Emacs
