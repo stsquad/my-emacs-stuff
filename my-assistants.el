@@ -24,6 +24,8 @@
   :ensure t)
 
 (use-package llm-openai
+  :ensure t
+  :commands make-llm-openai
   :config (setq my-gpt4
                 (make-llm-openai :key (my-pass-password "api.openai.com")
                                  :chat-model "gpt-4o")
@@ -42,19 +44,18 @@
                 ; cheaper version of o1 focused on coding, math,science
                 my-openai-o1-mini
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "o1-mini")))
-
-;; Also some hosted models
-(setq my-textsynth-mistral
-      (make-llm-openai-compatible :url "http://api.textsynth.com/v1/"
-                                  :chat-model "mistral_7B"
-                                  :key (my-pass-password
-                                        "api.textsynth.com"))
-      my-textsynth-llama-70b
-      (make-llm-openai-compatible :url "http://api.textsynth.com/v1/"
-                                  :chat-model "llama3.3_70B_instruct"
-                                  :key (my-pass-password
-                                        "api.textsynth.com")))
+                                 :chat-model "o1-mini")
+                ;; Also some hosted models
+                my-textsynth-mistral
+                (make-llm-openai-compatible :url "http://api.textsynth.com/v1/"
+                                            :chat-model "mistral_7B"
+                                            :key (my-pass-password
+                                                  "api.textsynth.com"))
+                my-textsynth-llama-70b
+                (make-llm-openai-compatible :url "http://api.textsynth.com/v1/"
+                                            :chat-model "llama3.3_70B_instruct"
+                                            :key (my-pass-password
+                                                  "api.textsynth.com"))))
 
 
 (use-package llm-ollama
@@ -73,13 +74,13 @@
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-3.1-flash-lite-preview")
+            "gemini-3.1-flash-lite")
            ;; general purpose
            my-gemini-llm-flash
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-3-flash-preview")
+            "gemini-3.5-flash")
            ;; advanced coding model
            my-gemini-pro-llm
            (make-llm-gemini
@@ -96,7 +97,7 @@
            ;; Powerful model for highly complex tasks. most expensive
            my-claude-opus
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-opus-4-6")
+                            :chat-model "claude-opus-4-7")
            ;; Intelligent, a little cheaper than opus
            my-claude-sonnet
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
