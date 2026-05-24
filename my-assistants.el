@@ -204,13 +204,44 @@
 ;;
 ;; Editor Code Assistant - MCP enabled chat interface
 ;;
+
+(defun my-eca-add-tracking-buffer ()
+  "Add the eca chat buffer to tracking when chat completes."
+  (tracking-add-buffer (current-buffer)))
+
 (use-package eca
-  :ensure t)
+  :ensure t
+  ;; :hook (eca-chat-mode . #'my-eca-chat-flyspell-setup)
+  :hook (eca-chat-finished . my-eca-add-tracking-buffer)
+  :config (setq eca-extra-args '("--verbose" "--log-level" "debug")
+                eca-completion-mode nil
+                eca-chat-use-side-window nil))
 
 ; Some helpers
+(defun my-eca-chat-flyspell-setup ()
+  "Enable Flyspell during typing and disable on submit in `eca-chat-mode`."
+  (when (derived-mode-p 'eca-chat-mode)
+    ;; Disable Flyspell when submitting prompts
+    (add-hook 'pre-command-hook
+              (lambda ()
+                (when (and (memq this-command '(eca-chat--key-pressed-return
+                                                eca-chat-send-prompt-at-chat))
+                           flyspell-mode)
+                  (flyspell-mode -1)))
+              nil t)
+    ;; Re-enable Flyspell when typing
+    (add-hook 'pre-command-hook
+              (lambda ()
+                (when (and (eq this-command 'self-insert-command)
+                           (not flyspell-mode))
+                  (flyspell-mode 1)))
+              nil t)))
+
+(add-hook 'eca-chat-mode-hook #'my-eca-chat-flyspell-setup)
 
 (defun my-eca-search-symbols (pattern &optional limit-type)
-  "Search for symbols matching a regex PATTERN. Optional `LIMIT-TYPE'"
+  "Search for symbols matching a regex `PATTERN'.
+Optional `LIMIT-TYPE'."
   (let ((matches '()))
     (mapatoms
      (lambda (sym)
@@ -241,7 +272,6 @@
                     "\n")
          (when (< 30 lms)
            (format "\n%d results not show, please narrow your search." (- lms 30))))))))
-
 
 ;;
 ;; Codeium
