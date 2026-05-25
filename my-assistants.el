@@ -166,11 +166,23 @@
   :bind ("C-c a" . ellama-transient-main-menu)
   :custom
   (ellama-provider
-   my-gemini-llm-flash "Fast-ish general purpose")
+   my-gemini-llm-flash-lite "Fast and cheapest general purpose")
   (ellama-completion-provider
    my-gemini-llm-flash-lite "Favour latency for completion")
   (ellama-spinner-type 'moon)
   (ellama-spinner-enabled t)
+  ;; Safe tools to use
+  (ellama-tools '(project_root
+                  read_file
+                  grep
+                  directory_tree))
+  ;; how to find skills
+  (ellama-skills-local-path ".agents/skills")
+  (ellama-skills-global-path "/home/alex/.config/eca/skills")
+  ;; Data Loss Protection setting
+  (ellama-tools-dlp-enabled t)
+  (ellama-tools-dlp-mode 'monitor)
+  (ellama-tools-dlp-log-targets '(memory))
   :init (setopt ellama-language "English"
                 ellama-providers
                 '(
