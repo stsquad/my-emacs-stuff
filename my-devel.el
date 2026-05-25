@@ -30,6 +30,8 @@
 
 ;; Tree sitter
 
+(use-package treesit)
+
 (use-package treesit-auto
   :if I-am-at-work
   :ensure t
@@ -317,6 +319,21 @@
 (use-package dockerfile-mode
   :mode ("\\.docker\\'" . dockerfile-mode)
   :ensure t)
+
+;; Scad
+
+(use-package scad-ts-mode
+  :ensure t
+  :after treesit
+  :mode "\\.scad\\'"
+  :hook ((scad-ts-mode . eglot-ensure)
+         (scad-ts-mode . electric-pair-local-mode)
+         (scad-ts-mode . electric-indent-local-mode)
+         (scad-ts-mode . whitespace-mode))
+  :init
+  (setq scad-ts-indent-offset 2)
+  :config
+  (add-hook 'scad-ts-after-open-gui-functions #'scad-ts--gui-focus-control))
 
 (provide 'my-devel)
 ;;; my-devel.el ends here
