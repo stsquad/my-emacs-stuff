@@ -885,7 +885,7 @@ patches."
       (I-am-at-work "mbsync  -V -Dm linaro-sync")
       (t "true"))
      ;; debug
-     mu4e-mu-debug t
+     mu4e-mu-debug nil
      mu4e-headers-report-render-time t
           ;;
      mu4e-update-interval 800
