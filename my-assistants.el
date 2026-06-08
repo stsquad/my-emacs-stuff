@@ -10,10 +10,14 @@
 (eval-when-compile (require 'use-package))
 (use-package my-utils)
 (use-package my-tracking)
+(use-package my-git)
 
 ;; AI!
 (use-package pcsv
   :ensure t)
+
+;; import useful env vars
+(setenv "GITLAB_TOKEN" (my-pass-auth-helper "api.gitlab.com"))
 
 ;;
 ;; llm provides an abstraction for various local and remote LLM APIs
@@ -23,8 +27,8 @@
 (use-package llm
   :ensure t)
 
+;; the individual helpers are part of llm, no need to ensure
 (use-package llm-openai
-  :ensure t
   :commands make-llm-openai
   :config (setq my-gpt4
                 (make-llm-openai :key (my-pass-password "api.openai.com")
@@ -221,15 +225,6 @@
   "Add the eca chat buffer to tracking when chat completes."
   (tracking-add-buffer (current-buffer)))
 
-(use-package eca
-  :ensure t
-  ;; :hook (eca-chat-mode . #'my-eca-chat-flyspell-setup)
-  :hook (eca-chat-finished . my-eca-add-tracking-buffer)
-  :config (setq eca-extra-args '("--verbose" "--log-level" "debug")
-                eca-completion-mode nil
-                eca-chat-use-side-window nil))
-
-; Some helpers
 (defun my-eca-chat-flyspell-setup ()
   "Enable Flyspell during typing and disable on submit in `eca-chat-mode`."
   (when (derived-mode-p 'eca-chat-mode)
@@ -249,7 +244,15 @@
                   (flyspell-mode 1)))
               nil t)))
 
-(add-hook 'eca-chat-mode-hook #'my-eca-chat-flyspell-setup)
+(use-package eca
+  :ensure t
+  :hook ((eca-chat-mode . my-eca-chat-flyspell-setup)
+         (eca-chat-finished . my-eca-add-tracking-buffer))
+  :config (setq eca-extra-args '("--verbose")
+                eca-completion-mode nil
+                eca-chat-use-side-window nil))
+
+;; Some local helpers for hacking elisp (see .eca/config.json customTools)
 
 (defun my-eca-search-symbols (pattern &optional limit-type)
   "Search for symbols matching a regex `PATTERN'.
