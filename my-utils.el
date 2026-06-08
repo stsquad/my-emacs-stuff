@@ -109,6 +109,22 @@ Save password if `CACHE' is non nil."
             (add-to-list 'my-cached-passwords (cons pass-name new-pass)))
           new-pass)))))
 
+(use-package auth-source-pass
+  :ensure t
+  :if (file-exists-p "~/.password-store")
+  :config (auth-source-pass-enable))
+
+;; Use auth to fetch pass keys instead of our hand-hacked solution
+(defun my-pass-auth-helper (key)
+  "Fetch password for `key' via auth."
+  (let ((pfunc (plist-get
+                (car
+                 (auth-source-search
+                  :host key))
+                :secret)))
+    (when pfunc
+      (funcall pfunc))))
+
 ;;
 ;; Bit extraction utils
 ;;

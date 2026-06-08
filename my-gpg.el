@@ -67,11 +67,6 @@
     (my-squash-gpg)
     (epa-file-enable)))
 
-(use-package auth-source-pass
-  :ensure t
-  :if (file-exists-p "~/.password-store")
-  :config (auth-source-pass-enable))
-
 (provide 'my-gpg)
 ;;; my-gpg.el ends here
 
