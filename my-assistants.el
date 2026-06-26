@@ -17,7 +17,7 @@
   :ensure t)
 
 ;; import useful env vars
-(setenv "GITLAB_TOKEN" (my-pass-auth-helper "api.gitlab.com"))
+(setenv "GITLAB_TOKEN" (my-pass-auth-helper "gitlab-qemu-api"))
 
 ;;
 ;; llm provides an abstraction for various local and remote LLM APIs
