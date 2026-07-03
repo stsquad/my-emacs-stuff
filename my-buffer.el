@@ -1,9 +1,8 @@
-;;; my-buffer.el --- buffer navigation tweaks
+;;; my-buffer.el --- buffer navigation tweaks -*- lexical-binding: t -*-
 ;;
 ;;; Commentary:
 ;;
-;; I now only use lusty-explorer for file loading. C-x b buffer
-;; switching will be helm-mini.
+;; C-x b buffer switching is now consult-buffer
 ;;
 ;;; Code:
 
@@ -13,22 +12,6 @@
 (use-package midnight
   :commands midnight-mode
   :config (midnight-mode t))
-
-;;
-;; Lusty Explorer
-;;
-;; moved C-x b to helm-mini (see my-helm)
-;; (global-set-key (kbd "C-x b") 'lusty-buffer-explorer)
-(defun my-lusty-file-explorer()
-  "Wrapper to launch, temporarily defaulting completing read."
-  (interactive)
-  (let ((completing-read-function 'completing-read-default))
-    (lusty-file-explorer)))
-
-(use-package lusty-explorer
-  :disabled t
-  :commands lusty-file-explorer
-  :bind (("C-x C-f" . my-lusty-file-explorer)))
 
 ;; ibuffer has been around for some time
 (defun my-ibuffer-bs-show ()
@@ -41,11 +24,13 @@
     (use-package bufler
       :ensure t
       :bind (("C-x C-b" . bufler))
-      :config (bufler-defgroups
+      :config
+      (setq bufler-groups
+            (bufler-defgroups
                (group
                 ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
                 (group-or "*Help/Info*"
-                          (mode-match "*Help*" (rx bos "help-"))
+                          (mode-match "*Help*" (rx bos (or "help" "helpful") "-"))
                           (mode-match "*Info*" (rx bos "info-"))))
                (group
                 ;; Subgroup collecting all special buffers (i.e. ones that are not
@@ -65,12 +50,28 @@
                  ;; separately for convenience.
                  (name-match "**Special**"
                              (rx bos "*" (or "Messages" "Warnings"
-                                             "scratch" "Backtrace")
-                                 "*"))))
-               (group
-                (group-or "IRC"
-                          (mode-match "Channels" (rx "circe-channel-mode"))
-                          (mode-match "DMs" (rx "circe-query-mode")))
+                                             "scratch" "Backtrace"
+                                             "Async-native-compile-log")
+                                 "*")))
+                ;; IRC buffers
+                (group
+                 (group-or "IRC Servers"
+                           (mode-match "Servers" (rx bos "circe-server-mode"))))
+                (group
+                 (group-or "IRC Messages"
+                           (mode-match "Channels" (rx bos "circe-channel-mode"))
+                           (mode-match "DMs" (rx bos "circe-query-mode"))))
+                ;; Emails
+                (group
+                 (group-or "Incoming Emails"
+                           (mode-match "Menu" (rx bos "mu4e-main-mode"))
+                           (mode-match "Headers" (rx bos "mu4e-headers-mode"))
+                           (mode-match "Viewing" (rx bos "mu4e-view-mode"))))
+                (group
+                 (group-or "Composed Emails"
+                           (mode-match "Composing" (rx bos "mu4e-compose-mode"))))
+                (group
+                 (name-match "ECA" (rx bos "<eca"))))
                (group
                 (auto-project))
                (auto-directory)
