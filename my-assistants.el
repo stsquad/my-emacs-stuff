@@ -27,28 +27,28 @@
 (use-package llm
   :ensure t)
 
-;; the individual helpers are part of llm, no need to ensure
+;; See https://developers.openai.com/api/docs/models
 (use-package llm-openai
-  :commands make-llm-openai
-  :config (setq my-gpt4
+  ;; most eye-watering expensive pro reasoning model
+  :config (setq my-gpt-pro
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "gpt-4o")
-                ; cheaper version of gpt4
-                my-gpt4-mini
+                                 :chat-model "gpt-5.5-pro")
+                ; Pretty expensive
+                my-gpt5-latest
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "gpt-4o-mini")
-                ; aliases to the latest chatgpt model
-                my-chatgpt
+                                 :chat-model "gpt-5.5")
+                ; Slightly older, half price model
+                my-gpt5-last
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "chatgpt-4o-latest")
-                ; broad general reasoning model, expensive
-                my-openai-o1
+                                 :chat-model "gpt-5.4")
+                ; Third cheaper than the main 5.4
+                my-gpt5-mini
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "o1")
-                ; cheaper version of o1 focused on coding, math,science
-                my-openai-o1-mini
+                                 :chat-model "gpt-5.4-mini")
+                ; Cheapest high volume model
+                my-gpt5-nano
                 (make-llm-openai :key (my-pass-password "api.openai.com")
-                                 :chat-model "o1-mini")
+                                 :chat-model "gpt-5.4-nano")
                 ;; Also some hosted models
                 my-textsynth-mistral
                 (make-llm-openai-compatible :url "http://api.textsynth.com/v1/"
@@ -98,14 +98,18 @@
 ;; See https://docs.anthropic.com/en/docs/about-claude/models/all-models
 (use-package llm-claude
   :config (setq
-           ;; Powerful model for highly complex tasks. most expensive
+           ;; The most expensive (and powerful) model.
+           my-claude-fable
+           (make-llm-claude :key (my-pass-password "api.anthropic.com")
+                            :chat-model "claude-fable-5")
+           ;; Powerful model for highly complex tasks. pretty expensive
            my-claude-opus
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-opus-4-7")
+                            :chat-model "claude-opus-4-8")
            ;; Intelligent, a little cheaper than opus
            my-claude-sonnet
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
-                            :chat-model "claude-sonnet-4-6")
+                            :chat-model "claude-sonnet-5")
            ;; Fast an relatively cheaper model
            my-claude-haiku
            (make-llm-claude :key (my-pass-password "api.anthropic.com")
@@ -119,41 +123,6 @@
   "Return the name of the current `PROJECT'."
   (file-name-sans-extension
    (file-name-nondirectory (directory-file-name (cdr project)))))
-
-(defun my-define-project-prompt ()
-  "Defined a ChatGPT prompt tailored for the current project."
-  (let* ((project (project-current t))
-         (proj-name (my-project-name project))
-         (origin-url (magit-get "remote" "origin" "url"))
-         (prompt-title (format "Project assistant for %s" proj-name))
-         (prompt (concat
-                  "Your goal is to help the user working on the current project.\n"
-                  (format "the project is in the directory %s and its origin repo is %s\n" proj-name origin-url)
-                  "You are positive and encouraging.\n"
-                  "You do not repeat obvious things, including their query.\n"
-                  "You are as concise in responses. You always guide the user go one level deeper and help them see patterns.\n"
-                  "You never apologise for confusions because it would waste their time.\n"
-                  "You use markdown liberally to structure responses.\n"
-                  "Always show code snippets in markdown blocks with language labels.\n"
-                  "Don't explain code snippets.\n"
-                  "Whenever you output updated code for the user, only show diffs,instead of entire snippets.\n"
-                  "You can assume the user is running on Debian Linux and is using Emacs as their editor\n")))
-    (add-to-list 'chatgpt-shell-system-prompts `(,prompt-title . ,prompt))))
-
-(use-package chatgpt-shell
-  :load-path (lambda () (my-return-path-if-ok
-                         "~/src/emacs/chatgpt-shell.git/"))
-  :config (setq
-           chatgpt-shell-chatgpt-model-version "gpt-4"
-           chatgpt-shell-openai-key '(lambda () (my-pass-password "api.openai.com"))))
-
-; "code-davinci-edit-001"
-; gpt-3.5-turbo is the cheaper faster one
-
-(use-package dall-e-shell
-  :load-path (lambda () (my-return-path-if-ok
-                         "~/src/emacs/chatgpt-shell.git/"))
-  :config (setq dall-e-shell-openai-key '(lambda () (my-pass-password "api.openai.com"))))
 
 ;;
 ;; Ellama
@@ -196,12 +165,11 @@
                   ("Gemini Flash (general)" . my-gemini-llm-flash)
                   ("Gemini Flash Lite (cheaper, low latency)" . my-gemini-llm-flash-lite)
                   ;; OpenAI Models
-                  ("ChatGPT (latest)" . my-chatgpt)
-                  ("OpenAI GPT4o" . my-gpt4)
-                  ("OpenAI GPT4o-mini" . my-gpt4-mini)
-                  ;; not available on API unless a pro member
-                  ;; ("OpenAI o1" . my-openai-o1)
-                  ("OpenAI o1-mini" . my-openai-o1-mini)
+                  ("ChatGPT Pro (most expensive)" . my-gpt-pro)
+                  ("ChatGPT (latest)" . my-gpt5-latest)
+                  ("ChatGPT (cheaper, older)" . my-gpt5-last)
+                  ("ChatGPT mini (much cheaper)" . my-gpt5-mini)
+                  ("ChatGPT nano (cheapest)" . my-gpt5-nano)
                   ;; Hosted open models
                   ("Mistral 7B (textsynth)" . my-textsynth-mistral)
                   ("Llama 70B (textsynth)". my-textsynth-llama-70b)
@@ -212,6 +180,7 @@
                   ("Claude Sonnet" . my-claude-sonnet)
                   ("Claude Haiku (cheap, fast)" . my-claude-haiku)
                   ("Claude Opus (slow, expensive)" . my-claude-opus)
+                  ("Claude Fable (really expensive)" . my-claude-fable)
                   ;;
                   )
                 ellama-keymap-prefix "C-c C-l l"
