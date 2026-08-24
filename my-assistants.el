@@ -8,7 +8,8 @@
 ;;; Code:
 
 (eval-when-compile (require 'use-package))
-(use-package my-utils)
+(use-package my-utils
+  :commands my-pass-password my-pass-auth-helper)
 (use-package my-tracking)
 (use-package my-git)
 
@@ -133,9 +134,7 @@
   :ensure t)
 
 (use-package ellama
-  ;; :ensure t
-  :load-path (lambda () (my-return-path-if-ok
-                         "~/src/emacs/ellama.git"))
+  :ensure t
   :bind ("C-c a" . ellama-transient-main-menu)
   :custom
   (ellama-provider
