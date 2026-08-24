@@ -78,13 +78,13 @@
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-3.1-flash-lite")
+            "gemini-3.5-flash-lite")
            ;; general purpose
            my-gemini-llm-flash
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-3.5-flash")
+            "gemini-3.7-flash")
            ;; advanced coding model
            my-gemini-pro-llm
            (make-llm-gemini
