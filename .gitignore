@@ -1,2 +1,7 @@
+# agent ephemra
+.agent-shell
+.semcode.db
+
+# compiled lisp and backup files
 *.elc
 *~
