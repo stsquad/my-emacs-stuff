@@ -44,6 +44,26 @@
   :config (setq lui-flyspell-p t)
   :hook (lui-pre-input . my-check-for-meeting))
 
+;; https://paste.centos.org/view/6747518d
+;; https://paste.debian.net/hidden/b9b43e07
+;;
+
+(defun my-create-pastebin-regex (host path alpha)
+  "Return a regex to extract pastebin result URLs from text.
+HOST is the pastebin host, PATH the url path and ALPHA indicates if
+the string contains alpha characters as well as numbers."
+  (rx-to-string
+   `(:
+     (group
+      "https://"
+      ,host
+      "/"
+      ,path
+      "/"
+      ,(if alpha
+           '(one-or-more hex-digit)
+         '(one-or-more digit)))) t))
+
 (defun lui-autopaste-service-private-linaro (text)
   "Paste TEXT to (private) pastebin.linaro.org and return the paste url."
   (let ((url-request-method "POST")
@@ -109,9 +129,61 @@ We need to fish it out from the returned page like savages.")
               (error "Error during pasting to paste.debian.net")))
         (kill-buffer buf)))))
 
+(defun lui-autopaste-service-ubuntu (text)
+  "Paste TEXT to pastebin.ubuntu.com and return the paste url."
+  (let* ((user "alex.bennee@linaro.org")
+         (pass (my-pass-password "ubuntu-one"))
+         (auth (base64-encode-string (concat user ":" pass) t))
+         (url-request-method "POST")
+         (url-request-extra-headers
+          `(("Content-Type" . "application/x-www-form-urlencoded")
+            ("Referer" . "https://pastebin.ubuntu.com/")
+            ("Authorization" . ,(concat "Basic " auth))))
+        (url-request-data (format "poster=%s&syntax=text&content=%s"
+                                  (url-hexify-string user-full-name)
+                                  (url-hexify-string text))))
+    (let ((buf (url-retrieve-synchronously
+                "https://pastebin.ubuntu.com/")))
+      (unwind-protect
+          (with-current-buffer buf
+            (setq my-global-debug-var buf)
+            (goto-char (point-min))
+            (if (re-search-forward "^Location: \\(.*?\\)\r?$" nil t)
+                (let ((loc (match-string 1)))
+                  (if (string-match-p "^http" loc)
+                      loc
+                    (concat "https://pastebin.ubuntu.com" loc)))
+              (error "Error during pasting to pastebin.ubuntu.com")))
+        (kill-buffer buf)))))
+
+(defun lui-autopaste-service-centos (text)
+  "Paste TEXT to paste.centos.org and return the paste url."
+  (let* ((paste-host "paste.centos.org")
+         (paste-url (format "https://%s/" paste-host))
+         (url-request-method "POST")
+         (url-request-extra-headers
+          `(("Content-Type" . "application/x-www-form-urlencoded")
+            ("Referer" . ,paste-url)))
+         (url-request-data (format "title=%s&lang=text&code=%s&expire=1440&submit=submit"
+                                   (url-hexify-string "Circe Paste")
+                                   (url-hexify-string text)))
+         (url-http-attempt-keepalives nil)
+         (buf (url-retrieve-synchronously paste-url)))
+    (unwind-protect
+        (with-current-buffer buf
+          (setq my-global-debug-var buf)
+          (goto-char (point-min))
+          (if (re-search-forward
+               (my-create-pastebin-regex paste-host "view" t)
+               nil t)
+              (concat (match-string 1))
+            (error "Error during pasting to paste.centos.org")))
+      (kill-buffer buf))))
+
 ;; Auto pasting
 (use-package lui-autopaste
-  :commands enable-lui-autopaste)
+  :commands enable-lui-autopaste
+  :config (setq lui-autopaste-function #'lui-autopaste-service-centos))
 
 ;; Auto join everything
 (defvar my-irc-login-timer
