@@ -14,7 +14,8 @@
 
 (eval-when-compile (require 'use-package))
 (use-package magit-git
-  :requires magit-process)
+  :requires magit-process
+  :commands (magit-git-string))
 
 (use-package bookmark)
 
