@@ -22,7 +22,7 @@
 (with-eval-after-load 'vc
   (remove-hook 'find-file-hook 'vc-find-file-hook)
   (remove-hook 'find-file-hook 'vc-refresh-state)
-  (setq vc-handled-backends nil))
+  (setq vc-handled-backends '(Git)))
 
 ;; As the built-in project.el support expects to use vc-mode hooks to
 ;; find the root of projects we need to provide something equivalent
