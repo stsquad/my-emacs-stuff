@@ -302,23 +302,14 @@ Optional `LIMIT-TYPE'."
 ;;
 (use-package agent-shell
   :ensure t
+  :bind  (:map agent-shell-mode-map
+               ("C-c C-l" . agent-shell-restart))
   :config (setq agent-shell-google-authentication
                 (agent-shell-google-make-authentication
                  :api-key
                  (lambda ()
                    (auth-source-pass-get 'secret "api.gemini.google.com")))
                 agent-shell-preferred-agent-config (agent-shell-goose-make-agent-config)))
-
-
-(use-package agent-shell-permission-transient
-  :vc (:url "https://github.com/Jamie-Cui/agent-shell-permission-transient"
-       :rev "main")
-  :ensure t
-  :after agent-shell
-  :bind (:map agent-shell-mode-map
-              ("C-c C-p" . agent-shell-permission-transient-menu))
-  :config
-  (agent-shell-permission-transient-mode +1))
 
 (provide 'my-assistants)
 ;;; my-assistants.el ends here
