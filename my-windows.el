@@ -112,10 +112,16 @@ Assumes that the frame is only split into two."
 
 
 ;; ace-window makes switching less painful
+;;
+;; The one annoying paper cut is remembering to hit '?' if you
+;; want to see the other dispatch options. The aw-minibuffer-flag at
+;; least ensures if you hit the right one you can see what will happen
+;; when you hit the window number.
 (use-package ace-window
   :ensure t
   :bind ("C-x o" . ace-window)
   :config (setq
+           aw-minibuffer-flag t ;; show current dispatch action
            aw-scope 'visible ;; jump between visible frames across displays
            ))
 
