@@ -18,7 +18,7 @@
 (use-package yasnippet
   :ensure t
   :commands (snippet-mode yas-global-mode)
-  :defer 60
+  :defer 10
   :hook (yas-minor-mode . my-disable-yas-if-no-snippets)
   :config (progn
             (when (file-exists-p "~/.emacs.d/my-snippets")
