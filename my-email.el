@@ -491,6 +491,17 @@ If `PREFIX' > 16 then pass the buffer to ellama to query."
           (overlay-put my-gnus-cc-hiding-overlay 'display "...")
           (overlay-put my-gnus-cc-hiding-overlay 'evaporate t))))))
 
+(defun my-gnus-cc-auto-toggle ()
+  "Auto fold CC if > 3 lines."
+  (save-excursion
+    (goto-char (point-min))
+    (when (gnus-article-goto-header (rx (or "CC" "Cc" "cc")))
+      (save-restriction
+        (mail-header-narrow-to-field)
+        (goto-char (point-min))
+        (if (re-search-forward (rx eol) nil t 3)
+            (my-gnus-article-toggle-long-cc))))))
+
 (defun my-mu4e-kill-message-id (&optional no-kill)
   "Snarf the message-id into the kill ring unless NO-KILL prefix."
   (interactive "P")
@@ -595,7 +606,8 @@ If `PREFIX' > 16 then pass the buffer to ellama to query."
               ;; overrides
               ("h"     . my-gnus-article-toggle-long-cc)
               ("R"     . my-mu4e-reply-function))
-  :hook (mu4e-view-mode . my-set-view-directory)
+  :hook ((mu4e-view-mode . my-set-view-directory)
+         (mu4e-view-rendered-hook . my-gnus-cc-auto-toggle))
   :config (setq mu4e-view-fields
                 '(:from :to :cc
                         :subject :flags
