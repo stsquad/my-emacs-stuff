@@ -95,7 +95,8 @@
   (rx (: (or my-based-on-tag-rx
              my-msgid-tag-rx
              "patchew.org/qemu"
-             "lore.kernel.org/qemu-devel")
+             "lore.kernel.org/qemu-devel"
+             "lore.kernel.org/r")
          (or "/" ": ")
          my-capture-brackets-rx))
   "Regexp to extract Message-Id from git tags. Expects a lowered string.")
