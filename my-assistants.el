@@ -216,7 +216,7 @@
   :ensure t
   :hook ((eca-chat-mode . my-eca-chat-flyspell-setup)
          (eca-chat-finished . my-eca-add-tracking-buffer))
-  :config (setq eca-extra-args '("--verbose")
+  :config (setq eca-extra-args '("--verbose" "--log-level" "debug")
                 eca-completion-mode nil
                 eca-chat-use-side-window nil))
 
