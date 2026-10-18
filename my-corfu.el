@@ -49,12 +49,9 @@ This should be called from a hook such as `server-after-make-frame-hook'"
   :ensure t
   :hook (server-after-make-frame . my-maybe-enable-corfu-terminal-mode))
 
-;; Disable for now as it breaks ement:
-;;  https://github.com/alphapapa/ement.el/issues/212
-;;  https://github.com/rougier/svg-lib/issues/18
 (use-package kind-icon
-   :disabled t
    :after corfu
+   :ensure t
    :custom
    (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
    :config
