@@ -34,7 +34,12 @@
 (use-package corfu
   :ensure t
   :init (global-corfu-mode)
-  :config (setq corfu-auto t))
+  :custom
+  (corfu-auto t)
+  (corfu-quit-no-match t)
+  :bind (:map corfu-map
+              ;; unbind RET so by default we don't take first completion
+              ("RET" . nil)))
 
 ;; we also need to handle disabling on new frames
 (defun my-maybe-enable-corfu-terminal-mode ()
