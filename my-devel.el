@@ -74,8 +74,8 @@
 ;;
 
 (use-package eglot
-  :hook ((c-mode . eglot-ensure)
-         (python-mode . eglot-ensure)))
+  :hook (((c-mode c++-mode c-ts-mode c++-ts-mode) . eglot-ensure)
+         ((python-mode python-ts-mode) . eglot-ensure)))
 
 ;; once clangd21 is more widely available we can avoid this global
 ;; hack in favour of per-project .clangd configs
