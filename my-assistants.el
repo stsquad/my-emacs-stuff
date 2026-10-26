@@ -85,16 +85,12 @@
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
             :chat-model
-            "gemini-3.7-flash")
-           ;; advanced coding model
-           my-gemini-pro-llm
+            "gemini-3.8-flash")
+           ;; advanced reasoning model for deep thinking
+           my-gemini-argon
            (make-llm-gemini
             :key (my-pass-password "api.gemini.google.com")
-            :chat-model "gemini-2.5-pro")
-           my-gemini-pro-preview-llm
-           (make-llm-gemini
-            :key (my-pass-password "api.gemini.google.com")
-            :chat-model "gemini-3.1-pro-preview")))
+            :chat-model "gemini-4-argon")))
 
 ;; See https://docs.anthropic.com/en/docs/about-claude/models/all-models
 (use-package llm-claude
@@ -159,8 +155,7 @@
                 ellama-providers
                 '(
                   ;; Google Gemini Models
-                  ("Gemini Pro 3 Preview" . my-gemini-pro-preview-llm)
-                  ("Gemini Pro 2.5 (coding)" . my-gemini-pro-llm)
+                  ("Gemini Argon (deep thinking)" . my-gemini-argon)
                   ("Gemini Flash (general)" . my-gemini-llm-flash)
                   ("Gemini Flash Lite (cheaper, low latency)" . my-gemini-llm-flash-lite)
                   ;; OpenAI Models
